@@ -1,6 +1,7 @@
 import 'dart:developer' as dev;
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/order.dart' as app_order;
 
@@ -62,6 +63,66 @@ class OrdersService {
       dev.log('[nearby_stream] error: $error');
       return <app_order.Order>[];
     });
+  }
+
+  Future<void> acceptOrder(String orderId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception('Driver not authenticated');
+
+    await _firestore.runTransaction((transaction) async {
+      final orderRef = _firestore.collection('orders').doc(orderId);
+      final orderDoc = await transaction.get(orderRef);
+
+      if (!orderDoc.exists) {
+        throw Exception('Order not found');
+      }
+
+      final currentStatus = orderDoc.data()!['status'] as String;
+      if (currentStatus != 'matching') {
+        throw Exception('Order was already taken');
+      }
+
+      final update = app_order.OrderStatus.createTransitionUpdate(
+        to: app_order.OrderStatus.accepted,
+        driverId: user.uid,
+      );
+
+      transaction.update(orderRef, update);
+    });
+  }
+
+  Future<void> transition(String orderId, app_order.OrderStatus to) async {
+    await _firestore.runTransaction((transaction) async {
+      final orderRef = _firestore.collection('orders').doc(orderId);
+      final orderDoc = await transaction.get(orderRef);
+
+      if (!orderDoc.exists) {
+        throw Exception('Order not found');
+      }
+
+      final currentStatus = app_order.OrderStatus.fromString(
+          orderDoc.data()!['status'] as String);
+
+      if (!app_order.OrderStatus.canTransition(currentStatus, to)) {
+        throw Exception('Invalid status transition');
+      }
+
+      final update = app_order.OrderStatus.createTransitionUpdate(to: to);
+      transaction.update(orderRef, update);
+    });
+  }
+
+  Stream<List<app_order.Order>> getDriverActiveOrders(String driverId) {
+    return _firestore
+        .collection('orders')
+        .where('driverId', isEqualTo: driverId)
+        .where('status', whereIn: ['accepted', 'onRoute'])
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs
+              .map((doc) => app_order.Order.fromFirestore(doc.id, doc.data()))
+              .toList();
+        });
   }
 
   double _calculateDistance(

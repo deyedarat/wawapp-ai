@@ -2,22 +2,25 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function isSignedIn() { return request.auth != null; }
+    function isOwner() { return resource.data.ownerId == request.auth.uid; }
+    function isDriver() { return resource.data.driverId == request.auth.uid; }
+    function validStatusTransition() {
+      let currentStatus = resource.data.status;
+      let newStatus = request.resource.data.status;
+      return (currentStatus == "matching" && newStatus in ["accepted", "cancelled"]) ||
+             (currentStatus == "accepted" && newStatus in ["onRoute", "cancelled"]) ||
+             (currentStatus == "onRoute" && newStatus == "completed");
+    }
 
     match /orders/{id} {
       allow create: if isSignedIn()
         && request.resource.data.status == "matching"
         && request.resource.data.ownerId == request.auth.uid
-
-        // price
         && request.resource.data.price is int
         && request.resource.data.price >= 0
-
-        // distance
         && request.resource.data.distanceKm is number
         && request.resource.data.distanceKm >= 0
         && request.resource.data.distanceKm < 100
-
-        // pickup
         && request.resource.data.pickup is map
         && request.resource.data.pickup.lat is number
         && request.resource.data.pickup.lng is number
@@ -26,8 +29,6 @@ service cloud.firestore {
         && request.resource.data.pickup.lat <= 90
         && request.resource.data.pickup.lng >= -180
         && request.resource.data.pickup.lng <= 180
-
-        // dropoff
         && request.resource.data.dropoff is map
         && request.resource.data.dropoff.lat is number
         && request.resource.data.dropoff.lng is number
@@ -37,8 +38,19 @@ service cloud.firestore {
         && request.resource.data.dropoff.lng >= -180
         && request.resource.data.dropoff.lng <= 180;
 
-      // Read for authenticated users (drivers/clients); will be further restricted later per business logic.
+      allow read: if isSignedIn() && (isOwner() || isDriver() || resource.data.status == "matching");
+      
+      allow update: if isSignedIn()
+        && validStatusTransition()
+        && request.resource.data.price == resource.data.price
+        && request.resource.data.ownerId == resource.data.ownerId
+        && ((request.resource.data.status == "accepted" && request.resource.data.driverId == request.auth.uid) ||
+            (request.resource.data.status != "accepted" && isDriver()));
+    }
+
+    match /driver_locations/{driverId} {
       allow read: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == driverId;
     }
   }
 }

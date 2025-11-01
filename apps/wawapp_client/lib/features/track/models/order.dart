@@ -1,5 +1,17 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+enum OrderStatus {
+  matching,
+  accepted,
+  onRoute,
+  completed,
+  cancelled;
+
+  static OrderStatus fromString(String status) {
+    return OrderStatus.values.firstWhere((e) => e.name == status);
+  }
+}
+
 class Order {
   final double distanceKm;
   final double price;
@@ -8,6 +20,7 @@ class Order {
   final LatLng pickup;
   final LatLng dropoff;
   final String? status;
+  final String? driverId;
 
   const Order({
     required this.distanceKm,
@@ -17,6 +30,7 @@ class Order {
     required this.pickup,
     required this.dropoff,
     this.status,
+    this.driverId,
   });
 
   Map<String, dynamic> toMap() => {
@@ -27,5 +41,6 @@ class Order {
         'pickup': {'lat': pickup.latitude, 'lng': pickup.longitude},
         'dropoff': {'lat': dropoff.latitude, 'lng': dropoff.longitude},
         'status': status,
+        'driverId': driverId,
       };
 }

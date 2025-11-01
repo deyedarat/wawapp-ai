@@ -36,6 +36,23 @@ class _NearbyScreenState extends State<NearbyScreen> {
     }
   }
 
+  Future<void> _acceptOrder(String orderId) async {
+    try {
+      await _ordersService.acceptOrder(orderId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم قبول الطلب بنجاح')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                'خطأ: ${e.toString().contains('already taken') ? 'تم أخذ الطلب بالفعل' : e.toString()}')),
+      );
+    }
+  }
+
   double _calculateDistance(
       double lat1, double lon1, double lat2, double lon2) {
     const R = 6371;
@@ -133,7 +150,17 @@ class _NearbyScreenState extends State<NearbyScreen> {
                                   Text('إلى: ${order.dropoff.label}'),
                                 ],
                               ),
-                              trailing: Text('${order.price} MRU'),
+                              trailing: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text('${order.price} MRU'),
+                                  const SizedBox(height: 4),
+                                  ElevatedButton(
+                                    onPressed: () => _acceptOrder(order.id),
+                                    child: const Text('قبول'),
+                                  ),
+                                ],
+                              ),
                               isThreeLine: true,
                             ),
                           );
