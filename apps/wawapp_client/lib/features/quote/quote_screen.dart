@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'providers/quote_provider.dart';
 import '../map/pick_route_controller.dart';
 import '../track/models/order.dart';
+import '../track/data/orders_repository.dart';
 import '../../core/utils/address_utils.dart';
 import '../../core/utils/eta.dart';
 import '../../core/pricing/pricing.dart';
@@ -55,7 +56,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                     children: [
                       Text(
                         price > 0
-                            ? '${l10n.currency} ${price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}'  
+                            ? '${l10n.currency} ${price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}'
                             : '--- ${l10n.currency}',
                         style: const TextStyle(
                             fontSize: 32, fontWeight: FontWeight.bold),
@@ -90,28 +91,47 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: quoteState.isReady
-                    ? () {
-                        final routeState = ref.read(routePickerProvider);
-                        final fromText = AddressUtils.friendly(
-                          userInput: routeState.pickupAddress,
-                          latLng: routeState.pickup,
-                        );
-                        final toText = AddressUtils.friendly(
-                          userInput: routeState.dropoffAddress,
-                          latLng: routeState.dropoff,
-                        );
-                        final breakdown =
-                            Pricing.compute(quoteState.distanceKm!);
-                        final order = Order(
-                          distanceKm: quoteState.distanceKm!,
-                          price: breakdown.rounded.toDouble(),
-                          pickupAddress: fromText,
-                          dropoffAddress: toText,
-                          pickup: routeState.pickup!,
-                          dropoff: routeState.dropoff!,
-                          status: 'pending',
-                        );
-                        context.push('/track', extra: order);
+                    ? () async {
+                        try {
+                          final repo = ref.read(ordersRepositoryProvider);
+                          final routeState = ref.read(routePickerProvider);
+                          final fromText = AddressUtils.friendly(
+                            userInput: routeState.pickupAddress,
+                            latLng: routeState.pickup,
+                          );
+                          final toText = AddressUtils.friendly(
+                            userInput: routeState.dropoffAddress,
+                            latLng: routeState.dropoff,
+                          );
+                          final breakdown =
+                              Pricing.compute(quoteState.distanceKm!);
+
+                          await repo.createOrder(
+                            pickup: routeState.pickup!,
+                            dropoff: routeState.dropoff!,
+                            pickupLabel: fromText,
+                            dropoffLabel: toText,
+                            distanceKm: quoteState.distanceKm!,
+                            price: breakdown.rounded,
+                          );
+
+                          if (!mounted) return;
+                          final order = Order(
+                            distanceKm: quoteState.distanceKm!,
+                            price: breakdown.rounded.toDouble(),
+                            pickupAddress: fromText,
+                            dropoffAddress: toText,
+                            pickup: routeState.pickup!,
+                            dropoff: routeState.dropoff!,
+                            status: 'matching',
+                          );
+                          context.push('/track', extra: order);
+                        } catch (e) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('خطأ في إنشاء الطلب: $e')),
+                          );
+                        }
                       }
                     : null,
                 child: Text(l10n.request_now),
