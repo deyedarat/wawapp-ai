@@ -53,8 +53,37 @@ This implementation unifies the order document schema across Client and Driver a
 2. Deploy indexes: `firebase deploy --only firestore:indexes`
 3. If App Check is enabled, ensure proper configuration for both apps
 
+## Phase 2: Order Status State Machine (COMPLETED)
+
+### Order Status Flow
+```
+matching → accepted → onRoute → completed
+    ↓         ↓
+cancelled  cancelled
+```
+
+### Driver App Features
+- **Accept Orders**: Transaction-safe order acceptance with conflict detection
+- **ActiveOrderScreen**: Status management with transition buttons
+- **Live Tracking**: Automatic location updates every 5s during active orders
+- **Logging**: Structured debug logs for tracking and nearby streams
+
+### Client App Features  
+- **OrderStatusScreen**: Real-time order progress tracking
+- **Driver Location**: Shows last known driver position during active orders
+- **Status Updates**: Live status changes from matching to completion
+
+### Security & Performance
+- **Status Validation**: Firestore rules enforce valid state transitions
+- **Driver Assignment**: Secure driverId assignment on order acceptance
+- **Location Privacy**: Driver locations only accessible during active orders
+- **Transaction Safety**: Prevents race conditions in order acceptance
+
 ## Follow-up TODOs
 - [ ] Consider geospatial indexing for production scale (GeoHash/Geofirestore)
-- [ ] Add order status transitions (matching → accepted → enRoute → delivered)
-- [ ] Implement driver assignment logic
-- [ ] Add real-time order tracking with telemetry
+- [x] Add order status transitions (matching → accepted → onRoute → completed)
+- [x] Implement driver assignment logic  
+- [x] Add real-time order tracking with telemetry
+- [ ] Add push notifications for status changes
+- [ ] Implement driver earnings tracking
+- [ ] Add order history and analytics

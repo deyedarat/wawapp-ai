@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../l10n/app_localizations.dart';
 import '../../models/order.dart' as app_order;
 import '../../services/orders_service.dart';
 
