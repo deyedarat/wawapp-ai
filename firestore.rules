@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() { return request.auth != null; }
+
+    match /orders/{id} {
+      allow create: if isSignedIn()
+        && request.resource.data.status == "matching"
+        && request.resource.data.ownerId == request.auth.uid
+
+        // price
+        && request.resource.data.price is int
+        && request.resource.data.price >= 0
+
+        // distance
+        && request.resource.data.distanceKm is number
+        && request.resource.data.distanceKm >= 0
+        && request.resource.data.distanceKm < 100
+
+        // pickup
+        && request.resource.data.pickup is map
+        && request.resource.data.pickup.lat is number
+        && request.resource.data.pickup.lng is number
+        && request.resource.data.pickup.label is string
+        && request.resource.data.pickup.lat >= -90
+        && request.resource.data.pickup.lat <= 90
+        && request.resource.data.pickup.lng >= -180
+        && request.resource.data.pickup.lng <= 180
+
+        // dropoff
+        && request.resource.data.dropoff is map
+        && request.resource.data.dropoff.lat is number
+        && request.resource.data.dropoff.lng is number
+        && request.resource.data.dropoff.label is string
+        && request.resource.data.dropoff.lat >= -90
+        && request.resource.data.dropoff.lat <= 90
+        && request.resource.data.dropoff.lng >= -180
+        && request.resource.data.dropoff.lng <= 180;
+
+      // Read for authenticated users (drivers/clients); will be further restricted later per business logic.
+      allow read: if isSignedIn();
+    }
+  }
+}
