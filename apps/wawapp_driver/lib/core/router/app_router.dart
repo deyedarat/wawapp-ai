@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/home/driver_home_screen.dart';
 import '../../features/nearby/nearby_screen.dart';
 import '../../features/wallet/wallet_screen.dart';
+import '../../features/auth/auth_gate.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -12,7 +13,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/',
         name: 'home',
-        builder: (context, state) => const DriverHomeScreen(),
+        builder: (context, state) => const AuthGate(child: DriverHomeScreen()),
       ),
       GoRoute(
         path: '/nearby',

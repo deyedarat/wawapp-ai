@@ -108,7 +108,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                               Pricing.compute(quoteState.distanceKm!);
 
                           final user = FirebaseAuth.instance.currentUser;
-                          if (user == null) throw Exception('User not authenticated');
+                          if (user == null)
+                            throw Exception('User not authenticated');
 
                           await repo.createOrder(
                             ownerId: user.uid,

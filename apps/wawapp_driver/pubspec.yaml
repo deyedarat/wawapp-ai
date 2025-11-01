@@ -16,10 +16,11 @@ dependencies:
   intl: ^0.20.2
   geolocator: ^10.1.0
   google_maps_flutter: ^2.5.0
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.15.3
-  cloud_firestore: ^4.13.6
-  firebase_messaging: ^14.7.9
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.0
+  cloud_firestore: ^5.4.4
+  crypto: ^3.0.3
+  firebase_messaging: ^15.2.10
 
 dev_dependencies:
   flutter_test:
