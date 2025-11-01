@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'providers/quote_provider.dart';
@@ -106,13 +107,24 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                           final breakdown =
                               Pricing.compute(quoteState.distanceKm!);
 
+                          final user = FirebaseAuth.instance.currentUser;
+                          if (user == null) throw Exception('User not authenticated');
+
                           await repo.createOrder(
-                            pickup: routeState.pickup!,
-                            dropoff: routeState.dropoff!,
-                            pickupLabel: fromText,
-                            dropoffLabel: toText,
+                            ownerId: user.uid,
+                            pickup: {
+                              'lat': routeState.pickup!.latitude,
+                              'lng': routeState.pickup!.longitude,
+                              'label': fromText,
+                            },
+                            dropoff: {
+                              'lat': routeState.dropoff!.latitude,
+                              'lng': routeState.dropoff!.longitude,
+                              'label': toText,
+                            },
                             distanceKm: quoteState.distanceKm!,
                             price: breakdown.rounded,
+                            status: 'matching',
                           );
 
                           if (!mounted) return;

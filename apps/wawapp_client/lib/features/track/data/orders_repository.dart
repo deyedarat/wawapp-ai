@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class OrdersRepository {
   final FirebaseFirestore _firestore;
@@ -10,31 +8,20 @@ class OrdersRepository {
       : _firestore = firestore ?? FirebaseFirestore.instance;
 
   Future<String> createOrder({
-    required LatLng pickup,
-    required LatLng dropoff,
-    required String pickupLabel,
-    required String dropoffLabel,
+    required String ownerId,
+    required Map<String, dynamic> pickup,
+    required Map<String, dynamic> dropoff,
     required double distanceKm,
     required int price,
+    required String status,
   }) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) throw Exception('User not authenticated');
-
     final docRef = await _firestore.collection('orders').add({
-      'ownerId': user.uid,
-      'status': 'matching',
-      'pickup': {
-        'lat': pickup.latitude,
-        'lng': pickup.longitude,
-        'label': pickupLabel,
-      },
-      'dropoff': {
-        'lat': dropoff.latitude,
-        'lng': dropoff.longitude,
-        'label': dropoffLabel,
-      },
+      'ownerId': ownerId,
+      'pickup': pickup,
+      'dropoff': dropoff,
       'distanceKm': distanceKm,
       'price': price,
+      'status': status,
       'createdAt': FieldValue.serverTimestamp(),
     });
     return docRef.id;

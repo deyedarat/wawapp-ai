@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wawapp_client/main.dart' as app;
 import 'package:wawapp_client/features/track/data/orders_repository.dart';
 
@@ -23,19 +22,18 @@ void main() {
       final uid = FirebaseAuth.instance.currentUser!.uid;
       print('Integration test - Auth UID: $uid');
 
-      // 3) Test order creation with fake points
+      // 3) Test order creation with unified schema
       final repository = OrdersRepository();
-      const pickup = LatLng(18.0783, -15.9744); // Nouakchott
-      const dropoff = LatLng(18.0969, -15.9497); // Nearby point
 
       // This should NOT throw "Not signed in" error
       expect(() async {
         final orderId = await repository.createOrder(
-          pickup: pickup,
-          dropoff: dropoff,
-          price: 100,
+          ownerId: uid,
+          pickup: {'lat': 18.0783, 'lng': -15.9744, 'label': 'Pickup A'},
+          dropoff: {'lat': 18.0969, 'lng': -15.9497, 'label': 'Dropoff B'},
           distanceKm: 2.5,
-          status: 'pending',
+          price: 100,
+          status: 'matching',
         );
         print('Integration test - Order created: $orderId');
       }, returnsNormally);

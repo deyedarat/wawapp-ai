@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wawapp_client/features/track/data/orders_repository.dart';
 
 void main() {
@@ -14,11 +13,14 @@ void main() {
     });
 
     test('createOrder returns orderId and writes correct fields', () async {
-      const pickup = LatLng(18.0783, -15.9744);
-      const dropoff = LatLng(18.0969, -15.9497);
-      const price = 100;
-
-      final orderId = await repository.createOrder(pickup, dropoff, price);
+      final orderId = await repository.createOrder(
+        ownerId: 'mock_uid',
+        pickup: {'lat': 18.0783, 'lng': -15.9744, 'label': 'Pickup A'},
+        dropoff: {'lat': 18.0969, 'lng': -15.9497, 'label': 'Dropoff B'},
+        distanceKm: 2.5,
+        price: 100,
+        status: 'matching',
+      );
 
       expect(orderId, isNotEmpty);
 
@@ -27,12 +29,16 @@ void main() {
       expect(doc.exists, isTrue);
 
       final data = doc.data()!;
-      expect(data['pickup']['lat'], pickup.latitude);
-      expect(data['pickup']['lng'], pickup.longitude);
-      expect(data['dropoff']['lat'], dropoff.latitude);
-      expect(data['dropoff']['lng'], dropoff.longitude);
-      expect(data['price'], price);
-      expect(data['status'], 'pending');
+      expect(data['ownerId'], 'mock_uid');
+      expect(data['pickup']['lat'], 18.0783);
+      expect(data['pickup']['lng'], -15.9744);
+      expect(data['pickup']['label'], 'Pickup A');
+      expect(data['dropoff']['lat'], 18.0969);
+      expect(data['dropoff']['lng'], -15.9497);
+      expect(data['dropoff']['label'], 'Dropoff B');
+      expect(data['distanceKm'], 2.5);
+      expect(data['price'], 100);
+      expect(data['status'], 'matching');
       expect(data['createdAt'], isNotNull);
     });
   });
