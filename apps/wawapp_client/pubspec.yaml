@@ -26,6 +26,10 @@ dependencies:
   firebase_messaging: ^14.7.10
   permission_handler: ^11.3.1
   yaml: ^3.1.2
+  crypto: ^3.0.3
+  firebase_app_check: ^0.2.1
+  flutter_secure_storage: ^9.0.0
+  equatable: ^2.0.5
 
 dev_dependencies:
   intl_utils: ^2.8.6
