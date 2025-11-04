@@ -136,3 +136,5 @@ logs
 coverage/
 *.lcov
 .nyc_output
+*.bak
+*.bak.*

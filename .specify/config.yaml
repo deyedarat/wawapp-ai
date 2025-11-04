@@ -1,0 +1,27 @@
+defaults:
+  mode: incremental
+  architecture_policy: preserve_existing
+  migration_strategy: extend_not_replace
+  respect_existing_patterns: true
+
+project:
+  type: mono-repo
+  apps:
+    client:
+      path: apps/wawapp_client
+      android:
+        google_services: apps/wawapp_client/android/app/google-services.json
+        maps_api_xml:    apps/wawapp_client/android/app/src/main/res/values/api_keys.xml
+    driver:
+      path: apps/wawapp_driver
+      android:
+        google_services: apps/wawapp_driver/android/app/google-services.json
+        maps_api_xml:    apps/wawapp_driver/android/app/src/main/res/values/api_keys.xml
+
+android:
+  maps_api_key_name: google_maps_api_key
+
+firebase:
+  projects:
+    client: wawapp-client     # غيّرها حسب اسم مشروع Firebase الفعلي
+    driver: wawapp-driver     # غيّرها حسب اسم مشروع Firebase الفعلي
