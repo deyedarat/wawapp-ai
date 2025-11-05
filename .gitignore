@@ -136,3 +136,5 @@ logs
 coverage/
 *.lcov
 .nyc_output
+
+apps/wawapp_driver/android/app/src/main/res/values/api_keys.xml
