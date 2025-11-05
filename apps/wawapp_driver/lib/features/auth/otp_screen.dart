@@ -20,9 +20,15 @@ class _OtpScreenState extends State<OtpScreen> {
     });
     try {
       await PhonePinAuth.instance.confirmOtp(_code.text.trim());
-      if (mounted)
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (_) => const CreatePinScreen()));
+      if (mounted) {
+        final hasPin = await PhonePinAuth.instance.hasPinHash();
+        if (hasPin) {
+          Navigator.popUntil(context, (r) => r.isFirst);
+        } else {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (_) => const CreatePinScreen()));
+        }
+      }
     } catch (e) {
       setState(() => _err = e.toString());
     } finally {

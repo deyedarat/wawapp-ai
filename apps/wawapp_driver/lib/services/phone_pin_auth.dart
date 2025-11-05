@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class PhonePinAuth {
   PhonePinAuth._();
@@ -32,12 +33,14 @@ class PhonePinAuth {
     final u = _auth.currentUser;
     if (u != null) return;
 
+    if (kDebugMode) print('AUTH: requestOTP(phone=$phoneE164)');
     final completer = Completer<void>();
     await _auth.verifyPhoneNumber(
       phoneNumber: phoneE164,
       timeout: const Duration(seconds: 60),
       verificationCompleted: (cred) async {
         await _auth.signInWithCredential(cred);
+        if (kDebugMode) print('AUTH: otpVerified(uid=${_auth.currentUser?.uid})');
         completer.complete();
       },
       verificationFailed: (e) => completer.completeError(e),
@@ -61,6 +64,7 @@ class PhonePinAuth {
     final cred =
         PhoneAuthProvider.credential(verificationId: vid, smsCode: smsCode);
     await _auth.signInWithCredential(cred);
+    if (kDebugMode) print('AUTH: otpVerified(uid=${_auth.currentUser?.uid})');
   }
 
   Future<void> setPin(String pin) async {
@@ -72,18 +76,40 @@ class PhonePinAuth {
       'pinHash': hp['hash'],
       'createdAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
+    if (kDebugMode) print('AUTH: pinCreated(uid=${_auth.currentUser?.uid})');
   }
 
   Future<bool> verifyPin(String pin) async {
     final doc = await _userDoc();
     final snap = await doc.get();
     final data = snap.data();
-    if (data == null) return false;
+    if (data == null) {
+      if (kDebugMode) print('AUTH: pinLoginFailed(reason=no_user_doc)');
+      return false;
+    }
     final salt = data['pinSalt'] as String?;
     final hash = data['pinHash'] as String?;
-    if (salt == null || hash == null) return false;
+    if (salt == null || hash == null) {
+      if (kDebugMode) print('AUTH: pinLoginFailed(reason=no_pin_hash)');
+      return false;
+    }
     final h = _hashWith(pin, salt);
-    return h == hash;
+    final success = h == hash;
+    if (kDebugMode) {
+      if (success) {
+        print('AUTH: pinLoginSuccess(uid=${_auth.currentUser?.uid})');
+      } else {
+        print('AUTH: pinLoginFailed(reason=wrong_pin)');
+      }
+    }
+    return success;
+  }
+
+  Future<bool> hasPinHash() async {
+    final doc = await _userDoc();
+    final snap = await doc.get();
+    final data = snap.data();
+    return data?['pinHash'] != null;
   }
 
   Future<void> signOut() => _auth.signOut();

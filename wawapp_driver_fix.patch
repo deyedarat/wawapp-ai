@@ -1,0 +1,72 @@
+diff --git a/apps/wawapp_driver/lib/features/auth/otp_screen.dart b/apps/wawapp_driver/lib/features/auth/otp_screen.dart
+index 0000000..1111111 100644
+--- a/apps/wawapp_driver/lib/features/auth/otp_screen.dart
++++ b/apps/wawapp_driver/lib/features/auth/otp_screen.dart
+@@ -20,9 +20,11 @@ class _OtpScreenState extends State<OtpScreen> {
+     });
+     try {
+       await PhonePinAuth.instance.confirmOtp(_code.text.trim());
+-      if (mounted)
++      if (mounted) {
+         Navigator.pushReplacement(context,
+             MaterialPageRoute(builder: (_) => const CreatePinScreen()));
++      }
+     } catch (e) {
+       setState(() => _err = e.toString());
+     } finally {
+diff --git a/apps/wawapp_driver/lib/features/auth/phone_pin_login_screen.dart b/apps/wawapp_driver/lib/features/auth/phone_pin_login_screen.dart
+index 0000000..1111111 100644
+--- a/apps/wawapp_driver/lib/features/auth/phone_pin_login_screen.dart
++++ b/apps/wawapp_driver/lib/features/auth/phone_pin_login_screen.dart
+@@ -30,9 +30,11 @@ class _PhonePinLoginScreenState extends State<PhonePinLoginScreen> {
+       await PhonePinAuth.instance.ensurePhoneSession(phone);
+ 
+       if (FirebaseAuth.instance.currentUser == null) {
+-        if (mounted)
++        if (mounted) {
+           Navigator.push(
+               context, MaterialPageRoute(builder: (_) => const OtpScreen()));
++        }
+         return;
+       }
+ 
+@@ -89,10 +91,12 @@ class _PhonePinLoginScreenState extends State<PhonePinLoginScreen> {
+                   : () async {
+                       await PhonePinAuth.instance
+                           .ensurePhoneSession(_phone.text.trim());
+-                      if (mounted)
++                      if (mounted) {
+                         Navigator.push(
+                             context,
+                             MaterialPageRoute(
+                                 builder: (_) => const OtpScreen()));
++                      }
+                     },
+               child: const Text('New device or forgot PIN? Verify by SMS'),
+             ),
+diff --git a/apps/wawapp_driver/lib/main.dart b/apps/wawapp_driver/lib/main.dart
+index 0000000..1111111 100644
+--- a/apps/wawapp_driver/lib/main.dart
++++ b/apps/wawapp_driver/lib/main.dart
+@@ -5,13 +5,17 @@ import 'package:firebase_core/firebase_core.dart';
+ import 'core/router/app_router.dart';
+ import 'core/theme/app_theme.dart';
+ import 'l10n/app_localizations.dart';
+-import 'firebase_options.dart';
+ 
+ void main() async {
+   WidgetsFlutterBinding.ensureInitialized();
+ 
+-  await Firebase.initializeApp(
+-    options: DefaultFirebaseOptions.currentPlatform,
+-  );
++  try {
++    await Firebase.initializeApp();
++  } catch (e) {
++    // Firebase initialization failed - continue without Firebase
++    // Run: flutterfire configure --project=your-project-id
++    debugPrint('Firebase init failed: $e');
++  }
+ 
+   runApp(const ProviderScope(child: MyApp()));
+ }
