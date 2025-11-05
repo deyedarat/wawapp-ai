@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "363341993641",
+    "project_id": "wawapp-952d6",
+    "storage_bucket": "wawapp-952d6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363341993641:android:344b79d7b86a067d683bb8",
+        "android_client_info": {
+          "package_name": "com.wawapp.client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8Soo8cPB0wzFBsCe_G1_WlQD-r8Kn3uI"
+        },
+        {
+          "current_key": "AIzaSyBdM9gMqHOtu3Hvk_g8Z3dKMcuO5WwMsMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363341993641:android:1a58dd28a46889d5683bb8",
+        "android_client_info": {
+          "package_name": "com.wawapp.driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8Soo8cPB0wzFBsCe_G1_WlQD-r8Kn3uI"
+        },
+        {
+          "current_key": "AIzaSyBdM9gMqHOtu3Hvk_g8Z3dKMcuO5WwMsMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
