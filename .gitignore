@@ -2,10 +2,10 @@ build/
 .dart_tool/
 .idea/
 .vscode/
-apps/**/google-services.json
-apps/**/lib/firebase_options.dart
 apps/**/android/.kotlin/
-**/google-services.json
+#
+# Allow committing Firebase config for multi-device builds
+# (google-services.json + firebase_options.dart)
 **/GoogleService-Info.plist
 .firebase/
 .gradle/
@@ -37,6 +37,8 @@ unlinked_spec.ds
 .cxx
 local.properties
 android.keystore
+**/*.jks
+**/*.keystore
 
 # iOS
 **/ios/**/*.mode1v3
@@ -137,4 +139,6 @@ coverage/
 *.lcov
 .nyc_output
 
-apps/wawapp_driver/android/app/src/main/res/values/api_keys.xml
+# (اختياري) إن أردت تشغيلًا فوريًا على أي جهاز:
+# ازِل السطر أدناه أو استبدله بملف عينة api_keys.sample.xml
+# apps/wawapp_driver/android/app/src/main/res/values/api_keys.xml
