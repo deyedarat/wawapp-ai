@@ -11,7 +11,7 @@ class AuthState {
 
 // Controller
 class AuthController extends StateNotifier<AuthState> {
-  AuthController(): super(const AuthState());
+  AuthController() : super(const AuthState());
 
   Future<void> login({required String phone, required String pin}) async {
     state = state.copyWith(loading: true, error: null);
@@ -26,5 +26,6 @@ class AuthController extends StateNotifier<AuthState> {
 }
 
 // Provider
-final authControllerProvider =
-  StateNotifierProvider<AuthController, AuthState>((ref) => AuthController());
+final authControllerProvider = StateNotifierProvider<AuthController, AuthState>(
+  (ref) => AuthController(),
+);

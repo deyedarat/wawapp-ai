@@ -8,23 +8,22 @@ class MyScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(authControllerProvider);
-    
+
     // Replace BlocListener with ref.listen
     ref.listen<AuthState>(authControllerProvider, (prev, next) {
       if (next.error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.error!)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.error!)));
       }
     });
 
     if (state.loading) return const CircularProgressIndicator();
 
     return ElevatedButton(
-      onPressed: () => ref.read(authControllerProvider.notifier).login(
-        phone: 'phone',
-        pin: 'pin',
-      ),
+      onPressed: () => ref
+          .read(authControllerProvider.notifier)
+          .login(phone: 'phone', pin: 'pin'),
       child: const Text('Login'),
     );
   }
