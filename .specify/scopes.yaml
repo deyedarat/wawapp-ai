@@ -1,0 +1,22 @@
+scopes:
+  - name: ui_screens
+    include:
+      - "apps/**/lib/features/**/**_screen.dart"
+      - "apps/**/lib/features/**/**_view.dart"
+  - name: ui_widgets
+    include:
+      - "apps/**/lib/shared/widgets/**.dart"
+  - name: services
+    include:
+      - "apps/**/lib/services/**.dart"
+  - name: tests
+    include:
+      - "apps/**/test/**.dart"
+      - "apps/**/integration_test/**.dart"
+
+protected:
+  - "apps/**/lib/core/**"
+  - "apps/**/lib/router/**"
+  - "apps/**/lib/l10n/**"
+  - "apps/**/lib/data/**"
+  - "apps/**/lib/theme/**"

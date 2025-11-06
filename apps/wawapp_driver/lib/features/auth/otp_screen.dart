@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../services/phone_pin_auth.dart';
 import 'create_pin_screen.dart';
@@ -20,13 +21,46 @@ class _OtpScreenState extends State<OtpScreen> {
     });
     try {
       await PhonePinAuth.instance.confirmOtp(_code.text.trim());
-      if (mounted)
-        Navigator.pushReplacement(context,
+      if (kDebugMode) {
+        print('[OtpScreen] OTP verified, checking for existing PIN');
+      }
+
+      final hasPin = await PhonePinAuth.instance.hasPinHash();
+      if (kDebugMode) {
+        print('[OtpScreen] hasPin=$hasPin');
+      }
+
+      if (!mounted) {
+        return;
+      }
+      setState(() => _busy = false);
+
+      if (!context.mounted) {
+        return;
+      }
+
+      if (hasPin) {
+        if (kDebugMode) {
+          print('[OtpScreen] PIN exists, navigating to home');
+        }
+        Navigator.popUntil(context, (r) => r.isFirst);
+      } else {
+        if (kDebugMode) {
+          print('[OtpScreen] No PIN, navigating to create PIN');
+        }
+        await Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (_) => const CreatePinScreen()));
-    } catch (e) {
-      setState(() => _err = e.toString());
+      }
+    } on Object catch (e, st) {
+      if (kDebugMode) {
+        print('[OtpScreen] Error: $e\n$st');
+      }
+      if (!mounted) {
+        return;
+      }
+      setState(() => _err = 'Invalid code. Please try again.');
     } finally {
-      if (mounted) setState(() => _busy = false);
+      // _busy already set to false in try block
     }
   }
 

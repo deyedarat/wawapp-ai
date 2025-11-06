@@ -29,7 +29,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
     try {
       _currentPosition = await _locationService.getCurrentPosition();
       setState(() {});
-    } catch (e) {
+    } on Object catch (e) {
       setState(() {
         _error = e.toString();
       });
@@ -39,12 +39,16 @@ class _NearbyScreenState extends State<NearbyScreen> {
   Future<void> _acceptOrder(String orderId) async {
     try {
       await _ordersService.acceptOrder(orderId);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم قبول الطلب بنجاح')),
       );
-    } catch (e) {
-      if (!mounted) return;
+    } on Object catch (e) {
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(

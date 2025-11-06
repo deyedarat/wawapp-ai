@@ -52,5 +52,20 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && request.auth.uid == driverId;
     }
+
+    match /users/{uid} {
+      // Read: only owner
+      allow read: if isSignedIn() && request.auth.uid == uid;
+
+      // Create: only owner
+      allow create: if isSignedIn() && request.auth.uid == uid;
+
+      // Update: only owner AND prevent partial, unsafe edits to sensitive fields
+      allow update: if isSignedIn()
+                    && request.auth.uid == uid
+                    && !(request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['pinHash','pinSalt'])
+                         && !request.resource.data.keys().hasAll(['pinHash','pinSalt']));
+    }
   }
 }

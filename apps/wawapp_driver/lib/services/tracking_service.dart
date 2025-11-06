@@ -21,7 +21,9 @@ class TrackingService {
 
   void startTracking() {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null || _isTracking) return;
+    if (user == null || _isTracking) {
+      return;
+    }
 
     dev.log('[tracking] start');
     _isTracking = true;
@@ -37,7 +39,9 @@ class TrackingService {
   }
 
   void stopTracking() {
-    if (!_isTracking) return;
+    if (!_isTracking) {
+      return;
+    }
 
     dev.log('[tracking] stop');
     _isTracking = false;
@@ -58,7 +62,9 @@ class TrackingService {
             position.latitude,
             position.longitude,
           );
-          if (distance < 20) return; // Skip if moved less than 20m
+          if (distance < 20) {
+            return; // Skip if moved less than 20m
+          }
         }
 
         await _firestore.collection('driver_locations').doc(driverId).set({
@@ -70,7 +76,7 @@ class TrackingService {
         _lastPosition = position;
         dev.log(
             '[tracking] update lat=${position.latitude} lng=${position.longitude}');
-      } catch (e) {
+      } on Object catch (e) {
         dev.log('[tracking] error: $e');
       }
     });
