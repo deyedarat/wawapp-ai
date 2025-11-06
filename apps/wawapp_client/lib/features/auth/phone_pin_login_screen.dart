@@ -30,9 +30,10 @@ class _PhonePinLoginScreenState extends State<PhonePinLoginScreen> {
       await PhonePinAuth.instance.ensurePhoneSession(phone);
 
       if (FirebaseAuth.instance.currentUser == null) {
-        if (mounted)
+        if (mounted) {
           Navigator.push(
               context, MaterialPageRoute(builder: (_) => const OtpScreen()));
+        }
         return;
       }
 
@@ -89,11 +90,12 @@ class _PhonePinLoginScreenState extends State<PhonePinLoginScreen> {
                   : () async {
                       await PhonePinAuth.instance
                           .ensurePhoneSession(_phone.text.trim());
-                      if (mounted)
+                      if (mounted) {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (_) => const OtpScreen()));
+                      }
                     },
               child: const Text('New device or forgot PIN? Verify by SMS'),
             ),
