@@ -145,3 +145,9 @@ coverage/
 
 **/*.bak
 .claude_patch.diff
+
+# Allow core logs utility
+!apps/wawapp_client/lib/core/logs/app_log.dart
+
+# Claude AI artifacts
+.claude/
