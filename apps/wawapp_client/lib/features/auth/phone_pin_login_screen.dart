@@ -1,62 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../services/phone_pin_auth.dart';
+import 'providers/auth_service_provider.dart';
 import 'otp_screen.dart';
 
-class PhonePinLoginScreen extends StatefulWidget {
+class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
   @override
-  State<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
+  ConsumerState<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
 }
 
-class _PhonePinLoginScreenState extends State<PhonePinLoginScreen> {
+class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   final _phone = TextEditingController(); // e.g. +222xxxxxxxx
   final _pin = TextEditingController();
-  bool _busy = false;
   String? _err;
 
   Future<void> _continue() async {
-    setState(() {
-      _busy = true;
-      _err = null;
-    });
-    try {
-      final phone = _phone.text.trim();
-      if (!phone.startsWith('+')) {
-        setState(() => _err = 'Use E.164 like +222...');
-        return;
-      }
-
-      await PhonePinAuth.instance.ensurePhoneSession(phone);
-
-      if (FirebaseAuth.instance.currentUser == null) {
-        if (mounted) {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (_) => const OtpScreen()));
-        }
-        return;
-      }
-
-      if (_pin.text.length != 4) {
-        setState(() => _err = 'PIN must be 4 digits');
-        return;
-      }
-      final ok = await PhonePinAuth.instance.verifyPin(_pin.text);
-      if (!ok) {
-        setState(() => _err = 'Invalid PIN');
-        return;
-      }
-
-      if (mounted) Navigator.pop(context); // success
-    } catch (e) {
-      setState(() => _err = e.toString());
-    } finally {
-      if (mounted) setState(() => _busy = false);
+    final phone = _phone.text.trim();
+    if (!phone.startsWith('+')) {
+      setState(() => _err = 'Use E.164 like +222...');
+      return;
     }
+    setState(() => _err = null);
+
+    await ref.read(authProvider.notifier).sendOtp(phone);
+
+    if (!mounted) return;
+
+    final authState = ref.read(authProvider);
+    if (authState.error != null) {
+      return; // Error will be shown from authState
+    }
+
+    if (FirebaseAuth.instance.currentUser == null) {
+      if (mounted) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => const OtpScreen()));
+      }
+      return;
+    }
+
+    if (_pin.text.length != 4) {
+      setState(() => _err = 'PIN must be 4 digits');
+      return;
+    }
+
+    await ref.read(authProvider.notifier).loginByPin(_pin.text);
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
+    // Listen for successful login and navigate
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next.hasPin && !next.isLoading && next.user != null) {
+        Navigator.pop(context);
+      }
+    });
+
+    final errorMessage = _err ?? authState.error;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Sign in with Phone')),
       body: Padding(
@@ -75,21 +79,21 @@ class _PhonePinLoginScreenState extends State<PhonePinLoginScreen> {
                 keyboardType: TextInputType.number,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'PIN (4 digits)')),
-            if (_err != null)
+            if (errorMessage != null)
               Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child:
-                      Text(_err!, style: const TextStyle(color: Colors.red))),
+                      Text(errorMessage, style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
-                onPressed: _busy ? null : _continue,
+                onPressed: authState.isLoading ? null : _continue,
                 child: const Text('Continue')),
             TextButton(
-              onPressed: _busy
+              onPressed: authState.isLoading
                   ? null
                   : () async {
-                      await PhonePinAuth.instance
-                          .ensurePhoneSession(_phone.text.trim());
+                      await ref.read(authProvider.notifier)
+                          .sendOtp(_phone.text.trim());
                       if (mounted) {
                         Navigator.push(
                             context,
