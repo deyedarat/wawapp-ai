@@ -16,12 +16,16 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
   Future<void> _transition(String orderId, app_order.OrderStatus to) async {
     try {
       await _ordersService.transition(orderId, to);
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديث حالة الطلب')),
       );
-    } catch (e) {
-      if (!mounted) return;
+    } on Object catch (e) {
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('خطأ: ${e.toString()}')),
       );

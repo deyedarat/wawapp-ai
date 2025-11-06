@@ -142,3 +142,6 @@ coverage/
 # (اختياري) إن أردت تشغيلًا فوريًا على أي جهاز:
 # ازِل السطر أدناه أو استبدله بملف عينة api_keys.sample.xml
 # apps/wawapp_driver/android/app/src/main/res/values/api_keys.xml
+
+**/*.bak
+.claude_patch.diff

@@ -16,7 +16,9 @@ class AuthGate extends StatelessWidget {
               body: Center(child: CircularProgressIndicator()));
         }
         final user = snap.data;
-        if (user == null) return const PhonePinLoginScreen();
+        if (user == null) {
+          return const PhonePinLoginScreen();
+        }
         return child;
       },
     );

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../services/phone_pin_auth.dart';
 
@@ -13,9 +14,33 @@ class _CreatePinScreenState extends State<CreatePinScreen> {
   String? _err;
   bool _busy = false;
 
+  bool _isValidPin(String pin) {
+    if (pin.length != 4 || !RegExp(r'^\d{4}$').hasMatch(pin)) {
+      return false;
+    }
+    if (pin.split('').every((d) => d == pin[0])) {
+      return false;
+    }
+    const seq = {'0123', '1234', '2345', '3456', '4567', '5678', '6789'};
+    const rseq = {'3210', '4321', '5432', '6543', '7654', '8765', '9876'};
+    if (seq.contains(pin) || rseq.contains(pin)) {
+      return false;
+    }
+    return true;
+  }
+
   Future<void> _save() async {
-    if (_p1.text.length != 4 || _p2.text.length != 4 || _p1.text != _p2.text) {
-      setState(() => _err = 'Enter 4 digits and confirm');
+    if (_p1.text.length != 4) {
+      setState(() => _err = 'PIN must be 4 digits');
+      return;
+    }
+    if (!_isValidPin(_p1.text)) {
+      setState(
+          () => _err = 'PIN too weak. Avoid sequences or repeated digits.');
+      return;
+    }
+    if (_p1.text != _p2.text) {
+      setState(() => _err = 'PINs do not match');
       return;
     }
     setState(() {
@@ -23,12 +48,33 @@ class _CreatePinScreenState extends State<CreatePinScreen> {
       _err = null;
     });
     try {
+      if (kDebugMode) {
+        print('[CreatePinScreen] Saving PIN');
+      }
       await PhonePinAuth.instance.setPin(_p1.text);
-      if (mounted) Navigator.popUntil(context, (r) => r.isFirst);
-    } catch (e) {
-      setState(() => _err = e.toString());
+      if (kDebugMode) {
+        print('[CreatePinScreen] PIN saved, navigating to home');
+      }
+
+      if (!mounted) {
+        return;
+      }
+      setState(() => _busy = false);
+
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.popUntil(context, (r) => r.isFirst);
+    } on Object catch (e, st) {
+      if (kDebugMode) {
+        print('[CreatePinScreen] Error: $e\n$st');
+      }
+      if (!mounted) {
+        return;
+      }
+      setState(() => _err = 'Failed to save PIN. Please try again.');
     } finally {
-      if (mounted) setState(() => _busy = false);
+      // _busy already set to false in try block
     }
   }
 

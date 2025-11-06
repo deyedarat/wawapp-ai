@@ -71,7 +71,7 @@ class Order {
       dropoff: LocationPoint.fromMap(data['dropoff'] as Map<String, dynamic>),
       distanceKm: (data['distanceKm'] as num).toDouble(),
       price: data['price'] as int,
-      createdAt: data['createdAt']?.toDate(),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
       driverId: data['driverId'] as String?,
     );
   }

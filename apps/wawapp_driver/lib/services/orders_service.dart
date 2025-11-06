@@ -37,7 +37,7 @@ class OrdersService {
             dev.log(
                 '[nearby_stream] item: {id: ${order.id}, km: ${distance.toStringAsFixed(1)}, price: ${order.price}}');
           }
-        } catch (e) {
+        } on Object catch (e) {
           dev.log('[nearby_stream] error parsing order ${doc.id}: $e');
         }
       }
@@ -67,7 +67,9 @@ class OrdersService {
 
   Future<void> acceptOrder(String orderId) async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) throw Exception('Driver not authenticated');
+    if (user == null) {
+      throw Exception('Driver not authenticated');
+    }
 
     await _firestore.runTransaction((transaction) async {
       final orderRef = _firestore.collection('orders').doc(orderId);
