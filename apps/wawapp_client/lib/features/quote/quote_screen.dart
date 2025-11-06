@@ -66,7 +66,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                       if (breakdown != null) ...[
                         const SizedBox(height: 12),
                         Text(
-                          'تفصيل السعر: أساس ${breakdown.base} + مسافة ${breakdown.distancePart} = ${breakdown.total} → حد أدنى ${PricingConfig.minFare} → تقريب ${price}',
+                          'تفصيل السعر: أساس ${breakdown.base} + مسافة ${breakdown.distancePart} = ${breakdown.total} → حد أدنى ${PricingConfig.minFare} → تقريب $price',
                           style: Theme.of(context).textTheme.bodySmall,
                           textAlign: TextAlign.center,
                         ),
@@ -108,8 +108,9 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                               Pricing.compute(quoteState.distanceKm!);
 
                           final user = FirebaseAuth.instance.currentUser;
-                          if (user == null)
+                          if (user == null) {
                             throw Exception('User not authenticated');
+                          }
 
                           await repo.createOrder(
                             ownerId: user.uid,
