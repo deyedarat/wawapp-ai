@@ -1,18 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../services/phone_pin_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'providers/auth_service_provider.dart';
 
-class CreatePinScreen extends StatefulWidget {
+class CreatePinScreen extends ConsumerStatefulWidget {
   const CreatePinScreen({super.key});
   @override
-  State<CreatePinScreen> createState() => _CreatePinScreenState();
+  ConsumerState<CreatePinScreen> createState() => _CreatePinScreenState();
 }
 
-class _CreatePinScreenState extends State<CreatePinScreen> {
+class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
   final _p1 = TextEditingController();
   final _p2 = TextEditingController();
   String? _err;
-  bool _busy = false;
 
   bool _isValidPin(String pin) {
     if (pin.length != 4 || !RegExp(r'^\d{4}$').hasMatch(pin)) {
@@ -43,43 +43,40 @@ class _CreatePinScreenState extends State<CreatePinScreen> {
       setState(() => _err = 'PINs do not match');
       return;
     }
-    setState(() {
-      _busy = true;
-      _err = null;
-    });
-    try {
-      if (kDebugMode) {
-        print('[CreatePinScreen] Saving PIN');
-      }
-      await PhonePinAuth.instance.setPin(_p1.text);
-      if (kDebugMode) {
-        print('[CreatePinScreen] PIN saved, navigating to home');
-      }
+    setState(() => _err = null);
 
-      if (!mounted) {
-        return;
-      }
-      setState(() => _busy = false);
+    if (kDebugMode) {
+      print('[CreatePinScreen] Saving PIN');
+    }
 
-      if (!context.mounted) {
-        return;
-      }
-      Navigator.popUntil(context, (r) => r.isFirst);
-    } on Object catch (e, st) {
-      if (kDebugMode) {
-        print('[CreatePinScreen] Error: $e\n$st');
-      }
-      if (!mounted) {
-        return;
-      }
-      setState(() => _err = 'Failed to save PIN. Please try again.');
-    } finally {
-      // _busy already set to false in try block
+    await ref.read(authProvider.notifier).createPin(_p1.text);
+
+    if (kDebugMode) {
+      print('[CreatePinScreen] createPin call completed');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
+    // Listen for successful PIN creation and navigate
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next.hasPin && !next.isLoading) {
+        if (kDebugMode) {
+          print('[CreatePinScreen] PIN saved, navigating to home');
+        }
+        Navigator.popUntil(context, (r) => r.isFirst);
+      }
+      if (next.error != null && previous?.error != next.error) {
+        if (kDebugMode) {
+          print('[CreatePinScreen] Error: ${next.error}');
+        }
+      }
+    });
+
+    final errorMessage = _err ?? authState.error;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Set PIN')),
       body: Padding(
@@ -98,14 +95,14 @@ class _CreatePinScreenState extends State<CreatePinScreen> {
                 keyboardType: TextInputType.number,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Confirm PIN')),
-            if (_err != null)
+            if (errorMessage != null)
               Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child:
-                      Text(_err!, style: const TextStyle(color: Colors.red))),
+                      Text(errorMessage, style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
-                onPressed: _busy ? null : _save, child: const Text('Save')),
+                onPressed: authState.isLoading ? null : _save, child: const Text('Save')),
           ],
         ),
       ),

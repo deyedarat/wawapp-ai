@@ -1,39 +1,41 @@
 import 'package:flutter/material.dart';
-import '../../services/phone_pin_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'providers/auth_service_provider.dart';
 
-class CreatePinScreen extends StatefulWidget {
+class CreatePinScreen extends ConsumerStatefulWidget {
   const CreatePinScreen({super.key});
   @override
-  State<CreatePinScreen> createState() => _CreatePinScreenState();
+  ConsumerState<CreatePinScreen> createState() => _CreatePinScreenState();
 }
 
-class _CreatePinScreenState extends State<CreatePinScreen> {
+class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
   final _p1 = TextEditingController();
   final _p2 = TextEditingController();
   String? _err;
-  bool _busy = false;
 
   Future<void> _save() async {
     if (_p1.text.length != 4 || _p2.text.length != 4 || _p1.text != _p2.text) {
       setState(() => _err = 'Enter 4 digits and confirm');
       return;
     }
-    setState(() {
-      _busy = true;
-      _err = null;
-    });
-    try {
-      await PhonePinAuth.instance.setPin(_p1.text);
-      if (mounted) Navigator.popUntil(context, (r) => r.isFirst);
-    } catch (e) {
-      setState(() => _err = e.toString());
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
+    setState(() => _err = null);
+
+    await ref.read(authProvider.notifier).createPin(_p1.text);
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
+    // Listen for successful PIN creation and navigate
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next.hasPin && !next.isLoading) {
+        Navigator.popUntil(context, (r) => r.isFirst);
+      }
+    });
+
+    final errorMessage = _err ?? authState.error;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Set PIN')),
       body: Padding(
@@ -52,14 +54,14 @@ class _CreatePinScreenState extends State<CreatePinScreen> {
                 keyboardType: TextInputType.number,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Confirm PIN')),
-            if (_err != null)
+            if (errorMessage != null)
               Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child:
-                      Text(_err!, style: const TextStyle(color: Colors.red))),
+                      Text(errorMessage, style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
-                onPressed: _busy ? null : _save, child: const Text('Save')),
+                onPressed: authState.isLoading ? null : _save, child: const Text('Save')),
           ],
         ),
       ),
