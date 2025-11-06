@@ -1,104 +1,97 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../services/phone_pin_auth.dart';
+import 'providers/auth_service_provider.dart';
 import 'otp_screen.dart';
 
-class PhonePinLoginScreen extends StatefulWidget {
+class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
   @override
-  State<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
+  ConsumerState<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
 }
 
-class _PhonePinLoginScreenState extends State<PhonePinLoginScreen> {
+class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   final _phone = TextEditingController(); // e.g. +222xxxxxxxx
   final _pin = TextEditingController();
-  bool _busy = false;
   String? _err;
 
   Future<void> _continue() async {
-    setState(() {
-      _busy = true;
-      _err = null;
-    });
-    try {
-      final phone = _phone.text.trim();
-      final e164 = RegExp(r'^\+[1-9]\d{6,14}$');
-      if (!e164.hasMatch(phone)) {
-        setState(
-            () => _err = 'Invalid phone format. Use E.164 like +22212345678');
-        return;
-      }
+    final phone = _phone.text.trim();
+    final e164 = RegExp(r'^\+[1-9]\d{6,14}$');
+    if (!e164.hasMatch(phone)) {
+      setState(
+          () => _err = 'Invalid phone format. Use E.164 like +22212345678');
+      return;
+    }
+    setState(() => _err = null);
 
+    if (kDebugMode) {
+      print('[PhonePinLogin] Attempting login');
+    }
+
+    await ref.read(authProvider.notifier).sendOtp(phone);
+
+    if (!mounted) return;
+
+    final authState = ref.read(authProvider);
+    if (authState.error != null) {
       if (kDebugMode) {
-        print('[PhonePinLogin] Attempting login');
+        print('[PhonePinLogin] Error after sendOtp: ${authState.error}');
       }
+      return; // Error will be shown from authState
+    }
 
-      await PhonePinAuth.instance.ensurePhoneSession(phone);
-
-      if (FirebaseAuth.instance.currentUser == null) {
-        if (kDebugMode) {
-          print('[PhonePinLogin] Not signed in, navigating to OTP');
-        }
-
-        if (!mounted) {
-          return;
-        }
-        setState(() => _busy = false);
-
-        if (!context.mounted) {
-          return;
-        }
-        await Navigator.push(
-            context, MaterialPageRoute(builder: (_) => const OtpScreen()));
-        return;
-      }
-
-      if (_pin.text.length != 4) {
-        setState(() => _err = 'PIN must be 4 digits');
-        return;
-      }
-
+    if (FirebaseAuth.instance.currentUser == null) {
       if (kDebugMode) {
-        print('[PhonePinLogin] Verifying PIN');
+        print('[PhonePinLogin] Not signed in, navigating to OTP');
       }
-      final ok = await PhonePinAuth.instance.verifyPin(_pin.text);
-      if (!ok) {
-        if (kDebugMode) {
-          print('[PhonePinLogin] PIN verification failed');
-        }
-        setState(() => _err = 'Invalid PIN. Please try again.');
-        return;
-      }
-
-      if (kDebugMode) {
-        print('[PhonePinLogin] Login success');
-      }
-
-      if (!mounted) {
-        return;
-      }
-      setState(() => _busy = false);
 
       if (!context.mounted) {
         return;
       }
-      Navigator.pop(context);
-    } on Object catch (e, st) {
-      if (kDebugMode) {
-        print('[PhonePinLogin] Error: $e\n$st');
-      }
-      if (!mounted) {
-        return;
-      }
-      setState(() => _err = 'Login failed. Please check your connection.');
-    } finally {
-      // _busy already set to false in try block
+      await Navigator.push(
+          context, MaterialPageRoute(builder: (_) => const OtpScreen()));
+      return;
+    }
+
+    if (_pin.text.length != 4) {
+      setState(() => _err = 'PIN must be 4 digits');
+      return;
+    }
+
+    if (kDebugMode) {
+      print('[PhonePinLogin] Verifying PIN');
+    }
+
+    await ref.read(authProvider.notifier).loginByPin(_pin.text);
+
+    if (kDebugMode) {
+      print('[PhonePinLogin] loginByPin call completed');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
+    // Listen for successful login and navigate
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next.hasPin && !next.isLoading && next.user != null) {
+        if (kDebugMode) {
+          print('[PhonePinLogin] Login success');
+        }
+        Navigator.pop(context);
+      }
+      if (next.error != null && previous?.error != next.error) {
+        if (kDebugMode) {
+          print('[PhonePinLogin] Error: ${next.error}');
+        }
+      }
+    });
+
+    final errorMessage = _err ?? authState.error;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Sign in with Phone')),
       body: Padding(
@@ -117,17 +110,17 @@ class _PhonePinLoginScreenState extends State<PhonePinLoginScreen> {
                 keyboardType: TextInputType.number,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'PIN (4 digits)')),
-            if (_err != null)
+            if (errorMessage != null)
               Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child:
-                      Text(_err!, style: const TextStyle(color: Colors.red))),
+                      Text(errorMessage, style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
-                onPressed: _busy ? null : _continue,
+                onPressed: authState.isLoading ? null : _continue,
                 child: const Text('Continue')),
             TextButton(
-              onPressed: _busy
+              onPressed: authState.isLoading
                   ? null
                   : () async {
                       final phone = _phone.text.trim();
@@ -137,39 +130,25 @@ class _PhonePinLoginScreenState extends State<PhonePinLoginScreen> {
                             'Invalid phone format. Use E.164 like +22212345678');
                         return;
                       }
-                      setState(() {
-                        _busy = true;
-                        _err = null;
-                      });
-                      try {
-                        if (kDebugMode) {
-                          print('[PhonePinLogin] SMS verification requested');
-                        }
-                        await PhonePinAuth.instance.ensurePhoneSession(phone);
+                      setState(() => _err = null);
 
-                        if (!mounted) {
-                          return;
-                        }
-                        setState(() => _busy = false);
-
-                        if (!context.mounted) {
-                          return;
-                        }
-                        await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const OtpScreen()));
-                      } on Object catch (e, st) {
-                        if (kDebugMode) {
-                          print('[PhonePinLogin] SMS error: $e\n$st');
-                        }
-                        if (!mounted) {
-                          return;
-                        }
-                        setState(() => _err = 'Failed to send SMS. Try again.');
-                      } finally {
-                        // _busy already set to false in try block
+                      if (kDebugMode) {
+                        print('[PhonePinLogin] SMS verification requested');
                       }
+
+                      await ref.read(authProvider.notifier).sendOtp(phone);
+
+                      if (!mounted) {
+                        return;
+                      }
+
+                      if (!context.mounted) {
+                        return;
+                      }
+                      await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const OtpScreen()));
                     },
               child: const Text('New device or forgot PIN? Verify by SMS'),
             ),
