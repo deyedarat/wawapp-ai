@@ -46,8 +46,8 @@ void main() {
       expect(find.text('Continue'), findsOneWidget);
 
       // Check for the SMS verification link
-      expect(find.text('New device or forgot PIN? Verify by SMS'),
-          findsOneWidget);
+      expect(
+          find.text('New device or forgot PIN? Verify by SMS'), findsOneWidget);
     });
 
     testWidgets('phone field accepts E.164 format', (tester) async {

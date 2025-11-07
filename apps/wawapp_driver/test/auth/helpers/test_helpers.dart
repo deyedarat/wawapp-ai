@@ -133,8 +133,7 @@ class FakeUser implements User {
   Future<void> updateEmail(String newEmail) => throw UnimplementedError();
 
   @override
-  Future<void> updatePassword(String newPassword) =>
-      throw UnimplementedError();
+  Future<void> updatePassword(String newPassword) => throw UnimplementedError();
 
   @override
   Future<void> updatePhoneNumber(PhoneAuthCredential phoneCredential) =>

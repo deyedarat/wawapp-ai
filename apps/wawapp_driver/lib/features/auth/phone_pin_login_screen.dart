@@ -8,7 +8,8 @@ import 'otp_screen.dart';
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
   @override
-  ConsumerState<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
+  ConsumerState<PhonePinLoginScreen> createState() =>
+      _PhonePinLoginScreenState();
 }
 
 class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
@@ -113,8 +114,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             if (errorMessage != null)
               Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child:
-                      Text(errorMessage, style: const TextStyle(color: Colors.red))),
+                  child: Text(errorMessage,
+                      style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
                 onPressed: authState.isLoading ? null : _continue,
@@ -145,10 +146,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
                       if (!context.mounted) {
                         return;
                       }
-                      await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const OtpScreen()));
+                      await Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => const OtpScreen()));
                     },
               child: const Text('New device or forgot PIN? Verify by SMS'),
             ),

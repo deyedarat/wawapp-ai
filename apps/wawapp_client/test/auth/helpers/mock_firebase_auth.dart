@@ -177,7 +177,8 @@ class MockFirebaseAuth implements FirebaseAuth {
       throw UnimplementedError();
 
   @override
-  void useAuthEmulator(String host, int port, {bool automaticHostMapping = true}) =>
+  void useAuthEmulator(String host, int port,
+          {bool automaticHostMapping = true}) =>
       throw UnimplementedError();
 
   @override

@@ -42,7 +42,8 @@ class AuthState {
 
 // AuthNotifier - manages authentication state
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier(this._authService, this._firebaseAuth) : super(const AuthState()) {
+  AuthNotifier(this._authService, this._firebaseAuth)
+      : super(const AuthState()) {
     // Listen to Firebase auth state changes
     _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
       state = state.copyWith(user: user);
