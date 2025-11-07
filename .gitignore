@@ -82,11 +82,23 @@ lerna-debug.log*
 .node_repl_history
 *.tgz
 .yarn-integrity
+# Environment variables & secrets
 .env
+.env.*
+!.env.example
 .env.local
+.env.development
 .env.development.local
+.env.test
 .env.test.local
+.env.production
 .env.production.local
+.runtimeconfig.json
+.runtimeconfig.*.json
+api_keys.xml
+**/values/api_keys.xml
+secrets.yaml
+secrets.*.yaml
 
 # Firebase
 firebase-debug.log
