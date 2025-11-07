@@ -100,6 +100,13 @@ api_keys.xml
 secrets.yaml
 secrets.*.yaml
 
+# Keystores & signing
+*.jks
+*.keystore
+!example.keystore
+key.properties
+release-keystore.properties
+
 # Firebase
 firebase-debug.log
 firestore-debug.log
