@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 /// Mock FirebaseAuth for testing
 class MockFirebaseAuth implements FirebaseAuth {
@@ -151,7 +152,7 @@ class MockFirebaseAuth implements FirebaseAuth {
       throw UnimplementedError();
 
   @override
-  Future<void> verifyPasswordResetCode(String code) =>
+  Future<String> verifyPasswordResetCode(String code) async =>
       throw UnimplementedError();
 
   @override
@@ -177,13 +178,27 @@ class MockFirebaseAuth implements FirebaseAuth {
       throw UnimplementedError();
 
   @override
-  void useAuthEmulator(String host, int port,
-          {bool automaticHostMapping = true}) =>
-      throw UnimplementedError();
+  Future<void> useAuthEmulator(String host, int port,
+      {bool automaticHostMapping = true}) async {
+    throw UnimplementedError();
+  }
 
   @override
-  int? get maxOperationRetryTime => throw UnimplementedError();
+  Future<UserCredential> getRedirectResult() => throw UnimplementedError();
 
   @override
   String? get tenantId => throw UnimplementedError();
+
+  @override
+  Future<void> initializeRecaptchaConfig() => throw UnimplementedError();
+
+  @override
+  Future<void> revokeTokenWithAuthorizationCode(String authorizationCode) =>
+      throw UnimplementedError();
+
+  @override
+  Map<String, dynamic> get pluginConstants => throw UnimplementedError();
+
+  @override
+  void useEmulator(String host, int port) => throw UnimplementedError();
 }
