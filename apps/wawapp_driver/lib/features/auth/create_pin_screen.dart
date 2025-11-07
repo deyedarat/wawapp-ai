@@ -98,11 +98,12 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
             if (errorMessage != null)
               Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child:
-                      Text(errorMessage, style: const TextStyle(color: Colors.red))),
+                  child: Text(errorMessage,
+                      style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
-                onPressed: authState.isLoading ? null : _save, child: const Text('Save')),
+                onPressed: authState.isLoading ? null : _save,
+                child: const Text('Save')),
           ],
         ),
       ),

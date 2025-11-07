@@ -124,10 +124,12 @@ void main() {
       );
 
       // Verify button text
-      expect(find.descendant(
-        of: find.byType(ElevatedButton),
-        matching: find.text('Verify'),
-      ), findsOneWidget);
+      expect(
+          find.descendant(
+            of: find.byType(ElevatedButton),
+            matching: find.text('Verify'),
+          ),
+          findsOneWidget);
     });
 
     testWidgets('can clear and re-enter code', (tester) async {

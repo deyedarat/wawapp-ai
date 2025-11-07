@@ -13,8 +13,7 @@ class AuthGate extends ConsumerWidget {
 
     // Show loading indicator while initializing
     if (authState.user == null && authState.isLoading) {
-      return const Scaffold(
-          body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     // If no user, show login screen
