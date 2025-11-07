@@ -170,3 +170,6 @@ coverage/
 
 # Claude AI artifacts
 .claude/
+
+# Windows null device
+nul

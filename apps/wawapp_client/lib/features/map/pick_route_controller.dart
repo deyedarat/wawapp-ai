@@ -50,7 +50,7 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
   RoutePickerNotifier() : super(const RoutePickerState());
 
   static const String _mapsApiKey = String.fromEnvironment('MAPS_API_KEY',
-      defaultValue: 'AIzaSyDimBTrli5SRnF4pfJrgdZnQBC3v05OUEs');
+      defaultValue: '');
   late final GooglePlace _googlePlace = GooglePlace(_mapsApiKey);
   final Uuid _uuid = const Uuid();
 
