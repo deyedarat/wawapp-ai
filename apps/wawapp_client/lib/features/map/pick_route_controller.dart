@@ -1,8 +1,9 @@
+import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:uuid/uuid.dart';
+import '../../core/geo/distance.dart';
 import '../../core/location/location_service.dart';
 
 // Use Google Maps LatLng directly to avoid conflicts
@@ -46,12 +47,22 @@ class RoutePickerState {
   bool get canCalculatePrice => pickup != null && dropoff != null;
 }
 
-class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
-  RoutePickerNotifier() : super(const RoutePickerState());
+final mapsApiKeyProvider = Provider<String>((ref) {
+  const key = String.fromEnvironment('MAPS_API_KEY', defaultValue: '');
+  if (key.isEmpty) {
+    dev.log('⚠️  MAPS_API_KEY is empty. Map features may not work.', name: 'MAP');
+  }
+  return key;
+});
 
-  static const String _mapsApiKey = String.fromEnvironment('MAPS_API_KEY',
-      defaultValue: '');
-  late final GooglePlace _googlePlace = GooglePlace(_mapsApiKey);
+class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
+  RoutePickerNotifier(this.apiKey) : super(const RoutePickerState()) {
+    assert(apiKey.isNotEmpty, 'MAPS_API_KEY must be provided via --dart-define');
+  }
+
+  final String apiKey;
+  static const String _tag = 'RoutePickerNotifier';
+  late final GooglePlace _googlePlace = GooglePlace(apiKey);
   final Uuid _uuid = const Uuid();
 
   void toggleSelection() {
@@ -100,6 +111,10 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
 
   Future<List<AutocompletePrediction>> searchPlaces(String query) async {
     if (query.isEmpty) return [];
+    if (apiKey.isEmpty) {
+      dev.log('Cannot search places: API key is empty', name: _tag);
+      return [];
+    }
 
     try {
       final result = await _googlePlace.autocomplete.get(
@@ -111,11 +126,17 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
 
       return result?.predictions ?? [];
     } catch (e) {
+      dev.log('Error searching places: $e', name: _tag);
       return [];
     }
   }
 
   Future<DetailsResult?> getPlaceDetails(String placeId) async {
+    if (apiKey.isEmpty) {
+      dev.log('Cannot get place details: API key is empty', name: _tag);
+      return null;
+    }
+
     try {
       final result = await _googlePlace.details.get(
         placeId,
@@ -124,19 +145,19 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
       );
       return result?.result;
     } catch (e) {
+      dev.log('Error getting place details: $e', name: _tag);
       return null;
     }
   }
 
   void _calculateDistance() {
     if (state.pickup != null && state.dropoff != null) {
-      final distance = Geolocator.distanceBetween(
-            state.pickup!.latitude,
-            state.pickup!.longitude,
-            state.dropoff!.latitude,
-            state.dropoff!.longitude,
-          ) /
-          1000; // Convert to km
+      final distance = computeDistanceKm(
+        lat1: state.pickup!.latitude,
+        lng1: state.pickup!.longitude,
+        lat2: state.dropoff!.latitude,
+        lng2: state.dropoff!.longitude,
+      );
 
       state = state.copyWith(distanceKm: distance);
     }
@@ -169,5 +190,5 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
 
 final routePickerProvider =
     StateNotifierProvider<RoutePickerNotifier, RoutePickerState>((ref) {
-  return RoutePickerNotifier();
+  return RoutePickerNotifier(ref.watch(mapsApiKeyProvider));
 });
