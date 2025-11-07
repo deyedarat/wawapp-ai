@@ -7,7 +7,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class GeocodingHelper {
   GeocodingHelper(this.apiKey) {
     if (apiKey.isEmpty) {
-      dev.log('⚠️  MAPS_API_KEY is empty. Geocoding may not work.', name: 'GeocodingHelper');
+      dev.log('⚠️  MAPS_API_KEY is empty. Geocoding may not work.',
+          name: 'GeocodingHelper');
     }
   }
 
@@ -15,7 +16,8 @@ class GeocodingHelper {
 
   Future<String> reverseGeocode(LatLng position) async {
     if (apiKey.isEmpty) {
-      dev.log('Cannot reverse geocode: API key is empty', name: 'GeocodingHelper');
+      dev.log('Cannot reverse geocode: API key is empty',
+          name: 'GeocodingHelper');
       return 'مفتاح API غير متوفر';
     }
 
@@ -33,7 +35,8 @@ class GeocodingHelper {
           return data['results'][0]['formatted_address'] ?? 'موقع غير محدد';
         }
       } else {
-        dev.log('Geocoding API returned ${response.statusCode}', name: 'GeocodingHelper');
+        dev.log('Geocoding API returned ${response.statusCode}',
+            name: 'GeocodingHelper');
       }
       return 'فشل في جلب العنوان، تحقق من الاتصال بالإنترنت';
     } catch (e) {

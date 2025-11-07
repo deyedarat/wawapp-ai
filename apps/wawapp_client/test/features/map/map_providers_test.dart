@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wawapp_client/features/map/pick_route_controller.dart';
 import 'package:wawapp_client/utils/geocoding_helper.dart';
 
@@ -33,12 +34,6 @@ void main() {
         throwsA(isA<AssertionError>()),
       );
     });
-
-    test('searchPlaces returns empty list when apiKey is empty', () async {
-      final notifier = RoutePickerNotifier('');
-      final results = await notifier.searchPlaces('test');
-      expect(results, isEmpty);
-    });
   });
 
   group('GeocodingHelper', () {
@@ -50,15 +45,9 @@ void main() {
     test('reverseGeocode returns error message when apiKey is empty', () async {
       final helper = GeocodingHelper('');
       final result = await helper.reverseGeocode(
-        const MockLatLng(0, 0),
+        const LatLng(0, 0),
       );
       expect(result, contains('مفتاح'));
     });
   });
-}
-
-class MockLatLng {
-  const MockLatLng(this.latitude, this.longitude);
-  final double latitude;
-  final double longitude;
 }

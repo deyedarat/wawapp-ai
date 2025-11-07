@@ -50,14 +50,16 @@ class RoutePickerState {
 final mapsApiKeyProvider = Provider<String>((ref) {
   const key = String.fromEnvironment('MAPS_API_KEY', defaultValue: '');
   if (key.isEmpty) {
-    dev.log('⚠️  MAPS_API_KEY is empty. Map features may not work.', name: 'MAP');
+    dev.log('⚠️  MAPS_API_KEY is empty. Map features may not work.',
+        name: 'MAP');
   }
   return key;
 });
 
 class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
   RoutePickerNotifier(this.apiKey) : super(const RoutePickerState()) {
-    assert(apiKey.isNotEmpty, 'MAPS_API_KEY must be provided via --dart-define');
+    assert(
+        apiKey.isNotEmpty, 'MAPS_API_KEY must be provided via --dart-define');
   }
 
   final String apiKey;
