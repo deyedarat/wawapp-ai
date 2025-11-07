@@ -18,6 +18,10 @@ workflows:
         - ~/.gradle/wrapper
     working_directory: apps/wawapp_client
     scripts:
+      - name: Guard secrets
+        script: |
+          cd ../..
+          pwsh -File tools/guards/guard-secrets.ps1
       - name: Get dependencies
         script: flutter pub get
       - name: Generate l10n
