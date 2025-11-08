@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class GeocodingHelper {
   GeocodingHelper(this.apiKey) {
     if (apiKey.isEmpty) {
+<<<<<<< Updated upstream
       dev.log('⚠️  MAPS_API_KEY is empty. Geocoding may not work.',
           name: 'GeocodingHelper');
     }
@@ -20,6 +21,7 @@ class GeocodingHelper {
           name: 'GeocodingHelper');
       return 'مفتاح API غير متوفر';
     }
+
 
     try {
       final url = 'https://maps.googleapis.com/maps/api/geocode/json'
@@ -35,8 +37,12 @@ class GeocodingHelper {
           return data['results'][0]['formatted_address'] ?? 'موقع غير محدد';
         }
       } else {
+<<<<<<< Updated upstream
         dev.log('Geocoding API returned ${response.statusCode}',
             name: 'GeocodingHelper');
+=======
+        dev.log('Geocoding API returned status ${response.statusCode}', name: 'GeocodingHelper');
+>>>>>>> Stashed changes
       }
       return 'فشل في جلب العنوان، تحقق من الاتصال بالإنترنت';
     } catch (e) {
