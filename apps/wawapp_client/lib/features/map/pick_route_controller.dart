@@ -9,6 +9,14 @@ import '../../core/location/location_service.dart';
 // Use Google Maps LatLng directly to avoid conflicts
 typedef MapLatLng = LatLng;
 
+final mapsApiKeyProvider = Provider<String>((ref) {
+  const key = String.fromEnvironment('MAPS_API_KEY', defaultValue: '');
+  if (key.isEmpty) {
+    dev.log('⚠️  MAPS_API_KEY is empty...', name: 'MAP');
+  }
+  return key;
+});
+
 class RoutePickerState {
   final MapLatLng? pickup;
   final MapLatLng? dropoff;
@@ -47,6 +55,7 @@ class RoutePickerState {
   bool get canCalculatePrice => pickup != null && dropoff != null;
 }
 
+<<<<<<< Updated upstream
 final mapsApiKeyProvider = Provider<String>((ref) {
   const key = String.fromEnvironment('MAPS_API_KEY', defaultValue: '');
   if (key.isEmpty) {
@@ -64,6 +73,7 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
 
   final String apiKey;
   static const String _tag = 'RoutePickerNotifier';
+
   late final GooglePlace _googlePlace = GooglePlace(apiKey);
   final Uuid _uuid = const Uuid();
 
