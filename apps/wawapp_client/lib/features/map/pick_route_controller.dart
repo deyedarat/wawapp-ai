@@ -12,7 +12,8 @@ typedef MapLatLng = LatLng;
 final mapsApiKeyProvider = Provider<String>((ref) {
   const key = String.fromEnvironment('MAPS_API_KEY', defaultValue: '');
   if (key.isEmpty) {
-    dev.log('⚠️  MAPS_API_KEY is empty...', name: 'MAP');
+    dev.log('⚠️ MAPS_API_KEY is empty. Map features may not work.',
+        name: 'MAP');
   }
   return key;
 });
@@ -55,16 +56,6 @@ class RoutePickerState {
   bool get canCalculatePrice => pickup != null && dropoff != null;
 }
 
-<<<<<<< Updated upstream
-final mapsApiKeyProvider = Provider<String>((ref) {
-  const key = String.fromEnvironment('MAPS_API_KEY', defaultValue: '');
-  if (key.isEmpty) {
-    dev.log('⚠️  MAPS_API_KEY is empty. Map features may not work.',
-        name: 'MAP');
-  }
-  return key;
-});
-
 class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
   RoutePickerNotifier(this.apiKey) : super(const RoutePickerState()) {
     assert(
@@ -85,10 +76,10 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
     // Set loading state
     if (state.selectingPickup) {
       state = state.copyWith(
-          pickup: location, pickupAddress: 'جارٍ تحديد العنوان...');
+          pickup: location, pickupAddress: 'جار تحديد العنوان...');
     } else {
       state = state.copyWith(
-          dropoff: location, dropoffAddress: 'جارٍ تحديد العنوان...');
+          dropoff: location, dropoffAddress: 'جار تحديد العنوان...');
     }
 
     final address = await LocationService.resolveAddressFromLatLng(
