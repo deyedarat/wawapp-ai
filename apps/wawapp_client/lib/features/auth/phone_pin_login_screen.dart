@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'providers/auth_service_provider.dart';
 import 'otp_screen.dart';
+import 'providers/auth_service_provider.dart';
 
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
@@ -15,6 +14,73 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   final _phone = TextEditingController(); // e.g. +222xxxxxxxx
   final _pin = TextEditingController();
   String? _err;
+  ProviderSubscription<AuthState>? _authSubscription;
+  bool _navigatedThisAttempt = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _navigatedThisAttempt = false;
+    // Use listenManual for precise control over navigation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _authSubscription = ref.listenManual(
+        authProvider,
+        (previous, next) {
+          // Navigate to OTP screen exactly once when codeSent
+          if (!_navigatedThisAttempt &&
+              previous?.otpStage != next.otpStage &&
+              next.otpStage == OtpStage.codeSent) {
+            _navigatedThisAttempt = true;
+            if (!mounted) return;
+
+            debugPrint(
+                '[PhonePinLogin] Navigating to OtpScreen (codeSent, vid=${next.verificationId?.substring(next.verificationId!.length - 6)})');
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+
+              // Close IME safely before navigation
+              FocusScope.of(context).unfocus();
+
+              // Show snackbar
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('OTP sent to ${next.phoneE164}')),
+              );
+
+              // Navigate to OTP screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => OtpScreen(
+                    verificationId: next.verificationId!,
+                    phone: next.phoneE164!,
+                    resendToken: next.resendToken,
+                  ),
+                ),
+              );
+            });
+          }
+
+          // Navigate home when authenticated
+          if (next.user != null && !next.isLoading && mounted) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                Navigator.of(context).pushReplacementNamed('/');
+              }
+            });
+          }
+        },
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.close();
+    _phone.dispose();
+    _pin.dispose();
+    super.dispose();
+  }
 
   Future<void> _continue() async {
     final phone = _phone.text.trim();
@@ -24,22 +90,10 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     }
     setState(() => _err = null);
 
+    // Reset navigation flag for new attempt
+    _navigatedThisAttempt = false;
     await ref.read(authProvider.notifier).sendOtp(phone);
-
-    if (!mounted) return;
-
-    final authState = ref.read(authProvider);
-    if (authState.error != null) {
-      return; // Error will be shown from authState
-    }
-
-    if (FirebaseAuth.instance.currentUser == null) {
-      if (mounted) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (_) => const OtpScreen()));
-      }
-      return;
-    }
+    // Navigation handled by router redirect
 
     if (_pin.text.length != 4) {
       setState(() => _err = 'PIN must be 4 digits');
@@ -52,13 +106,6 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-
-    // Listen for successful login and navigate
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      if (next.hasPin && !next.isLoading && next.user != null) {
-        Navigator.pop(context);
-      }
-    });
 
     final errorMessage = _err ?? authState.error;
 
@@ -87,24 +134,14 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
                       style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
-                onPressed: authState.isLoading ? null : _continue,
-                child: const Text('Continue')),
-            TextButton(
-              onPressed: authState.isLoading
-                  ? null
-                  : () async {
-                      await ref
-                          .read(authProvider.notifier)
-                          .sendOtp(_phone.text.trim());
-                      if (mounted) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const OtpScreen()));
-                      }
-                    },
-              child: const Text('New device or forgot PIN? Verify by SMS'),
-            ),
+                onPressed: (authState.isLoading ||
+                        authState.otpStage == OtpStage.sending ||
+                        authState.otpStage == OtpStage.codeSent)
+                    ? null
+                    : _continue,
+                child: authState.isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text('Continue')),
           ],
         ),
       ),

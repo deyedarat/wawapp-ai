@@ -36,7 +36,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
     if (authState.user != null) {
       if (kDebugMode) {
-        print('[OtpScreen] OTP verified successfully, hasPin=${authState.hasPin}');
+        print(
+            '[OtpScreen] OTP verified successfully, hasPin=${authState.hasPin}');
       }
 
       if (!context.mounted) return;
@@ -81,7 +82,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             ElevatedButton(
                 onPressed: authState.isLoading ? null : _verify,
                 child: authState.isLoading
-                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2))
                     : const Text('Verify')),
           ],
         ),

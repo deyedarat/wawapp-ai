@@ -18,7 +18,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final notificationsPlugin = FlutterLocalNotificationsPlugin();
 
 void main() async {
-  print('🟢 APP STARTED'); 
+  print('🟢 APP STARTED');
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
@@ -27,7 +27,8 @@ void main() async {
 
   // Suppress reCAPTCHA error in debug mode
   if (const bool.fromEnvironment('dart.vm.product') == false) {
-    await FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+    await FirebaseAuth.instance
+        .setSettings(appVerificationDisabledForTesting: true);
   }
 
   const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');

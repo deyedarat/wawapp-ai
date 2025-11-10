@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../services/phone_pin_auth.dart';
 
@@ -7,6 +9,16 @@ final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
   return PhonePinAuth.instance;
 });
 
+// OTP Stage enum
+enum OtpStage {
+  idle,
+  sending,
+  codeSent,
+  verifying,
+  verified,
+  failed,
+}
+
 // AuthState model
 class AuthState {
   final bool isLoading;
@@ -14,6 +26,12 @@ class AuthState {
   final String? phone;
   final bool hasPin;
   final String? error;
+  final bool otpFlowActive;
+  final String? verificationId;
+  final OtpStage otpStage;
+  final int? resendToken;
+  final String? phoneE164;
+  final String? errorMessage;
 
   const AuthState({
     this.isLoading = false,
@@ -21,6 +39,12 @@ class AuthState {
     this.phone,
     this.hasPin = false,
     this.error,
+    this.otpFlowActive = false,
+    this.verificationId,
+    this.otpStage = OtpStage.idle,
+    this.resendToken,
+    this.phoneE164,
+    this.errorMessage,
   });
 
   AuthState copyWith({
@@ -29,6 +53,12 @@ class AuthState {
     String? phone,
     bool? hasPin,
     String? error,
+    bool? otpFlowActive,
+    String? verificationId,
+    OtpStage? otpStage,
+    int? resendToken,
+    String? phoneE164,
+    String? errorMessage,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
@@ -36,6 +66,12 @@ class AuthState {
       phone: phone ?? this.phone,
       hasPin: hasPin ?? this.hasPin,
       error: error,
+      otpFlowActive: otpFlowActive ?? this.otpFlowActive,
+      verificationId: verificationId ?? this.verificationId,
+      otpStage: otpStage ?? this.otpStage,
+      resendToken: resendToken ?? this.resendToken,
+      phoneE164: phoneE164 ?? this.phoneE164,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }
@@ -57,7 +93,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   final PhonePinAuth _authService;
   final FirebaseAuth _firebaseAuth;
-  late final _authStateSubscription;
+  late final StreamSubscription<User?> _authStateSubscription;
 
   @override
   void dispose() {
@@ -82,29 +118,88 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // Send OTP to phone number
   Future<void> sendOtp(String phone) async {
-    state = state.copyWith(isLoading: true, error: null);
+    // Guard: prevent duplicate calls
+    if (state.otpStage == OtpStage.sending ||
+        state.otpStage == OtpStage.codeSent) {
+      debugPrint('[AuthNotifier] sendOtp blocked: already ${state.otpStage}');
+      return;
+    }
+
+    state = state.copyWith(
+      isLoading: true,
+      error: null,
+      otpFlowActive: true,
+      otpStage: OtpStage.sending,
+      phoneE164: phone,
+      errorMessage: null,
+    );
+
     try {
-      await _authService.ensurePhoneSession(phone);
-      state = state.copyWith(isLoading: false, phone: phone);
+      await _authService.ensurePhoneSession(
+        phone,
+        onCodeSent: (verificationId, resendToken) {
+          state = state.copyWith(
+            otpFlowActive: true,
+            verificationId: verificationId,
+            resendToken: resendToken,
+            isLoading: false,
+            error: null,
+            otpStage: OtpStage.codeSent,
+            phoneE164: phone,
+            errorMessage: null,
+          );
+          debugPrint(
+              '[AuthNotifier] codeSent → otpStage=codeSent, vid=${verificationId.substring(verificationId.length - 6)}');
+        },
+        onVerificationFailed: (errorMessage) {
+          state = state.copyWith(
+            isLoading: false,
+            error: errorMessage,
+            otpFlowActive: false,
+            otpStage: OtpStage.failed,
+            errorMessage: errorMessage,
+          );
+          debugPrint('[AuthNotifier] verificationFailed → $errorMessage');
+        },
+      );
+      state = state.copyWith(
+        isLoading: false,
+        phone: phone,
+      );
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
+        otpFlowActive: false,
+        otpStage: OtpStage.failed,
+        errorMessage: e.toString(),
       );
     }
   }
 
   // Verify OTP code
   Future<void> verifyOtp(String code) async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(
+      isLoading: true,
+      error: null,
+      otpStage: OtpStage.verifying,
+    );
     try {
       await _authService.confirmOtp(code);
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(
+        isLoading: false,
+        otpFlowActive: false,
+        verificationId: null,
+        otpStage: OtpStage.verified,
+      );
       // User will be updated via authStateChanges listener
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
+        otpFlowActive: false,
+        otpStage: OtpStage.failed,
+        errorMessage: e.toString(),
       );
     }
   }
