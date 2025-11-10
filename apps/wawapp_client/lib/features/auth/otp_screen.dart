@@ -1,40 +1,51 @@
 import 'package:flutter/material.dart';
-import '../../services/phone_pin_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'providers/auth_service_provider.dart';
 import 'create_pin_screen.dart';
 
-class OtpScreen extends StatefulWidget {
-  const OtpScreen({super.key});
+class OtpScreen extends ConsumerStatefulWidget {
+  final String verificationId;
+  final String phone;
+  final int? resendToken;
+
+  const OtpScreen({
+    super.key,
+    required this.verificationId,
+    required this.phone,
+    this.resendToken,
+  });
+
   @override
-  State<OtpScreen> createState() => _OtpScreenState();
+  ConsumerState<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _OtpScreenState extends ConsumerState<OtpScreen> {
   final _code = TextEditingController();
-  String? _err;
-  bool _busy = false;
 
   Future<void> _verify() async {
-    setState(() {
-      _busy = true;
-      _err = null;
-    });
-    try {
-      await PhonePinAuth.instance.confirmOtp(_code.text.trim());
-      if (mounted) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (_) => const CreatePinScreen()));
-      }
-    } catch (e) {
-      setState(() => _err = e.toString());
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
+    await ref.read(authProvider.notifier).verifyOtp(_code.text.trim());
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
+    // Listen for successful verification
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next.user != null && !next.otpFlowActive && !next.isLoading) {
+        if (!context.mounted) return;
+        // User authenticated, navigate to create PIN
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const CreatePinScreen()),
+        );
+      }
+    });
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Enter SMS Code')),
+      appBar: AppBar(
+        title: Text('Enter SMS Code sent to ${widget.phone}'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -44,14 +55,15 @@ class _OtpScreenState extends State<OtpScreen> {
                 controller: _code,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'Code')),
-            if (_err != null)
+            if (authState.error != null)
               Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child:
-                      Text(_err!, style: const TextStyle(color: Colors.red))),
+                  child: Text(authState.error!,
+                      style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
-                onPressed: _busy ? null : _verify, child: const Text('Verify')),
+                onPressed: authState.isLoading ? null : _verify,
+                child: const Text('Verify')),
           ],
         ),
       ),

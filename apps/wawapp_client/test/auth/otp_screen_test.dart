@@ -7,7 +7,10 @@ void main() {
     testWidgets('renders OTP input field', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 
@@ -28,7 +31,10 @@ void main() {
     testWidgets('TextField accepts numeric input', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 
@@ -46,7 +52,10 @@ void main() {
     testWidgets('TextField has maxLength of 6', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 
@@ -61,7 +70,10 @@ void main() {
     testWidgets('Verify button is initially enabled', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 
@@ -76,7 +88,10 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 
@@ -92,7 +107,10 @@ void main() {
     testWidgets('has proper layout structure', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 
@@ -106,7 +124,10 @@ void main() {
     testWidgets('TextField has correct decoration', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 
@@ -119,7 +140,10 @@ void main() {
     testWidgets('button text is correct', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 
@@ -135,7 +159,10 @@ void main() {
     testWidgets('can clear and re-enter code', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 
@@ -156,7 +183,10 @@ void main() {
     testWidgets('respects numeric keyboard type', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 
@@ -172,7 +202,10 @@ void main() {
     testWidgets('maintains code between rebuilds', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 
@@ -194,7 +227,10 @@ void main() {
     testWidgets('has semantic labels', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: OtpScreen(),
+          home: OtpScreen(
+            verificationId: 'test-vid-123',
+            phone: '+222123456789',
+          ),
         ),
       );
 

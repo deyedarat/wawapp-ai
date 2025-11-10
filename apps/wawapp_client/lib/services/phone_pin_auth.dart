@@ -28,9 +28,19 @@ class PhonePinAuth {
     return _db.collection('users').doc(uid);
   }
 
-  Future<void> ensurePhoneSession(String phoneE164) async {
+  Future<void> ensurePhoneSession(
+    String phoneE164, {
+    void Function(String verificationId, int? resendToken)? onCodeSent,
+    void Function(String errorMessage)? onVerificationFailed,
+  }) async {
     final u = _auth.currentUser;
     if (u != null) return;
+
+    try {
+      _auth.setLanguageCode('ar');
+    } catch (e) {
+      // Ignore language code errors
+    }
 
     final completer = Completer<void>();
     await _auth.verifyPhoneNumber(
@@ -40,9 +50,13 @@ class PhonePinAuth {
         await _auth.signInWithCredential(cred);
         completer.complete();
       },
-      verificationFailed: (e) => completer.completeError(e),
-      codeSent: (verificationId, _) {
+      verificationFailed: (e) {
+        onVerificationFailed?.call(e.message ?? e.toString());
+        completer.completeError(e);
+      },
+      codeSent: (verificationId, resendToken) {
         _lastVerificationId = verificationId;
+        onCodeSent?.call(verificationId, resendToken);
         completer.complete();
       },
       codeAutoRetrievalTimeout: (vid) => _lastVerificationId = vid,

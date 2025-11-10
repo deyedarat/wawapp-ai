@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,18 +7,37 @@ import '../../features/quote/quote_screen.dart';
 import '../../features/track/track_screen.dart';
 import '../../features/track/models/order.dart';
 import '../../features/about/about_screen.dart';
-import '../../features/auth/auth_gate.dart';
+import '../../features/auth/phone_pin_login_screen.dart';
+import '../../features/auth/otp_screen.dart';
+import '../../features/auth/providers/auth_service_provider.dart';
 import '../../main.dart' show navigatorKey;
 
 final appRouterProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authProvider);
+
   return GoRouter(
     navigatorKey: navigatorKey,
     initialLocation: '/',
+    redirect: (context, state) => _redirect(state, authState),
+    refreshListenable:
+        _GoRouterRefreshStream(ref.read(authProvider.notifier).stream),
     routes: [
       GoRoute(
         path: '/',
         name: 'home',
-        builder: (context, state) => const AuthGate(child: HomeScreen()),
+        builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const PhonePinLoginScreen(),
+      ),
+      GoRoute(
+        path: '/otp',
+        name: 'otp',
+        redirect: (context, state) =>
+            '/login', // OTP screen accessed via Navigator.push
+        builder: (context, state) => const PhonePinLoginScreen(),
       ),
       GoRoute(
         path: '/quote',
@@ -53,3 +73,46 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ),
   );
 });
+
+String? _redirect(GoRouterState s, AuthState st) {
+  final loggedIn = st.user != null;
+  final canOtp = (st.otpFlowActive == true) || (st.verificationId != null);
+
+  debugPrint(
+      '[Router] loc=${s.matchedLocation} loggedIn=$loggedIn canOtp=$canOtp');
+
+  // Allow OTP route when canOtp is true
+  if (!loggedIn && canOtp && s.matchedLocation != '/otp') {
+    debugPrint('[Router] Redirecting to /otp (canOtp=true)');
+    return '/otp';
+  }
+
+  // Not logged in and not in OTP flow
+  if (!loggedIn && !canOtp && s.matchedLocation != '/login') {
+    debugPrint('[Router] Redirecting to /login (not authenticated)');
+    return '/login';
+  }
+
+  // Logged in but on login page
+  if (loggedIn && s.matchedLocation == '/login') {
+    debugPrint('[Router] Redirecting to / (already authenticated)');
+    return '/';
+  }
+
+  return null;
+}
+
+class _GoRouterRefreshStream extends ChangeNotifier {
+  _GoRouterRefreshStream(Stream<AuthState> stream) {
+    notifyListeners();
+    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
+  }
+
+  late final StreamSubscription<AuthState> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}

@@ -8,6 +8,16 @@ final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
   return PhonePinAuth.instance;
 });
 
+// OTP Stage enum
+enum OtpStage {
+  idle,
+  sending,
+  codeSent,
+  verifying,
+  verified,
+  failed,
+}
+
 // AuthState model
 class AuthState {
   final bool isLoading;
@@ -16,6 +26,9 @@ class AuthState {
   final bool hasPin;
   final String? error;
   final bool otpFlowActive; // Track OTP flow across rebuilds
+  final OtpStage otpStage;
+  final String? verificationId;
+  final int? resendToken;
 
   const AuthState({
     this.isLoading = false,
@@ -24,6 +37,9 @@ class AuthState {
     this.hasPin = false,
     this.error,
     this.otpFlowActive = false,
+    this.otpStage = OtpStage.idle,
+    this.verificationId,
+    this.resendToken,
   });
 
   AuthState copyWith({
@@ -33,6 +49,9 @@ class AuthState {
     bool? hasPin,
     String? error,
     bool? otpFlowActive,
+    OtpStage? otpStage,
+    String? verificationId,
+    int? resendToken,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
@@ -41,6 +60,9 @@ class AuthState {
       hasPin: hasPin ?? this.hasPin,
       error: error,
       otpFlowActive: otpFlowActive ?? this.otpFlowActive,
+      otpStage: otpStage ?? this.otpStage,
+      verificationId: verificationId ?? this.verificationId,
+      resendToken: resendToken ?? this.resendToken,
     );
   }
 }
@@ -52,7 +74,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     // Listen to Firebase auth state changes
     _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
       if (kDebugMode) {
-        print('[AuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}');
+        print(
+            '[AuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}');
       }
       state = state.copyWith(user: user);
       if (user != null) {
@@ -117,7 +140,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // Send OTP to phone number
   Future<void> sendOtp(String phone) async {
-    state = state.copyWith(isLoading: true, error: null);
+    // Guard: prevent duplicate calls
+    if (state.otpStage == OtpStage.sending ||
+        state.otpStage == OtpStage.codeSent) {
+      if (kDebugMode) {
+        print('[AuthNotifier] sendOtp blocked: already ${state.otpStage}');
+      }
+      return;
+    }
+
+    state = state.copyWith(
+        isLoading: true, error: null, otpStage: OtpStage.sending);
     try {
       if (kDebugMode) {
         print('[AuthNotifier] Sending OTP to $phone');
@@ -143,7 +176,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         print('[AuthNotifier] Verifying OTP code');
       }
       await _authService.confirmOtp(code);
-      if (kDebugMode) print('[AuthNotifier] OTP verified, user should update via authStateChanges');
+      if (kDebugMode)
+        print(
+            '[AuthNotifier] OTP verified, user should update via authStateChanges');
       state = state.copyWith(isLoading: false, otpFlowActive: false);
       // User will be updated via authStateChanges listener
     } catch (e) {
