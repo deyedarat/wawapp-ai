@@ -79,7 +79,7 @@ meta:
 
   "format" {
     Write-Host "[SpecKit] Running dart formatter..." -ForegroundColor Cyan
-    dart format . --fix
+    dart format .
     exit 0
   }
 

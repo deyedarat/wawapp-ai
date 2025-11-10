@@ -1,71 +1,66 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../services/phone_pin_auth.dart';
-import 'create_pin_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'providers/auth_service_provider.dart';
 
-class OtpScreen extends StatefulWidget {
+class OtpScreen extends ConsumerStatefulWidget {
   const OtpScreen({super.key});
   @override
-  State<OtpScreen> createState() => _OtpScreenState();
+  ConsumerState<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _OtpScreenState extends ConsumerState<OtpScreen> {
   final _code = TextEditingController();
-  String? _err;
-  bool _busy = false;
 
   Future<void> _verify() async {
-    setState(() {
-      _busy = true;
-      _err = null;
-    });
-    try {
-      await PhonePinAuth.instance.confirmOtp(_code.text.trim());
+    final code = _code.text.trim();
+    if (code.isEmpty) return;
+
+    if (kDebugMode) {
+      print('[OtpScreen] Verifying OTP code');
+    }
+
+    await ref.read(authProvider.notifier).verifyOtp(code);
+
+    if (!mounted) return;
+
+    final authState = ref.read(authProvider);
+
+    if (authState.error != null) {
       if (kDebugMode) {
-        print('[OtpScreen] OTP verified, checking for existing PIN');
+        print('[OtpScreen] Verification error: ${authState.error}');
       }
+      return;
+    }
 
-      final hasPin = await PhonePinAuth.instance.hasPinHash();
+    if (authState.user != null) {
       if (kDebugMode) {
-        print('[OtpScreen] hasPin=$hasPin');
+        print('[OtpScreen] OTP verified successfully, hasPin=${authState.hasPin}');
       }
 
-      if (!mounted) {
-        return;
-      }
-      setState(() => _busy = false);
+      if (!context.mounted) return;
 
-      if (!context.mounted) {
-        return;
-      }
-
-      if (hasPin) {
+      if (authState.hasPin) {
         if (kDebugMode) {
-          print('[OtpScreen] PIN exists, navigating to home');
+          print('[OtpScreen] PIN exists, going to home');
         }
-        Navigator.popUntil(context, (r) => r.isFirst);
+        if (!context.mounted) return;
+        context.go('/');
       } else {
         if (kDebugMode) {
           print('[OtpScreen] No PIN, navigating to create PIN');
         }
-        await Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (_) => const CreatePinScreen()));
+        if (!context.mounted) return;
+        context.pushReplacement('/create-pin');
       }
-    } on Object catch (e, st) {
-      if (kDebugMode) {
-        print('[OtpScreen] Error: $e\n$st');
-      }
-      if (!mounted) {
-        return;
-      }
-      setState(() => _err = 'Invalid code. Please try again.');
-    } finally {
-      // _busy already set to false in try block
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Enter SMS Code')),
       body: Padding(
@@ -77,14 +72,17 @@ class _OtpScreenState extends State<OtpScreen> {
                 controller: _code,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'Code')),
-            if (_err != null)
+            if (authState.error != null)
               Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child:
-                      Text(_err!, style: const TextStyle(color: Colors.red))),
+                  child: Text(authState.error!,
+                      style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
-                onPressed: _busy ? null : _verify, child: const Text('Verify')),
+                onPressed: authState.isLoading ? null : _verify,
+                child: authState.isLoading
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('Verify')),
           ],
         ),
       ),

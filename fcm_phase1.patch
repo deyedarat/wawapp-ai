@@ -1,0 +1,72 @@
+diff --git a/apps/wawapp_client/pubspec.yaml b/apps/wawapp_client/pubspec.yaml
+index 1111111..2222222 100644
+--- a/apps/wawapp_client/pubspec.yaml
++++ b/apps/wawapp_client/pubspec.yaml
+@@ -25,6 +25,7 @@ dependencies:
+   crypto: ^3.0.3
+   firebase_messaging: ^15.2.10
+   permission_handler: ^11.3.1
++  flutter_local_notifications: ^17.2.3
+   yaml: ^3.1.2
+ 
+ dev_dependencies:
+diff --git a/apps/wawapp_driver/pubspec.yaml b/apps/wawapp_driver/pubspec.yaml
+index 3333333..4444444 100644
+--- a/apps/wawapp_driver/pubspec.yaml
++++ b/apps/wawapp_driver/pubspec.yaml
+@@ -20,6 +20,7 @@ dependencies:
+   cloud_firestore: ^5.4.4
+   crypto: ^3.0.3
+   firebase_messaging: ^15.2.10
++  flutter_local_notifications: ^17.2.3
+ 
+ dev_dependencies:
+   flutter_test:
+diff --git a/apps/wawapp_client/android/app/src/main/AndroidManifest.xml b/apps/wawapp_client/android/app/src/main/AndroidManifest.xml
+index 5555555..6666666 100644
+--- a/apps/wawapp_client/android/app/src/main/AndroidManifest.xml
++++ b/apps/wawapp_client/android/app/src/main/AndroidManifest.xml
+@@ -3,6 +3,7 @@
+     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
++    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+     <application
+         android:label="wawapp_client"
+         android:name="${applicationName}"
+diff --git a/apps/wawapp_driver/android/app/src/main/AndroidManifest.xml b/apps/wawapp_driver/android/app/src/main/AndroidManifest.xml
+index 7777777..8888888 100644
+--- a/apps/wawapp_driver/android/app/src/main/AndroidManifest.xml
++++ b/apps/wawapp_driver/android/app/src/main/AndroidManifest.xml
+@@ -1,4 +1,7 @@
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android">
++    <uses-permission android:name="android.permission.INTERNET" />
++    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
++    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+     <application
+         android:label="wawapp_driver"
+         android:name="${applicationName}"
+diff --git a/apps/wawapp_client/ios/Runner/Info.plist b/apps/wawapp_client/ios/Runner/Info.plist
+index 9999999..aaaaaaa 100644
+--- a/apps/wawapp_client/ios/Runner/Info.plist
++++ b/apps/wawapp_client/ios/Runner/Info.plist
+@@ -47,5 +47,7 @@
+ 	<true/>
+ 	<key>UIStatusBarHidden</key>
+ 	<false/>
++	<key>FirebaseAppDelegateProxyEnabled</key>
++	<true/>
+ </dict>
+ </plist>
+diff --git a/apps/wawapp_driver/ios/Runner/Info.plist b/apps/wawapp_driver/ios/Runner/Info.plist
+index bbbbbbb..ccccccc 100644
+--- a/apps/wawapp_driver/ios/Runner/Info.plist
++++ b/apps/wawapp_driver/ios/Runner/Info.plist
+@@ -43,5 +43,7 @@
+ 	<true/>
+ 	<key>UIApplicationSupportsIndirectInputEvents</key>
+ 	<true/>
++	<key>FirebaseAppDelegateProxyEnabled</key>
++	<true/>
+ </dict>
+ </plist>

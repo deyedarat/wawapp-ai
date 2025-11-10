@@ -35,7 +35,7 @@ class GeocodingHelper {
           return data['results'][0]['formatted_address'] ?? 'موقع غير محدد';
         }
       } else {
-        dev.log('Geocoding API returned status ${response.statusCode}', 
+        dev.log('Geocoding API returned status ${response.statusCode}',
             name: 'GeocodingHelper');
       }
       return 'فشل في جلب العنوان، تحقق من الاتصال بالإنترنت';

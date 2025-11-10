@@ -5,9 +5,13 @@ import '../../features/home/driver_home_screen.dart';
 import '../../features/nearby/nearby_screen.dart';
 import '../../features/wallet/wallet_screen.dart';
 import '../../features/auth/auth_gate.dart';
+import '../../features/auth/otp_screen.dart';
+import '../../features/auth/create_pin_screen.dart';
+import '../../main.dart' show navigatorKey;
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: '/',
     routes: [
       GoRoute(
@@ -24,6 +28,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/wallet',
         name: 'wallet',
         builder: (context, state) => const WalletScreen(),
+      ),
+      GoRoute(
+        path: '/otp',
+        name: 'otp',
+        builder: (context, state) => const OtpScreen(),
+      ),
+      GoRoute(
+        path: '/create-pin',
+        name: 'createPin',
+        builder: (context, state) => const CreatePinScreen(),
+      ),
+      GoRoute(
+        path: '/order/:orderId',
+        name: 'order',
+        builder: (context, state) {
+          final orderId = state.pathParameters['orderId'];
+          return Scaffold(
+            appBar: AppBar(title: const Text('Order Details')),
+            body: Center(child: Text('Order: $orderId')),
+          );
+        },
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

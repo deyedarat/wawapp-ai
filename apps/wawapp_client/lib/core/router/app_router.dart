@@ -7,9 +7,11 @@ import '../../features/track/track_screen.dart';
 import '../../features/track/models/order.dart';
 import '../../features/about/about_screen.dart';
 import '../../features/auth/auth_gate.dart';
+import '../../main.dart' show navigatorKey;
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: '/',
     routes: [
       GoRoute(
@@ -31,6 +33,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/about',
         name: 'about',
         builder: (context, state) => const AboutScreen(),
+      ),
+      GoRoute(
+        path: '/order/:orderId',
+        name: 'order',
+        builder: (context, state) {
+          final orderId = state.pathParameters['orderId'];
+          return Scaffold(
+            appBar: AppBar(title: const Text('Order Details')),
+            body: Center(child: Text('Order: $orderId')),
+          );
+        },
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
