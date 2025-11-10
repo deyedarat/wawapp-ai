@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'providers/auth_service_provider.dart';
 
 class CreatePinScreen extends ConsumerStatefulWidget {
@@ -66,7 +67,9 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
         if (kDebugMode) {
           print('[CreatePinScreen] PIN saved, navigating to home');
         }
-        Navigator.popUntil(context, (r) => r.isFirst);
+        if (context.mounted) {
+          context.go('/');
+        }
       }
       if (next.error != null && previous?.error != next.error) {
         if (kDebugMode) {

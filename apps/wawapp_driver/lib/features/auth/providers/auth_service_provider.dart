@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../services/phone_pin_auth.dart';
@@ -14,6 +15,7 @@ class AuthState {
   final String? phone;
   final bool hasPin;
   final String? error;
+  final bool otpFlowActive; // Track OTP flow across rebuilds
 
   const AuthState({
     this.isLoading = false,
@@ -21,6 +23,7 @@ class AuthState {
     this.phone,
     this.hasPin = false,
     this.error,
+    this.otpFlowActive = false,
   });
 
   AuthState copyWith({
@@ -29,6 +32,7 @@ class AuthState {
     String? phone,
     bool? hasPin,
     String? error,
+    bool? otpFlowActive,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
@@ -36,6 +40,7 @@ class AuthState {
       phone: phone ?? this.phone,
       hasPin: hasPin ?? this.hasPin,
       error: error,
+      otpFlowActive: otpFlowActive ?? this.otpFlowActive,
     );
   }
 }
@@ -46,6 +51,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       : super(const AuthState()) {
     // Listen to Firebase auth state changes
     _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
+      if (kDebugMode) {
+        print('[AuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}');
+      }
       state = state.copyWith(user: user);
       if (user != null) {
         _checkHasPin();
@@ -68,17 +76,42 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Check if current user has a PIN set
   Future<void> _checkHasPin() async {
     try {
+      if (kDebugMode) {
+        print('[AuthNotifier] Checking if user has PIN');
+      }
       final user = _firebaseAuth.currentUser;
       if (user != null) {
         // Driver app has hasPinHash method
         final hasPinHash = await _authService.hasPinHash();
+        if (kDebugMode) {
+          print('[AuthNotifier] hasPinHash=$hasPinHash');
+        }
         state = state.copyWith(
           hasPin: hasPinHash,
           phone: user.phoneNumber,
         );
       }
     } catch (e) {
+      if (kDebugMode) {
+        print('[AuthNotifier] Error checking PIN: $e');
+      }
       // Silent fail - hasPin will remain false
+    }
+  }
+
+  // Start OTP flow
+  void startOtpFlow() {
+    state = state.copyWith(otpFlowActive: true);
+    if (kDebugMode) {
+      print('[AuthNotifier] OTP flow started');
+    }
+  }
+
+  // End OTP flow
+  void endOtpFlow() {
+    state = state.copyWith(otpFlowActive: false);
+    if (kDebugMode) {
+      print('[AuthNotifier] OTP flow ended');
     }
   }
 
@@ -86,12 +119,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> sendOtp(String phone) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
+      if (kDebugMode) {
+        print('[AuthNotifier] Sending OTP to $phone');
+      }
       await _authService.ensurePhoneSession(phone);
+      if (kDebugMode) print('[AuthNotifier] OTP sent successfully');
       state = state.copyWith(isLoading: false, phone: phone);
     } catch (e) {
+      if (kDebugMode) print('[AuthNotifier] Send OTP error: $e');
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
+        otpFlowActive: false, // End flow on error
       );
     }
   }
@@ -100,10 +139,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> verifyOtp(String code) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
+      if (kDebugMode) {
+        print('[AuthNotifier] Verifying OTP code');
+      }
       await _authService.confirmOtp(code);
-      state = state.copyWith(isLoading: false);
+      if (kDebugMode) print('[AuthNotifier] OTP verified, user should update via authStateChanges');
+      state = state.copyWith(isLoading: false, otpFlowActive: false);
       // User will be updated via authStateChanges listener
     } catch (e) {
+      if (kDebugMode) print('[AuthNotifier] Verify OTP error: $e');
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
@@ -161,8 +205,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 }
 
-// Main auth provider - auto dispose when no longer used
-final authProvider = StateNotifierProvider.autoDispose<AuthNotifier, AuthState>(
+// Main auth provider - keepAlive to preserve state across navigation
+final authProvider = StateNotifierProvider<AuthNotifier, AuthState>(
   (ref) {
     final authService = ref.watch(phonePinAuthServiceProvider);
     final firebaseAuth = FirebaseAuth.instance;

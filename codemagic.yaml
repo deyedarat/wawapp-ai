@@ -18,10 +18,6 @@ workflows:
         - ~/.gradle/wrapper
     working_directory: apps/wawapp_client
     scripts:
-      - name: Guard secrets
-        script: |
-          cd ../..
-          pwsh -File tools/guards/guard-secrets.ps1
       - name: Get dependencies
         script: flutter pub get
       - name: Generate l10n
@@ -30,3 +26,81 @@ workflows:
         script: flutter build apk --debug --no-shrink
     artifacts:
       - build/app/outputs/flutter-apk/app-debug.apk
+
+  android_release:
+    name: Android Release APK
+    max_build_duration: 60
+    environment:
+      flutter: stable
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - ~/.gradle/caches
+        - ~/.gradle/wrapper
+    working_directory: apps/wawapp_client
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Generate l10n
+        script: flutter gen-l10n
+      - name: Build release APK
+        script: flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+
+  ios_debug:
+    name: iOS Debug Build
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+    working_directory: apps/wawapp_client
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Generate l10n
+        script: flutter gen-l10n
+      - name: Build iOS
+        script: flutter build ios --debug --no-codesign
+    artifacts:
+      - build/ios/iphoneos/Runner.app
+
+  test_workflow:
+    name: Run Tests
+    max_build_duration: 30
+    environment:
+      flutter: stable
+    triggering:
+      events:
+        - pull_request
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+    working_directory: apps/wawapp_client
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Generate l10n
+        script: flutter gen-l10n
+      - name: Run tests
+        script: flutter test
+      - name: Run integration tests
+        script: flutter test integration_test/

@@ -48,6 +48,21 @@ class MockFirebaseAuth implements FirebaseAuth {
   FirebaseApp get app => throw UnimplementedError();
 
   @override
+  set app(FirebaseApp? newApp) => throw UnimplementedError();
+
+  @override
+  String? get customAuthDomain => null;
+
+  @override
+  set customAuthDomain(String? domain) => throw UnimplementedError();
+
+  @override
+  String? get tenantId => null;
+
+  @override
+  set tenantId(String? tenant) => throw UnimplementedError();
+
+  @override
   Future<void> applyActionCode(String code) => throw UnimplementedError();
 
   @override
@@ -185,9 +200,6 @@ class MockFirebaseAuth implements FirebaseAuth {
 
   @override
   Future<UserCredential> getRedirectResult() => throw UnimplementedError();
-
-  @override
-  String? get tenantId => throw UnimplementedError();
 
   @override
   Future<void> initializeRecaptchaConfig() => throw UnimplementedError();

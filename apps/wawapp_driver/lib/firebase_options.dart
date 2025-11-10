@@ -53,10 +53,10 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDGpF8zQoQxQxQxQxQxQxQxQxQxQxQxQxQ',
-    appId: '1:363341993641:android:344b79d7b86a067d683bb8',
+    apiKey: 'AIzaSyBO67aaNMqotGFF73jlCB8uVGUQ5bILfVM',
+    appId: '1:363341993641:android:1a58dd28a46889d5683bb8',
     messagingSenderId: '363341993641',
     projectId: 'wawapp-952d6',
-    storageBucket: 'wawapp-952d6.appspot.com',
+    storageBucket: 'wawapp-952d6.firebasestorage.app',
   );
 }

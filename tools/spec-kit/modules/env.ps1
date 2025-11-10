@@ -32,12 +32,14 @@ function Invoke-EnvVerify {
  # Java
 Write-Host -NoNewline "[java      ] "
 try {
+  # استخدم 2>&1 لتوجيه stderr إلى stdout
   $output = & java -version 2>&1 | Out-String
-  if ($output -match "version" -or $output -match "openjdk") {
-    $version = ($output -split "`n")[0].Trim()
+  if ($output -match "version" -or $output -match "openjdk" -or $output -match "java") {
+    # استخرج السطر الأول فقط
+    $version = ($output -split "`n" | Where-Object { $_ -match "version|openjdk" } | Select-Object -First 1).Trim()
     Write-Host "OK $version" -ForegroundColor Green
   } else {
-    Write-Host "FAILED" -ForegroundColor Yellow
+    Write-Host "FAILED (detected but unrecognized output)" -ForegroundColor Yellow
   }
 } catch {
   Write-Host "MISSING (required)" -ForegroundColor Red
