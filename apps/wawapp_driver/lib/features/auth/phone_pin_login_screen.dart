@@ -16,9 +16,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   final _pin = TextEditingController();
   String? _err;
   bool _navigatedThisAttempt = false;
-
-  // ✅ Store cancel function
-  void Function()? _cancelListener;
+  ProviderSubscription<AuthState>? _cancelListener;
   @override
   void initState() {
     super.initState();
@@ -30,24 +28,16 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
       (previous, next) {
         _onAuthState(prev: previous, next: next);
       },
-        debugPrint('[PhonePinLogin] 🟡 Listener triggered!');
-        debugPrint('[PhonePinLogin] Previous stage: ${previous?.otpStage}');
-        debugPrint('[PhonePinLogin] Next stage: ${next.otpStage}');
-        debugPrint(
-            '[PhonePinLogin] _navigatedThisAttempt: $_navigatedThisAttempt');
-        debugPrint('[PhonePinLogin] mounted: $mounted');
-
-      },
       // ✅ نفّذ النداء فورًا بالحالة الحالية
       fireImmediately: true,
     );
+    _cancelListener = cancel;
     // ✅ تأمين إضافي: لو fireImmediately غير مدعومة/لم تُطلق التنقّل،
     //   نفّذ على الحالة الحالية بعد إنشائه مباشرة.
     Future.microtask(() {
       final current = ref.read(authProvider);
       _onAuthState(prev: null, next: current);
     });
-    ref.onDispose(cancel);
   }
 
   void _onAuthState({AuthState? prev, required AuthState next}) {
@@ -63,7 +53,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
     if (becameCodeSent &&
         !_navigatedThisAttempt &&
-        next.phoneE164 != null &&
+        next.phone != null &&
         next.verificationId != null) {
       debugPrint('[PhonePinLogin] 🟢 Navigation condition MET!');
       _navigatedThisAttempt = true;
@@ -81,7 +71,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
           debugPrint('[PhonePinLogin] 🚀 Attempting navigation to /otp');
           try {
             context.push('/otp', extra: {
-              'phone': next.phoneE164!,
+              'phone': next.phone!,
               'verificationId': next.verificationId!,
               'resendToken': next.resendToken,
             });
@@ -117,7 +107,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
   @override
   void dispose() {
-    _cancelListener?.call();
+    _cancelListener?.close();
     _phone.dispose();
     _pin.dispose();
     super.dispose();

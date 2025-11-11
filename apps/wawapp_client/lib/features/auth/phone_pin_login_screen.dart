@@ -15,6 +15,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   final _pin = TextEditingController();
   String? _err;
   bool _navigatedThisAttempt = false;
+  ProviderSubscription<AuthState>? _cancelListener;
 
   @override
   void initState() {
@@ -23,19 +24,20 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     // ✅ Riverpod-safe listener outside build:
     debugPrint('[PhonePinLogin] 🔵 Setting up listener (manual)');
     final cancel = ref.listenManual<AuthState>(
-      authProvider,n      (previous, next) {
+      authProvider,
+      (previous, next) {
         _onAuthState(prev: previous, next: next);
       },
       // ✅ نفّذ النداء فورًا بالحالة الحالية
       fireImmediately: true,
     );
+    _cancelListener = cancel;
     // ✅ تأمين إضافي: لو fireImmediately غير مدعومة/لم تُطلق التنقّل،
     //   نفّذ على الحالة الحالية بعد إنشائه مباشرة.
     Future.microtask(() {
       final current = ref.read(authProvider);
       _onAuthState(prev: null, next: current);
     });
-    ref.onDispose(cancel);
   }
 
   void _onAuthState({AuthState? prev, required AuthState next}) {
@@ -105,6 +107,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
   @override
   void dispose() {
+    _cancelListener?.close();
     _phone.dispose();
     _pin.dispose();
     super.dispose();
