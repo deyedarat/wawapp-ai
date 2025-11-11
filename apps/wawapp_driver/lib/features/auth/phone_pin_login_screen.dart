@@ -15,18 +15,17 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   final _phone = TextEditingController();
   final _pin = TextEditingController();
   String? _err;
-  ProviderSubscription<AuthState>? _authSubscription;
   bool _navigatedThisAttempt = false;
 
   @override
   void initState() {
     super.initState();
     _navigatedThisAttempt = false;
-    
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      debugPrint('[PhonePinLogin] 🔵 Setting up listener');
-      
-      ref.listen<AuthState>(authProvider, (previous, next) {
+    // ✅ Riverpod-safe listener outside build:
+    debugPrint('[PhonePinLogin] 🔵 Setting up listener (manual)');
+    final cancel = ref.listenManual<AuthState>(
+      authProvider,
+      (previous, next) {
         debugPrint('[PhonePinLogin] 🟡 Listener triggered!');
         debugPrint('[PhonePinLogin] Previous stage: ${previous?.otpStage}');
         debugPrint('[PhonePinLogin] Next stage: ${next.otpStage}');
@@ -98,13 +97,15 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             context.go('/');
           });
         }
-      });
-    });
+      },
+      fireImmediately: false,
+    );
+    // Auto-cleanup when the widget is disposed
+    ref.onDispose(cancel);
   }
 
   @override
   void dispose() {
-    _authSubscription?.close();
     _phone.dispose();
     _pin.dispose();
     super.dispose();

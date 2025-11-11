@@ -14,18 +14,17 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   final _phone = TextEditingController(); // e.g. +222xxxxxxxx
   final _pin = TextEditingController();
   String? _err;
-  ProviderSubscription<AuthState>? _authSubscription;
   bool _navigatedThisAttempt = false;
 
   @override
   void initState() {
     super.initState();
     _navigatedThisAttempt = false;
-    // Use listenManual for precise control over navigation
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _authSubscription = ref.listenManual(
-        authProvider,
-        (previous, next) {
+    // ✅ Riverpod-safe listener outside build:
+    debugPrint('[PhonePinLogin] 🔵 Setting up listener (manual)');
+    final cancel = ref.listenManual<AuthState>(
+      authProvider,
+      (previous, next) {
           // Navigate to OTP screen exactly once when codeSent
           if (!_navigatedThisAttempt &&
               previous?.otpStage != next.otpStage &&
@@ -70,13 +69,14 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             });
           }
         },
+        fireImmediately: false,
       );
-    });
+    // Auto-cleanup when the widget is disposed
+    ref.onDispose(cancel);
   }
 
   @override
   void dispose() {
-    _authSubscription?.close();
     _phone.dispose();
     _pin.dispose();
     super.dispose();
