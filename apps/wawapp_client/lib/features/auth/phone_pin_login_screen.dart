@@ -23,56 +23,84 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     // ✅ Riverpod-safe listener outside build:
     debugPrint('[PhonePinLogin] 🔵 Setting up listener (manual)');
     final cancel = ref.listenManual<AuthState>(
-      authProvider,
-      (previous, next) {
-          // Navigate to OTP screen exactly once when codeSent
-          if (!_navigatedThisAttempt &&
-              previous?.otpStage != next.otpStage &&
-              next.otpStage == OtpStage.codeSent) {
-            _navigatedThisAttempt = true;
-            if (!mounted) return;
-
-            debugPrint(
-                '[PhonePinLogin] Navigating to OtpScreen (codeSent, vid=${next.verificationId?.substring(next.verificationId!.length - 6)})');
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!mounted) return;
-
-              // Close IME safely before navigation
-              FocusScope.of(context).unfocus();
-
-              // Show snackbar
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('OTP sent to ${next.phoneE164}')),
-              );
-
-              // Navigate to OTP screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => OtpScreen(
-                    verificationId: next.verificationId!,
-                    phone: next.phoneE164!,
-                    resendToken: next.resendToken,
-                  ),
-                ),
-              );
-            });
-          }
-
-          // Navigate home when authenticated
-          if (next.user != null && !next.isLoading && mounted) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (context.mounted) {
-                Navigator.of(context).pushReplacementNamed('/');
-              }
-            });
-          }
-        },
-        fireImmediately: false,
-      );
-    // Auto-cleanup when the widget is disposed
+      authProvider,n      (previous, next) {
+        _onAuthState(prev: previous, next: next);
+      },
+      // ✅ نفّذ النداء فورًا بالحالة الحالية
+      fireImmediately: true,
+    );
+    // ✅ تأمين إضافي: لو fireImmediately غير مدعومة/لم تُطلق التنقّل،
+    //   نفّذ على الحالة الحالية بعد إنشائه مباشرة.
+    Future.microtask(() {
+      final current = ref.read(authProvider);
+      _onAuthState(prev: null, next: current);
+    });
     ref.onDispose(cancel);
+  }
+
+  void _onAuthState({AuthState? prev, required AuthState next}) {
+    debugPrint('[PhonePinLogin] 🟡 Listener triggered!');
+    debugPrint('[PhonePinLogin] Previous stage: ${prev?.otpStage}');
+    debugPrint('[PhonePinLogin] Next stage: ${next.otpStage}');
+    debugPrint('[PhonePinLogin] _navigatedThisAttempt: $_navigatedThisAttempt');
+    debugPrint('[PhonePinLogin] mounted: $mounted');
+
+    // ✅ اعتبرها codeSent حتى في أول استدعاء لو الحالة الحالية بالفعل codeSent
+    final becameCodeSent = next.otpStage == OtpStage.codeSent &&
+        (prev == null || prev.otpStage != OtpStage.codeSent);
+
+    if (becameCodeSent &&
+        !_navigatedThisAttempt &&
+        next.phoneE164 != null &&
+        next.verificationId != null) {
+      debugPrint('[PhonePinLogin] 🟢 Navigation condition MET!');
+      _navigatedThisAttempt = true;
+
+      if (!mounted) {
+        debugPrint('[PhonePinLogin] ❌ Widget not mounted');
+        return;
+      }
+
+      debugPrint(
+          '[PhonePinLogin] Navigating to OtpScreen (codeSent, vid=${next.verificationId?.substring(next.verificationId!.length - 6)})');
+
+      // ✅ أي pending-loading UI لازم يتوقف الآن
+      Future.microtask(() {
+        if (!mounted || _navigatedThisAttempt == false) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+
+          // Close IME safely before navigation
+          FocusScope.of(context).unfocus();
+
+          // Show snackbar
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('OTP sent to ${next.phoneE164}')),
+          );
+
+          // Navigate to OTP screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => OtpScreen(
+                verificationId: next.verificationId!,
+                phone: next.phoneE164!,
+                resendToken: next.resendToken,
+              ),
+            ),
+          );
+        });
+      });
+    }
+
+    // Navigate home when authenticated
+    if (next.user != null && !next.isLoading && mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) {
+          Navigator.of(context).pushReplacementNamed('/');
+        }
+      });
+    }
   }
 
   @override
@@ -93,7 +121,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     // Reset navigation flag for new attempt
     _navigatedThisAttempt = false;
     await ref.read(authProvider.notifier).sendOtp(phone);
-    // Navigation handled by router redirect
+    // Navigation handled by listener
 
     if (_pin.text.length != 4) {
       setState(() => _err = 'PIN must be 4 digits');

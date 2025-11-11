@@ -17,6 +17,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   String? _err;
   bool _navigatedThisAttempt = false;
 
+  // ✅ Store cancel function
+  void Function()? _cancelListener;
   @override
   void initState() {
     super.initState();
@@ -26,86 +28,96 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     final cancel = ref.listenManual<AuthState>(
       authProvider,
       (previous, next) {
+        _onAuthState(prev: previous, next: next);
+      },
         debugPrint('[PhonePinLogin] 🟡 Listener triggered!');
         debugPrint('[PhonePinLogin] Previous stage: ${previous?.otpStage}');
         debugPrint('[PhonePinLogin] Next stage: ${next.otpStage}');
-        debugPrint('[PhonePinLogin] _navigatedThisAttempt: $_navigatedThisAttempt');
+        debugPrint(
+            '[PhonePinLogin] _navigatedThisAttempt: $_navigatedThisAttempt');
         debugPrint('[PhonePinLogin] mounted: $mounted');
-        
-        // Check navigation condition
-        if (!_navigatedThisAttempt &&
-            previous?.otpStage != next.otpStage &&
-            next.otpStage == OtpStage.codeSent) {
-          
-          debugPrint('[PhonePinLogin] 🟢 Navigation condition MET!');
-          _navigatedThisAttempt = true;
-          
-          if (!mounted) {
-            debugPrint('[PhonePinLogin] ❌ Widget not mounted');
-            return;
-          }
 
-          debugPrint('[PhonePinLogin] ⏳ Starting delayed navigation (800ms)...');
-          
-          Future.delayed(const Duration(milliseconds: 800), () {
-            debugPrint('[PhonePinLogin] ⏰ Delay completed');
-            
-            if (!mounted || !context.mounted) {
-              debugPrint('[PhonePinLogin] ❌ Context not mounted after delay');
-              return;
-            }
-            
-            debugPrint('[PhonePinLogin] 🎯 Closing keyboard...');
-            FocusScope.of(context).unfocus();
-            
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              debugPrint('[PhonePinLogin] 📍 Post frame callback');
-              
-              if (!mounted || !context.mounted) {
-                debugPrint('[PhonePinLogin] ❌ Context not mounted in callback');
-                return;
-              }
-              
-              debugPrint('[PhonePinLogin] 🚀 Attempting navigation to /otp');
-              try {
-                context.push('/otp');
-                debugPrint('[PhonePinLogin] ✅ Navigation successful!');
-              } catch (e, stackTrace) {
-                debugPrint('[PhonePinLogin] ❌ Navigation failed: $e');
-                debugPrint('[PhonePinLogin] Stack trace: $stackTrace');
-              }
-            });
-          });
-        } else {
-          debugPrint('[PhonePinLogin] 🔴 Navigation condition NOT met');
-          if (_navigatedThisAttempt) {
-            debugPrint('[PhonePinLogin] Reason: Already navigated');
-          }
-          if (previous?.otpStage == next.otpStage) {
-            debugPrint('[PhonePinLogin] Reason: Stage unchanged');
-          }
-          if (next.otpStage != OtpStage.codeSent) {
-            debugPrint('[PhonePinLogin] Reason: Stage is not codeSent');
-          }
-        }
-        
-        // Check for successful login (existing code)
-        if (next.user != null && !next.isLoading && mounted) {
-          debugPrint('[PhonePinLogin] User logged in, navigating to home');
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted || !context.mounted) return;
-            context.go('/');
-          });
-        }
       },
-      fireImmediately: false,
+      // ✅ نفّذ النداء فورًا بالحالة الحالية
+      fireImmediately: true,
     );
-    // Auto-cleanup when the widget is disposed
+    // ✅ تأمين إضافي: لو fireImmediately غير مدعومة/لم تُطلق التنقّل،
+    //   نفّذ على الحالة الحالية بعد إنشائه مباشرة.
+    Future.microtask(() {
+      final current = ref.read(authProvider);
+      _onAuthState(prev: null, next: current);
+    });
     ref.onDispose(cancel);
+  }
+
+  void _onAuthState({AuthState? prev, required AuthState next}) {
+    debugPrint('[PhonePinLogin] 🟡 Listener triggered!');
+    debugPrint('[PhonePinLogin] Previous stage: ${prev?.otpStage}');
+    debugPrint('[PhonePinLogin] Next stage: ${next.otpStage}');
+    debugPrint('[PhonePinLogin] _navigatedThisAttempt: $_navigatedThisAttempt');
+    debugPrint('[PhonePinLogin] mounted: $mounted');
+
+    // ✅ اعتبرها codeSent حتى في أول استدعاء لو الحالة الحالية بالفعل codeSent
+    final becameCodeSent = next.otpStage == OtpStage.codeSent &&
+        (prev == null || prev.otpStage != OtpStage.codeSent);
+
+    if (becameCodeSent &&
+        !_navigatedThisAttempt &&
+        next.phoneE164 != null &&
+        next.verificationId != null) {
+      debugPrint('[PhonePinLogin] 🟢 Navigation condition MET!');
+      _navigatedThisAttempt = true;
+
+      if (!mounted) {
+        debugPrint('[PhonePinLogin] ❌ Widget not mounted');
+        return;
+      }
+
+      // ✅ أي pending-loading UI لازم يتوقف الآن
+      Future.microtask(() {
+        if (!mounted || _navigatedThisAttempt == false) return;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || !context.mounted) return;
+          debugPrint('[PhonePinLogin] 🚀 Attempting navigation to /otp');
+          try {
+            context.push('/otp', extra: {
+              'phone': next.phoneE164!,
+              'verificationId': next.verificationId!,
+              'resendToken': next.resendToken,
+            });
+            debugPrint('[PhonePinLogin] ✅ Navigation successful!');
+          } catch (e, stackTrace) {
+            debugPrint('[PhonePinLogin] ❌ Navigation failed: $e');
+            debugPrint('[PhonePinLogin] Stack trace: $stackTrace');
+          }
+        });
+      });
+    } else {
+      debugPrint('[PhonePinLogin] 🔴 Navigation condition NOT met');
+      if (_navigatedThisAttempt) {
+        debugPrint('[PhonePinLogin] Reason: Already navigated');
+      }
+      if (prev != null && prev.otpStage == next.otpStage) {
+        debugPrint('[PhonePinLogin] Reason: Stage unchanged');
+      }
+      if (next.otpStage != OtpStage.codeSent) {
+        debugPrint('[PhonePinLogin] Reason: Stage is not codeSent');
+      }
+    }
+
+    // Check for successful login
+    if (next.user != null && !next.isLoading && mounted) {
+      debugPrint('[PhonePinLogin] User logged in, navigating to home');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !context.mounted) return;
+        context.go('/');
+      });
+    }
   }
 
   @override
   void dispose() {
+    _cancelListener?.call();
     _phone.dispose();
     _pin.dispose();
     super.dispose();
@@ -148,6 +160,9 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     if (kDebugMode) {
       print('[PhonePinLogin] Starting OTP flow (non-await)...');
     }
+
+    // Reset navigation flag for new attempt
+    _navigatedThisAttempt = false;
 
     // Mark OTP flow as active in provider (survives rebuild)
     ref.read(authProvider.notifier).startOtpFlow();
