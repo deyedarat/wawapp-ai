@@ -29,7 +29,11 @@ class PhonePinAuth {
     return _db.collection('users').doc(uid);
   }
 
-  Future<void> ensurePhoneSession(String phoneE164) async {
+  Future<void> ensurePhoneSession(
+    String phoneE164, {
+    void Function(String verificationId, int? resendToken)? onCodeSent,
+    void Function(String errorMessage)? onVerificationFailed,
+  }) async {
     final u = _auth.currentUser;
     if (u != null) {
       if (kDebugMode) {
@@ -42,13 +46,19 @@ class PhonePinAuth {
       print('[PhonePinAuth] ensurePhoneSession: starting verification');
     }
 
+    try {
+      _auth.setLanguageCode('ar');
+    } catch (e) {
+      // Ignore language code errors
+    }
+
     final completer = Completer<void>();
     await _auth.verifyPhoneNumber(
       phoneNumber: phoneE164,
       timeout: const Duration(seconds: 60),
       verificationCompleted: (cred) async {
         if (kDebugMode) {
-          print('[PhonePinAuth] verificationCompleted: auto sign-in');
+          print('[PhonePinAuth] ✅ verificationCompleted: auto sign-in');
         }
         await _auth.signInWithCredential(cred);
         completer.complete();
@@ -56,18 +66,26 @@ class PhonePinAuth {
       verificationFailed: (FirebaseAuthException e) {
         if (kDebugMode) {
           print(
-              '[PhonePinAuth] verificationFailed: code=${e.code}, message=${e.message}');
+              '[PhonePinAuth] ❌ verificationFailed: code=${e.code}, message=${e.message}');
         }
+        onVerificationFailed?.call(e.message ?? e.toString());
         completer.completeError(e);
       },
-      codeSent: (verificationId, _) {
+      codeSent: (verificationId, resendToken) {
         if (kDebugMode) {
-          print('[PhonePinAuth] codeSent');
+          print(
+              '[PhonePinAuth] ✅ codeSent: vid=${verificationId.substring(0, 6)}..., token=$resendToken');
         }
         _lastVerificationId = verificationId;
+        onCodeSent?.call(verificationId, resendToken);
         completer.complete();
       },
-      codeAutoRetrievalTimeout: (vid) => _lastVerificationId = vid,
+      codeAutoRetrievalTimeout: (vid) {
+        if (kDebugMode) {
+          print('[PhonePinAuth] codeAutoRetrievalTimeout (no auto-retrieval)');
+        }
+        _lastVerificationId = vid;
+      },
     );
     await completer.future;
   }

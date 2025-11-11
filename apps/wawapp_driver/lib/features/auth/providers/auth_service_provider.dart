@@ -150,20 +150,54 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
 
     state = state.copyWith(
-        isLoading: true, error: null, otpStage: OtpStage.sending);
+      isLoading: true,
+      error: null,
+      otpFlowActive: true,
+      otpStage: OtpStage.sending,
+      phone: phone,
+    );
+
     try {
       if (kDebugMode) {
         print('[AuthNotifier] Sending OTP to $phone');
       }
-      await _authService.ensurePhoneSession(phone);
-      if (kDebugMode) print('[AuthNotifier] OTP sent successfully');
-      state = state.copyWith(isLoading: false, phone: phone);
+      await _authService.ensurePhoneSession(
+        phone,
+        onCodeSent: (verificationId, resendToken) {
+          if (kDebugMode) {
+            print(
+                '[AuthNotifier] ✅ codeSent callback → otpStage=codeSent, vid=${verificationId.substring(verificationId.length - 6)}');
+          }
+          state = state.copyWith(
+            otpFlowActive: true,
+            verificationId: verificationId,
+            resendToken: resendToken,
+            isLoading: false,
+            error: null,
+            otpStage: OtpStage.codeSent,
+            phone: phone,
+          );
+        },
+        onVerificationFailed: (errorMessage) {
+          if (kDebugMode) {
+            print('[AuthNotifier] ❌ verificationFailed → $errorMessage');
+          }
+          state = state.copyWith(
+            isLoading: false,
+            error: errorMessage,
+            otpFlowActive: false,
+            otpStage: OtpStage.failed,
+          );
+        },
+      );
+      // ✅ لا تكتب فوق الحالة هنا - callbacks تتولى التحديث
     } catch (e) {
       if (kDebugMode) print('[AuthNotifier] Send OTP error: $e');
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
-        otpFlowActive: false, // End flow on error
+        otpFlowActive: false,
+        otpStage: OtpStage.failed,
       );
     }
   }

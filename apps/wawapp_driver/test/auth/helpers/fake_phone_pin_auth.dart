@@ -55,21 +55,28 @@ class FakePhonePinAuth implements PhonePinAuth {
   }
 
   @override
-  Future<void> ensurePhoneSession(String phoneE164) async {
+  Future<void> ensurePhoneSession(
+    String phoneE164, {
+    void Function(String verificationId, int? resendToken)? onCodeSent,
+    void Function(String errorMessage)? onVerificationFailed,
+  }) async {
     sendOtpCallCount++;
     _lastPhone = phoneE164;
 
     if (shouldFailSendOtp) {
+      onVerificationFailed?.call('Failed to send OTP');
       throw Exception('Failed to send OTP');
     }
 
     // Validate E.164 format
     final e164Pattern = RegExp(r'^\+[1-9]\d{6,14}$');
     if (!e164Pattern.hasMatch(phoneE164)) {
+      onVerificationFailed?.call('Invalid phone number format');
       throw Exception('Invalid phone number format');
     }
 
     _otpSent = true;
+    onCodeSent?.call('fake-verification-id', null);
   }
 
   @override

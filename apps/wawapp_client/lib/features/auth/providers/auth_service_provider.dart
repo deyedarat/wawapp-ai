@@ -138,6 +138,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _authService.ensurePhoneSession(
         phone,
         onCodeSent: (verificationId, resendToken) {
+          debugPrint(
+              '[AuthNotifier] ✅ codeSent callback → otpStage=codeSent, vid=${verificationId.substring(verificationId.length - 6)}');
           state = state.copyWith(
             otpFlowActive: true,
             verificationId: verificationId,
@@ -148,10 +150,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
             phoneE164: phone,
             errorMessage: null,
           );
-          debugPrint(
-              '[AuthNotifier] codeSent → otpStage=codeSent, vid=${verificationId.substring(verificationId.length - 6)}');
         },
         onVerificationFailed: (errorMessage) {
+          debugPrint('[AuthNotifier] ❌ verificationFailed → $errorMessage');
           state = state.copyWith(
             isLoading: false,
             error: errorMessage,
@@ -159,13 +160,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
             otpStage: OtpStage.failed,
             errorMessage: errorMessage,
           );
-          debugPrint('[AuthNotifier] verificationFailed → $errorMessage');
         },
       );
-      state = state.copyWith(
-        isLoading: false,
-        phone: phone,
-      );
+      // ✅ لا تكتب فوق الحالة هنا - callbacks تتولى التحديث
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
