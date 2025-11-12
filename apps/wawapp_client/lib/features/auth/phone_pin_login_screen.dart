@@ -64,7 +64,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
           // Navigate home when authenticated
           if (next.user != null && !next.isLoading && mounted) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
+              if (context.mounted) {
                 Navigator.of(context).pushReplacementNamed('/');
               }
             });
