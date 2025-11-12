@@ -8,7 +8,6 @@ import '../../features/track/track_screen.dart';
 import '../../features/track/models/order.dart';
 import '../../features/about/about_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
-import '../../features/auth/otp_screen.dart';
 import '../../features/auth/providers/auth_service_provider.dart';
 import '../../main.dart' show navigatorKey;
 

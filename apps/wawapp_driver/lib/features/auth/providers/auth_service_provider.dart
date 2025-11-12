@@ -176,9 +176,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         print('[AuthNotifier] Verifying OTP code');
       }
       await _authService.confirmOtp(code);
-      if (kDebugMode)
+      if (kDebugMode) {
         print(
             '[AuthNotifier] OTP verified, user should update via authStateChanges');
+      }
       state = state.copyWith(isLoading: false, otpFlowActive: false);
       // User will be updated via authStateChanges listener
     } catch (e) {

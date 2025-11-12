@@ -35,10 +35,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       if (next.user != null && !next.otpFlowActive && !next.isLoading) {
         if (!context.mounted) return;
         // User authenticated, navigate to create PIN
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const CreatePinScreen()),
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const CreatePinScreen()),
+          );
+        });
       }
     });
 

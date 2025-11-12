@@ -30,6 +30,7 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
     // Listen for successful PIN creation and navigate
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next.hasPin && !next.isLoading) {
+        if (!context.mounted) return;
         Navigator.popUntil(context, (r) => r.isFirst);
       }
     });
