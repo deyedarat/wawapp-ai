@@ -24,7 +24,7 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
   Future<void> _createPin() async {
     final pin = _pinController.text.trim();
     final confirm = _confirmController.text.trim();
-    
+
     if (pin.length != 4) return;
     if (pin != confirm) {
       ScaffoldMessenger.of(context).showSnackBar(

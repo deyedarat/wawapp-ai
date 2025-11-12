@@ -20,7 +20,7 @@ String _hashWithSalt(String pin, String salt) {
 class PhonePinAuth {
   PhonePinAuth._(this.userCollection);
   static PhonePinAuth? _instance;
-  
+
   factory PhonePinAuth({required String userCollection}) {
     _instance ??= PhonePinAuth._(userCollection);
     return _instance!;
@@ -71,7 +71,8 @@ class PhonePinAuth {
   Future<void> confirmOtp(String smsCode) async {
     final vid = _lastVerificationId;
     if (vid == null) throw Exception('No verification id');
-    final cred = PhoneAuthProvider.credential(verificationId: vid, smsCode: smsCode);
+    final cred =
+        PhoneAuthProvider.credential(verificationId: vid, smsCode: smsCode);
     await _auth.signInWithCredential(cred);
   }
 
@@ -105,7 +106,9 @@ class PhonePinAuth {
       final ok = oldHash == storedHash;
       if (ok) {
         final newSalt = _generateSalt();
-        await docRef.set({'pinSalt': newSalt, 'pinHash': _hashWithSalt(pin, newSalt)}, SetOptions(merge: true));
+        await docRef.set(
+            {'pinSalt': newSalt, 'pinHash': _hashWithSalt(pin, newSalt)},
+            SetOptions(merge: true));
       }
       return ok;
     }
@@ -118,7 +121,11 @@ class PhonePinAuth {
   }
 
   Future<bool> phoneExists(String phoneE164) async {
-    final snap = await _db.collection(userCollection).where('phone', isEqualTo: phoneE164).limit(1).get();
+    final snap = await _db
+        .collection(userCollection)
+        .where('phone', isEqualTo: phoneE164)
+        .limit(1)
+        .get();
     return snap.docs.isNotEmpty;
   }
 
