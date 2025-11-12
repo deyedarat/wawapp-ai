@@ -34,7 +34,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     }
 
     setState(() => _checkingPhone = true);
-    final exists = await ref.read(authProvider.notifier).checkPhoneExists(phone);
+    final exists =
+        await ref.read(authProvider.notifier).checkPhoneExists(phone);
     setState(() {
       _checkingPhone = false;
       _isNewUser = !exists;
@@ -83,14 +84,14 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
                   : const Text('Check Phone'),
             ),
             const SizedBox(height: 16),
-            if (_isNewUser) ..[
+            if (_isNewUser) ...[
               const Text('New user - Create account'),
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: authState.isLoading ? null : _createAccount,
                 child: const Text('Create Account'),
               ),
-            ] else if (!_isNewUser && _phone.text.isNotEmpty) ..[
+            ] else if (!_isNewUser && _phone.text.isNotEmpty) ...[
               const Text('Existing user - Enter PIN'),
               TextField(
                 controller: _pin,
