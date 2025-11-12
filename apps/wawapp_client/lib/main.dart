@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
+import 'core/router/navigator.dart';
 import 'core/build_info/build_info.dart';
 import 'core/build_info/build_info_banner.dart';
 import 'core/location/location_bootstrap.dart';
@@ -33,8 +34,6 @@ void main() async {
   debugPrint('✅ WawApp initialization complete');
   runApp(const ProviderScope(child: MyApp()));
 }
-
-
 
 class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});

@@ -9,13 +9,13 @@ import '../../features/track/models/order.dart';
 import '../../features/about/about_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
 import '../../features/auth/providers/auth_service_provider.dart';
-import '../../main.dart' show navigatorKey;
+import 'navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
   return GoRouter(
-    navigatorKey: navigatorKey,
+    navigatorKey: appNavigatorKey,
     initialLocation: '/',
     redirect: (context, state) => _redirect(state, authState),
     refreshListenable:

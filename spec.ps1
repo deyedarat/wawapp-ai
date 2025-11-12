@@ -1,185 +1,236 @@
-# speckit.ps1 (drop-in)
-[CmdletBinding()]
 param(
-  [Parameter(Position=0)]
-  [ValidateSet(
-    "init","doctor","help","fix:node-policy","env:verify","format","analyze",
-    "flutter:refresh","build:driver","build:client","test:unit","test:analyze","env:verify-Firebase"
-  )]
-  [string]$cmd = "help",
-
-  [switch]$VerboseLog
+    [Parameter(Position=0)]
+    [ValidateSet('init','doctor','help','env:verify','fix:node-policy','format','analyze','flutter:refresh','build:driver','build:client','test:unit','test:analyze','env:verify-Firebase')]
+    [string]$Command = 'help',
+    
+    [Parameter(Position=1)]
+    [string]$Config
 )
 
 $ErrorActionPreference = "Stop"
-
-# ثابت: مسار مجلد السكربت نفسه مهما كان مجلد التشغيل الحالي
 $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $ScriptRoot
 
-function Write-Info($msg){ Write-Host "[Speckit] $msg" }
-function Die($msg){ Write-Error "[Speckit] $msg"; exit 1 }
+# Reload PATH from registry
+$machinePath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
+$userPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+$env:Path = "$machinePath;$userPath"
 
-switch ($cmd) {
-  "init" {
-    $specDir   = Join-Path $ScriptRoot ".specify"
-    $configYml = Join-Path $specDir "config.yaml"
+function Show-Help {
+    Write-Host @"
+Spec tasks:
+  .\spec.ps1 init
+  .\spec.ps1 doctor
+  .\spec.ps1 env:verify
+  .\spec.ps1 fix:node-policy
+  .\spec.ps1 format
+  .\spec.ps1 analyze
+  .\spec.ps1 flutter:refresh
+  .\spec.ps1 build:driver           [Debug|Release]
+  .\spec.ps1 build:client           [Debug|Release]
+  .\spec.ps1 test:unit
+  .\spec.ps1 test:analyze
+  .\spec.ps1 env:verify-Firebase
 
-    if (-not (Test-Path $specDir)) { New-Item -ItemType Directory -Force -Path $specDir | Out-Null }
+Examples:
+  .\spec.ps1 flutter:refresh
+  .\spec.ps1 build:driver Debug
+  .\spec.ps1 build:client Release
+"@
+}
 
-    if (-not (Test-Path $configYml)) {
-      Write-Info "Creating .specify/config.yaml ..."
-@"
-version: 1
-meta:
-  name: WawApp
-  updated_at: $(Get-Date -Format "yyyy-MM-ddTHH:mm:ssK")
-"@ | Set-Content $configYml -Encoding UTF8
+function Invoke-Init {
+    Write-Host "[INIT] Creating .specify/config.yaml..."
+    $specifyDir = Join-Path $ScriptRoot ".specify"
+    if (-not (Test-Path $specifyDir)) {
+        New-Item -ItemType Directory -Path $specifyDir -Force | Out-Null
+    }
+    $configPath = Join-Path $specifyDir "config.yaml"
+    if (-not (Test-Path $configPath)) {
+        $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        @"
+version: 1.0
+name: WawApp
+timestamp: $timestamp
+"@ | Out-File -FilePath $configPath -Encoding UTF8
+        Write-Host "[INIT] SUCCESS: Config created at .specify/config.yaml"
     } else {
-      Write-Info ".specify/config.yaml already exists."
+        Write-Host "[INIT] Config already exists"
     }
-    Write-Info "Init complete."; exit 0
-  }
+}
 
-  "doctor" {
-    # تحديث PATH من سجل النظام
-    $machine = [Environment]::GetEnvironmentVariable('Path','Machine')
-    $user    = [Environment]::GetEnvironmentVariable('Path','User')
-    $env:Path = "$machine;$user"
-    
-    $doctorPath = Join-Path $PSScriptRoot "tools\spec-kit\doctor.ps1"
-    if (-not (Test-Path $doctorPath)) {
-      Write-Error "[Speckit] Missing doctor script: $doctorPath"
-      exit 1
+function Invoke-Doctor {
+    Write-Host "[DOCTOR] Running diagnostics..."
+    $doctorPath = Join-Path $ScriptRoot "tools\spec-kit\doctor.ps1"
+    if (Test-Path $doctorPath) {
+        & $doctorPath -Light:$true
+        Write-Host "[DOCTOR] SUCCESS"
+    } else {
+        Write-Warning "doctor script not found at $doctorPath"
     }
-    Write-Host "[Speckit] == Speckit Doctor =="
-    # نفّذ نفس الجلسة لتجنب مشاكل PATH/assoc
-    & $doctorPath -Light:$true -VerboseLog:$VerboseLog
-    $code = $LASTEXITCODE; if ($code -eq $null) { $code = 0 }
-    Write-Host "[Speckit] Doctor finished with exit code $code"
-    exit $code
-  }
+}
 
-  "fix:node-policy" {
-    $envModule = Join-Path $PSScriptRoot "tools\spec-kit\modules\env.ps1"
-    if (-not (Test-Path $envModule)) {
-      Die "Missing env module: $envModule"
+function Invoke-EnvVerify {
+    Write-Host "[ENV:VERIFY] Verifying environment..."
+    $envPath = Join-Path $ScriptRoot "tools\spec-kit\modules\env.ps1"
+    if (Test-Path $envPath) {
+        . $envPath
+        Invoke-EnvVerify
+        Write-Host "[ENV:VERIFY] SUCCESS"
+    } else {
+        Write-Warning "env module not found at $envPath"
     }
-    . $envModule
-    Fix-NodeExecutionPolicy
-    exit 0
-  }
+}
 
-  "env:verify" {
-    $envModule = Join-Path $PSScriptRoot "tools\spec-kit\modules\env.ps1"
-    if (-not (Test-Path $envModule)) {
-      Die "Missing env module: $envModule"
+function Invoke-FixNodePolicy {
+    Write-Host "[FIX:NODE-POLICY] Fixing Node execution policy..."
+    $envPath = Join-Path $ScriptRoot "tools\spec-kit\modules\env.ps1"
+    if (Test-Path $envPath) {
+        . $envPath
+        Fix-NodeExecutionPolicy
+        Write-Host "[FIX:NODE-POLICY] SUCCESS"
+    } else {
+        Write-Warning "env module not found at $envPath"
     }
-    . $envModule
-    Invoke-EnvVerify
-    exit 0
-  }
+}
 
-  "format" {
-    Write-Host "[SpecKit] Running dart formatter..." -ForegroundColor Cyan
+function Invoke-Format {
+    Write-Host "[FORMAT] Running dart format..."
     dart format .
-    exit 0
-  }
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "dart format failed"
+        exit 1
+    }
+    Write-Host "[FORMAT] SUCCESS"
+}
 
-  "analyze" {
-    Write-Host "[SpecKit] Running Flutter analyzer..." -ForegroundColor Cyan
+function Invoke-Analyze {
+    Write-Host "[ANALYZE] Running flutter analyze..."
     flutter analyze
-    exit 0
-  }
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "flutter analyze failed"
+        exit 1
+    }
+    Write-Host "[ANALYZE] SUCCESS"
+}
 
-  # === Flutter helpers (Speckit) ===
-  "flutter:refresh" {
-    Write-Host "[Speckit] == Flutter Environment Refresh ==" -ForegroundColor Cyan
-    foreach ($app in @("wawapp_client","wawapp_driver")) {
-      $path = Join-Path $ScriptRoot "apps\$app"
-      if (Test-Path "$path\pubspec.yaml") {
-        Write-Host "[Speckit] -> Refreshing $app"
-        Push-Location $path
-        flutter clean
-        flutter pub get
+function Invoke-FlutterRefresh {
+    Write-Host "[FLUTTER:REFRESH] Refreshing Flutter projects..."
+    $apps = @('apps\wawapp_client', 'apps\wawapp_driver')
+    foreach ($app in $apps) {
+        $appPath = Join-Path $ScriptRoot $app
+        $pubspecPath = Join-Path $appPath "pubspec.yaml"
+        if (Test-Path $pubspecPath) {
+            $appName = Split-Path $app -Leaf
+            Write-Host "Refreshing $appName..."
+            Push-Location $appPath
+            try {
+                flutter clean
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Error "flutter clean failed for $appName"
+                    exit 1
+                }
+                flutter pub get
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Error "flutter pub get failed for $appName"
+                    exit 1
+                }
+            } finally {
+                Pop-Location
+            }
+        }
+    }
+    Write-Host "[FLUTTER:REFRESH] SUCCESS"
+}
+
+function Invoke-BuildDriver {
+    param([string]$Config)
+    $mode = if ($Config) { $Config } else { "Debug" }
+    Write-Host "[BUILD:DRIVER] Building DRIVER ($mode)..."
+    $appPath = Join-Path $ScriptRoot "apps\wawapp_driver"
+    Push-Location $appPath
+    try {
+        if ($mode -eq "Release") {
+            flutter build apk --release
+        } else {
+            flutter build apk --debug
+        }
+        $exitCode = $LASTEXITCODE
+    } finally {
         Pop-Location
-      } else {
-        Write-Host "[Speckit] Skipped $app (no pubspec.yaml found)"
-      }
     }
-    Write-Host "[Speckit] Refresh done."
-    exit 0
-  }
-
- "build:driver" {
-    # استخدم وسيط ثاني اختياري (Release أو Debug)
-    $Configuration = if ($args.Length -gt 0) { $args[0] } else { "Debug" }
-    $target = "apps/wawapp_driver/lib/main.dart"
-    Write-Host "[Specify] == Building DRIVER ($Configuration) ==" -ForegroundColor Cyan
-    if ($Configuration -eq "Release") {
-        flutter build apk --release -t $target
-    } else {
-        flutter build apk --debug -t $target
-    }
-    exit $LASTEXITCODE
+    exit $exitCode
 }
 
-"build:client" {
-    $Configuration = if ($args.Length -gt 0) { $args[0] } else { "Debug" }
-    $target = "apps/wawapp_client/lib/main.dart"
-    Write-Host "[Specify] == Building CLIENT ($Configuration) ==" -ForegroundColor Cyan
-    if ($Configuration -eq "Release") {
-        flutter build apk --release -t $target
-    } else {
-        flutter build apk --debug -t $target
+function Invoke-BuildClient {
+    param([string]$Config)
+    $mode = if ($Config) { $Config } else { "Debug" }
+    Write-Host "[BUILD:CLIENT] Building CLIENT ($mode)..."
+    $appPath = Join-Path $ScriptRoot "apps\wawapp_client"
+    Push-Location $appPath
+    try {
+        if ($mode -eq "Release") {
+            flutter build apk --release
+        } else {
+            flutter build apk --debug
+        }
+        $exitCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
     }
-    exit $LASTEXITCODE
+    exit $exitCode
 }
 
-
-  "test:unit" {
-    Write-Host "[Speckit] == Running unit/widget tests ==" -ForegroundColor Cyan
+function Invoke-TestUnit {
+    Write-Host "[TEST:UNIT] Running unit tests..."
     flutter test
     exit $LASTEXITCODE
-  }
+}
 
-  "test:analyze" {
-    Write-Host "[Speckit] == Dart/Flutter Analyze (strict) ==" -ForegroundColor Cyan
-    dart format . | Out-Null
+function Invoke-TestAnalyze {
+    Write-Host "[TEST:ANALYZE] Running format and analyze..."
+    dart format . > $null
     flutter analyze
     exit $LASTEXITCODE
-  }
+}
 
-  "env:verify-Firebase" {
-    Write-Host "[Speckit] == Verifying Firebase bindings ==" -ForegroundColor Cyan
+function Invoke-EnvVerifyFirebase {
+    Write-Host "[ENV:VERIFY-FIREBASE] Checking Firebase configuration..."
+    $appsDir = Join-Path $ScriptRoot "apps"
     $found = $false
-    Get-ChildItem -Path ".\apps" -Recurse -Include "google-services.json","firebase_options.dart" -ErrorAction SilentlyContinue | ForEach-Object {
-      $found = $true
-      Write-Host ("✔ " + $_.FullName)
+    
+    $googleServices = Get-ChildItem -Path $appsDir -Recurse -Filter "google-services.json" -ErrorAction SilentlyContinue
+    foreach ($file in $googleServices) {
+        Write-Host "FOUND: $($file.FullName)"
+        $found = $true
     }
-    if (-not $found) { Write-Host "⚠ No Firebase configs found under apps/" -ForegroundColor Yellow }
-    exit 0
-  }
+    
+    $firebaseOptions = Get-ChildItem -Path $appsDir -Recurse -Filter "firebase_options.dart" -ErrorAction SilentlyContinue
+    foreach ($file in $firebaseOptions) {
+        Write-Host "FOUND: $($file.FullName)"
+        $found = $true
+    }
+    
+    if (-not $found) {
+        Write-Warning "No Firebase configs found under apps/"
+    }
+    
+    Write-Host "[ENV:VERIFY-FIREBASE] SUCCESS"
+}
 
-  default {
-@"
-SpecKit (lite) commands:
-  ./speckit.ps1 init            - create/refresh .specify/config.yaml (under script folder)
-  ./speckit.ps1 doctor          - run environment & files checks
-  ./speckit.ps1 fix:node-policy - bypass execution policy & verify npm
-  ./speckit.ps1 env:verify      - verify all environment tools with hints
-  ./speckit.ps1 format          - run dart format . --fix
-  ./speckit.ps1 analyze         - run flutter analyze
-  ./speckit.ps1 flutter:refresh - flutter clean + pub get via Speckit
-  ./speckit.ps1 build:driver    - build driver APK (add -Configuration Release)
-  ./speckit.ps1 build:client    - build client APK (add -Configuration Release)
-  ./speckit.ps1 test:unit       - run flutter test
-  ./speckit.ps1 test:analyze    - format + analyze
-  ./speckit.ps1 env:verify-Firebase - quick Firebase linkage check
-  ./speckit.ps1 help            - show this help
-Options:
-  -VerboseLog                   - pass through extra logging to doctor
-"@ | Write-Host
-    exit 0
-  }
+# Main execution
+switch ($Command) {
+    'init' { Invoke-Init }
+    'doctor' { Invoke-Doctor }
+    'help' { Show-Help }
+    'env:verify' { Invoke-EnvVerify }
+    'fix:node-policy' { Invoke-FixNodePolicy }
+    'format' { Invoke-Format }
+    'analyze' { Invoke-Analyze }
+    'flutter:refresh' { Invoke-FlutterRefresh }
+    'build:driver' { Invoke-BuildDriver -Config $Config }
+    'build:client' { Invoke-BuildClient -Config $Config }
+    'test:unit' { Invoke-TestUnit }
+    'test:analyze' { Invoke-TestAnalyze }
+    'env:verify-Firebase' { Invoke-EnvVerifyFirebase }
 }
