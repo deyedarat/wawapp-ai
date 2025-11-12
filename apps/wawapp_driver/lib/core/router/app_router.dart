@@ -7,11 +7,11 @@ import '../../features/wallet/wallet_screen.dart';
 import '../../features/auth/auth_gate.dart';
 import '../../features/auth/otp_screen.dart';
 import '../../features/auth/create_pin_screen.dart';
-import '../../main.dart' show navigatorKey;
+import 'navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    navigatorKey: navigatorKey,
+    navigatorKey: appNavigatorKey,
     initialLocation: '/',
     routes: [
       GoRoute(
