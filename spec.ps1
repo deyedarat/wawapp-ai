@@ -1,6 +1,6 @@
 param(
     [Parameter(Position=0)]
-    [ValidateSet('init','doctor','help','env:verify','fix:node-policy','format','analyze','flutter:refresh','build:driver','build:client','test:unit','test:analyze','env:verify-Firebase')]
+    [ValidateSet('init','doctor','help','env:verify','fix:node-policy','format','analyze','flutter:refresh','build:driver','build:client','test:unit','test:analyze','env:verify-Firebase','fcm:verify')]
     [string]$Command = 'help',
     
     [Parameter(Position=1)]
@@ -31,6 +31,7 @@ Spec tasks:
   .\spec.ps1 test:unit
   .\spec.ps1 test:analyze
   .\spec.ps1 env:verify-Firebase
+  .\spec.ps1 fcm:verify
 
 Examples:
   .\spec.ps1 flutter:refresh
@@ -218,6 +219,27 @@ function Invoke-EnvVerifyFirebase {
     Write-Host "[ENV:VERIFY-FIREBASE] SUCCESS"
 }
 
+function Invoke-FcmVerify {
+    Write-Host "[FCM:VERIFY] Verifying FCM configuration..."
+    $fcmVerifyPath = Join-Path $ScriptRoot "tools\spec-kit\modules\fcm_verify.ps1"
+    if (Test-Path $fcmVerifyPath) {
+        . $fcmVerifyPath
+        $clientPath = Join-Path $ScriptRoot "apps\wawapp_client"
+        $driverPath = Join-Path $ScriptRoot "apps\wawapp_driver"
+        
+        $clientOk = Invoke-FcmVerify -AppPath $clientPath
+        $driverOk = Invoke-FcmVerify -AppPath $driverPath
+        
+        if ($clientOk -and $driverOk) {
+            Write-Host "[FCM:VERIFY] SUCCESS"
+        } else {
+            Write-Warning "[FCM:VERIFY] Some checks failed"
+        }
+    } else {
+        Write-Warning "fcm_verify module not found at $fcmVerifyPath"
+    }
+}
+
 # Main execution
 switch ($Command) {
     'init' { Invoke-Init }
@@ -233,4 +255,5 @@ switch ($Command) {
     'test:unit' { Invoke-TestUnit }
     'test:analyze' { Invoke-TestAnalyze }
     'env:verify-Firebase' { Invoke-EnvVerifyFirebase }
+    'fcm:verify' { Invoke-FcmVerify }
 }
