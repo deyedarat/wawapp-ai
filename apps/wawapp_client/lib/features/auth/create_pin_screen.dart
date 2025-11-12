@@ -1,69 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'providers/auth_service_provider.dart';
 
 class CreatePinScreen extends ConsumerStatefulWidget {
   const CreatePinScreen({super.key});
+
   @override
   ConsumerState<CreatePinScreen> createState() => _CreatePinScreenState();
 }
 
 class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
-  final _p1 = TextEditingController();
-  final _p2 = TextEditingController();
-  String? _err;
+  final _pinController = TextEditingController();
+  final _confirmController = TextEditingController();
 
-  Future<void> _save() async {
-    if (_p1.text.length != 4 || _p2.text.length != 4 || _p1.text != _p2.text) {
-      setState(() => _err = 'Enter 4 digits and confirm');
+  @override
+  void dispose() {
+    _pinController.dispose();
+    _confirmController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _createPin() async {
+    final pin = _pinController.text.trim();
+    final confirm = _confirmController.text.trim();
+    
+    if (pin.length != 4) return;
+    if (pin != confirm) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('PINs do not match')),
+      );
       return;
     }
-    setState(() => _err = null);
 
-    await ref.read(authProvider.notifier).createPin(_p1.text);
+    await ref.read(authProvider.notifier).createPin(pin);
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    // Listen for successful PIN creation and navigate
-    ref.listen<AuthState>(authProvider, (previous, next) {
+    ref.listen(authProvider, (prev, next) {
       if (next.hasPin && !next.isLoading) {
-        if (!context.mounted) return;
-        Navigator.popUntil(context, (r) => r.isFirst);
+        context.go('/');
       }
     });
 
-    final errorMessage = _err ?? authState.error;
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Set PIN')),
+      appBar: AppBar(title: const Text('Create PIN')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            const Text('Create a 4-digit PIN for quick login'),
+            const SizedBox(height: 16),
             TextField(
-                maxLength: 4,
-                controller: _p1,
-                keyboardType: TextInputType.number,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'PIN')),
+              controller: _pinController,
+              keyboardType: TextInputType.number,
+              maxLength: 4,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'PIN'),
+            ),
             TextField(
-                maxLength: 4,
-                controller: _p2,
-                keyboardType: TextInputType.number,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Confirm PIN')),
-            if (errorMessage != null)
-              Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(errorMessage,
-                      style: const TextStyle(color: Colors.red))),
-            const SizedBox(height: 8),
+              controller: _confirmController,
+              keyboardType: TextInputType.number,
+              maxLength: 4,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Confirm PIN'),
+            ),
+            if (authState.error != null)
+              Text(authState.error!, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 16),
             ElevatedButton(
-                onPressed: authState.isLoading ? null : _save,
-                child: const Text('Save')),
+              onPressed: authState.isLoading ? null : _createPin,
+              child: authState.isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('Create PIN'),
+            ),
           ],
         ),
       ),
