@@ -8,7 +8,10 @@ import '../../features/track/track_screen.dart';
 import '../../features/track/models/order.dart';
 import '../../features/about/about_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
+import '../../features/auth/otp_screen.dart';
+import '../../features/auth/create_pin_screen.dart';
 import '../../features/auth/providers/auth_service_provider.dart';
+import 'package:auth_shared/auth_shared.dart';
 import 'navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -34,9 +37,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/otp',
         name: 'otp',
-        redirect: (context, state) =>
-            '/login', // OTP screen accessed via Navigator.push
-        builder: (context, state) => const PhonePinLoginScreen(),
+        builder: (context, state) => const OtpScreen(),
+      ),
+      GoRoute(
+        path: '/create-pin',
+        name: 'createPin',
+        builder: (context, state) => const CreatePinScreen(),
       ),
       GoRoute(
         path: '/quote',

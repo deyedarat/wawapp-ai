@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'otp_screen.dart';
+import 'package:go_router/go_router.dart';
 import 'providers/auth_service_provider.dart';
+import 'package:auth_shared/auth_shared.dart';
 
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
@@ -11,137 +12,100 @@ class PhonePinLoginScreen extends ConsumerStatefulWidget {
 }
 
 class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
-  final _phone = TextEditingController(); // e.g. +222xxxxxxxx
+  final _phone = TextEditingController();
   final _pin = TextEditingController();
-  String? _err;
-  ProviderSubscription<AuthState>? _authSubscription;
-  bool _navigatedThisAttempt = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _navigatedThisAttempt = false;
-    // Use listenManual for precise control over navigation
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _authSubscription = ref.listenManual(
-        authProvider,
-        (previous, next) {
-          // Navigate to OTP screen exactly once when codeSent
-          if (!_navigatedThisAttempt &&
-              previous?.otpStage != next.otpStage &&
-              next.otpStage == OtpStage.codeSent) {
-            _navigatedThisAttempt = true;
-            if (!mounted) return;
-
-            debugPrint(
-                '[PhonePinLogin] Navigating to OtpScreen (codeSent, vid=${next.verificationId?.substring(next.verificationId!.length - 6)})');
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!mounted) return;
-
-              // Close IME safely before navigation
-              FocusScope.of(context).unfocus();
-
-              // Show snackbar
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('OTP sent to ${next.phoneE164}')),
-              );
-
-              // Navigate to OTP screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => OtpScreen(
-                    verificationId: next.verificationId!,
-                    phone: next.phoneE164!,
-                    resendToken: next.resendToken,
-                  ),
-                ),
-              );
-            });
-          }
-
-          // Navigate home when authenticated
-          if (next.user != null && !next.isLoading && mounted) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (context.mounted) {
-                Navigator.of(context).pushReplacementNamed('/');
-              }
-            });
-          }
-        },
-      );
-    });
-  }
+  bool _isNewUser = false;
+  bool _checkingPhone = false;
 
   @override
   void dispose() {
-    _authSubscription?.close();
     _phone.dispose();
     _pin.dispose();
     super.dispose();
   }
 
-  Future<void> _continue() async {
+  Future<void> _checkPhone() async {
     final phone = _phone.text.trim();
     if (!phone.startsWith('+')) {
-      setState(() => _err = 'Use E.164 like +222...');
-      return;
-    }
-    setState(() => _err = null);
-
-    // Reset navigation flag for new attempt
-    _navigatedThisAttempt = false;
-    await ref.read(authProvider.notifier).sendOtp(phone);
-    // Navigation handled by router redirect
-
-    if (_pin.text.length != 4) {
-      setState(() => _err = 'PIN must be 4 digits');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Use E.164 format like +222...')),
+      );
       return;
     }
 
+    setState(() => _checkingPhone = true);
+    final exists = await ref.read(authProvider.notifier).checkPhoneExists(phone);
+    setState(() {
+      _checkingPhone = false;
+      _isNewUser = !exists;
+    });
+  }
+
+  Future<void> _loginWithPin() async {
+    if (_pin.text.length != 4) return;
     await ref.read(authProvider.notifier).loginByPin(_pin.text);
+  }
+
+  Future<void> _createAccount() async {
+    await ref.read(authProvider.notifier).sendOtp(_phone.text.trim());
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    final errorMessage = _err ?? authState.error;
+    ref.listen(authProvider, (prev, next) {
+      if (next.otpStage == OtpStage.codeSent) {
+        context.go('/otp');
+      }
+      if (next.user != null && next.hasPin && !next.isLoading) {
+        context.go('/');
+      }
+    });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign in with Phone')),
+      appBar: AppBar(title: const Text('Sign in')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
-                controller: _phone,
-                keyboardType: TextInputType.phone,
-                decoration:
-                    const InputDecoration(labelText: 'Phone (+222...)')),
-            const SizedBox(height: 12),
-            TextField(
+              controller: _phone,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(labelText: 'Phone (+222...)'),
+              onChanged: (_) => setState(() => _isNewUser = false),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: _checkingPhone ? null : _checkPhone,
+              child: _checkingPhone
+                  ? const CircularProgressIndicator()
+                  : const Text('Check Phone'),
+            ),
+            const SizedBox(height: 16),
+            if (_isNewUser) ..[
+              const Text('New user - Create account'),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: authState.isLoading ? null : _createAccount,
+                child: const Text('Create Account'),
+              ),
+            ] else if (!_isNewUser && _phone.text.isNotEmpty) ..[
+              const Text('Existing user - Enter PIN'),
+              TextField(
                 controller: _pin,
                 maxLength: 4,
                 keyboardType: TextInputType.number,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'PIN (4 digits)')),
-            if (errorMessage != null)
-              Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(errorMessage,
-                      style: const TextStyle(color: Colors.red))),
-            const SizedBox(height: 8),
-            ElevatedButton(
-                onPressed: (authState.isLoading ||
-                        authState.otpStage == OtpStage.sending ||
-                        authState.otpStage == OtpStage.codeSent)
-                    ? null
-                    : _continue,
-                child: authState.isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text('Continue')),
+                decoration: const InputDecoration(labelText: 'PIN'),
+              ),
+              ElevatedButton(
+                onPressed: authState.isLoading ? null : _loginWithPin,
+                child: const Text('Login'),
+              ),
+            ],
+            if (authState.error != null)
+              Text(authState.error!, style: const TextStyle(color: Colors.red)),
           ],
         ),
       ),

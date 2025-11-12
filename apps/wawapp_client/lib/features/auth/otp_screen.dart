@@ -1,72 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'providers/auth_service_provider.dart';
-import 'create_pin_screen.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
-  final String verificationId;
-  final String phone;
-  final int? resendToken;
-
-  const OtpScreen({
-    super.key,
-    required this.verificationId,
-    required this.phone,
-    this.resendToken,
-  });
+  const OtpScreen({super.key});
 
   @override
   ConsumerState<OtpScreen> createState() => _OtpScreenState();
 }
 
 class _OtpScreenState extends ConsumerState<OtpScreen> {
-  final _code = TextEditingController();
+  final _codeController = TextEditingController();
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    super.dispose();
+  }
 
   Future<void> _verify() async {
-    await ref.read(authProvider.notifier).verifyOtp(_code.text.trim());
+    final code = _codeController.text.trim();
+    if (code.length != 6) return;
+    await ref.read(authProvider.notifier).verifyOtp(code);
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    // Listen for successful verification
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      if (next.user != null && !next.otpFlowActive && !next.isLoading) {
-        if (!context.mounted) return;
-        // User authenticated, navigate to create PIN
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!context.mounted) return;
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const CreatePinScreen()),
-          );
-        });
+    ref.listen(authProvider, (prev, next) {
+      if (next.user != null && !next.isLoading) {
+        context.go('/create-pin');
       }
     });
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Enter SMS Code sent to ${widget.phone}'),
-      ),
+      appBar: AppBar(title: const Text('Enter OTP')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            Text('Enter the 6-digit code sent to ${authState.phoneE164}'),
+            const SizedBox(height: 16),
             TextField(
-                maxLength: 6,
-                controller: _code,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Code')),
+              controller: _codeController,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              decoration: const InputDecoration(labelText: 'OTP Code'),
+            ),
             if (authState.error != null)
-              Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(authState.error!,
-                      style: const TextStyle(color: Colors.red))),
-            const SizedBox(height: 8),
+              Text(authState.error!, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 16),
             ElevatedButton(
-                onPressed: authState.isLoading ? null : _verify,
-                child: const Text('Verify')),
+              onPressed: authState.isLoading ? null : _verify,
+              child: authState.isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('Verify'),
+            ),
           ],
         ),
       ),
