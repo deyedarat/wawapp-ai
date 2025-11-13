@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'providers/auth_service_provider.dart';
+import 'create_pin_screen.dart';
 import 'phone_pin_login_screen.dart';
+import '../home/driver_home_screen.dart';
 
 class AuthGate extends ConsumerWidget {
   final Widget child;
@@ -9,19 +12,28 @@ class AuthGate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
+    final user = FirebaseAuth.instance.currentUser;
 
-    // Show loading indicator while initializing
-    if (authState.user == null && authState.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    // If no user, show login screen
-    if (authState.user == null) {
+    if (user == null) {
       return const PhonePinLoginScreen();
     }
 
-    // User is authenticated, show protected content
-    return child;
+    return FutureBuilder<DocumentSnapshot>(
+      future: FirebaseFirestore.instance.collection('drivers').doc(user.uid).get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+
+        final hasPin = snapshot.data?.data() != null &&
+            (snapshot.data!.data() as Map<String, dynamic>)['pinHash'] != null;
+
+        if (!hasPin) {
+          return const CreatePinScreen();
+        }
+
+        return const DriverHomeScreen();
+      },
+    );
   }
 }
