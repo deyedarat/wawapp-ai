@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
@@ -27,6 +28,22 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             IconButton(
               icon: const Icon(Icons.account_balance_wallet),
               onPressed: () => context.push('/wallet'),
+            ),
+            PopupMenuButton<String>(
+              onSelected: (value) async {
+                if (value == 'signout') {
+                  await FirebaseAuth.instance.signOut();
+                  if (context.mounted) {
+                    context.go('/login');
+                  }
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'signout',
+                  child: Text('Sign out'),
+                ),
+              ],
             ),
           ],
         ),
