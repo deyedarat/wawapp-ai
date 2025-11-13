@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/analytics_service.dart';
 
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});
@@ -32,6 +33,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             PopupMenuButton<String>(
               onSelected: (value) async {
                 if (value == 'signout') {
+                  await AnalyticsService.instance.logLogoutClicked();
                   await FirebaseAuth.instance.signOut();
                   if (context.mounted) {
                     context.go('/login');

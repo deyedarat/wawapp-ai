@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../services/phone_pin_auth.dart';
+import '../../../services/analytics_service.dart';
 
 // Provider for PhonePinAuth service singleton
 final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
@@ -180,6 +181,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         print(
             '[AuthNotifier] OTP verified, user should update via authStateChanges');
       }
+      await AnalyticsService.instance.logLoginSuccess('otp');
       state = state.copyWith(isLoading: false, otpFlowActive: false);
       // User will be updated via authStateChanges listener
     } catch (e) {
@@ -196,6 +198,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       await _authService.setPin(pin);
+      await AnalyticsService.instance.logPinCreated();
       state = state.copyWith(isLoading: false, hasPin: true);
     } catch (e) {
       state = state.copyWith(
@@ -211,6 +214,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final isValid = await _authService.verifyPin(pin);
       if (isValid) {
+        await AnalyticsService.instance.logLoginSuccess('pin');
         state = state.copyWith(isLoading: false, hasPin: true);
       } else {
         state = state.copyWith(

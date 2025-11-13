@@ -22,51 +22,52 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   void initState() {
     super.initState();
     _navigatedThisAttempt = false;
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       debugPrint('[PhonePinLogin] 🔵 Setting up listener');
-      
+
       ref.listen<AuthState>(authProvider, (previous, next) {
         debugPrint('[PhonePinLogin] 🟡 Listener triggered!');
         debugPrint('[PhonePinLogin] Previous stage: ${previous?.otpStage}');
         debugPrint('[PhonePinLogin] Next stage: ${next.otpStage}');
-        debugPrint('[PhonePinLogin] _navigatedThisAttempt: $_navigatedThisAttempt');
+        debugPrint(
+            '[PhonePinLogin] _navigatedThisAttempt: $_navigatedThisAttempt');
         debugPrint('[PhonePinLogin] mounted: $mounted');
-        
+
         // Check navigation condition
         if (!_navigatedThisAttempt &&
             previous?.otpStage != next.otpStage &&
             next.otpStage == OtpStage.codeSent) {
-          
           debugPrint('[PhonePinLogin] 🟢 Navigation condition MET!');
           _navigatedThisAttempt = true;
-          
+
           if (!mounted) {
             debugPrint('[PhonePinLogin] ❌ Widget not mounted');
             return;
           }
 
-          debugPrint('[PhonePinLogin] ⏳ Starting delayed navigation (800ms)...');
-          
+          debugPrint(
+              '[PhonePinLogin] ⏳ Starting delayed navigation (800ms)...');
+
           Future.delayed(const Duration(milliseconds: 800), () {
             debugPrint('[PhonePinLogin] ⏰ Delay completed');
-            
+
             if (!mounted || !context.mounted) {
               debugPrint('[PhonePinLogin] ❌ Context not mounted after delay');
               return;
             }
-            
+
             debugPrint('[PhonePinLogin] 🎯 Closing keyboard...');
             FocusScope.of(context).unfocus();
-            
+
             WidgetsBinding.instance.addPostFrameCallback((_) {
               debugPrint('[PhonePinLogin] 📍 Post frame callback');
-              
+
               if (!mounted || !context.mounted) {
                 debugPrint('[PhonePinLogin] ❌ Context not mounted in callback');
                 return;
               }
-              
+
               debugPrint('[PhonePinLogin] 🚀 Attempting navigation to /otp');
               try {
                 context.push('/otp');
@@ -89,7 +90,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             debugPrint('[PhonePinLogin] Reason: Stage is not codeSent');
           }
         }
-        
+
         // Check for successful login (existing code)
         if (next.user != null && !next.isLoading && mounted) {
           debugPrint('[PhonePinLogin] User logged in, navigating to home');

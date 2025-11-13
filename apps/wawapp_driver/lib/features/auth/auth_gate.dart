@@ -19,10 +19,12 @@ class AuthGate extends ConsumerWidget {
     }
 
     return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance.collection('drivers').doc(user.uid).get(),
+      future:
+          FirebaseFirestore.instance.collection('drivers').doc(user.uid).get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
         }
 
         final hasPin = snapshot.data?.data() != null &&
