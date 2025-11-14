@@ -25,6 +25,7 @@ class RoutePickerState {
   final String dropoffAddress;
   final bool selectingPickup;
   final double? distanceKm;
+  final bool mapsEnabled;
 
   const RoutePickerState({
     this.pickup,
@@ -33,6 +34,7 @@ class RoutePickerState {
     this.dropoffAddress = '',
     this.selectingPickup = true,
     this.distanceKm,
+    this.mapsEnabled = true,
   });
 
   RoutePickerState copyWith({
@@ -42,6 +44,7 @@ class RoutePickerState {
     String? dropoffAddress,
     bool? selectingPickup,
     double? distanceKm,
+    bool? mapsEnabled,
   }) {
     return RoutePickerState(
       pickup: pickup ?? this.pickup,
@@ -50,6 +53,7 @@ class RoutePickerState {
       dropoffAddress: dropoffAddress ?? this.dropoffAddress,
       selectingPickup: selectingPickup ?? this.selectingPickup,
       distanceKm: distanceKm ?? this.distanceKm,
+      mapsEnabled: mapsEnabled ?? this.mapsEnabled,
     );
   }
 
@@ -57,15 +61,20 @@ class RoutePickerState {
 }
 
 class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
-  RoutePickerNotifier(this.apiKey) : super(const RoutePickerState()) {
-    assert(
-        apiKey.isNotEmpty, 'MAPS_API_KEY must be provided via --dart-define');
+  RoutePickerNotifier(this.apiKey)
+      : super(RoutePickerState(mapsEnabled: apiKey.isNotEmpty)) {
+    if (apiKey.isEmpty) {
+      dev.log(
+          '[MapConfig] MAPS_API_KEY is empty – map features disabled in this build.',
+          name: _tag);
+    }
   }
 
   final String apiKey;
   static const String _tag = 'RoutePickerNotifier';
 
-  late final GooglePlace _googlePlace = GooglePlace(apiKey);
+  late final GooglePlace? _googlePlace =
+      apiKey.isNotEmpty ? GooglePlace(apiKey) : null;
   final Uuid _uuid = const Uuid();
 
   void toggleSelection() {
@@ -114,13 +123,13 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
 
   Future<List<AutocompletePrediction>> searchPlaces(String query) async {
     if (query.isEmpty) return [];
-    if (apiKey.isEmpty) {
-      dev.log('Cannot search places: API key is empty', name: _tag);
+    if (!state.mapsEnabled || _googlePlace == null) {
+      dev.log('Cannot search places: Maps disabled (no API key)', name: _tag);
       return [];
     }
 
     try {
-      final result = await _googlePlace.autocomplete.get(
+      final result = await _googlePlace!.autocomplete.get(
         query,
         sessionToken: _uuid.v4(),
         language: 'ar',
@@ -135,13 +144,14 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
   }
 
   Future<DetailsResult?> getPlaceDetails(String placeId) async {
-    if (apiKey.isEmpty) {
-      dev.log('Cannot get place details: API key is empty', name: _tag);
+    if (!state.mapsEnabled || _googlePlace == null) {
+      dev.log('Cannot get place details: Maps disabled (no API key)',
+          name: _tag);
       return null;
     }
 
     try {
-      final result = await _googlePlace.details.get(
+      final result = await _googlePlace!.details.get(
         placeId,
         sessionToken: _uuid.v4(),
         language: 'ar',

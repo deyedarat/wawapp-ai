@@ -6,7 +6,7 @@ import 'phone_pin_auth.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this._authService, this._firebaseAuth)
-      : super(const AuthState()) {
+    : super(const AuthState()) {
     _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
       state = state.copyWith(user: user);
       if (user != null) {
@@ -50,9 +50,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> sendOtp(String phone) async {
     if (state.otpStage == OtpStage.sending ||
-        state.otpStage == OtpStage.codeSent) return;
+        state.otpStage == OtpStage.codeSent)
+      return;
     state = state.copyWith(
-        isLoading: true, error: null, otpStage: OtpStage.sending);
+      isLoading: true,
+      error: null,
+      otpStage: OtpStage.sending,
+    );
     try {
       await _authService.ensurePhoneSession(phone);
       state = state.copyWith(
@@ -64,7 +68,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
     } catch (e) {
       state = state.copyWith(
-          isLoading: false, error: e.toString(), otpFlowActive: false);
+        isLoading: false,
+        error: e.toString(),
+        otpFlowActive: false,
+      );
     }
   }
 
