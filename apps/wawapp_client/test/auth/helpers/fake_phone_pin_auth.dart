@@ -79,6 +79,10 @@ class FakePhonePinAuth implements PhonePinAuth {
     onCodeSent?.call('fake-verification-id-123', null);
   }
 
+  Future<bool> phoneExists(String phoneE164) async {
+    return false;
+  }
+
   @override
   Future<void> confirmOtp(String smsCode) async {
     verifyOtpCallCount++;
@@ -143,6 +147,5 @@ class FakePhonePinAuth implements PhonePinAuth {
     _otpSent = false;
   }
 
-  @override
-  String? get lastVerificationId => throw UnimplementedError();
+  String? get lastVerificationId => null;
 }

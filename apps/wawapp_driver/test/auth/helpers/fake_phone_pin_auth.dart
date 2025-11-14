@@ -55,7 +55,7 @@ class FakePhonePinAuth implements PhonePinAuth {
   }
 
   @override
-  Future<void> ensurePhoneSession(String phoneE164) async {
+  Future<void> ensurePhoneSession(String phoneE164, {void Function()? onCodeSent}) async {
     sendOtpCallCount++;
     _lastPhone = phoneE164;
 
@@ -70,6 +70,7 @@ class FakePhonePinAuth implements PhonePinAuth {
     }
 
     _otpSent = true;
+    onCodeSent?.call();
   }
 
   @override

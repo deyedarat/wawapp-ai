@@ -2,24 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import '../../l10n/app_localizations.dart';
 import '../../core/location/location_service.dart';
-import 'models/order.dart';
+import 'models/order.dart' as app_order;
 import 'widgets/order_status_timeline.dart';
 
-class TrackScreen extends StatefulWidget {
-  final Order? order;
+class TrackScreen extends ConsumerStatefulWidget {
+  final app_order.Order? order;
   const TrackScreen({super.key, this.order});
 
   @override
-  State<TrackScreen> createState() => _TrackScreenState();
+  ConsumerState<TrackScreen> createState() => _TrackScreenState();
 }
 
-class _TrackScreenState extends State<TrackScreen> {
+class _TrackScreenState extends ConsumerState<TrackScreen> {
   GoogleMapController? _mapController;
   StreamSubscription? _positionSubscription;
+  StreamSubscription<DocumentSnapshot>? _orderSubscription;
   LatLng? _currentPosition;
+  String? _orderId;
+  bool _hasNavigated = false;
 
   static const CameraPosition _nouakchott = CameraPosition(
     target: LatLng(18.0735, -15.9582),
@@ -30,11 +36,47 @@ class _TrackScreenState extends State<TrackScreen> {
   void initState() {
     super.initState();
     _startLocationTracking();
+    _startOrderTracking();
+  }
+
+  void _startOrderTracking() async {
+    if (widget.order == null) return;
+
+    final user = await FirebaseFirestore.instance
+        .collection('orders')
+        .where('ownerId', isEqualTo: widget.order!.status)
+        .limit(1)
+        .get();
+
+    if (user.docs.isEmpty) return;
+    _orderId = user.docs.first.id;
+
+    _orderSubscription = FirebaseFirestore.instance
+        .collection('orders')
+        .doc(_orderId)
+        .snapshots()
+        .listen((snapshot) {
+      if (!mounted || _hasNavigated) return;
+
+      final data = snapshot.data();
+      if (data == null) return;
+
+      final status = data['status'] as String?;
+      if (status == 'accepted' && !_hasNavigated) {
+        _hasNavigated = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            context.go('/driver-found/$_orderId');
+          }
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     _positionSubscription?.cancel();
+    _orderSubscription?.cancel();
     super.dispose();
   }
 

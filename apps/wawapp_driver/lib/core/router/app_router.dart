@@ -7,6 +7,7 @@ import '../../features/wallet/wallet_screen.dart';
 import '../../features/auth/auth_gate.dart';
 import '../../features/auth/otp_screen.dart';
 import '../../features/auth/create_pin_screen.dart';
+import '../../features/active/active_order_screen.dart';
 import 'navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -40,15 +41,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CreatePinScreen(),
       ),
       GoRoute(
-        path: '/order/:orderId',
-        name: 'order',
-        builder: (context, state) {
-          final orderId = state.pathParameters['orderId'];
-          return Scaffold(
-            appBar: AppBar(title: const Text('Order Details')),
-            body: Center(child: Text('Order: $orderId')),
-          );
-        },
+        path: '/active-order',
+        name: 'activeOrder',
+        builder: (context, state) => const ActiveOrderScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

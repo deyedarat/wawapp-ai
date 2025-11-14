@@ -4,7 +4,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'core/router/app_router.dart';
-import 'core/router/navigator.dart';
 import 'core/theme/app_theme.dart';
 import 'l10n/app_localizations.dart';
 import 'firebase_options.dart';
