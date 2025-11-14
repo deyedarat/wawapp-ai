@@ -26,6 +26,10 @@ class OrdersRepository {
     });
     return docRef.id;
   }
+
+  Stream<DocumentSnapshot> watchOrder(String orderId) {
+    return _firestore.collection('orders').doc(orderId).snapshots();
+  }
 }
 
 final ordersRepositoryProvider = Provider<OrdersRepository>((ref) {

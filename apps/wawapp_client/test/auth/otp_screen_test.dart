@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wawapp_client/features/auth/otp_screen.dart';
 
 void main() {
   group('OtpScreen Widget Tests', () {
     testWidgets('renders OTP input field', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );
@@ -30,10 +30,9 @@ void main() {
 
     testWidgets('TextField accepts numeric input', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );
@@ -51,10 +50,9 @@ void main() {
 
     testWidgets('TextField has maxLength of 6', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );
@@ -69,10 +67,9 @@ void main() {
 
     testWidgets('Verify button is initially enabled', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );
@@ -87,10 +84,9 @@ void main() {
     testWidgets('displays error message when verification fails',
         (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );
@@ -106,10 +102,9 @@ void main() {
 
     testWidgets('has proper layout structure', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );
@@ -123,10 +118,9 @@ void main() {
 
     testWidgets('TextField has correct decoration', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );
@@ -139,10 +133,9 @@ void main() {
 
     testWidgets('button text is correct', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );
@@ -158,10 +151,9 @@ void main() {
 
     testWidgets('can clear and re-enter code', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );
@@ -182,10 +174,9 @@ void main() {
 
     testWidgets('respects numeric keyboard type', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );
@@ -201,10 +192,9 @@ void main() {
   group('OtpScreen State Management', () {
     testWidgets('maintains code between rebuilds', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );
@@ -226,10 +216,9 @@ void main() {
   group('OtpScreen Accessibility', () {
     testWidgets('has semantic labels', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: OtpScreen(
-            verificationId: 'test-vid-123',
-            phone: '+222123456789',
+        const ProviderScope(
+          child: MaterialApp(
+            home: OtpScreen(),
           ),
         ),
       );

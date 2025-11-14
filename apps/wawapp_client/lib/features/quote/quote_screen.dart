@@ -20,6 +20,25 @@ class QuoteScreen extends ConsumerStatefulWidget {
 }
 
 class _QuoteScreenState extends ConsumerState<QuoteScreen> {
+  void _startOrderTracking(String orderId) {
+    final repo = ref.read(ordersRepositoryProvider);
+    repo.watchOrder(orderId).listen((snapshot) {
+      if (!mounted) return;
+      
+      final data = snapshot.data() as Map<String, dynamic>?;
+      if (data == null) return;
+      
+      final status = data['status'] as String?;
+      if (status == 'accepted') {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            context.go('/driver-found/$orderId');
+          }
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -112,7 +131,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                             throw Exception('User not authenticated');
                           }
 
-                          await repo.createOrder(
+                          final orderId = await repo.createOrder(
                             ownerId: user.uid,
                             pickup: {
                               'lat': routeState.pickup!.latitude,
@@ -139,6 +158,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                             dropoff: routeState.dropoff!,
                             status: 'matching',
                           );
+                          
+                          _startOrderTracking(orderId);
                           context.push('/track', extra: order);
                         } catch (e) {
                           if (!mounted) return;

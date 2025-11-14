@@ -23,80 +23,20 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     super.initState();
     _navigatedThisAttempt = false;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      debugPrint('[PhonePinLogin] 🔵 Setting up listener');
+    _authSubscription = ref.listenManual<AuthState>(authProvider, (previous, next) {
+      if (!_navigatedThisAttempt &&
+          previous?.otpStage != next.otpStage &&
+          next.otpStage == OtpStage.codeSent) {
+        _navigatedThisAttempt = true;
 
-      ref.listen<AuthState>(authProvider, (previous, next) {
-        debugPrint('[PhonePinLogin] 🟡 Listener triggered!');
-        debugPrint('[PhonePinLogin] Previous stage: ${previous?.otpStage}');
-        debugPrint('[PhonePinLogin] Next stage: ${next.otpStage}');
-        debugPrint(
-            '[PhonePinLogin] _navigatedThisAttempt: $_navigatedThisAttempt');
-        debugPrint('[PhonePinLogin] mounted: $mounted');
+        if (!mounted || !context.mounted) return;
 
-        // Check navigation condition
-        if (!_navigatedThisAttempt &&
-            previous?.otpStage != next.otpStage &&
-            next.otpStage == OtpStage.codeSent) {
-          debugPrint('[PhonePinLogin] 🟢 Navigation condition MET!');
-          _navigatedThisAttempt = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || !context.mounted) return;
 
-          if (!mounted) {
-            debugPrint('[PhonePinLogin] ❌ Widget not mounted');
-            return;
-          }
-
-          debugPrint(
-              '[PhonePinLogin] ⏳ Starting delayed navigation (800ms)...');
-
-          Future.delayed(const Duration(milliseconds: 800), () {
-            debugPrint('[PhonePinLogin] ⏰ Delay completed');
-
-            if (!mounted || !context.mounted) {
-              debugPrint('[PhonePinLogin] ❌ Context not mounted after delay');
-              return;
-            }
-
-            debugPrint('[PhonePinLogin] 🎯 Closing keyboard...');
-            FocusScope.of(context).unfocus();
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              debugPrint('[PhonePinLogin] 📍 Post frame callback');
-
-              if (!mounted || !context.mounted) {
-                debugPrint('[PhonePinLogin] ❌ Context not mounted in callback');
-                return;
-              }
-
-              debugPrint('[PhonePinLogin] 🚀 Attempting navigation to /otp');
-              try {
-                context.push('/otp');
-                debugPrint('[PhonePinLogin] ✅ Navigation successful!');
-              } catch (e, stackTrace) {
-                debugPrint('[PhonePinLogin] ❌ Navigation failed: $e');
-                debugPrint('[PhonePinLogin] Stack trace: $stackTrace');
-              }
-            });
-          });
-        } else {
-          debugPrint('[PhonePinLogin] 🔴 Navigation condition NOT met');
-          if (_navigatedThisAttempt) {
-            debugPrint('[PhonePinLogin] Reason: Already navigated');
-          }
-          if (previous?.otpStage == next.otpStage) {
-            debugPrint('[PhonePinLogin] Reason: Stage unchanged');
-          }
-          if (next.otpStage != OtpStage.codeSent) {
-            debugPrint('[PhonePinLogin] Reason: Stage is not codeSent');
-          }
-        }
-
-        // Check for successful login (existing code)
-        if (next.user != null && !next.isLoading && mounted) {
-          debugPrint(
-              '[PhonePinLogin] User logged in - AuthGate will handle navigation');
-        }
-      });
+          context.push('/otp');
+        });
+      }
     });
   }
 
@@ -173,27 +113,6 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-
-    // Listener for PIN login (keep existing)
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      if (!mounted) return;
-      if (next.otpFlowActive) return; // Skip if in OTP flow
-
-      if (next.hasPin && !next.isLoading && next.user != null) {
-        if (kDebugMode) {
-          print(
-              '[PhonePinLogin] Login success - AuthGate will handle navigation');
-        }
-      }
-
-      if (next.error != null && previous?.error != next.error) {
-        if (kDebugMode) {
-          print('[PhonePinLogin] Error: ${next.error}');
-        }
-      }
-    });
-
-    // OTP navigation handled in initState listenManual
 
     final errorMessage = _err ?? authState.error;
 

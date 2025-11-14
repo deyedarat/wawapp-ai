@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../models/order.dart' as app_order;
@@ -42,9 +43,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم قبول الطلب بنجاح')),
-      );
+      context.go('/active-order');
     } on Object catch (e) {
       if (!mounted) {
         return;

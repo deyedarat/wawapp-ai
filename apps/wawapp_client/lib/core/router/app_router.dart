@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/quote/quote_screen.dart';
 import '../../features/track/track_screen.dart';
+import '../../features/track/driver_found_screen.dart';
 import '../../features/track/models/order.dart';
 import '../../features/about/about_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
@@ -60,13 +61,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AboutScreen(),
       ),
       GoRoute(
-        path: '/order/:orderId',
-        name: 'order',
+        path: '/driver-found/:orderId',
+        name: 'driverFound',
         builder: (context, state) {
-          final orderId = state.pathParameters['orderId'];
+          final orderId = state.pathParameters['orderId']!;
+          return DriverFoundScreen(orderId: orderId);
+        },
+      ),
+      GoRoute(
+        path: '/track/:orderId',
+        name: 'trackById',
+        builder: (context, state) {
+          final orderId = state.pathParameters['orderId']!;
           return Scaffold(
-            appBar: AppBar(title: const Text('Order Details')),
-            body: Center(child: Text('Order: $orderId')),
+            appBar: AppBar(title: const Text('تتبع الطلب')),
+            body: Center(child: Text('تتبع الطلب: $orderId')),
           );
         },
       ),
