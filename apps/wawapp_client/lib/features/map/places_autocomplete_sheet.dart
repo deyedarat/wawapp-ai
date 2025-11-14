@@ -83,6 +83,8 @@ class _PlacesAutocompleteSheetState
 
   @override
   Widget build(BuildContext context) {
+    final routeState = ref.watch(routePickerProvider);
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
       padding: const EdgeInsets.all(16),
@@ -93,20 +95,42 @@ class _PlacesAutocompleteSheetState
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 16),
-          TextField(
-            controller: _controller,
-            decoration: const InputDecoration(
-              hintText: 'ابحث عن موقع...',
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(),
+          if (!routeState.mapsEnabled)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                border: Border.all(color: Colors.orange[200]!),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.orange),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'البحث عن الأماكن غير متوفر في هذا الإصدار. يمكنك النقر على الخريطة لتحديد الموقع.',
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            onChanged: _onSearchChanged,
-            autofocus: true,
-          ),
-          const SizedBox(height: 16),
-          if (_isLoading)
-            const Center(child: CircularProgressIndicator())
-          else
+          if (routeState.mapsEnabled)
+            TextField(
+              controller: _controller,
+              decoration: const InputDecoration(
+                hintText: 'ابحث عن موقع...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: _onSearchChanged,
+              autofocus: true,
+            ),
+          if (routeState.mapsEnabled) const SizedBox(height: 16),
+          if (routeState.mapsEnabled && _isLoading)
+            const Center(child: CircularProgressIndicator()),
+          if (routeState.mapsEnabled && !_isLoading)
             Expanded(
               child: ListView.builder(
                 itemCount: _predictions.length,
@@ -118,6 +142,14 @@ class _PlacesAutocompleteSheetState
                     onTap: () => _onPlaceSelected(prediction),
                   );
                 },
+              ),
+            ),
+          if (!routeState.mapsEnabled)
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('إغلاق'),
               ),
             ),
         ],

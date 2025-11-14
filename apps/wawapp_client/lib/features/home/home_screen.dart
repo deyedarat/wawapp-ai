@@ -244,23 +244,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                 ),
                               )
-                            : GoogleMap(
-                                onMapCreated: (GoogleMapController controller) {
-                                  dev.log('GoogleMap created successfully',
-                                      name: 'WAWAPP_HOME');
-                                  _mapController = controller;
-                                  WidgetsBinding.instance.addPostFrameCallback(
-                                      (_) => _fitBounds(routeState));
-                                },
-                                initialCameraPosition: _nouakchott,
-                                myLocationEnabled: _hasLocationPermission,
-                                myLocationButtonEnabled: _hasLocationPermission,
-                                onTap: _onMapTap,
-                                markers: _buildMarkers(routeState),
-                                compassEnabled: true,
-                                mapToolbarEnabled: false,
-                                zoomControlsEnabled: true,
-                              ),
+                            : !routeState.mapsEnabled
+                                ? Container(
+                                    color: Colors.grey[100],
+                                    child: const Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.map_outlined,
+                                              size: 64, color: Colors.grey),
+                                          SizedBox(height: 16),
+                                          Text(
+                                            'الخريطة غير متوفرة في هذا الإصدار\nيمكنك استخدام النقر لتحديد المواقع يدوياً',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : GoogleMap(
+                                    onMapCreated:
+                                        (GoogleMapController controller) {
+                                      dev.log('GoogleMap created successfully',
+                                          name: 'WAWAPP_HOME');
+                                      _mapController = controller;
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback(
+                                              (_) => _fitBounds(routeState));
+                                    },
+                                    initialCameraPosition: _nouakchott,
+                                    myLocationEnabled: _hasLocationPermission,
+                                    myLocationButtonEnabled:
+                                        _hasLocationPermission,
+                                    onTap: _onMapTap,
+                                    markers: _buildMarkers(routeState),
+                                    compassEnabled: true,
+                                    mapToolbarEnabled: false,
+                                    zoomControlsEnabled: true,
+                                  ),
                       ),
                       if (_errorMessage == null)
                         Positioned(
@@ -308,12 +331,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.search),
-                        onPressed: () => _showPlacesSheet(true),
+                        onPressed: routeState.mapsEnabled
+                            ? () => _showPlacesSheet(true)
+                            : null,
                       ),
                       border: const OutlineInputBorder(),
                     ),
                     readOnly: true,
-                    onTap: () => _showPlacesSheet(true),
+                    onTap: routeState.mapsEnabled
+                        ? () => _showPlacesSheet(true)
+                        : null,
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -323,12 +350,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       prefixIcon: const Icon(Icons.location_on),
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.search),
-                        onPressed: () => _showPlacesSheet(false),
+                        onPressed: routeState.mapsEnabled
+                            ? () => _showPlacesSheet(false)
+                            : null,
                       ),
                       border: const OutlineInputBorder(),
                     ),
                     readOnly: true,
-                    onTap: () => _showPlacesSheet(false),
+                    onTap: routeState.mapsEnabled
+                        ? () => _showPlacesSheet(false)
+                        : null,
                   ),
                   const SizedBox(height: 24),
                   SizedBox(

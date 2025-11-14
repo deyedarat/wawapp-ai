@@ -11,23 +11,25 @@ class NotificationService {
   NotificationService._internal();
 
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
-  
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
+
   BuildContext? _context;
   String? _pendingRoute;
 
   Future<void> initialize(BuildContext context) async {
     _context = context;
-    
+
     await _initializeLocalNotifications();
     await _setupFirebaseMessaging();
     await _handleInitialMessage();
   }
 
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings();
-    
+
     await _localNotifications.initialize(
       const InitializationSettings(android: androidSettings, iOS: iosSettings),
       onDidReceiveNotificationResponse: _onNotificationTap,
@@ -37,7 +39,7 @@ class NotificationService {
   Future<void> _setupFirebaseMessaging() async {
     // Foreground messages
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-    
+
     // Background/terminated app messages
     FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
   }
@@ -74,7 +76,7 @@ class NotificationService {
       type: message.data['type'],
       role: message.data['role'],
     );
-    
+
     if (route != null) {
       if (_context != null) {
         _context!.go(route);
@@ -101,7 +103,7 @@ class NotificationService {
       type: data['type'],
       role: data['role'],
     );
-    
+
     if (route != null && _context != null) {
       _context!.go(route);
     }

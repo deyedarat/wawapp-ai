@@ -71,8 +71,10 @@ class PhonePinAuth {
   Future<void> confirmOtp(String smsCode) async {
     final vid = _lastVerificationId;
     if (vid == null) throw Exception('No verification id');
-    final cred =
-        PhoneAuthProvider.credential(verificationId: vid, smsCode: smsCode);
+    final cred = PhoneAuthProvider.credential(
+      verificationId: vid,
+      smsCode: smsCode,
+    );
     await _auth.signInWithCredential(cred);
   }
 
@@ -106,9 +108,10 @@ class PhonePinAuth {
       final ok = oldHash == storedHash;
       if (ok) {
         final newSalt = _generateSalt();
-        await docRef.set(
-            {'pinSalt': newSalt, 'pinHash': _hashWithSalt(pin, newSalt)},
-            SetOptions(merge: true));
+        await docRef.set({
+          'pinSalt': newSalt,
+          'pinHash': _hashWithSalt(pin, newSalt),
+        }, SetOptions(merge: true));
       }
       return ok;
     }
