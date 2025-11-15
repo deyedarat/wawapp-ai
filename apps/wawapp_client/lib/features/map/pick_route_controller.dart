@@ -10,11 +10,7 @@ import '../../core/location/location_service.dart';
 typedef MapLatLng = LatLng;
 
 final mapsApiKeyProvider = Provider<String>((ref) {
-  const key = String.fromEnvironment('MAPS_API_KEY', defaultValue: '');
-  if (key.isEmpty) {
-    dev.log('⚠️ MAPS_API_KEY is empty. Map features may not work.',
-        name: 'MAP');
-  }
+  const key = String.fromEnvironment('MAPS_API_KEY', defaultValue: 'AIzaSyBkeDIcXg0M-zfXogKtHfyZWWdNb916vjU');
   return key;
 });
 
@@ -62,13 +58,7 @@ class RoutePickerState {
 
 class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
   RoutePickerNotifier(this.apiKey)
-      : super(RoutePickerState(mapsEnabled: apiKey.isNotEmpty)) {
-    if (apiKey.isEmpty) {
-      dev.log(
-          '[MapConfig] MAPS_API_KEY is empty – map features disabled in this build.',
-          name: _tag);
-    }
-  }
+      : super(const RoutePickerState(mapsEnabled: true));
 
   final String apiKey;
   static const String _tag = 'RoutePickerNotifier';

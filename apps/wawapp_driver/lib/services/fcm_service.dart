@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 class FcmService {
@@ -58,6 +59,12 @@ class FcmService {
         'tokenUpdatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
       debugPrint('FCM token saved for driver ${user.uid}: $token');
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        debugPrint('FCM token save failed: Permission denied. Check Firestore security rules for /drivers/{uid}');
+      } else {
+        debugPrint('FCM token save failed: ${e.code} - ${e.message}');
+      }
     } catch (e) {
       debugPrint('Error saving FCM token: $e');
     }

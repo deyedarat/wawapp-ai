@@ -93,11 +93,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
         // Check for successful login (existing code)
         if (next.user != null && !next.isLoading && mounted) {
-          debugPrint('[PhonePinLogin] User logged in, navigating to home');
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted || !context.mounted) return;
-            context.go('/');
-          });
+          debugPrint(
+              '[PhonePinLogin] User logged in - AuthGate will handle navigation');
         }
       });
     });
@@ -133,27 +130,44 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     await ref.read(authProvider.notifier).sendOtp(phone);
   }
 
-  void _handleOtpFlow() {
+  void _handleOtpFlow() async {
     final phone = _phone.text.trim();
     final e164 = RegExp(r'^\+[1-9]\d{6,14}$');
 
-    if (!e164.hasMatch(phone)) {
-      setState(
-          () => _err = 'Invalid phone format. Use E.164 like +22212345678');
+    // If phone is empty or invalid, navigate to OTP screen anyway
+    // The OTP screen can handle phone input and validation
+    if (phone.isEmpty || !e164.hasMatch(phone)) {
+      if (kDebugMode) {
+        print(
+            '[PhonePinLogin] No valid phone, navigating to OTP screen for input');
+      }
+      context.push('/otp');
       return;
     }
 
     setState(() => _err = null);
 
     if (kDebugMode) {
-      print('[PhonePinLogin] Starting OTP flow (non-await)...');
+      print('[PhonePinLogin] Starting OTP flow with phone: $phone');
     }
 
     // Mark OTP flow as active in provider (survives rebuild)
     ref.read(authProvider.notifier).startOtpFlow();
 
-    // Start sending OTP (no await)
-    ref.read(authProvider.notifier).sendOtp(phone);
+    // Start sending OTP and navigate immediately after
+    try {
+      await ref.read(authProvider.notifier).sendOtp(phone);
+      if (mounted && context.mounted) {
+        if (kDebugMode) {
+          print('[PhonePinLogin] OTP sent, navigating to /otp');
+        }
+        context.push('/otp');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('[PhonePinLogin] OTP send failed: $e');
+      }
+    }
   }
 
   @override
@@ -167,10 +181,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
       if (next.hasPin && !next.isLoading && next.user != null) {
         if (kDebugMode) {
-          print('[PhonePinLogin] Login success');
-        }
-        if (context.mounted) {
-          Navigator.pop(context);
+          print(
+              '[PhonePinLogin] Login success - AuthGate will handle navigation');
         }
       }
 
@@ -224,11 +236,11 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
                   : const Text('Continue'),
             ),
             TextButton(
-              onPressed: (authState.isLoading ||
-                      authState.otpStage == OtpStage.sending ||
-                      authState.otpStage == OtpStage.codeSent)
-                  ? null
-                  : _handleOtpFlow,
+              // IMPORTANT:
+              // Always allow the user to tap this link to start SMS verification.
+              // The handler validates the phone number and navigates to /otp.
+              // The provider has guard logic to prevent duplicate OTP sends.
+              onPressed: _handleOtpFlow,
               child: const Text('New device or forgot PIN? Verify by SMS'),
             ),
           ],

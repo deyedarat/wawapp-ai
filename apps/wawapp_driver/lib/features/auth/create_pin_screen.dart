@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'providers/auth_service_provider.dart';
 
 class CreatePinScreen extends ConsumerStatefulWidget {
@@ -61,14 +60,11 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    // Listen for successful PIN creation and navigate
+    // Listen for PIN creation status
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next.hasPin && !next.isLoading) {
         if (kDebugMode) {
-          print('[CreatePinScreen] PIN saved, navigating to home');
-        }
-        if (context.mounted) {
-          context.go('/');
+          print('[CreatePinScreen] PIN saved');
         }
       }
       if (next.error != null && previous?.error != next.error) {

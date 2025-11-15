@@ -67,5 +67,16 @@ service cloud.firestore {
                          .hasAny(['pinHash','pinSalt'])
                          && !request.resource.data.keys().hasAll(['pinHash','pinSalt']));
     }
+
+    match /drivers/{driverId} {
+      // Read: only the driver themselves
+      allow read: if isSignedIn() && request.auth.uid == driverId;
+
+      // Create: only the driver themselves
+      allow create: if isSignedIn() && request.auth.uid == driverId;
+
+      // Update: only the driver themselves
+      allow update: if isSignedIn() && request.auth.uid == driverId;
+    }
   }
 }

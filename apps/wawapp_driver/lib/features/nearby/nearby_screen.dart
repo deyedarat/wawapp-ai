@@ -141,31 +141,63 @@ class _NearbyScreenState extends State<NearbyScreen> {
                             order.pickup.lng,
                           );
                           return Card(
-                            child: ListTile(
-                              leading: const Icon(Icons.local_shipping),
-                              title: Text(
-                                  'طلب #${order.id.substring(order.id.length - 6)}'),
-                              subtitle: Column(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                      'المسافة: ${distance.toStringAsFixed(1)} كم'),
-                                  Text('من: ${order.pickup.label}'),
-                                  Text('إلى: ${order.dropoff.label}'),
-                                ],
-                              ),
-                              trailing: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text('${order.price} MRU'),
-                                  const SizedBox(height: 4),
-                                  ElevatedButton(
-                                    onPressed: () => _acceptOrder(order.id),
-                                    child: const Text('قبول'),
+                                  const Icon(Icons.local_shipping, size: 40),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'طلب #${order.id.substring(order.id.length - 6)}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'المسافة: ${distance.toStringAsFixed(1)} كم',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text('من: ${order.pickup.label}',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis),
+                                        Text('إلى: ${order.dropoff.label}',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text('${order.price} MRU',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      const SizedBox(height: 8),
+                                      ElevatedButton(
+                                        onPressed: () => _acceptOrder(order.id),
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 8),
+                                        ),
+                                        child: const Text('قبول'),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                              isThreeLine: true,
                             ),
                           );
                         },

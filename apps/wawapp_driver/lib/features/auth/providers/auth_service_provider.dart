@@ -156,7 +156,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) {
         print('[AuthNotifier] Sending OTP to $phone');
       }
-      await _authService.ensurePhoneSession(phone);
+      await _authService.ensurePhoneSession(phone, onCodeSent: () {
+        if (kDebugMode) print('[AuthNotifier] Code sent callback triggered');
+        state = state.copyWith(otpStage: OtpStage.codeSent);
+      });
       if (kDebugMode) print('[AuthNotifier] OTP sent successfully');
       state = state.copyWith(isLoading: false, phone: phone);
     } catch (e) {
@@ -165,6 +168,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         error: e.toString(),
         otpFlowActive: false, // End flow on error
+        otpStage: OtpStage.failed,
       );
     }
   }
