@@ -24,12 +24,12 @@ class PhonePinAuth {
   final _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
 
-  Future<DocumentReference<Map<String, dynamic>>> _userDoc() async {
+  Future<DocumentReference<Map<String, dynamic>>> _driverDoc() async {
     final uid = _auth.currentUser!.uid;
-    return _db.collection('users').doc(uid);
+    return _db.collection('drivers').doc(uid);
   }
 
-  Future<void> ensurePhoneSession(String phoneE164) async {
+  Future<void> ensurePhoneSession(String phoneE164, {VoidCallback? onCodeSent}) async {
     final u = _auth.currentUser;
     if (u != null) {
       if (kDebugMode) {
@@ -65,6 +65,7 @@ class PhonePinAuth {
           print('[PhonePinAuth] codeSent');
         }
         _lastVerificationId = verificationId;
+        onCodeSent?.call();
         completer.complete();
       },
       codeAutoRetrievalTimeout: (vid) => _lastVerificationId = vid,
@@ -95,7 +96,7 @@ class PhonePinAuth {
   }
 
   Future<void> setPin(String pin) async {
-    final doc = await _userDoc();
+    final doc = await _driverDoc();
     final salt = _generateSalt();
     final hash = _hashWithSalt(pin, salt);
 
@@ -113,7 +114,7 @@ class PhonePinAuth {
 
   Future<bool> verifyPin(String pin) async {
     final uid = _auth.currentUser!.uid;
-    final docRef = await _userDoc();
+    final docRef = await _driverDoc();
     final snap = await docRef.get();
     final data = snap.data();
     if (data == null) {
@@ -149,7 +150,7 @@ class PhonePinAuth {
   }
 
   Future<bool> hasPinHash() async {
-    final doc = await _userDoc();
+    final doc = await _driverDoc();
     final snap = await doc.get();
     final data = snap.data();
     final exists = data?['pinHash'] != null;
