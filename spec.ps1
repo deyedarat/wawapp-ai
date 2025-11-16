@@ -1,6 +1,6 @@
 param(
     [Parameter(Position=0)]
-    [ValidateSet('init','doctor','help','env:verify','fix:node-policy','format','analyze','flutter:refresh','build:driver','build:client','test:unit','test:analyze','env:verify-Firebase','fcm:verify')]
+    [ValidateSet('init','doctor','help','env:verify','fix:node-policy','format','analyze','flutter:refresh','build:driver','build:client','test:unit','test:analyze','env:verify-Firebase','fcm:verify','error:analyze')]
     [string]$Command = 'help',
     
     [Parameter(Position=1)]
@@ -32,11 +32,13 @@ Spec tasks:
   .\spec.ps1 test:analyze
   .\spec.ps1 env:verify-Firebase
   .\spec.ps1 fcm:verify
+  .\spec.ps1 error:analyze          [LogFile]
 
 Examples:
   .\spec.ps1 flutter:refresh
   .\spec.ps1 build:driver Debug
   .\spec.ps1 build:client Release
+  .\spec.ps1 error:analyze build_log.txt
 "@
 }
 
@@ -240,6 +242,23 @@ function Invoke-FcmVerify {
     }
 }
 
+function Invoke-ErrorAnalyze {
+    param([string]$Config)
+    Write-Host "[ERROR:ANALYZE] Analyzing error..."
+    $errorAnalyzerPath = Join-Path $ScriptRoot "tools\spec-kit\modules\error_analyzer.ps1"
+    if (Test-Path $errorAnalyzerPath) {
+        Import-Module $errorAnalyzerPath -Force
+        if ($Config) {
+            Invoke-ErrorAnalysis -LogFile $Config
+        } else {
+            Invoke-ErrorAnalysis
+        }
+        Write-Host "[ERROR:ANALYZE] COMPLETE"
+    } else {
+        Write-Warning "error_analyzer module not found at $errorAnalyzerPath"
+    }
+}
+
 # Main execution
 switch ($Command) {
     'init' { Invoke-Init }
@@ -256,4 +275,5 @@ switch ($Command) {
     'test:analyze' { Invoke-TestAnalyze }
     'env:verify-Firebase' { Invoke-EnvVerifyFirebase }
     'fcm:verify' { Invoke-FcmVerify }
+    'error:analyze' { Invoke-ErrorAnalyze -Config $Config }
 }

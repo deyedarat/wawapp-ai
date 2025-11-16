@@ -6,6 +6,7 @@ import '../../features/home/home_screen.dart';
 import '../../features/quote/quote_screen.dart';
 import '../../features/track/track_screen.dart';
 import '../../features/track/driver_found_screen.dart';
+import '../../features/track/public_track_screen.dart';
 import '../../features/track/models/order.dart';
 import '../../features/about/about_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
@@ -73,10 +74,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'trackById',
         builder: (context, state) {
           final orderId = state.pathParameters['orderId']!;
-          return Scaffold(
-            appBar: AppBar(title: const Text('تتبع الطلب')),
-            body: Center(child: Text('تتبع الطلب: $orderId')),
-          );
+          return PublicTrackScreen(orderId: orderId);
         },
       ),
     ],
@@ -93,7 +91,13 @@ String? _redirect(GoRouterState s, AuthState st) {
   final canOtp = (st.otpFlowActive == true) || (st.verificationId != null);
 
   debugPrint(
-      '[Router] loc=${s.matchedLocation} loggedIn=$loggedIn canOtp=$canOtp');
+      '[Router] loc=${s.matchedLocation} loggedIn=$loggedIn canOtp=$canOtp otpStage=${st.otpStage}');
+
+  // Allow public tracking without authentication
+  if (s.matchedLocation.startsWith('/track/')) {
+    debugPrint('[Router] Allowing public tracking access');
+    return null;
+  }
 
   // Allow OTP route when canOtp is true
   if (!loggedIn && canOtp && s.matchedLocation != '/otp') {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:core_shared/core_shared.dart';
 import '../../models/order.dart' as app_order;
 import '../../services/orders_service.dart';
 
@@ -13,7 +14,7 @@ class ActiveOrderScreen extends StatefulWidget {
 class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
   final _ordersService = OrdersService();
 
-  Future<void> _transition(String orderId, app_order.OrderStatus to) async {
+  Future<void> _transition(String orderId, OrderStatus to) async {
     try {
       await _ordersService.transition(orderId, to);
       if (!mounted) {
@@ -85,32 +86,32 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                         Text(
                             'المسافة: ${order.distanceKm.toStringAsFixed(1)} كم'),
                         Text('السعر: ${order.price} MRU'),
-                        Text('الحالة: ${order.status}'),
+                        Text('الحالة: ${order.orderStatus.toArabicLabel()}'),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                if (order.orderStatus == app_order.OrderStatus.accepted) ...[
-                  ElevatedButton(
-                    onPressed: () =>
-                        _transition(order.id, app_order.OrderStatus.onRoute),
-                    child: const Text('بدء الرحلة'),
-                  ),
-                  const SizedBox(height: 8),
-                  OutlinedButton(
-                    onPressed: () =>
-                        _transition(order.id, app_order.OrderStatus.cancelled),
-                    child: const Text('إلغاء'),
-                  ),
-                ],
-                if (order.orderStatus == app_order.OrderStatus.onRoute) ...[
-                  ElevatedButton(
-                    onPressed: () =>
-                        _transition(order.id, app_order.OrderStatus.completed),
-                    child: const Text('إكمال الطلب'),
-                  ),
-                ],
+                ElevatedButton(
+                  onPressed: order.orderStatus.canDriverStartTrip
+                      ? () => _transition(order.id, OrderStatus.onRoute)
+                      : null,
+                  child: const Text('بدء الرحلة'),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: order.orderStatus.canDriverCompleteTrip
+                      ? () => _transition(order.id, OrderStatus.completed)
+                      : null,
+                  child: const Text('إكمال الطلب'),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed: order.orderStatus.canDriverCancel
+                      ? () => _transition(order.id, OrderStatus.cancelledByDriver)
+                      : null,
+                  child: const Text('إلغاء'),
+                ),
               ],
             ),
           );

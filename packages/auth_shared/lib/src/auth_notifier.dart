@@ -49,16 +49,33 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> sendOtp(String phone) async {
+    if (kDebugMode) {
+      print('[AuthNotifier] sendOtp() called with phone=$phone');
+    }
+
     if (state.otpStage == OtpStage.sending ||
-        state.otpStage == OtpStage.codeSent)
+        state.otpStage == OtpStage.codeSent) {
+      if (kDebugMode) {
+        print('[AuthNotifier] sendOtp() aborted - already in stage ${state.otpStage}');
+      }
       return;
+    }
+
     state = state.copyWith(
       isLoading: true,
       error: null,
       otpStage: OtpStage.sending,
     );
+    if (kDebugMode) {
+      print('[AuthNotifier] OTP stage set to sending');
+    }
+
     try {
+      if (kDebugMode) {
+        print('[AuthNotifier] Calling ensurePhoneSession() for phone=$phone');
+      }
       await _authService.ensurePhoneSession(phone);
+
       state = state.copyWith(
         isLoading: false,
         phoneE164: phone,
@@ -66,12 +83,25 @@ class AuthNotifier extends StateNotifier<AuthState> {
         otpFlowActive: true,
         verificationId: _authService.lastVerificationId,
       );
-    } catch (e) {
+
+      if (kDebugMode) {
+        print('[AuthNotifier] ensurePhoneSession() completed, state: otpStage=${state.otpStage}, otpFlowActive=${state.otpFlowActive}, verificationId isNull=${state.verificationId == null}');
+      }
+    } catch (e, stackTrace) {
+      if (kDebugMode) {
+        print('[AuthNotifier] ensurePhoneSession() FAILED: ${e.runtimeType} - $e');
+        print('[AuthNotifier] Stacktrace: $stackTrace');
+      }
+
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
         otpFlowActive: false,
       );
+
+      if (kDebugMode) {
+        print('[AuthNotifier] State after error: otpStage=${state.otpStage}, otpFlowActive=${state.otpFlowActive}, error=${state.error}');
+      }
     }
   }
 

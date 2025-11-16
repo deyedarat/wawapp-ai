@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:core_shared/core_shared.dart';
 import 'package:wawapp_client/main.dart' as app;
 import 'package:wawapp_client/features/track/data/orders_repository.dart';
 
@@ -33,7 +34,7 @@ void main() {
           dropoff: {'lat': 18.0969, 'lng': -15.9497, 'label': 'Dropoff B'},
           distanceKm: 2.5,
           price: 100,
-          status: 'matching',
+          status: OrderStatus.assigning,
         );
         print('Integration test - Order created: $orderId');
       }, returnsNormally);
