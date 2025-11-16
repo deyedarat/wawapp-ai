@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:core_shared/core_shared.dart';
 
 class OrdersRepository {
   final FirebaseFirestore _firestore;
@@ -13,7 +14,7 @@ class OrdersRepository {
     required Map<String, dynamic> dropoff,
     required double distanceKm,
     required int price,
-    required String status,
+    required OrderStatus status,
   }) async {
     final docRef = await _firestore.collection('orders').add({
       'ownerId': ownerId,
@@ -21,7 +22,7 @@ class OrdersRepository {
       'dropoff': dropoff,
       'distanceKm': distanceKm,
       'price': price,
-      'status': status,
+      'status': status.toFirestore(),
       'createdAt': FieldValue.serverTimestamp(),
     });
     return docRef.id;

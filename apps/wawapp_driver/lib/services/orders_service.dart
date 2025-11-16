@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:core_shared/core_shared.dart';
 import '../models/order.dart' as app_order;
 
 class OrdersService {
@@ -13,7 +14,7 @@ class OrdersService {
 
     return _firestore
         .collection('orders')
-        .where('status', isEqualTo: 'matching')
+        .where('status', isEqualTo: OrderStatus.assigning.toFirestore())
         .snapshots()
         .map((snapshot) {
       if (snapshot.docs.isEmpty) {
@@ -79,13 +80,13 @@ class OrdersService {
         throw Exception('Order not found');
       }
 
-      final currentStatus = orderDoc.data()!['status'] as String;
-      if (currentStatus != 'matching') {
+      final currentStatus = OrderStatus.fromFirestore(
+          orderDoc.data()!['status'] as String);
+      if (currentStatus != OrderStatus.assigning) {
         throw Exception('Order was already taken');
       }
 
-      final update = app_order.OrderStatus.createTransitionUpdate(
-        to: app_order.OrderStatus.accepted,
+      final update = OrderStatus.accepted.createTransitionUpdate(
         driverId: user.uid,
       );
 
@@ -93,7 +94,7 @@ class OrdersService {
     });
   }
 
-  Future<void> transition(String orderId, app_order.OrderStatus to) async {
+  Future<void> transition(String orderId, OrderStatus to) async {
     await _firestore.runTransaction((transaction) async {
       final orderRef = _firestore.collection('orders').doc(orderId);
       final orderDoc = await transaction.get(orderRef);
@@ -102,14 +103,14 @@ class OrdersService {
         throw Exception('Order not found');
       }
 
-      final currentStatus = app_order.OrderStatus.fromString(
+      final currentStatus = OrderStatus.fromFirestore(
           orderDoc.data()!['status'] as String);
 
-      if (!app_order.OrderStatus.canTransition(currentStatus, to)) {
+      if (!currentStatus.canTransitionTo(to)) {
         throw Exception('Invalid status transition');
       }
 
-      final update = app_order.OrderStatus.createTransitionUpdate(to: to);
+      final update = to.createTransitionUpdate();
       transaction.update(orderRef, update);
     });
   }
@@ -118,7 +119,10 @@ class OrdersService {
     return _firestore
         .collection('orders')
         .where('driverId', isEqualTo: driverId)
-        .where('status', whereIn: ['accepted', 'onRoute'])
+        .where('status', whereIn: [
+          OrderStatus.accepted.toFirestore(),
+          OrderStatus.onRoute.toFirestore(),
+        ])
         .snapshots()
         .map((snapshot) {
           return snapshot.docs

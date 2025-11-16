@@ -48,7 +48,16 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   }
 
   Future<void> _createAccount() async {
-    await ref.read(authProvider.notifier).sendOtp(_phone.text.trim());
+    final phone = _phone.text.trim();
+    debugPrint('[LoginScreen] _createAccount() called for phone=$phone');
+
+    try {
+      await ref.read(authProvider.notifier).sendOtp(phone);
+      debugPrint('[LoginScreen] sendOtp() returned successfully');
+    } catch (e, stackTrace) {
+      debugPrint('[LoginScreen] sendOtp() threw exception: ${e.runtimeType} - $e');
+      debugPrint('[LoginScreen] Stacktrace: $stackTrace');
+    }
   }
 
   @override
@@ -56,10 +65,18 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     final authState = ref.watch(authProvider);
 
     ref.listen(authProvider, (prev, next) {
+      debugPrint('[LoginScreen] Auth state changed: otpStage=${next.otpStage}, otpFlowActive=${next.otpFlowActive}, verificationId isNull=${next.verificationId == null}, error=${next.error}');
+
       if (next.otpStage == OtpStage.codeSent) {
-        context.go('/otp');
+        debugPrint('[LoginScreen] OTP code sent, router will redirect based on canOtp.');
       }
+
+      if (next.error != null && next.error!.isNotEmpty) {
+        debugPrint('[LoginScreen] Error detected in auth state: ${next.error}');
+      }
+
       if (next.user != null && next.hasPin && !next.isLoading) {
+        debugPrint('[LoginScreen] User authenticated with PIN, navigating to home');
         context.go('/');
       }
     });

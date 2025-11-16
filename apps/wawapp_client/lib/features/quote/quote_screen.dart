@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:core_shared/core_shared.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'providers/quote_provider.dart';
@@ -145,7 +146,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                             },
                             distanceKm: quoteState.distanceKm!,
                             price: breakdown.rounded,
-                            status: 'matching',
+                            status: OrderStatus.assigning,
                           );
 
                           if (!mounted) return;
@@ -156,7 +157,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                             dropoffAddress: toText,
                             pickup: routeState.pickup!,
                             dropoff: routeState.dropoff!,
-                            status: 'matching',
+                            status: OrderStatus.assigning.toFirestore(),
                           );
                           
                           _startOrderTracking(orderId);

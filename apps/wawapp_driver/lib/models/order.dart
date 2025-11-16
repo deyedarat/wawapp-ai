@@ -1,41 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-enum OrderStatus {
-  matching,
-  accepted,
-  onRoute,
-  completed,
-  cancelled;
-
-  static OrderStatus fromString(String status) {
-    return OrderStatus.values.firstWhere((e) => e.name == status);
-  }
-
-  static bool canTransition(OrderStatus from, OrderStatus to) {
-    const transitions = {
-      OrderStatus.matching: [OrderStatus.accepted, OrderStatus.cancelled],
-      OrderStatus.accepted: [OrderStatus.onRoute, OrderStatus.cancelled],
-      OrderStatus.onRoute: [OrderStatus.completed],
-      OrderStatus.completed: <OrderStatus>[],
-      OrderStatus.cancelled: <OrderStatus>[],
-    };
-    return transitions[from]?.contains(to) ?? false;
-  }
-
-  static Map<String, dynamic> createTransitionUpdate({
-    required OrderStatus to,
-    String? driverId,
-  }) {
-    final update = {
-      'status': to.name,
-      'updatedAt': FieldValue.serverTimestamp(),
-    };
-    if (to == OrderStatus.accepted && driverId != null) {
-      update['driverId'] = driverId;
-    }
-    return update;
-  }
-}
+import 'package:core_shared/core_shared.dart';
 
 class Order {
   final String id;
@@ -60,7 +24,7 @@ class Order {
     this.driverId,
   });
 
-  OrderStatus get orderStatus => OrderStatus.fromString(status);
+  OrderStatus get orderStatus => OrderStatus.fromFirestore(status);
 
   factory Order.fromFirestore(String id, Map<String, dynamic> data) {
     return Order(

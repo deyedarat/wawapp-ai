@@ -1,16 +1,5 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-enum OrderStatus {
-  matching,
-  accepted,
-  onRoute,
-  completed,
-  cancelled;
-
-  static OrderStatus fromString(String status) {
-    return OrderStatus.values.firstWhere((e) => e.name == status);
-  }
-}
+import 'package:core_shared/core_shared.dart';
 
 class Order {
   final double distanceKm;
@@ -32,6 +21,8 @@ class Order {
     this.status,
     this.driverId,
   });
+
+  OrderStatus get orderStatus => OrderStatus.fromFirestore(status ?? 'requested');
 
   Map<String, dynamic> toMap() => {
         'distanceKm': distanceKm,
