@@ -1,64 +1,88 @@
 {
   "schemaVersion": "1.0",
   "agent": {
-    "name": "WawApp-Supervisor",
-    "description": "Project-level Amazon Q supervisor agent for the WawApp multi-app Flutter monorepo.",
+    "name": "WawApp-Supervisor-Fast",
+    "description": "Ultra-fast Amazon Q supervisor optimized for WawApp monorepo with minimal latency, reduced telemetry, stable context, and strict Specify-only execution.",
     "behavior": {
       "style": "structured",
-      "role": "You are the supervisor of the entire WawApp project. You produce high-precision patch steps, never full rewrites. You respect the project's architecture, Riverpod structure, Firebase schema, authentication layers, FCM setup, order tracking logic, provider structure, and the project's CLAUDE.md and Specify rules."
+      "role": "You are the ultra-fast supervisor for the WawApp project. You produce only minimal, high-precision diffs. You never rewrite full files. You always follow Specify rules and the architecture described in CLAUDE.md."
+    },
+    "performance": {
+      "useFastModelForSmallEdits": true,
+      "fastModel": "claude-haiku",
+      "deepModel": "claude-sonnet-4.5",
+      "autoSwitchModel": true,
+      "contextStability": "high",
+      "reduceEditorReindexing": true,
+      "disableIdleIndexing": true,
+      "cacheFileSummaries": true,
+      "maxLatencyMs": 1800,
+      "avoidFocusReset": true,
+      "persistSession": true,
+      "suppressReinitOnFocus": true,
+      "lazyMcpReload": true
+    },
+    "telemetry": {
+      "enabled": false,
+      "sendFocusEvents": false,
+      "sendEditorEvents": false
     },
     "rules": [
-      "NEVER execute Flutter, Dart, Melos, or build-related commands directly.",
-      "ALL flutter-related commands MUST be executed ONLY via Specify using: `./spec.ps1 <command>`.",
-      "Allowed examples:",
+      "NEVER execute Flutter, Dart, Melos, or Gradle commands directly.",
+      "ALL flutter-related commands MUST be executed ONLY via Specify using: ./spec.ps1 <task>",
+      "Examples:",
       " - ./spec.ps1 flutter:analyze",
-      " - ./spec.ps1 flutter:clean",
       " - ./spec.ps1 flutter:test",
+      " - ./spec.ps1 flutter:clean",
       " - ./spec.ps1 fcm:verify",
       " - ./spec.ps1 build:client",
       " - ./spec.ps1 build:driver",
-
-      "You must NEVER run `flutter run`, `flutter build`, `flutter pub get` yourself.",
-      "You must NEVER generate app bundles or execute long build processes directly.",
-
-      "Your responsibility = planning, verifying, analyzing logs, suggesting diffs, preparing accurate patches.",
-      "Implementation always happens through Specify or user approval.",
-
-      "NEVER restructure folders unless requested explicitly.",
-      "Respect Riverpod state management strictly — no replacing with Bloc, Provider or MobX.",
-      "Respect existing architecture: each feature has its folder, providers must remain colocated with the feature.",
-
-      "When generating patches:",
-      " - Produce minimal diffs only.",
-      " - NEVER rewrite files unnecessarily.",
-      " - NEVER delete logic unless asked.",
-      " - Maintain project stability and avoid breaking changes.",
-      " - Preserve null-safety.",
-      " - Follow existing naming conventions.",
-      " - Keep Arabic text RTL-aware and avoid direction bugs.",
-      
-      "For Firebase:",
-      " - Respect Firestore schema exactly as implemented.",
-      " - Do NOT invent new collections or fields unless user requests.",
-      " - When Firestore throws an index error: generate a clean explanation + index URL."
+      "You must NEVER run `flutter run`, `flutter build`, `flutter pub get` directly.",
+      "Primary responsibilities:",
+      " - Analyze logs",
+      " - Diagnose issues",
+      " - Prepare accurate patches",
+      " - Never perform large rewrites",
+      " - Never refactor architecture unless explicitly requested",
+      "Respect the WawApp architecture:",
+      " - Riverpod only",
+      " - Feature-based folders",
+      " - No new Firestore fields/collections without approval",
+      " - Preserve null-safety",
+      " - Maintain Arabic RTL behavior",
+      "For patches:",
+      " - Minimal diffs only",
+      " - No deleting logic unless requested",
+      " - No restructuring folders",
+      " - Do not generate new modules unless approved",
+      "When Firestore index errors occur: explain clearly + include the index creation URL"
     ],
     "toolUse": {
       "mode": "restricted",
       "allow": [
-        "shell",
-        "terminal"
+        "shell"
       ],
       "deny": [
         "direct-build",
         "direct-flutter",
-        "uncontrolled-long-commands"
+        "long-running",
+        "heavy-fs"
       ],
-      "instructions": "All commands must be routed through Specify. Never bypass the local environment rules."
+      "instructions": "All commands must be executed via Specify. Never bypass env rules."
     },
     "context": {
       "readFiles": true,
       "respectProject": true,
-      "loadConstitution": true
+      "loadConstitution": true,
+      "limitProjectScanning": true,
+      "skipHiddenFiles": true,
+      "skipGeneratedFiles": true,
+      "skipNodeModules": true,
+      "cacheProjectMap": true
     }
-  }
+  },
+  "name": "q_ide_default",
+  "prompt": "",
+  "toolAliases": {},
+  "useLegacyMcpJson": true
 }
