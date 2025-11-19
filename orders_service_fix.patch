@@ -1,0 +1,69 @@
+--- a/apps/wawapp_driver/lib/services/orders_service.dart
++++ b/apps/wawapp_driver/lib/services/orders_service.dart
+@@ -12,6 +12,11 @@ class OrdersService {
+   Stream<List<app_order.Order>> getNearbyOrders(Position driverPosition) {
+     dev.log('[nearby_stream] start');
+ 
++    // Enhanced logging for diagnosis
++    final targetStatus = OrderStatus.assigning.toFirestore();
++    dev.log('[nearby_stream] Looking for status: "$targetStatus"');
++    dev.log('[nearby_stream] Driver position: ${driverPosition.latitude}, ${driverPosition.longitude}');
++
+     return _firestore
+         .collection('orders')
+         .where('status', isEqualTo: OrderStatus.assigning.toFirestore())
+@@ -19,6 +24,7 @@ class OrdersService {
+         .map((snapshot) {
+       if (snapshot.docs.isEmpty) {
+         dev.log('[nearby_stream] empty');
++        _logAllOrdersForDebug(); // Add debug helper
+         return <app_order.Order>[];
+       }
+ 
+@@ -26,6 +32,8 @@ class OrdersService {
+       for (final doc in snapshot.docs) {
+         try {
+           final order = app_order.Order.fromFirestore(doc.id, doc.data());
++          dev.log('[nearby_stream] Parsed order ${order.id}: pickup=(${order.pickup.lat},${order.pickup.lng})');
++          
+           final distance = _calculateDistance(
+             driverPosition.latitude,
+             driverPosition.longitude,
+@@ -33,11 +41,15 @@ class OrdersService {
+             order.pickup.lng,
+           );
+ 
+-          if (distance <= 8.0) {
++          // Temporarily increase distance limit for testing
++          if (distance <= 50.0) { // Changed from 8.0 to 50.0
+             orders.add(order);
+             dev.log(
+                 '[nearby_stream] item: {id: ${order.id}, km: ${distance.toStringAsFixed(1)}, price: ${order.price}}');
++          } else {
++            dev.log('[nearby_stream] filtered out: {id: ${order.id}, km: ${distance.toStringAsFixed(1)} > 50km}');
+           }
+         } on Object catch (e) {
+           dev.log('[nearby_stream] error parsing order ${doc.id}: $e');
++          dev.log('[nearby_stream] raw data: ${doc.data()}');
+         }
+       }
+@@ -58,6 +70,19 @@ class OrdersService {
+       return orders;
+     }).handleError((error) {
+       dev.log('[nearby_stream] error: $error');
+       return <app_order.Order>[];
+     });
+   }
++
++  // Debug helper method
++  void _logAllOrdersForDebug() async {
++    try {
++      final allOrders = await _firestore.collection('orders').get();
++      dev.log('[DEBUG] Total orders in DB: ${allOrders.docs.length}');
++      for (final doc in allOrders.docs.take(5)) {
++        dev.log('[DEBUG] Order ${doc.id}: ${doc.data()}');
++      }
++    } catch (e) {
++      dev.log('[DEBUG] Error fetching all orders: $e');
++    }
++  }
