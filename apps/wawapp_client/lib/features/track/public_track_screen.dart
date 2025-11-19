@@ -31,25 +31,27 @@ class PublicTrackScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error_outline, 
-                      size: 80, 
+                    Icon(
+                      Icons.error_outline,
+                      size: 80,
                       color: Theme.of(context).colorScheme.error,
                     ),
                     const SizedBox(height: 24),
                     Text(
                       'لا يمكن عرض هذا الطلب',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'تحقق من رابط التتبع أو حاول لاحقًا',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                            color: Colors.grey[600],
+                          ),
                     ),
                     const SizedBox(height: 24),
                     FilledButton.icon(
@@ -69,25 +71,30 @@ class PublicTrackScreen extends ConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.search_off, 
-                          size: 80, 
+                        Icon(
+                          Icons.search_off,
+                          size: 80,
                           color: Colors.grey[400],
                         ),
                         const SizedBox(height: 24),
                         Text(
                           'الطلب غير موجود',
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         const SizedBox(height: 12),
                         Text(
                           'تحقق من رابط التتبع أو حاول لاحقًا',
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
                         ),
                         const SizedBox(height: 24),
                         FilledButton.icon(
@@ -105,8 +112,10 @@ class PublicTrackScreen extends ConsumerWidget {
               final order = app_order.Order(
                 distanceKm: (data['distanceKm'] as num).toDouble(),
                 price: (data['price'] as num).toDouble(),
-                pickupAddress: (data['pickup'] as Map<String, dynamic>)['label'] as String,
-                dropoffAddress: (data['dropoff'] as Map<String, dynamic>)['label'] as String,
+                pickupAddress:
+                    (data['pickup'] as Map<String, dynamic>)['label'] as String,
+                dropoffAddress: (data['dropoff']
+                    as Map<String, dynamic>)['label'] as String,
                 pickup: LatLng(
                   (data['pickup'] as Map<String, dynamic>)['lat'] as double,
                   (data['pickup'] as Map<String, dynamic>)['lng'] as double,

@@ -55,7 +55,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
       await ref.read(authProvider.notifier).sendOtp(phone);
       debugPrint('[LoginScreen] sendOtp() returned successfully');
     } catch (e, stackTrace) {
-      debugPrint('[LoginScreen] sendOtp() threw exception: ${e.runtimeType} - $e');
+      debugPrint(
+          '[LoginScreen] sendOtp() threw exception: ${e.runtimeType} - $e');
       debugPrint('[LoginScreen] Stacktrace: $stackTrace');
     }
   }
@@ -65,10 +66,12 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     final authState = ref.watch(authProvider);
 
     ref.listen(authProvider, (prev, next) {
-      debugPrint('[LoginScreen] Auth state changed: otpStage=${next.otpStage}, otpFlowActive=${next.otpFlowActive}, verificationId isNull=${next.verificationId == null}, error=${next.error}');
+      debugPrint(
+          '[LoginScreen] Auth state changed: otpStage=${next.otpStage}, otpFlowActive=${next.otpFlowActive}, verificationId isNull=${next.verificationId == null}, error=${next.error}');
 
       if (next.otpStage == OtpStage.codeSent) {
-        debugPrint('[LoginScreen] OTP code sent, router will redirect based on canOtp.');
+        debugPrint(
+            '[LoginScreen] OTP code sent, router will redirect based on canOtp.');
       }
 
       if (next.error != null && next.error!.isNotEmpty) {
@@ -76,7 +79,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
       }
 
       if (next.user != null && next.hasPin && !next.isLoading) {
-        debugPrint('[LoginScreen] User authenticated with PIN, navigating to home');
+        debugPrint(
+            '[LoginScreen] User authenticated with PIN, navigating to home');
         context.go('/');
       }
     });

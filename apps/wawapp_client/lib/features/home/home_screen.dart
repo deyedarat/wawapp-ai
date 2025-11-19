@@ -11,6 +11,7 @@ import '../quote/models/latlng.dart' as quote_latlng;
 import '../../core/geo/distance.dart';
 import '../../core/pricing/pricing.dart';
 import '../../core/location/location_service.dart';
+import '../map/providers/district_layer_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -99,6 +100,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _onMapTap(LatLng location) async {
     await ref.read(routePickerProvider.notifier).setLocationFromTap(location);
     _mapController?.animateCamera(CameraUpdate.newLatLng(location));
+  }
+
+  void _onCameraMove(CameraPosition position) {
+    ref.read(currentZoomProvider.notifier).state = position.zoom;
   }
 
   void _showPlacesSheet(bool isPickup) {
@@ -264,25 +269,66 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       ),
                                     ),
                                   )
-                                : GoogleMap(
-                                    onMapCreated:
-                                        (GoogleMapController controller) {
-                                      dev.log('GoogleMap created successfully',
-                                          name: 'WAWAPP_HOME');
-                                      _mapController = controller;
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback(
-                                              (_) => _fitBounds(routeState));
+                                : Consumer(
+                                    builder: (context, ref, child) {
+                                      final polygons = ref.watch(districtPolygonsProvider);
+                                      final locale = Localizations.localeOf(context);
+                                      final markersAsync = ref.watch(districtMarkersProvider(locale.languageCode));
+                                      
+                                      return markersAsync.when(
+                                        data: (districtMarkers) => GoogleMap(
+                                          onMapCreated: (GoogleMapController controller) {
+                                            dev.log('GoogleMap created successfully', name: 'WAWAPP_HOME');
+                                            _mapController = controller;
+                                            WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds(routeState));
+                                          },
+                                          initialCameraPosition: _nouakchott,
+                                          myLocationEnabled: _hasLocationPermission,
+                                          myLocationButtonEnabled: _hasLocationPermission,
+                                          onTap: _onMapTap,
+                                          onCameraMove: _onCameraMove,
+                                          markers: {..._buildMarkers(routeState), ...districtMarkers},
+                                          polygons: polygons,
+                                          compassEnabled: true,
+                                          mapToolbarEnabled: false,
+                                          zoomControlsEnabled: true,
+                                        ),
+                                        loading: () => GoogleMap(
+                                          onMapCreated: (GoogleMapController controller) {
+                                            dev.log('GoogleMap created successfully', name: 'WAWAPP_HOME');
+                                            _mapController = controller;
+                                            WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds(routeState));
+                                          },
+                                          initialCameraPosition: _nouakchott,
+                                          myLocationEnabled: _hasLocationPermission,
+                                          myLocationButtonEnabled: _hasLocationPermission,
+                                          onTap: _onMapTap,
+                                          onCameraMove: _onCameraMove,
+                                          markers: _buildMarkers(routeState),
+                                          polygons: polygons,
+                                          compassEnabled: true,
+                                          mapToolbarEnabled: false,
+                                          zoomControlsEnabled: true,
+                                        ),
+                                        error: (error, stack) => GoogleMap(
+                                          onMapCreated: (GoogleMapController controller) {
+                                            dev.log('GoogleMap created successfully', name: 'WAWAPP_HOME');
+                                            _mapController = controller;
+                                            WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds(routeState));
+                                          },
+                                          initialCameraPosition: _nouakchott,
+                                          myLocationEnabled: _hasLocationPermission,
+                                          myLocationButtonEnabled: _hasLocationPermission,
+                                          onTap: _onMapTap,
+                                          onCameraMove: _onCameraMove,
+                                          markers: _buildMarkers(routeState),
+                                          polygons: polygons,
+                                          compassEnabled: true,
+                                          mapToolbarEnabled: false,
+                                          zoomControlsEnabled: true,
+                                        ),
+                                      );
                                     },
-                                    initialCameraPosition: _nouakchott,
-                                    myLocationEnabled: _hasLocationPermission,
-                                    myLocationButtonEnabled:
-                                        _hasLocationPermission,
-                                    onTap: _onMapTap,
-                                    markers: _buildMarkers(routeState),
-                                    compassEnabled: true,
-                                    mapToolbarEnabled: false,
-                                    zoomControlsEnabled: true,
                                   ),
                       ),
                       if (_errorMessage == null)

@@ -61,7 +61,8 @@ class FcmService {
       debugPrint('FCM token saved for driver ${user.uid}: $token');
     } on FirebaseException catch (e) {
       if (e.code == 'permission-denied') {
-        debugPrint('FCM token save failed: Permission denied. Check Firestore security rules for /drivers/{uid}');
+        debugPrint(
+            'FCM token save failed: Permission denied. Check Firestore security rules for /drivers/{uid}');
       } else {
         debugPrint('FCM token save failed: ${e.code} - ${e.message}');
       }

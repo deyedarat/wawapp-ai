@@ -10,7 +10,8 @@ import '../../core/location/location_service.dart';
 typedef MapLatLng = LatLng;
 
 final mapsApiKeyProvider = Provider<String>((ref) {
-  const key = String.fromEnvironment('MAPS_API_KEY', defaultValue: 'AIzaSyBkeDIcXg0M-zfXogKtHfyZWWdNb916vjU');
+  const key = String.fromEnvironment('MAPS_API_KEY',
+      defaultValue: 'AIzaSyBkeDIcXg0M-zfXogKtHfyZWWdNb916vjU');
   return key;
 });
 

@@ -10,6 +10,7 @@ class Order {
   final double distanceKm;
   final int price;
   final DateTime? createdAt;
+  final DateTime? completedAt;
   final String? driverId;
 
   const Order({
@@ -21,6 +22,7 @@ class Order {
     required this.distanceKm,
     required this.price,
     this.createdAt,
+    this.completedAt,
     this.driverId,
   });
 
@@ -36,6 +38,7 @@ class Order {
       distanceKm: (data['distanceKm'] as num).toDouble(),
       price: data['price'] as int,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
+      completedAt: (data['completedAt'] as Timestamp?)?.toDate(),
       driverId: data['driverId'] as String?,
     );
   }

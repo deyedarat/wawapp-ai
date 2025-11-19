@@ -56,7 +56,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (state.otpStage == OtpStage.sending ||
         state.otpStage == OtpStage.codeSent) {
       if (kDebugMode) {
-        print('[AuthNotifier] sendOtp() aborted - already in stage ${state.otpStage}');
+        print(
+          '[AuthNotifier] sendOtp() aborted - already in stage ${state.otpStage}',
+        );
       }
       return;
     }
@@ -85,11 +87,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
 
       if (kDebugMode) {
-        print('[AuthNotifier] ensurePhoneSession() completed, state: otpStage=${state.otpStage}, otpFlowActive=${state.otpFlowActive}, verificationId isNull=${state.verificationId == null}');
+        print(
+          '[AuthNotifier] ensurePhoneSession() completed, state: otpStage=${state.otpStage}, otpFlowActive=${state.otpFlowActive}, verificationId isNull=${state.verificationId == null}',
+        );
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print('[AuthNotifier] ensurePhoneSession() FAILED: ${e.runtimeType} - $e');
+        print(
+          '[AuthNotifier] ensurePhoneSession() FAILED: ${e.runtimeType} - $e',
+        );
         print('[AuthNotifier] Stacktrace: $stackTrace');
       }
 
@@ -100,7 +106,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
 
       if (kDebugMode) {
-        print('[AuthNotifier] State after error: otpStage=${state.otpStage}, otpFlowActive=${state.otpFlowActive}, error=${state.error}');
+        print(
+          '[AuthNotifier] State after error: otpStage=${state.otpStage}, otpFlowActive=${state.otpFlowActive}, error=${state.error}',
+        );
       }
     }
   }
