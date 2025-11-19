@@ -86,8 +86,8 @@ class AuthGate extends ConsumerWidget {
         debugPrint('[AuthGate] driver doc exists: ${doc?.exists}');
 
         final data = doc?.data();
-        final hasPin = data?['pinHash'] != null &&
-            (data!['pinHash'] as String).isNotEmpty;
+        final hasPin =
+            data?['pinHash'] != null && (data!['pinHash'] as String).isNotEmpty;
 
         debugPrint('[AuthGate] driver hasPin: $hasPin');
 

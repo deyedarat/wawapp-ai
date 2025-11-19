@@ -40,7 +40,9 @@ class PhonePinAuth {
 
   Future<void> ensurePhoneSession(String phoneE164) async {
     if (kDebugMode) {
-      print('[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow for phone=$phoneE164');
+      print(
+        '[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow for phone=$phoneE164',
+      );
     }
 
     final u = _auth.currentUser;
@@ -52,7 +54,9 @@ class PhonePinAuth {
     final completer = Completer<void>();
 
     if (kDebugMode) {
-      print('[PhonePinAuth] Calling Firebase verifyPhoneNumber() for phone=$phoneE164');
+      print(
+        '[PhonePinAuth] Calling Firebase verifyPhoneNumber() for phone=$phoneE164',
+      );
     }
 
     try {
@@ -60,7 +64,10 @@ class PhonePinAuth {
         phoneNumber: phoneE164,
         timeout: const Duration(seconds: 60),
         verificationCompleted: (cred) async {
-          if (kDebugMode) print('[PhonePinAuth] verificationCompleted callback - auto sign-in');
+          if (kDebugMode)
+            print(
+              '[PhonePinAuth] verificationCompleted callback - auto sign-in',
+            );
           try {
             await _auth.signInWithCredential(cred);
             if (kDebugMode) print('[PhonePinAuth] Auto sign-in successful');
@@ -72,42 +79,56 @@ class PhonePinAuth {
         },
         verificationFailed: (e) {
           if (kDebugMode) {
-            print('[PhonePinAuth] verificationFailed callback - code: ${e.code}, message: ${e.message}');
+            print(
+              '[PhonePinAuth] verificationFailed callback - code: ${e.code}, message: ${e.message}',
+            );
           }
           completer.completeError(e);
         },
         codeSent: (verificationId, resendToken) {
           if (kDebugMode) {
-            print('[PhonePinAuth] codeSent callback - verificationId=$verificationId, resendToken=$resendToken');
+            print(
+              '[PhonePinAuth] codeSent callback - verificationId=$verificationId, resendToken=$resendToken',
+            );
           }
           _lastVerificationId = verificationId;
 
           if (kDebugMode) {
-            print('[PhonePinAuth] Firebase Auth phone verification started successfully: verificationId isNull=${_lastVerificationId == null}');
+            print(
+              '[PhonePinAuth] Firebase Auth phone verification started successfully: verificationId isNull=${_lastVerificationId == null}',
+            );
           }
 
           completer.complete();
         },
         codeAutoRetrievalTimeout: (vid) {
           if (kDebugMode) {
-            print('[PhonePinAuth] codeAutoRetrievalTimeout callback - verificationId=$vid');
+            print(
+              '[PhonePinAuth] codeAutoRetrievalTimeout callback - verificationId=$vid',
+            );
           }
           _lastVerificationId = vid;
         },
       );
 
       if (kDebugMode) {
-        print('[PhonePinAuth] verifyPhoneNumber() call initiated, waiting for callbacks...');
+        print(
+          '[PhonePinAuth] verifyPhoneNumber() call initiated, waiting for callbacks...',
+        );
       }
 
       await completer.future;
 
       if (kDebugMode) {
-        print('[PhonePinAuth] ensurePhoneSession() completed successfully, verificationId=$_lastVerificationId');
+        print(
+          '[PhonePinAuth] ensurePhoneSession() completed successfully, verificationId=$_lastVerificationId',
+        );
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print('[PhonePinAuth] ensurePhoneSession() EXCEPTION: ${e.runtimeType} - $e');
+        print(
+          '[PhonePinAuth] ensurePhoneSession() EXCEPTION: ${e.runtimeType} - $e',
+        );
         print('[PhonePinAuth] Stacktrace: $stackTrace');
       }
       rethrow;

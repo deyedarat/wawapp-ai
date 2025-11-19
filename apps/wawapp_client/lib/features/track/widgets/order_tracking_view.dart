@@ -1,11 +1,15 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../l10n/app_localizations.dart';
 import '../models/order.dart' as app_order;
+import '../providers/order_tracking_provider.dart';
 import 'order_status_timeline.dart';
+import '../../map/providers/district_layer_provider.dart';
 
-class OrderTrackingView extends StatefulWidget {
+class OrderTrackingView extends ConsumerStatefulWidget {
   final app_order.Order? order;
   final bool readOnly;
   final LatLng? currentPosition;
@@ -18,11 +22,17 @@ class OrderTrackingView extends StatefulWidget {
   });
 
   @override
-  State<OrderTrackingView> createState() => _OrderTrackingViewState();
+  ConsumerState<OrderTrackingView> createState() => _OrderTrackingViewState();
 }
 
-class _OrderTrackingViewState extends State<OrderTrackingView> {
+class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
   GoogleMapController? _mapController;
+  bool _isFollowingDriver = true;
+  LatLng? _lastDriverPosition;
+
+  void _onCameraMove(CameraPosition position) {
+    ref.read(currentZoomProvider.notifier).state = position.zoom;
+  }
 
   static const CameraPosition _nouakchott = CameraPosition(
     target: LatLng(18.0735, -15.9582),
@@ -37,7 +47,8 @@ class _OrderTrackingViewState extends State<OrderTrackingView> {
         polylineId: const PolylineId('route'),
         points: [
           LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
-          LatLng(widget.order!.dropoff.latitude, widget.order!.dropoff.longitude),
+          LatLng(
+              widget.order!.dropoff.latitude, widget.order!.dropoff.longitude),
         ],
         color: Theme.of(context).colorScheme.primary,
         width: 4,
@@ -48,7 +59,7 @@ class _OrderTrackingViewState extends State<OrderTrackingView> {
     return polylines;
   }
 
-  Set<Marker> _buildMarkers() {
+  Set<Marker> _buildMarkers(DriverLocation? driverLocation) {
     final markers = <Marker>{};
 
     if (widget.currentPosition != null && !widget.readOnly) {
@@ -79,6 +90,16 @@ class _OrderTrackingViewState extends State<OrderTrackingView> {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
         infoWindow:
             InfoWindow(title: 'تسليم', snippet: widget.order!.dropoffAddress),
+      ));
+    }
+
+    // Add driver marker if available
+    if (driverLocation != null) {
+      markers.add(Marker(
+        markerId: const MarkerId('driver'),
+        position: driverLocation.position,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+        infoWindow: const InfoWindow(title: 'السائق'),
       ));
     }
 
@@ -116,32 +137,172 @@ class _OrderTrackingViewState extends State<OrderTrackingView> {
     }
   }
 
+  void _handleDriverMovement(DriverLocation? driverLocation) {
+    if (_mapController == null ||
+        driverLocation == null ||
+        !_isFollowingDriver) {
+      return;
+    }
+
+    final currentPos = driverLocation.position;
+
+    // Only animate if driver moved significantly (>50 meters)
+    if (_lastDriverPosition != null) {
+      final distance = _calculateDistance(
+        _lastDriverPosition!.latitude,
+        _lastDriverPosition!.longitude,
+        currentPos.latitude,
+        currentPos.longitude,
+      );
+      if (distance < 50) return;
+    }
+
+    _lastDriverPosition = currentPos;
+    _mapController!.animateCamera(
+      CameraUpdate.newLatLngZoom(currentPos, 16.0),
+    );
+  }
+
+  void _recenterOnDriver(DriverLocation driverLocation) {
+    if (_mapController == null) return;
+
+    setState(() {
+      _isFollowingDriver = true;
+    });
+
+    _mapController!.animateCamera(
+      CameraUpdate.newLatLngZoom(driverLocation.position, 16.0),
+    );
+  }
+
+  double _calculateDistance(
+      double lat1, double lon1, double lat2, double lon2) {
+    const double earthRadius = 6371000; // meters
+    final double dLat = (lat2 - lat1) * (math.pi / 180);
+    final double dLon = (lon2 - lon1) * (math.pi / 180);
+    final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(lat1 * math.pi / 180) *
+            math.cos(lat2 * math.pi / 180) *
+            math.sin(dLon / 2) *
+            math.sin(dLon / 2);
+    return earthRadius * 2 * math.asin(math.sqrt(a));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
+    // Watch driver location if order has a driver
+    final driverLocationAsync = widget.order?.driverId != null
+        ? ref.watch(driverLocationProvider(widget.order!.driverId!))
+        : null;
+
+    final driverLocation = driverLocationAsync?.whenOrNull(
+      data: (location) => location,
+    );
+
+    // Handle driver movement for auto-follow
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _handleDriverMovement(driverLocation);
+    });
 
     return Column(
       children: [
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.4,
-          child: GoogleMap(
-            onMapCreated: (GoogleMapController controller) {
-              _mapController = controller;
-              WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds());
-            },
-            initialCameraPosition: widget.order?.pickup != null
-                ? CameraPosition(
-                    target: LatLng(widget.order!.pickup.latitude,
-                        widget.order!.pickup.longitude),
-                    zoom: 14.0,
-                  )
-                : _nouakchott,
-            myLocationEnabled: !widget.readOnly,
-            myLocationButtonEnabled: !widget.readOnly,
-            markers: _buildMarkers(),
-            polylines: _buildPolylines(),
-            compassEnabled: true,
-            mapToolbarEnabled: false,
+          child: Stack(
+            children: [
+              Consumer(
+                builder: (context, ref, child) {
+                  final polygons = ref.watch(districtPolygonsProvider);
+                  final locale = Localizations.localeOf(context);
+                  final markersAsync = ref.watch(districtMarkersProvider(locale.languageCode));
+                  
+                  return markersAsync.when(
+                    data: (districtMarkers) => GoogleMap(
+                      onMapCreated: (GoogleMapController controller) {
+                        _mapController = controller;
+                        WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds());
+                      },
+                      onCameraMoveStarted: () {
+                        _isFollowingDriver = false;
+                      },
+                      onCameraMove: _onCameraMove,
+                      initialCameraPosition: widget.order?.pickup != null
+                          ? CameraPosition(
+                              target: LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
+                              zoom: 14.0,
+                            )
+                          : _nouakchott,
+                      myLocationEnabled: !widget.readOnly,
+                      myLocationButtonEnabled: !widget.readOnly,
+                      markers: {..._buildMarkers(driverLocation), ...districtMarkers},
+                      polylines: _buildPolylines(),
+                      polygons: polygons,
+                      compassEnabled: true,
+                      mapToolbarEnabled: false,
+                    ),
+                    loading: () => GoogleMap(
+                      onMapCreated: (GoogleMapController controller) {
+                        _mapController = controller;
+                        WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds());
+                      },
+                      onCameraMoveStarted: () {
+                        _isFollowingDriver = false;
+                      },
+                      onCameraMove: _onCameraMove,
+                      initialCameraPosition: widget.order?.pickup != null
+                          ? CameraPosition(
+                              target: LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
+                              zoom: 14.0,
+                            )
+                          : _nouakchott,
+                      myLocationEnabled: !widget.readOnly,
+                      myLocationButtonEnabled: !widget.readOnly,
+                      markers: _buildMarkers(driverLocation),
+                      polylines: _buildPolylines(),
+                      polygons: polygons,
+                      compassEnabled: true,
+                      mapToolbarEnabled: false,
+                    ),
+                    error: (error, stack) => GoogleMap(
+                      onMapCreated: (GoogleMapController controller) {
+                        _mapController = controller;
+                        WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds());
+                      },
+                      onCameraMoveStarted: () {
+                        _isFollowingDriver = false;
+                      },
+                      onCameraMove: _onCameraMove,
+                      initialCameraPosition: widget.order?.pickup != null
+                          ? CameraPosition(
+                              target: LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
+                              zoom: 14.0,
+                            )
+                          : _nouakchott,
+                      myLocationEnabled: !widget.readOnly,
+                      myLocationButtonEnabled: !widget.readOnly,
+                      markers: _buildMarkers(driverLocation),
+                      polylines: _buildPolylines(),
+                      polygons: polygons,
+                      compassEnabled: true,
+                      mapToolbarEnabled: false,
+                    ),
+                  );
+                },
+              ),
+              if (driverLocation != null && !widget.readOnly)
+                Positioned(
+                  bottom: 16,
+                  right: 16,
+                  child: FloatingActionButton.small(
+                    onPressed: () => _recenterOnDriver(driverLocation),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    child: const Icon(Icons.my_location),
+                  ),
+                ),
+            ],
           ),
         ),
         Expanded(

@@ -25,10 +25,10 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
     final repo = ref.read(ordersRepositoryProvider);
     repo.watchOrder(orderId).listen((snapshot) {
       if (!mounted) return;
-      
+
       final data = snapshot.data() as Map<String, dynamic>?;
       if (data == null) return;
-      
+
       final status = data['status'] as String?;
       if (status == 'accepted') {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -159,7 +159,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                             dropoff: routeState.dropoff!,
                             status: OrderStatus.assigning.toFirestore(),
                           );
-                          
+
                           _startOrderTracking(orderId);
                           context.push('/track', extra: order);
                         } catch (e) {

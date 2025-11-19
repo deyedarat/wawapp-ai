@@ -67,6 +67,4 @@ class OrderStatusTimeline extends StatelessWidget {
       ],
     );
   }
-
-
 }

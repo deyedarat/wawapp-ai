@@ -17,25 +17,25 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum OrderStatus {
   /// Order created, waiting for driver assignment
   requested,
-  
+
   /// System is searching for available drivers
   assigning,
-  
+
   /// Driver has accepted the order
   accepted,
-  
+
   /// Driver is on the way to pickup/dropoff
   onRoute,
-  
+
   /// Order successfully completed
   completed,
-  
+
   /// Order cancelled by client
   cancelledByClient,
-  
+
   /// Order cancelled by driver
   cancelledByDriver,
-  
+
   /// Order expired without being accepted
   expired;
 
@@ -134,10 +134,24 @@ enum OrderStatus {
   /// Check if transition from current status to target status is valid
   bool canTransitionTo(OrderStatus target) {
     const transitions = {
-      OrderStatus.requested: [OrderStatus.assigning, OrderStatus.cancelledByClient],
-      OrderStatus.assigning: [OrderStatus.accepted, OrderStatus.expired, OrderStatus.cancelledByClient],
-      OrderStatus.accepted: [OrderStatus.onRoute, OrderStatus.cancelledByDriver, OrderStatus.cancelledByClient],
-      OrderStatus.onRoute: [OrderStatus.completed, OrderStatus.cancelledByDriver],
+      OrderStatus.requested: [
+        OrderStatus.assigning,
+        OrderStatus.cancelledByClient
+      ],
+      OrderStatus.assigning: [
+        OrderStatus.accepted,
+        OrderStatus.expired,
+        OrderStatus.cancelledByClient
+      ],
+      OrderStatus.accepted: [
+        OrderStatus.onRoute,
+        OrderStatus.cancelledByDriver,
+        OrderStatus.cancelledByClient
+      ],
+      OrderStatus.onRoute: [
+        OrderStatus.completed,
+        OrderStatus.cancelledByDriver
+      ],
       OrderStatus.completed: <OrderStatus>[],
       OrderStatus.cancelledByClient: <OrderStatus>[],
       OrderStatus.cancelledByDriver: <OrderStatus>[],
@@ -154,12 +168,17 @@ enum OrderStatus {
       'status': toFirestore(),
       'updatedAt': FieldValue.serverTimestamp(),
     };
-    
+
     // Add driverId when accepting order
     if (this == OrderStatus.accepted && driverId != null) {
       update['driverId'] = driverId;
     }
-    
+
+    // Add completedAt when completing order
+    if (this == OrderStatus.completed) {
+      update['completedAt'] = FieldValue.serverTimestamp();
+    }
+
     return update;
   }
 }

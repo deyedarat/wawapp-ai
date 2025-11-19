@@ -29,7 +29,8 @@ class PhonePinAuth {
     return _db.collection('drivers').doc(uid);
   }
 
-  Future<void> ensurePhoneSession(String phoneE164, {VoidCallback? onCodeSent}) async {
+  Future<void> ensurePhoneSession(String phoneE164,
+      {VoidCallback? onCodeSent}) async {
     final u = _auth.currentUser;
     if (u != null) {
       if (kDebugMode) {

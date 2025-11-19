@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' as dev;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'location_service.dart';
 import 'orders_service.dart';
@@ -25,11 +26,13 @@ class TrackingService {
       return;
     }
 
+    debugPrint('[TRACKING] Starting tracking for driver: ${user.uid}');
     dev.log('[tracking] start');
     _isTracking = true;
 
     _orderSubscription =
         _ordersService.getDriverActiveOrders(user.uid).listen((orders) {
+      debugPrint('[TRACKING] Active orders count: ${orders.length}');
       if (orders.isNotEmpty) {
         _startLocationUpdates(user.uid);
       } else {
@@ -43,6 +46,7 @@ class TrackingService {
       return;
     }
 
+    debugPrint('[TRACKING] Stopping tracking');
     dev.log('[tracking] stop');
     _isTracking = false;
     _stopLocationUpdates();
@@ -51,6 +55,7 @@ class TrackingService {
 
   void _startLocationUpdates(String driverId) {
     _updateTimer?.cancel();
+    debugPrint('[TRACKING] Starting location updates for driver: $driverId');
     _updateTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
       try {
         final position = await _locationService.getCurrentPosition();
@@ -63,6 +68,8 @@ class TrackingService {
             position.longitude,
           );
           if (distance < 20) {
+            debugPrint(
+                '[TRACKING] Skipping update - moved only ${distance.toStringAsFixed(1)}m');
             return; // Skip if moved less than 20m
           }
         }
@@ -73,16 +80,20 @@ class TrackingService {
           'updatedAt': FieldValue.serverTimestamp(),
         });
 
+        debugPrint(
+            '[TRACKING] Firestore write - driverId: $driverId, lat: ${position.latitude}, lng: ${position.longitude}, updatedAt: serverTimestamp');
         _lastPosition = position;
         dev.log(
             '[tracking] update lat=${position.latitude} lng=${position.longitude}');
       } on Object catch (e) {
+        debugPrint('[TRACKING] Error during location update: $e');
         dev.log('[tracking] error: $e');
       }
     });
   }
 
   void _stopLocationUpdates() {
+    debugPrint('[TRACKING] Stopping location updates');
     _updateTimer?.cancel();
     _updateTimer = null;
     _lastPosition = null;

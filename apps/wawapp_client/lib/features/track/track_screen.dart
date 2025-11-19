@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:core_shared/core_shared.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
@@ -33,17 +34,26 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
     _startOrderTracking();
   }
 
-  void _startOrderTracking() async {
-    if (widget.order == null) return;
+  void _startOrderTracking() {
+    if (widget.order == null) {
+      debugPrint('[TRACK] No order provided to track');
+      return;
+    }
 
-    final user = await FirebaseFirestore.instance
-        .collection('orders')
-        .where('ownerId', isEqualTo: widget.order!.status)
-        .limit(1)
-        .get();
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      debugPrint('[TRACK] User not authenticated');
+      return;
+    }
 
-    if (user.docs.isEmpty) return;
-    _orderId = user.docs.first.id;
+    // Verify user owns this order
+    if (widget.order!.ownerId != currentUser.uid) {
+      debugPrint(
+          '[TRACK] User tried to track an order they do not own: orderId=${widget.order!.id}, ownerId=${widget.order!.ownerId}, uid=${currentUser.uid}');
+      return;
+    }
+
+    _orderId = widget.order!.id;
 
     _orderSubscription = FirebaseFirestore.instance
         .collection('orders')
@@ -86,10 +96,6 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
       },
     );
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {

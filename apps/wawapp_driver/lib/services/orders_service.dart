@@ -80,8 +80,8 @@ class OrdersService {
         throw Exception('Order not found');
       }
 
-      final currentStatus = OrderStatus.fromFirestore(
-          orderDoc.data()!['status'] as String);
+      final currentStatus =
+          OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
       if (currentStatus != OrderStatus.assigning) {
         throw Exception('Order was already taken');
       }
@@ -103,8 +103,8 @@ class OrdersService {
         throw Exception('Order not found');
       }
 
-      final currentStatus = OrderStatus.fromFirestore(
-          orderDoc.data()!['status'] as String);
+      final currentStatus =
+          OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
 
       if (!currentStatus.canTransitionTo(to)) {
         throw Exception('Invalid status transition');
@@ -125,9 +125,22 @@ class OrdersService {
         ])
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs
+          final orders = snapshot.docs
               .map((doc) => app_order.Order.fromFirestore(doc.id, doc.data()))
               .toList();
+
+          // Log active orders for tracking verification
+          if (orders.isNotEmpty) {
+            final orderStatuses = orders
+                .map((o) => '${o.id.substring(o.id.length - 6)}:${o.status}')
+                .join(', ');
+            dev.log(
+                '[TRACKING] Active orders for driver $driverId: [$orderStatuses]');
+          } else {
+            dev.log('[TRACKING] No active orders for driver $driverId');
+          }
+
+          return orders;
         });
   }
 

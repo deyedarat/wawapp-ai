@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:core_shared/core_shared.dart';
 
 class Order {
+  final String? id;
+  final String? ownerId;
   final double distanceKm;
   final double price;
   final String pickupAddress;
@@ -10,8 +13,11 @@ class Order {
   final LatLng dropoff;
   final String? status;
   final String? driverId;
+  final DateTime? completedAt;
 
   const Order({
+    this.id,
+    this.ownerId,
     required this.distanceKm,
     required this.price,
     required this.pickupAddress,
@@ -20,11 +26,40 @@ class Order {
     required this.dropoff,
     this.status,
     this.driverId,
+    this.completedAt,
   });
 
-  OrderStatus get orderStatus => OrderStatus.fromFirestore(status ?? 'requested');
+  OrderStatus get orderStatus =>
+      OrderStatus.fromFirestore(status ?? 'requested');
+
+  factory Order.fromFirestore(Map<String, dynamic> data) {
+    final pickupData = data['pickup'] as Map<String, dynamic>;
+    final dropoffData = data['dropoff'] as Map<String, dynamic>;
+
+    return Order(
+      id: data['id'] as String?,
+      ownerId: data['ownerId'] as String?,
+      distanceKm: (data['distanceKm'] as num).toDouble(),
+      price: (data['price'] as num).toDouble(),
+      pickupAddress: data['pickupAddress'] as String,
+      dropoffAddress: data['dropoffAddress'] as String,
+      pickup: LatLng(
+        (pickupData['lat'] as num).toDouble(),
+        (pickupData['lng'] as num).toDouble(),
+      ),
+      dropoff: LatLng(
+        (dropoffData['lat'] as num).toDouble(),
+        (dropoffData['lng'] as num).toDouble(),
+      ),
+      status: data['status'] as String?,
+      driverId: data['driverId'] as String?,
+      completedAt: (data['completedAt'] as Timestamp?)?.toDate(),
+    );
+  }
 
   Map<String, dynamic> toMap() => {
+        'id': id,
+        'ownerId': ownerId,
         'distanceKm': distanceKm,
         'price': price,
         'pickupAddress': pickupAddress,

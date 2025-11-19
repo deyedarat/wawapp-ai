@@ -23,7 +23,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     super.initState();
     _navigatedThisAttempt = false;
 
-    _authSubscription = ref.listenManual<AuthState>(authProvider, (previous, next) {
+    _authSubscription =
+        ref.listenManual<AuthState>(authProvider, (previous, next) {
       if (!_navigatedThisAttempt &&
           previous?.otpStage != next.otpStage &&
           next.otpStage == OtpStage.codeSent) {

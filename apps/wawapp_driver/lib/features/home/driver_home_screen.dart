@@ -74,16 +74,38 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  Text(
-                    l10n.nearby_requests,
-                    style: Theme.of(context).textTheme.headlineMedium,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.nearby_requests,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      TextButton(
+                        onPressed: () => context.push('/nearby'),
+                        child: const Text('عرض الكل'),
+                      ),
+                    ],
                   ),
-                  TextButton(
-                    onPressed: () => context.push('/nearby'),
-                    child: const Text('عرض الكل'),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: () => context.push('/earnings'),
+                    icon: const Icon(Icons.account_balance_wallet),
+                    label: const Text('الأرباح'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 48),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: () => context.push('/history'),
+                    icon: const Icon(Icons.history),
+                    label: const Text('السجل'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 48),
+                    ),
                   ),
                 ],
               ),

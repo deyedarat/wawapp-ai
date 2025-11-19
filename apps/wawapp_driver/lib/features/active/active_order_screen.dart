@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:core_shared/core_shared.dart';
 import '../../models/order.dart' as app_order;
 import '../../services/orders_service.dart';
+import '../../services/tracking_service.dart';
 
 class ActiveOrderScreen extends StatefulWidget {
   const ActiveOrderScreen({super.key});
@@ -13,6 +14,15 @@ class ActiveOrderScreen extends StatefulWidget {
 
 class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
   final _ordersService = OrdersService();
+  bool _isTrackingStarted = false;
+
+  @override
+  void dispose() {
+    if (_isTrackingStarted) {
+      TrackingService.instance.stopTracking();
+    }
+    super.dispose();
+  }
 
   Future<void> _transition(String orderId, OrderStatus to) async {
     try {
@@ -53,6 +63,16 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
           }
 
           final orders = snapshot.data ?? [];
+
+          // Handle tracking based on active orders
+          if (orders.isNotEmpty && !_isTrackingStarted) {
+            _isTrackingStarted = true;
+            TrackingService.instance.startTracking();
+          } else if (orders.isEmpty && _isTrackingStarted) {
+            _isTrackingStarted = false;
+            TrackingService.instance.stopTracking();
+          }
+
           if (orders.isEmpty) {
             return const Center(
               child: Column(
@@ -108,7 +128,8 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                 const SizedBox(height: 8),
                 OutlinedButton(
                   onPressed: order.orderStatus.canDriverCancel
-                      ? () => _transition(order.id, OrderStatus.cancelledByDriver)
+                      ? () =>
+                          _transition(order.id, OrderStatus.cancelledByDriver)
                       : null,
                   child: const Text('إلغاء'),
                 ),
