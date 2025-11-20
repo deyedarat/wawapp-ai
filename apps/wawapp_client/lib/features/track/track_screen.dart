@@ -75,6 +75,13 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
               context.go('/driver-found/$_orderId');
             }
           });
+        } else if (status == OrderStatus.completed && !_hasNavigated) {
+          _hasNavigated = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.go('/trip-completed/$_orderId');
+            }
+          });
         }
       }
     });

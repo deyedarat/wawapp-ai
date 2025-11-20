@@ -10,9 +10,17 @@ service cloud.firestore {
     function validStatusTransition() {
       let currentStatus = resource.data.status;
       let newStatus = request.resource.data.status;
-      return (currentStatus == "matching" && newStatus in ["accepted", "cancelled"]) ||
-             (currentStatus == "accepted" && newStatus in ["onRoute", "cancelled"]) ||
-             (currentStatus == "onRoute" && newStatus == "completed");
+      return (currentStatus == "matching" && newStatus in ["accepted", "cancelled", "cancelledByClient", "cancelledByDriver"]) ||
+             (currentStatus == "accepted" && newStatus in ["onRoute", "cancelled", "cancelledByClient", "cancelledByDriver"]) ||
+             (currentStatus == "onRoute" && newStatus in ["completed", "cancelled", "cancelledByDriver"]);
+    }
+    function isRatingUpdate() {
+      let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      return affectedKeys.hasOnly(['driverRating', 'ratedAt', 'updatedAt'])
+        && request.resource.data.driverRating is int
+        && request.resource.data.driverRating >= 1
+        && request.resource.data.driverRating <= 5
+        && resource.data.status == 'completed';
     }
 
     match /orders/{id} {
@@ -44,11 +52,12 @@ service cloud.firestore {
       allow read: if isSignedIn() && (isOwner() || isDriver() || resource.data.status == "matching");
       
       allow update: if isSignedIn()
-        && validStatusTransition()
         && request.resource.data.price == resource.data.price
         && request.resource.data.ownerId == resource.data.ownerId
-        && ((request.resource.data.status == "accepted" && request.resource.data.driverId == request.auth.uid) ||
-            (request.resource.data.status != "accepted" && isDriver()));
+        && ((validStatusTransition() && ((request.resource.data.status == "accepted" && request.resource.data.driverId == request.auth.uid) ||
+            (request.resource.data.status == "cancelledByClient" && isOwner()) ||
+            (request.resource.data.status in ["onRoute", "completed", "cancelled", "cancelledByDriver"] && isDriver()))) ||
+            (isRatingUpdate() && isOwner()));
     }
 
     match /driver_locations/{driverId} {

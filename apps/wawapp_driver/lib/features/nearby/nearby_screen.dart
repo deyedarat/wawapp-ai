@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import 'package:core_shared/core_shared.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../models/order.dart' as app_order;
 import '../../../services/location_service.dart';
 import '../../../services/orders_service.dart';
+import '../../../widgets/error_screen.dart';
 import 'dart:math';
 import 'dart:developer' as dev;
 
@@ -133,8 +135,10 @@ class _NearbyScreenState extends State<NearbyScreen> {
                         if (kDebugMode) {
                           dev.log('[Matching] NearbyScreen: Stream error: ${snapshot.error}');
                         }
-                        return Center(
-                          child: Text('خطأ: ${snapshot.error}'),
+                        final appError = AppError.from(snapshot.error!);
+                        return ErrorScreen(
+                          message: appError.toUserMessage(),
+                          onRetry: () => setState(() {}),
                         );
                       }
                       final orders = snapshot.data ?? [];

@@ -11,6 +11,7 @@ import 'core/location/location_bootstrap.dart';
 import 'firebase_options.dart';
 import 'services/fcm_service.dart';
 import 'services/notification_service.dart';
+import 'services/analytics_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +47,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   void initState() {
     super.initState();
     FcmService().initialize();
+    AnalyticsService.instance.setUserTypeClient();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       NotificationService().initialize(context);
     });

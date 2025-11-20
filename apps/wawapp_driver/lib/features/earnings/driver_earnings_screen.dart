@@ -1,41 +1,120 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:core_shared/core_shared.dart';
 import '../../models/order.dart' as app_order;
+import '../../widgets/error_screen.dart';
 import 'providers/driver_earnings_provider.dart';
+import 'data/driver_earnings_repository.dart';
 
-class DriverEarningsScreen extends ConsumerWidget {
+class DriverEarningsScreen extends ConsumerStatefulWidget {
   const DriverEarningsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DriverEarningsScreen> createState() => _DriverEarningsScreenState();
+}
+
+class _DriverEarningsScreenState extends ConsumerState<DriverEarningsScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final earningsState = ref.watch(driverEarningsProvider);
+    final repository = DriverEarningsRepository();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('الأرباح'),
         centerTitle: true,
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'اليوم'),
+            Tab(text: 'هذا الأسبوع'),
+            Tab(text: 'إجمالي الأرباح'),
+          ],
+        ),
       ),
       body: earningsState.isLoading
           ? const Center(child: CircularProgressIndicator())
           : earningsState.error != null
-              ? Center(child: Text('خطأ: ${earningsState.error}'))
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSummaryCards(earningsState),
-                      const SizedBox(height: 24),
-                      Text(
-                        'الرحلات المكتملة',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTripsList(earningsState.completedOrders),
-                    ],
-                  ),
+              ? ErrorScreen(
+                  message: AppError.from(earningsState.error!).toUserMessage(),
+                  onRetry: () => ref.refresh(driverEarningsProvider),
+                )
+              : TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildDailyTab(earningsState, repository),
+                    _buildWeeklyTab(earningsState, repository),
+                    _buildTotalTab(earningsState),
+                  ],
                 ),
+    );
+  }
+
+  Widget _buildDailyTab(DriverEarningsState state, DriverEarningsRepository repo) {
+    final dailyOrders = repo.getDailyEarnings(state.completedOrders);
+    final total = state.todayTotal;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSummaryCard('أرباح اليوم', '$total MRU', Colors.green,
+              subtitle: '${dailyOrders.length} رحلة'),
+          const SizedBox(height: 16),
+          _buildTripsList(dailyOrders),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeeklyTab(DriverEarningsState state, DriverEarningsRepository repo) {
+    final weeklyOrders = repo.getWeeklyEarnings(state.completedOrders);
+    final total = state.weekTotal;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSummaryCard('أرباح هذا الأسبوع', '$total MRU', Colors.blue,
+              subtitle: '${weeklyOrders.length} رحلة'),
+          const SizedBox(height: 16),
+          _buildTripsList(weeklyOrders),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTotalTab(DriverEarningsState state) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSummaryCards(state),
+          const SizedBox(height: 24),
+          Text('جميع الرحلات المكتملة',
+              style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 16),
+          _buildTripsList(state.completedOrders),
+        ],
+      ),
     );
   }
 
