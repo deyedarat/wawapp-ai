@@ -7,6 +7,7 @@ import '../../features/quote/quote_screen.dart';
 import '../../features/track/track_screen.dart';
 import '../../features/track/driver_found_screen.dart';
 import '../../features/track/public_track_screen.dart';
+import '../../features/track/trip_completed_screen.dart';
 import '../../features/track/models/order.dart';
 import '../../features/about/about_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
@@ -75,6 +76,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final orderId = state.pathParameters['orderId']!;
           return PublicTrackScreen(orderId: orderId);
+        },
+      ),
+      GoRoute(
+        path: '/trip-completed/:orderId',
+        name: 'tripCompleted',
+        builder: (context, state) {
+          final orderId = state.pathParameters['orderId']!;
+          return TripCompletedScreen(orderId: orderId);
         },
       ),
     ],

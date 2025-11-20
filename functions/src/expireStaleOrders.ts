@@ -79,6 +79,13 @@ export const expireStaleOrders = functions
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
           });
 
+          // Log analytics-style event
+          console.log('[Analytics] order_expired', {
+            order_id: orderId,
+            owner_id: orderData.ownerId || null,
+            created_at: orderData.createdAt?.toDate?.()?.toISOString() || null,
+          });
+
           expiredCount++;
         } else {
           console.log(`[ExpireOrders] Skipping order ${orderId} - status changed to ${orderData.status} or has driver ${orderData.assignedDriverId}`);
@@ -89,6 +96,9 @@ export const expireStaleOrders = functions
       if (expiredCount > 0) {
         await batch.commit();
         console.log(`[ExpireOrders] Successfully expired ${expiredCount} orders.`);
+        
+        // Log batch analytics event
+        console.log('[Analytics] order_expired_batch', { count: expiredCount });
       } else {
         console.log('[ExpireOrders] No orders to expire after safety checks.');
       }

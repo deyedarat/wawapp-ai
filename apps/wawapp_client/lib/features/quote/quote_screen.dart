@@ -12,6 +12,7 @@ import '../track/data/orders_repository.dart';
 import '../../core/utils/address_utils.dart';
 import '../../core/utils/eta.dart';
 import '../../core/pricing/pricing.dart';
+import '../../services/analytics_service.dart';
 
 class QuoteScreen extends ConsumerStatefulWidget {
   const QuoteScreen({super.key});
@@ -147,6 +148,9 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                             distanceKm: quoteState.distanceKm!,
                             price: breakdown.rounded,
                           );
+
+                          // Log analytics event
+                          AnalyticsService.instance.logOrderCreated(orderId: orderId);
 
                           if (!mounted) return;
                           final order = Order(

@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:core_shared/core_shared.dart';
 import 'providers/order_tracking_provider.dart';
 import '../map/providers/district_layer_provider.dart';
+import '../../widgets/error_screen.dart';
 
 class DriverFoundScreen extends ConsumerWidget {
   final String orderId;
@@ -19,9 +21,13 @@ class DriverFoundScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('تم العثور على سائق')),
       body: orderAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('خطأ: $error'),
-        ),
+        error: (error, stack) {
+          final appError = AppError.from(error);
+          return ErrorScreen(
+            message: appError.toUserMessage(),
+            onRetry: () => ref.refresh(orderTrackingProvider(orderId)),
+          );
+        },
         data: (snapshot) {
           if (snapshot == null || !snapshot.exists) {
             return const Center(child: Text('الطلب غير موجود'));

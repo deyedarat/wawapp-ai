@@ -5,6 +5,7 @@ import 'package:core_shared/core_shared.dart';
 import '../../models/order.dart' as app_order;
 import '../../services/orders_service.dart';
 import '../../services/tracking_service.dart';
+import '../../widgets/error_screen.dart';
 import 'dart:developer' as dev;
 
 class ActiveOrderScreen extends StatefulWidget {
@@ -17,6 +18,7 @@ class ActiveOrderScreen extends StatefulWidget {
 class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
   final _ordersService = OrdersService();
   bool _isTrackingStarted = false;
+  bool _isCancelling = false;
 
   @override
   void dispose() {
@@ -42,6 +44,55 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('خطأ: ${e.toString()}')),
       );
+    }
+  }
+
+  Future<void> _showCancelDialog(String orderId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('إلغاء الطلب'),
+        content: const Text('هل تريد إلغاء هذا الطلب؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('لا'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('نعم'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await _cancelOrder(orderId);
+    }
+  }
+
+  Future<void> _cancelOrder(String orderId) async {
+    setState(() => _isCancelling = true);
+
+    try {
+      await _ordersService.cancelOrder(orderId);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تم إلغاء الطلب بواسطة السائق')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isCancelling = false);
+        final message = e.toString().contains('current status')
+            ? 'لا يمكن إلغاء الطلب الآن، ربما تغيّرت حالته.'
+            : 'تعذّر إلغاء الطلب، حاول مرة أخرى.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
     }
   }
 
@@ -77,6 +128,17 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
               dev.log('[Matching] ActiveOrderScreen: Waiting for stream data');
             }
             return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            if (kDebugMode) {
+              dev.log('[Matching] ActiveOrderScreen: Stream error: ${snapshot.error}');
+            }
+            final appError = AppError.from(snapshot.error!);
+            return ErrorScreen(
+              message: appError.toUserMessage(),
+              onRetry: () => setState(() {}),
+            );
           }
 
           final orders = snapshot.data ?? [];
@@ -147,11 +209,20 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton(
-                  onPressed: order.orderStatus.canDriverCancel
-                      ? () =>
-                          _transition(order.id, OrderStatus.cancelledByDriver)
+                  onPressed: order.orderStatus.canDriverCancel && !_isCancelling
+                      ? () => _showCancelDialog(order.id)
                       : null,
-                  child: const Text('إلغاء'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    side: const BorderSide(color: Colors.red),
+                  ),
+                  child: _isCancelling
+                      ? const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('إلغاء الطلب'),
                 ),
               ],
             ),

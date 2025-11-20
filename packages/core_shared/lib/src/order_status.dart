@@ -180,6 +180,12 @@ enum OrderStatus {
       update['completedAt'] = FieldValue.serverTimestamp();
     }
 
+    // Add cancelledAt when cancelling order
+    if (this == OrderStatus.cancelledByClient ||
+        this == OrderStatus.cancelledByDriver) {
+      update['cancelledAt'] = FieldValue.serverTimestamp();
+    }
+
     return update;
   }
 }

@@ -183,6 +183,9 @@ class OrdersService {
 
       transaction.update(orderRef, update);
     });
+
+    // Log analytics event after successful acceptance
+    AnalyticsService.instance.logOrderAcceptedByDriver(orderId: orderId);
   }
 
   Future<void> transition(String orderId, OrderStatus to) async {
@@ -204,6 +207,48 @@ class OrdersService {
       final update = to.createTransitionUpdate();
       transaction.update(orderRef, update);
     });
+
+    // Log analytics event for completed orders
+    if (to == OrderStatus.completed) {
+      AnalyticsService.instance.logOrderCompletedByDriver(orderId: orderId);
+    }
+  }
+
+  Future<void> cancelOrder(String orderId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception('Driver not authenticated');
+    }
+
+    await _firestore.runTransaction((transaction) async {
+      final orderRef = _firestore.collection('orders').doc(orderId);
+      final orderDoc = await transaction.get(orderRef);
+
+      if (!orderDoc.exists) {
+        throw Exception('Order not found');
+      }
+
+      final data = orderDoc.data()!;
+      final driverId = data['driverId'] as String?;
+
+      if (driverId != user.uid) {
+        throw Exception('Not authorized to cancel this order');
+      }
+
+      final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
+
+      if (!currentStatus.canDriverCancel) {
+        throw Exception('Cannot cancel order in current status');
+      }
+
+      transaction.update(
+        orderRef,
+        OrderStatus.cancelledByDriver.createTransitionUpdate(),
+      );
+    });
+
+    // Log analytics event after successful cancellation
+    AnalyticsService.instance.logOrderCancelledByDriver(orderId: orderId);
   }
 
   Stream<List<app_order.Order>> getDriverActiveOrders(String driverId) {

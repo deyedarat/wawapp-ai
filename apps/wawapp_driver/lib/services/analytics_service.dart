@@ -36,4 +36,49 @@ class AnalyticsService {
       if (kDebugMode) print('[Analytics] Error logging logout_clicked: $e');
     }
   }
+
+  Future<void> setUserTypeDriver() async {
+    try {
+      await _analytics.setUserProperty(name: 'user_type', value: 'driver');
+      if (kDebugMode) print('[Analytics] user_type set to driver');
+    } catch (e) {
+      if (kDebugMode) print('[Analytics] Error setting user_type: $e');
+    }
+  }
+
+  Future<void> logOrderAcceptedByDriver({required String orderId}) async {
+    try {
+      await _analytics.logEvent(
+        name: 'order_accepted_by_driver',
+        parameters: {'order_id': orderId},
+      );
+      if (kDebugMode) print('[Analytics] order_accepted_by_driver: $orderId');
+    } catch (e) {
+      if (kDebugMode) print('[Analytics] Error logging order_accepted_by_driver: $e');
+    }
+  }
+
+  Future<void> logOrderCancelledByDriver({required String orderId}) async {
+    try {
+      await _analytics.logEvent(
+        name: 'order_cancelled_by_driver',
+        parameters: {'order_id': orderId},
+      );
+      if (kDebugMode) print('[Analytics] order_cancelled_by_driver: $orderId');
+    } catch (e) {
+      if (kDebugMode) print('[Analytics] Error logging order_cancelled_by_driver: $e');
+    }
+  }
+
+  Future<void> logOrderCompletedByDriver({required String orderId}) async {
+    try {
+      await _analytics.logEvent(
+        name: 'order_completed_by_driver',
+        parameters: {'order_id': orderId},
+      );
+      if (kDebugMode) print('[Analytics] order_completed_by_driver: $orderId');
+    } catch (e) {
+      if (kDebugMode) print('[Analytics] Error logging order_completed_by_driver: $e');
+    }
+  }
 }

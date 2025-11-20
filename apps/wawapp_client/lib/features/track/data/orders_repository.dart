@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
 import '../models/order.dart' as app_order;
+import '../../../services/analytics_service.dart';
 
 class OrdersRepository {
   final FirebaseFirestore _firestore;
@@ -63,6 +65,69 @@ class OrdersRepository {
         .map((snapshot) => snapshot.docs
             .map((doc) => app_order.Order.fromFirestore({...doc.data(), 'id': doc.id}))
             .toList());
+  }
+
+  Future<void> cancelOrder(String orderId) async {
+    await _firestore.runTransaction((transaction) async {
+      final orderRef = _firestore.collection('orders').doc(orderId);
+      final orderSnapshot = await transaction.get(orderRef);
+
+      if (!orderSnapshot.exists) {
+        throw Exception('Order not found');
+      }
+
+      final data = orderSnapshot.data()!;
+      final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
+
+      if (!currentStatus.canClientCancel) {
+        throw Exception('Cannot cancel order in current status');
+      }
+
+      transaction.update(
+        orderRef,
+        OrderStatus.cancelledByClient.createTransitionUpdate(),
+      );
+    });
+
+    // Log analytics event after successful cancellation
+    AnalyticsService.instance.logOrderCancelledByClient(orderId: orderId);
+  }
+
+  Future<void> rateDriver({
+    required String orderId,
+    required int rating,
+  }) async {
+    if (rating < 1 || rating > 5) {
+      throw ArgumentError('Rating must be between 1 and 5');
+    }
+
+    await _firestore.runTransaction((transaction) async {
+      final orderRef = _firestore.collection('orders').doc(orderId);
+      final orderSnapshot = await transaction.get(orderRef);
+
+      if (!orderSnapshot.exists) {
+        throw Exception('Order not found');
+      }
+
+      final data = orderSnapshot.data()!;
+      final ownerId = data['ownerId'] as String?;
+      final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
+      if (ownerId != currentUserId) {
+        throw Exception('Not authorized to rate this order');
+      }
+
+      final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
+      if (currentStatus != OrderStatus.completed) {
+        throw Exception('Can only rate completed orders');
+      }
+
+      transaction.update(orderRef, {
+        'driverRating': rating,
+        'ratedAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    });
   }
 }
 

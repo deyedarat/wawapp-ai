@@ -15,5 +15,5 @@ final driverHistoryProvider = StreamProvider.autoDispose<List<app_order.Order>>(
     return Stream.value([]);
   }
   
-  return repository.watchCompletedOrders(user.uid);
+  return repository.watchAllHistoryOrders(user.uid);
 });

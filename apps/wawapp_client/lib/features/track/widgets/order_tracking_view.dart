@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:go_router/go_router.dart';
 import '../../../l10n/app_localizations.dart';
 import '../models/order.dart' as app_order;
 import '../providers/order_tracking_provider.dart';
+import '../data/orders_repository.dart';
 import 'order_status_timeline.dart';
 import '../../map/providers/district_layer_provider.dart';
 
@@ -29,6 +31,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
   GoogleMapController? _mapController;
   bool _isFollowingDriver = true;
   LatLng? _lastDriverPosition;
+  bool _isCancelling = false;
 
   void _onCameraMove(CameraPosition position) {
     ref.read(currentZoomProvider.notifier).state = position.zoom;
@@ -188,6 +191,59 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
     return earthRadius * 2 * math.asin(math.sqrt(a));
   }
 
+  Future<void> _showCancelDialog(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('إلغاء الطلب'),
+        content: const Text('هل تريد إلغاء الطلب؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('لا'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('نعم'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await _cancelOrder();
+    }
+  }
+
+  Future<void> _cancelOrder() async {
+    if (widget.order == null) return;
+
+    setState(() => _isCancelling = true);
+
+    try {
+      final repository = ref.read(ordersRepositoryProvider);
+      await repository.cancelOrder(widget.order!.id);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تم إلغاء الطلب')),
+        );
+        context.go('/');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isCancelling = false);
+        final message = e.toString().contains('current status')
+            ? 'لا يمكن إلغاء الطلب الآن، ربما تم قبوله أو تغيّرت حالته.'
+            : 'تعذّر إلغاء الطلب، حاول مرة أخرى.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -343,6 +399,23 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                       },
                       child: const Text('نسخ رابط التتبع'),
                     ),
+                    if (widget.order!.orderStatus.canClientCancel) ...[
+                      const SizedBox(height: 8),
+                      OutlinedButton(
+                        onPressed: _isCancelling ? null : () => _showCancelDialog(context),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red),
+                        ),
+                        child: _isCancelling
+                            ? const SizedBox(
+                                height: 16,
+                                width: 16,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Text('إلغاء الطلب'),
+                      ),
+                    ],
                   ],
                 ],
               ],
