@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/analytics_service.dart';
+import '../../services/driver_status_service.dart';
+import 'dart:developer' as dev;
 
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});
@@ -13,9 +16,93 @@ class DriverHomeScreen extends StatefulWidget {
 
 class _DriverHomeScreenState extends State<DriverHomeScreen> {
   bool _isOnline = false;
+  bool _isTogglingStatus = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOnlineStatus();
+  }
+
+  Future<void> _loadOnlineStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final isOnline =
+          await DriverStatusService.instance.getOnlineStatus(user.uid);
+      if (mounted) {
+        setState(() {
+          _isOnline = isOnline;
+        });
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        dev.log('[DriverHome] Error loading online status: $e');
+      }
+    }
+  }
+
+  Future<void> _toggleOnlineStatus(bool value) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('خطأ: المستخدم غير مسجل الدخول')),
+        );
+      }
+      return;
+    }
+
+    if (_isTogglingStatus) return;
+
+    setState(() {
+      _isTogglingStatus = true;
+    });
+
+    try {
+      if (value) {
+        await DriverStatusService.instance.setOnline(user.uid);
+      } else {
+        await DriverStatusService.instance.setOffline(user.uid);
+      }
+
+      if (mounted) {
+        setState(() {
+          _isOnline = value;
+          _isTogglingStatus = false;
+        });
+      }
+
+      if (kDebugMode) {
+        dev.log(
+            '[Matching] DriverHomeScreen: Driver toggled online status to: $value');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        dev.log('[DriverHome] Error toggling status: $e');
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('فشل تحديث الحالة: $e')),
+        );
+        setState(() {
+          _isTogglingStatus = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      final user = FirebaseAuth.instance.currentUser;
+      dev.log('[Matching] DriverHomeScreen: Building home screen');
+      dev.log('[Matching] DriverHomeScreen: Driver online status: $_isOnline');
+      dev.log('[Matching] DriverHomeScreen: Driver ID: ${user?.uid ?? "not authenticated"}');
+    }
+
     final l10n = AppLocalizations.of(context)!;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
 
@@ -33,6 +120,16 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             PopupMenuButton<String>(
               onSelected: (value) async {
                 if (value == 'signout') {
+                  final user = FirebaseAuth.instance.currentUser;
+                  if (user != null) {
+                    try {
+                      await DriverStatusService.instance.setOffline(user.uid);
+                    } catch (e) {
+                      if (kDebugMode) {
+                        dev.log('[DriverHome] Error setting offline on logout: $e');
+                      }
+                    }
+                  }
                   await AnalyticsService.instance.logLogoutClicked();
                   await FirebaseAuth.instance.signOut();
                   if (context.mounted) {
@@ -63,11 +160,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                   ),
                   Switch(
                     value: _isOnline,
-                    onChanged: (value) {
-                      setState(() {
-                        _isOnline = value;
-                      });
-                    },
+                    onChanged: _isTogglingStatus ? null : _toggleOnlineStatus,
                   ),
                 ],
               ),
@@ -84,7 +177,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       TextButton(
-                        onPressed: () => context.push('/nearby'),
+                        onPressed: () {
+                          if (kDebugMode) {
+                            dev.log('[Matching] DriverHomeScreen: Navigating to nearby orders screen');
+                          }
+                          context.push('/nearby');
+                        },
                         child: const Text('عرض الكل'),
                       ),
                     ],

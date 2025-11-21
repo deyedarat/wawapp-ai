@@ -32,9 +32,10 @@ void main() {
           ownerId: uid,
           pickup: {'lat': 18.0783, 'lng': -15.9744, 'label': 'Pickup A'},
           dropoff: {'lat': 18.0969, 'lng': -15.9497, 'label': 'Dropoff B'},
+          pickupAddress: 'Test Pickup Address',
+          dropoffAddress: 'Test Dropoff Address',
           distanceKm: 2.5,
           price: 100,
-          status: OrderStatus.assigning,
         );
         print('Integration test - Order created: $orderId');
       }, returnsNormally);
