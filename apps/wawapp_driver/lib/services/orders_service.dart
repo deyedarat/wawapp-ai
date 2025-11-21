@@ -167,7 +167,7 @@ class OrdersService {
                 '[Matching] ⚠️ assignedDriverId field missing in schema. Consider migration or use fallback query.');
           }
         }
-        return <app_order.Order>[];
+        throw AppError.from(error);
       });
     });
   }
@@ -175,95 +175,110 @@ class OrdersService {
   Future<void> acceptOrder(String orderId) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw Exception('Driver not authenticated');
+      throw const AppError(type: AppErrorType.permissionDenied, message: 'Driver not authenticated');
     }
 
-    await _firestore.runTransaction((transaction) async {
-      final orderRef = _firestore.collection('orders').doc(orderId);
-      final orderDoc = await transaction.get(orderRef);
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final orderRef = _firestore.collection('orders').doc(orderId);
+        final orderDoc = await transaction.get(orderRef);
 
-      if (!orderDoc.exists) {
-        throw Exception('Order not found');
-      }
+        if (!orderDoc.exists) {
+          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+        }
 
-      final currentStatus =
-          OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
-      if (currentStatus != OrderStatus.assigning) {
-        throw Exception('Order was already taken');
-      }
+        final currentStatus =
+            OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
+        if (currentStatus != OrderStatus.assigning) {
+          throw const AppError(type: AppErrorType.permissionDenied, message: 'Order was already taken');
+        }
 
-      final update = OrderStatus.accepted.createTransitionUpdate(
-        driverId: user.uid,
-      );
+        final update = OrderStatus.accepted.createTransitionUpdate(
+          driverId: user.uid,
+        );
 
-      transaction.update(orderRef, update);
-    });
+        transaction.update(orderRef, update);
+      });
 
-    // Log analytics event after successful acceptance
-    AnalyticsService.instance.logOrderAcceptedByDriver(orderId: orderId);
+      // Log analytics event after successful acceptance
+      AnalyticsService.instance.logOrderAcceptedByDriver(orderId: orderId);
+    } catch (e) {
+      if (e is AppError) rethrow;
+      throw AppError.from(e);
+    }
   }
 
   Future<void> transition(String orderId, OrderStatus to) async {
-    await _firestore.runTransaction((transaction) async {
-      final orderRef = _firestore.collection('orders').doc(orderId);
-      final orderDoc = await transaction.get(orderRef);
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final orderRef = _firestore.collection('orders').doc(orderId);
+        final orderDoc = await transaction.get(orderRef);
 
-      if (!orderDoc.exists) {
-        throw Exception('Order not found');
+        if (!orderDoc.exists) {
+          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+        }
+
+        final currentStatus =
+            OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
+
+        if (!currentStatus.canTransitionTo(to)) {
+          throw const AppError(type: AppErrorType.permissionDenied, message: 'Invalid status transition');
+        }
+
+        final update = to.createTransitionUpdate();
+        transaction.update(orderRef, update);
+      });
+
+      // Log analytics event for completed orders
+      if (to == OrderStatus.completed) {
+        AnalyticsService.instance.logOrderCompletedByDriver(orderId: orderId);
       }
-
-      final currentStatus =
-          OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
-
-      if (!currentStatus.canTransitionTo(to)) {
-        throw Exception('Invalid status transition');
-      }
-
-      final update = to.createTransitionUpdate();
-      transaction.update(orderRef, update);
-    });
-
-    // Log analytics event for completed orders
-    if (to == OrderStatus.completed) {
-      AnalyticsService.instance.logOrderCompletedByDriver(orderId: orderId);
+    } catch (e) {
+      if (e is AppError) rethrow;
+      throw AppError.from(e);
     }
   }
 
   Future<void> cancelOrder(String orderId) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw Exception('Driver not authenticated');
+      throw const AppError(type: AppErrorType.permissionDenied, message: 'Driver not authenticated');
     }
 
-    await _firestore.runTransaction((transaction) async {
-      final orderRef = _firestore.collection('orders').doc(orderId);
-      final orderDoc = await transaction.get(orderRef);
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final orderRef = _firestore.collection('orders').doc(orderId);
+        final orderDoc = await transaction.get(orderRef);
 
-      if (!orderDoc.exists) {
-        throw Exception('Order not found');
-      }
+        if (!orderDoc.exists) {
+          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+        }
 
-      final data = orderDoc.data()!;
-      final driverId = data['driverId'] as String?;
+        final data = orderDoc.data()!;
+        final driverId = data['driverId'] as String?;
 
-      if (driverId != user.uid) {
-        throw Exception('Not authorized to cancel this order');
-      }
+        if (driverId != user.uid) {
+          throw const AppError(type: AppErrorType.permissionDenied, message: 'Not authorized to cancel this order');
+        }
 
-      final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
+        final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
 
-      if (!currentStatus.canDriverCancel) {
-        throw Exception('Cannot cancel order in current status');
-      }
+        if (!currentStatus.canDriverCancel) {
+          throw const AppError(type: AppErrorType.permissionDenied, message: 'Cannot cancel order in current status');
+        }
 
-      transaction.update(
-        orderRef,
-        OrderStatus.cancelledByDriver.createTransitionUpdate(),
-      );
-    });
+        transaction.update(
+          orderRef,
+          OrderStatus.cancelledByDriver.createTransitionUpdate(),
+        );
+      });
 
-    // Log analytics event after successful cancellation
-    AnalyticsService.instance.logOrderCancelledByDriver(orderId: orderId);
+      // Log analytics event after successful cancellation
+      AnalyticsService.instance.logOrderCancelledByDriver(orderId: orderId);
+    } catch (e) {
+      if (e is AppError) rethrow;
+      throw AppError.from(e);
+    }
   }
 
   Stream<List<app_order.Order>> getDriverActiveOrders(String driverId) {
