@@ -44,7 +44,7 @@ class OrdersRepository {
     } catch (e, stackTrace) {
       debugPrint('[OrdersClient] Failed to create order: $e');
       debugPrint('[OrdersClient] Stack trace: $stackTrace');
-      rethrow;
+      throw AppError.from(e);
     }
   }
 
@@ -66,6 +66,7 @@ class OrdersRepository {
         .handleError((error, stackTrace) {
       debugPrint('[OrdersClient] Error fetching user orders: $error');
       debugPrint('[OrdersClient] Stack trace: $stackTrace');
+      throw AppError.from(error);
     }).map((snapshot) {
       debugPrint('[OrdersClient] Received ${snapshot.docs.length} orders');
       return snapshot.docs
@@ -92,6 +93,7 @@ class OrdersRepository {
         .handleError((error, stackTrace) {
       debugPrint('[OrdersClient] Error fetching orders by status: $error');
       debugPrint('[OrdersClient] Stack trace: $stackTrace');
+      throw AppError.from(error);
     }).map((snapshot) {
       debugPrint(
           '[OrdersClient] Received ${snapshot.docs.length} orders with status: ${status.toFirestore()}');
@@ -103,29 +105,34 @@ class OrdersRepository {
   }
 
   Future<void> cancelOrder(String orderId) async {
-    await _firestore.runTransaction((transaction) async {
-      final orderRef = _firestore.collection('orders').doc(orderId);
-      final orderSnapshot = await transaction.get(orderRef);
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final orderRef = _firestore.collection('orders').doc(orderId);
+        final orderSnapshot = await transaction.get(orderRef);
 
-      if (!orderSnapshot.exists) {
-        throw Exception('Order not found');
-      }
+        if (!orderSnapshot.exists) {
+          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+        }
 
-      final data = orderSnapshot.data()!;
-      final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
+        final data = orderSnapshot.data()!;
+        final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
 
-      if (!currentStatus.canClientCancel) {
-        throw Exception('Cannot cancel order in current status');
-      }
+        if (!currentStatus.canClientCancel) {
+          throw const AppError(type: AppErrorType.permissionDenied, message: 'Cannot cancel order in current status');
+        }
 
-      transaction.update(
-        orderRef,
-        OrderStatus.cancelledByClient.createTransitionUpdate(),
-      );
-    });
+        transaction.update(
+          orderRef,
+          OrderStatus.cancelledByClient.createTransitionUpdate(),
+        );
+      });
 
-    // Log analytics event after successful cancellation
-    AnalyticsService.instance.logOrderCancelledByClient(orderId: orderId);
+      // Log analytics event after successful cancellation
+      AnalyticsService.instance.logOrderCancelledByClient(orderId: orderId);
+    } catch (e) {
+      if (e is AppError) rethrow;
+      throw AppError.from(e);
+    }
   }
 
   Future<void> rateDriver({
@@ -136,33 +143,38 @@ class OrdersRepository {
       throw ArgumentError('Rating must be between 1 and 5');
     }
 
-    await _firestore.runTransaction((transaction) async {
-      final orderRef = _firestore.collection('orders').doc(orderId);
-      final orderSnapshot = await transaction.get(orderRef);
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final orderRef = _firestore.collection('orders').doc(orderId);
+        final orderSnapshot = await transaction.get(orderRef);
 
-      if (!orderSnapshot.exists) {
-        throw Exception('Order not found');
-      }
+        if (!orderSnapshot.exists) {
+          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+        }
 
-      final data = orderSnapshot.data()!;
-      final ownerId = data['ownerId'] as String?;
-      final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+        final data = orderSnapshot.data()!;
+        final ownerId = data['ownerId'] as String?;
+        final currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
-      if (ownerId != currentUserId) {
-        throw Exception('Not authorized to rate this order');
-      }
+        if (ownerId != currentUserId) {
+          throw const AppError(type: AppErrorType.permissionDenied, message: 'Not authorized to rate this order');
+        }
 
-      final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
-      if (currentStatus != OrderStatus.completed) {
-        throw Exception('Can only rate completed orders');
-      }
+        final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
+        if (currentStatus != OrderStatus.completed) {
+          throw const AppError(type: AppErrorType.permissionDenied, message: 'Can only rate completed orders');
+        }
 
-      transaction.update(orderRef, {
-        'driverRating': rating,
-        'ratedAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        transaction.update(orderRef, {
+          'driverRating': rating,
+          'ratedAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
       });
-    });
+    } catch (e) {
+      if (e is AppError) rethrow;
+      throw AppError.from(e);
+    }
   }
 }
 
