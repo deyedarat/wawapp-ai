@@ -367,16 +367,6 @@ class FCMService {
       debugPrint('[FCM] Deep link received: $deepLink');
     }
 
-    // Log analytics
-    AnalyticsService.instance.logEvent(
-      'deep_link_opened',
-      parameters: {
-        'link': deepLink.toString(),
-        'scheme': deepLink.scheme,
-        'path': deepLink.path,
-      },
-    );
-
     final path = deepLink.path;
     final queryParams = deepLink.queryParameters;
 

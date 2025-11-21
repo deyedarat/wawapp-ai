@@ -21,8 +21,7 @@ final clientProfileStreamProvider = StreamProvider<ClientProfile?>((ref) {
       // Update user properties when profile loads
       AnalyticsService.instance.setUserProperties(
         userId: user.uid,
-        totalOrders: profile.totalOrders,
-        isVerified: profile.isVerified,
+        totalOrders: profile.totalTrips,
       );
       
       // ANALYTICS VALIDATION:

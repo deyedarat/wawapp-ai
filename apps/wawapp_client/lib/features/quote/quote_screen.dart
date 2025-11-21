@@ -150,8 +150,11 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                           );
 
                           // Log analytics event
-                          AnalyticsService.instance
-                              .logOrderCreated(orderId: orderId);
+                          AnalyticsService.instance.logOrderCreated(
+                            orderId: orderId,
+                            priceAmount: breakdown.rounded,
+                            distanceKm: quoteState.distanceKm!,
+                          );
 
                           if (!mounted) return;
                           final order = Order(
