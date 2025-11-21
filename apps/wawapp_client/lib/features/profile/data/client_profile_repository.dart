@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:core_shared/core_shared.dart';
+import '../../../services/analytics_service.dart';
 
 class ClientProfileRepository {
   final FirebaseFirestore _firestore;
@@ -94,6 +95,11 @@ class ClientProfileRepository {
         .doc(location.id)
         .set(location.toJson());
     debugPrint('[SavedLocations] Saved location added successfully');
+    
+    // Log analytics event
+    AnalyticsService.instance.logSavedLocationAdded(
+      locationLabel: location.label,
+    );
   }
 
   Future<void> updateSavedLocation(String userId, SavedLocation location) async {
@@ -116,5 +122,10 @@ class ClientProfileRepository {
         .doc(locationId)
         .delete();
     debugPrint('[SavedLocations] Saved location deleted successfully');
+    
+    // Log analytics event
+    AnalyticsService.instance.logSavedLocationDeleted(
+      locationId: locationId,
+    );
   }
 }

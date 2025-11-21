@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:core_shared/core_shared.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:geolocator/geolocator.dart';
-import '../../../models/order.dart' as app_order;
 import '../../../services/location_service.dart';
 import '../../../services/orders_service.dart';
 import '../../../widgets/error_screen.dart';
+import 'providers/nearby_orders_provider.dart';
 import 'dart:math';
 import 'dart:developer' as dev;
 
-class NearbyScreen extends StatefulWidget {
+class NearbyScreen extends ConsumerStatefulWidget {
   const NearbyScreen({super.key});
 
   @override
-  State<NearbyScreen> createState() => _NearbyScreenState();
+  ConsumerState<NearbyScreen> createState() => _NearbyScreenState();
 }
 
-class _NearbyScreenState extends State<NearbyScreen> {
+class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   final _ordersService = OrdersService();
   final _locationService = LocationService.instance;
   Position? _currentPosition;
@@ -118,51 +119,52 @@ class _NearbyScreenState extends State<NearbyScreen> {
               )
             : _currentPosition == null
                 ? const Center(child: CircularProgressIndicator())
-                : StreamBuilder<List<app_order.Order>>(
-                    stream: () {
-                      if (kDebugMode) {
-                        dev.log(
-                            '[Matching] NearbyScreen: Subscribing to nearby orders stream');
-                      }
-                      return _ordersService.getNearbyOrders(_currentPosition!);
-                    }(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        if (kDebugMode) {
-                          dev.log(
-                              '[Matching] NearbyScreen: Waiting for stream data');
-                        }
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (snapshot.hasError) {
-                        if (kDebugMode) {
-                          dev.log(
-                              '[Matching] NearbyScreen: Stream error: ${snapshot.error}');
-                        }
-                        final appError = AppError.from(snapshot.error!);
-                        return ErrorScreen(
-                          message: appError.toUserMessage(),
-                          onRetry: () => setState(() {}),
-                        );
-                      }
-                      final orders = snapshot.data ?? [];
-                      if (kDebugMode) {
-                        dev.log(
-                            '[Matching] NearbyScreen: Displaying ${orders.length} orders');
-                      }
-                      if (orders.isEmpty) {
-                        return const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.inbox, size: 64, color: Colors.grey),
-                              SizedBox(height: 16),
-                              Text('لا توجد طلبات قريبة'),
-                            ],
-                          ),
-                        );
-                      }
-                      return ListView.builder(
+                : _buildOrdersList(),
+      ),
+    );
+  }
+
+  Widget _buildOrdersList() {
+    if (kDebugMode) {
+      dev.log('[Matching] NearbyScreen: Subscribing to nearby orders stream');
+    }
+
+    final ordersAsync = ref.watch(nearbyOrdersProvider(_currentPosition!));
+
+    return ordersAsync.when(
+      loading: () {
+        if (kDebugMode) {
+          dev.log('[Matching] NearbyScreen: Waiting for stream data');
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+      error: (error, stack) {
+        if (kDebugMode) {
+          dev.log('[Matching] NearbyScreen: Stream error: $error');
+        }
+        final appError = AppError.from(error);
+        return ErrorScreen(
+          message: appError.toUserMessage(),
+          onRetry: () => ref.refresh(nearbyOrdersProvider(_currentPosition!)),
+        );
+      },
+      data: (orders) {
+        if (kDebugMode) {
+          dev.log('[Matching] NearbyScreen: Displaying ${orders.length} orders');
+        }
+        if (orders.isEmpty) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.inbox, size: 64, color: Colors.grey),
+                SizedBox(height: 16),
+                Text('لا توجد طلبات قريبة'),
+              ],
+            ),
+          );
+        }
+        return ListView.builder(
                         padding: const EdgeInsets.all(16),
                         itemCount: orders.length,
                         itemBuilder: (context, index) {
@@ -235,9 +237,8 @@ class _NearbyScreenState extends State<NearbyScreen> {
                           );
                         },
                       );
-                    },
-                  ),
-      ),
+        },
+      },
     );
   }
 }

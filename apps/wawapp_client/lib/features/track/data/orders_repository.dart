@@ -40,6 +40,14 @@ class OrdersRepository {
 
       debugPrint(
           '[OrdersClient] Order created successfully with ID: ${docRef.id}');
+      
+      // Log analytics event
+      AnalyticsService.instance.logOrderCreated(
+        orderId: docRef.id,
+        priceAmount: price,
+        distanceKm: distanceKm,
+      );
+      
       return docRef.id;
     } catch (e, stackTrace) {
       debugPrint('[OrdersClient] Failed to create order: $e');

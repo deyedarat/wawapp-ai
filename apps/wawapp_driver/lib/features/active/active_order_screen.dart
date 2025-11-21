@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:core_shared/core_shared.dart';
-import '../../models/order.dart' as app_order;
 import '../../services/orders_service.dart';
 import '../../services/tracking_service.dart';
 import '../../widgets/error_screen.dart';
+import 'providers/active_order_provider.dart';
 import 'dart:developer' as dev;
 
-class ActiveOrderScreen extends StatefulWidget {
+class ActiveOrderScreen extends ConsumerStatefulWidget {
   const ActiveOrderScreen({super.key});
 
   @override
-  State<ActiveOrderScreen> createState() => _ActiveOrderScreenState();
+  ConsumerState<ActiveOrderScreen> createState() => _ActiveOrderScreenState();
 }
 
-class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
+class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
   final _ordersService = OrdersService();
   bool _isTrackingStarted = false;
   bool _isCancelling = false;
@@ -114,37 +115,28 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
           '[Matching] ActiveOrderScreen: Building screen for driver ${user.uid}');
     }
 
+    final ordersAsync = ref.watch(activeOrdersProvider);
+
     return Scaffold(
       appBar: AppBar(title: const Text('الطلب النشط')),
-      body: StreamBuilder<List<app_order.Order>>(
-        stream: () {
+      body: ordersAsync.when(
+        loading: () {
           if (kDebugMode) {
-            dev.log(
-                '[Matching] ActiveOrderScreen: Subscribing to active orders stream for driver ${user.uid}');
+            dev.log('[Matching] ActiveOrderScreen: Waiting for stream data');
           }
-          return _ordersService.getDriverActiveOrders(user.uid);
-        }(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            if (kDebugMode) {
-              dev.log('[Matching] ActiveOrderScreen: Waiting for stream data');
-            }
-            return const Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
+        },
+        error: (error, stack) {
+          if (kDebugMode) {
+            dev.log('[Matching] ActiveOrderScreen: Stream error: $error');
           }
-
-          if (snapshot.hasError) {
-            if (kDebugMode) {
-              dev.log(
-                  '[Matching] ActiveOrderScreen: Stream error: ${snapshot.error}');
-            }
-            final appError = AppError.from(snapshot.error!);
-            return ErrorScreen(
-              message: appError.toUserMessage(),
-              onRetry: () => setState(() {}),
-            );
-          }
-
-          final orders = snapshot.data ?? [];
+          final appError = AppError.from(error);
+          return ErrorScreen(
+            message: appError.toUserMessage(),
+            onRetry: () => ref.refresh(activeOrdersProvider),
+          );
+        },
+        data: (orders) {
           if (kDebugMode) {
             dev.log(
                 '[Matching] ActiveOrderScreen: Received ${orders.length} active orders');
