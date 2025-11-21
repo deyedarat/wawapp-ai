@@ -237,7 +237,6 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                           );
                         },
                       );
-        },
       },
     );
   }

@@ -131,7 +131,7 @@ class _OrderHistoryTile extends StatelessWidget {
                 fontSize: 16,
               ),
             ),
-            if (order.driverRating != null) ..[
+            if (order.driverRating != null) ...[
               const SizedBox(height: 4),
               Row(
                 mainAxisSize: MainAxisSize.min,

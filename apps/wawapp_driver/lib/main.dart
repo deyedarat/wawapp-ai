@@ -39,7 +39,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
-    FcmService().initialize();
+    // FCM will be initialized after authentication in auth_gate.dart
     AnalyticsService.instance.setUserTypeDriver();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       NotificationService().initialize(context);

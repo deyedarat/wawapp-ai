@@ -98,7 +98,7 @@ class ClientProfileRepository {
     
     // Log analytics event
     AnalyticsService.instance.logSavedLocationAdded(
-      locationLabel: location.label,
+      locationLabel: location.name,
     );
   }
 
