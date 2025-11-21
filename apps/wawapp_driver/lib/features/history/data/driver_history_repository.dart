@@ -6,10 +6,13 @@ class DriverHistoryRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Stream<List<app_order.Order>> watchCompletedOrders(String driverId) {
+    // REQUIRED COMPOSITE INDEX: orders [driverId ASC, status ASC, completedAt DESC]
+    // Deploy via: firebase deploy --only firestore:indexes
+    // Or create manually in Firebase Console: https://console.firebase.google.com/project/_/firestore/indexes
     return _firestore
         .collection('orders')
         .where('driverId', isEqualTo: driverId)
-        .where('status', isEqualTo: 'completed')
+        .where('status', isEqualTo: OrderStatus.completed.toFirestore())
         .orderBy('completedAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs

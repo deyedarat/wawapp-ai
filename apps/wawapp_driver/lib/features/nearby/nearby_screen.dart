@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,6 +7,7 @@ import '../../../models/order.dart' as app_order;
 import '../../../services/location_service.dart';
 import '../../../services/orders_service.dart';
 import 'dart:math';
+import 'dart:developer' as dev;
 
 class NearbyScreen extends StatefulWidget {
   const NearbyScreen({super.key});
@@ -27,10 +29,19 @@ class _NearbyScreenState extends State<NearbyScreen> {
   }
 
   Future<void> _initLocation() async {
+    if (kDebugMode) {
+      dev.log('[Matching] NearbyScreen: Initializing location');
+    }
     try {
       _currentPosition = await _locationService.getCurrentPosition();
+      if (kDebugMode) {
+        dev.log('[Matching] NearbyScreen: Location obtained: lat=${_currentPosition!.latitude.toStringAsFixed(4)}, lng=${_currentPosition!.longitude.toStringAsFixed(4)}');
+      }
       setState(() {});
     } on Object catch (e) {
+      if (kDebugMode) {
+        dev.log('[Matching] NearbyScreen: Location error: $e');
+      }
       setState(() {
         _error = e.toString();
       });
@@ -105,17 +116,31 @@ class _NearbyScreenState extends State<NearbyScreen> {
             : _currentPosition == null
                 ? const Center(child: CircularProgressIndicator())
                 : StreamBuilder<List<app_order.Order>>(
-                    stream: _ordersService.getNearbyOrders(_currentPosition!),
+                    stream: () {
+                      if (kDebugMode) {
+                        dev.log('[Matching] NearbyScreen: Subscribing to nearby orders stream');
+                      }
+                      return _ordersService.getNearbyOrders(_currentPosition!);
+                    }(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (kDebugMode) {
+                          dev.log('[Matching] NearbyScreen: Waiting for stream data');
+                        }
                         return const Center(child: CircularProgressIndicator());
                       }
                       if (snapshot.hasError) {
+                        if (kDebugMode) {
+                          dev.log('[Matching] NearbyScreen: Stream error: ${snapshot.error}');
+                        }
                         return Center(
                           child: Text('خطأ: ${snapshot.error}'),
                         );
                       }
                       final orders = snapshot.data ?? [];
+                      if (kDebugMode) {
+                        dev.log('[Matching] NearbyScreen: Displaying ${orders.length} orders');
+                      }
                       if (orders.isEmpty) {
                         return const Center(
                           child: Column(

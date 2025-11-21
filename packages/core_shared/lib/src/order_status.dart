@@ -169,9 +169,10 @@ enum OrderStatus {
       'updatedAt': FieldValue.serverTimestamp(),
     };
 
-    // Add driverId when accepting order
+    // Add both driverId and assignedDriverId when accepting order
     if (this == OrderStatus.accepted && driverId != null) {
       update['driverId'] = driverId;
+      update['assignedDriverId'] = driverId;
     }
 
     // Add completedAt when completing order

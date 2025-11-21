@@ -137,16 +137,15 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                             pickup: {
                               'lat': routeState.pickup!.latitude,
                               'lng': routeState.pickup!.longitude,
-                              'label': fromText,
                             },
                             dropoff: {
                               'lat': routeState.dropoff!.latitude,
                               'lng': routeState.dropoff!.longitude,
-                              'label': toText,
                             },
+                            pickupAddress: fromText,
+                            dropoffAddress: toText,
                             distanceKm: quoteState.distanceKm!,
                             price: breakdown.rounded,
-                            status: OrderStatus.assigning,
                           );
 
                           if (!mounted) return;

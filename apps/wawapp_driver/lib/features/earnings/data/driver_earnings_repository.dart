@@ -10,6 +10,9 @@ class DriverEarningsRepository {
     debugPrint(
         '[EARNINGS] Starting query for completed orders, driverId: $driverId');
 
+    // REQUIRED COMPOSITE INDEX: orders [driverId ASC, status ASC, completedAt DESC]
+    // Deploy via: firebase deploy --only firestore:indexes
+    // Or create manually in Firebase Console: https://console.firebase.google.com/project/_/firestore/indexes
     return _firestore
         .collection('orders')
         .where('driverId', isEqualTo: driverId)

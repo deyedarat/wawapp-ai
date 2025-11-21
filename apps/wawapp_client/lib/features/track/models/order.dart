@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:core_shared/core_shared.dart';
+import '../../../core/utils/date_formatter.dart';
 
 class Order {
   final String? id;
@@ -13,6 +14,7 @@ class Order {
   final LatLng dropoff;
   final String? status;
   final String? driverId;
+  final DateTime? createdAt;
   final DateTime? completedAt;
 
   const Order({
@@ -26,6 +28,7 @@ class Order {
     required this.dropoff,
     this.status,
     this.driverId,
+    this.createdAt,
     this.completedAt,
   });
 
@@ -53,6 +56,7 @@ class Order {
       ),
       status: data['status'] as String?,
       driverId: data['driverId'] as String?,
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
       completedAt: (data['completedAt'] as Timestamp?)?.toDate(),
     );
   }
@@ -69,4 +73,13 @@ class Order {
         'status': status,
         'driverId': driverId,
       };
+
+  /// Format creation date for UI display in local device time
+  String get formattedCreatedAt => DateFormatter.formatOrderCreated(createdAt);
+
+  /// Format completion date for UI display in local device time
+  String get formattedCompletedAt => DateFormatter.formatOrderCompleted(completedAt);
+
+  /// Format creation date with relative time (e.g., "2 hours ago")
+  String get relativeCreatedAt => DateFormatter.formatRelative(createdAt);
 }

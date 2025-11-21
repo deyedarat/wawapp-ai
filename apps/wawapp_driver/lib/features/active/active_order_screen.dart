@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:core_shared/core_shared.dart';
 import '../../models/order.dart' as app_order;
 import '../../services/orders_service.dart';
 import '../../services/tracking_service.dart';
+import 'dart:developer' as dev;
 
 class ActiveOrderScreen extends StatefulWidget {
   const ActiveOrderScreen({super.key});
@@ -48,21 +50,39 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
+      if (kDebugMode) {
+        dev.log('[Matching] ActiveOrderScreen: User not authenticated');
+      }
       return const Scaffold(
         body: Center(child: Text('غير مسجل الدخول')),
       );
     }
 
+    if (kDebugMode) {
+      dev.log('[Matching] ActiveOrderScreen: Building screen for driver ${user.uid}');
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('الطلب النشط')),
       body: StreamBuilder<List<app_order.Order>>(
-        stream: _ordersService.getDriverActiveOrders(user.uid),
+        stream: () {
+          if (kDebugMode) {
+            dev.log('[Matching] ActiveOrderScreen: Subscribing to active orders stream for driver ${user.uid}');
+          }
+          return _ordersService.getDriverActiveOrders(user.uid);
+        }(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
+            if (kDebugMode) {
+              dev.log('[Matching] ActiveOrderScreen: Waiting for stream data');
+            }
             return const Center(child: CircularProgressIndicator());
           }
 
           final orders = snapshot.data ?? [];
+          if (kDebugMode) {
+            dev.log('[Matching] ActiveOrderScreen: Received ${orders.length} active orders');
+          }
 
           // Handle tracking based on active orders
           if (orders.isNotEmpty && !_isTrackingStarted) {

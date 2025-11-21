@@ -12,6 +12,7 @@ class Order {
   final DateTime? createdAt;
   final DateTime? completedAt;
   final String? driverId;
+  final String? assignedDriverId;
 
   const Order({
     required this.id,
@@ -24,6 +25,7 @@ class Order {
     this.createdAt,
     this.completedAt,
     this.driverId,
+    this.assignedDriverId,
   });
 
   OrderStatus get orderStatus => OrderStatus.fromFirestore(status);
@@ -40,6 +42,7 @@ class Order {
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
       completedAt: (data['completedAt'] as Timestamp?)?.toDate(),
       driverId: data['driverId'] as String?,
+      assignedDriverId: data['assignedDriverId'] as String?,
     );
   }
 }
