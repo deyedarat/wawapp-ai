@@ -124,7 +124,8 @@ service cloud.firestore {
                     // Prevent drivers from modifying admin-only fields
                     && (!('isVerified' in resource.data) || request.resource.data.isVerified == resource.data.isVerified)
                     && (!('rating' in resource.data) || request.resource.data.rating == resource.data.rating)
-                    && (!('totalTrips' in resource.data) || request.resource.data.totalTrips == resource.data.totalTrips);
+                    && (!('totalTrips' in resource.data) || request.resource.data.totalTrips == resource.data.totalTrips)
+                    && (!('ratedOrders' in resource.data) || request.resource.data.ratedOrders == resource.data.ratedOrders);
     }
   }
 }

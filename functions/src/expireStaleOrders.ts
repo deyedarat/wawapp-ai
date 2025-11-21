@@ -64,6 +64,7 @@ export const expireStaleOrders = functions
       // Prepare batch update
       const batch = db.batch();
       let expiredCount = 0;
+      let skippedCount = 0;
 
       staleOrdersSnapshot.forEach((doc) => {
         const orderData = doc.data();
@@ -71,7 +72,11 @@ export const expireStaleOrders = functions
 
         // Safety check: double-verify order is still in matching status with no driver
         if (orderData.status === 'matching' && orderData.assignedDriverId === null) {
-          console.log(`[ExpireOrders] Expiring order ${orderId} (created: ${orderData.createdAt?.toDate?.()?.toISOString() || 'unknown'})`);
+          console.log('[ExpireOrders] Expiring order', {
+            order_id: orderId,
+            created_at: orderData.createdAt?.toDate?.()?.toISOString() || 'unknown',
+            age_minutes: Math.floor((now.seconds - (orderData.createdAt?.seconds || now.seconds)) / 60),
+          });
 
           batch.update(doc.ref, {
             status: 'expired',
@@ -88,19 +93,31 @@ export const expireStaleOrders = functions
 
           expiredCount++;
         } else {
-          console.log(`[ExpireOrders] Skipping order ${orderId} - status changed to ${orderData.status} or has driver ${orderData.assignedDriverId}`);
+          console.log('[ExpireOrders] Skipping order (race condition avoided)', {
+            order_id: orderId,
+            current_status: orderData.status,
+            has_driver: orderData.assignedDriverId !== null,
+          });
+          skippedCount++;
         }
       });
 
       // Commit batch update
       if (expiredCount > 0) {
         await batch.commit();
-        console.log(`[ExpireOrders] Successfully expired ${expiredCount} orders.`);
+        console.log('[ExpireOrders] Batch committed', {
+          expired: expiredCount,
+          skipped: skippedCount,
+          total_queried: staleOrdersSnapshot.size,
+        });
         
         // Log batch analytics event
         console.log('[Analytics] order_expired_batch', { count: expiredCount });
       } else {
-        console.log('[ExpireOrders] No orders to expire after safety checks.');
+        console.log('[ExpireOrders] No orders to expire', {
+          skipped: skippedCount,
+          reason: 'All orders had status/driver changes (race condition)',
+        });
       }
 
       // Log warning if we hit the batch limit (indicates high volume of stale orders)
