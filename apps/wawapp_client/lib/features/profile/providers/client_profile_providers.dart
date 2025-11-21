@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
 import '../data/client_profile_repository.dart';
+import '../../../services/analytics_service.dart';
 
 final clientProfileRepositoryProvider = Provider<ClientProfileRepository>((ref) {
   return ClientProfileRepository(firestore: FirebaseFirestore.instance);
@@ -15,7 +16,20 @@ final clientProfileStreamProvider = StreamProvider<ClientProfile?>((ref) {
   }
 
   final repository = ref.watch(clientProfileRepositoryProvider);
-  return repository.watchProfile(user.uid);
+  return repository.watchProfile(user.uid).map((profile) {
+    if (profile != null) {
+      // Update user properties when profile loads
+      AnalyticsService.instance.setUserProperties(
+        userId: user.uid,
+        totalOrders: profile.totalOrders,
+        isVerified: profile.isVerified,
+      );
+      
+      // ANALYTICS VALIDATION:
+      // DebugView should show: user_type=client, total_orders, is_verified
+    }
+    return profile;
+  });
 });
 
 final savedLocationsStreamProvider = StreamProvider<List<SavedLocation>>((ref) {

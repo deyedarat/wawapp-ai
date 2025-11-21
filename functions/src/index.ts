@@ -13,3 +13,4 @@ admin.initializeApp();
 // Export Cloud Functions
 export { expireStaleOrders } from './expireStaleOrders';
 export { aggregateDriverRating } from './aggregateDriverRating';
+export { notifyOrderEvents } from './notifyOrderEvents';

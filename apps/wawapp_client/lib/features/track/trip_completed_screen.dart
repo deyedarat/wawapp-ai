@@ -6,8 +6,10 @@ import 'package:intl/intl.dart';
 import 'package:core_shared/core_shared.dart';
 import 'data/orders_repository.dart';
 import 'models/order.dart' as app_order;
+import 'providers/order_tracking_provider.dart';
 import '../../widgets/error_screen.dart';
 import '../../services/analytics_service.dart';
+import '../../services/fcm_service.dart';
 
 class TripCompletedScreen extends ConsumerStatefulWidget {
   final String orderId;
@@ -49,6 +51,16 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
         rating: _selectedRating!,
       );
 
+      // Check if user arrived via notification
+      final notificationSource = FCMService.instance.getNotificationSource(widget.orderId);
+      if (notificationSource == 'trip_completed') {
+        // Track conversion: notification → rating
+        AnalyticsService.instance.logDriverRatedFromNotification(
+          orderId: widget.orderId,
+          rating: _selectedRating!,
+        );
+      }
+
       // Log analytics event
       AnalyticsService.instance.logDriverRated(
         orderId: widget.orderId,
@@ -73,24 +85,21 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final orderAsync = ref.watch(orderTrackingProvider(widget.orderId));
+
     return Scaffold(
       appBar: AppBar(title: const Text('اكتمل الطلب')),
-      body: StreamBuilder<DocumentSnapshot>(
-        stream: ref.read(ordersRepositoryProvider).watchOrder(widget.orderId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            final appError = AppError.from(snapshot.error!);
-            return ErrorScreen(
-              message: appError.toUserMessage(),
-              onRetry: () => setState(() {}),
-            );
-          }
-
-          final data = snapshot.data?.data() as Map<String, dynamic>?;
+      body: orderAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) {
+          final appError = AppError.from(error);
+          return ErrorScreen(
+            message: appError.toUserMessage(),
+            onRetry: () => ref.refresh(orderTrackingProvider(widget.orderId)),
+          );
+        },
+        data: (snapshot) {
+          final data = snapshot?.data() as Map<String, dynamic>?;
           if (data == null) {
             return const Center(child: Text('الطلب غير موجود'));
           }
@@ -101,7 +110,6 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
           final dateStr = completedAt != null
               ? DateFormat('yyyy-MM-dd HH:mm').format(completedAt.toDate())
               : '';
-          final isAlreadyRated = order.driverRating != null;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'providers/auth_service_provider.dart';
 import 'package:auth_shared/auth_shared.dart';
+import '../../services/analytics_service.dart';
+import '../../services/fcm_service.dart';
 
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
@@ -81,6 +83,23 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
       if (next.user != null && next.hasPin && !next.isLoading) {
         debugPrint(
             '[LoginScreen] User authenticated with PIN, navigating to home');
+        
+        // Set basic user properties immediately after auth
+        AnalyticsService.instance.setUserProperties(userId: next.user!.uid);
+        AnalyticsService.instance.logAuthCompleted(method: 'phone_pin');
+        
+        // Initialize FCM for push notifications
+        FCMService.instance.initialize(context);
+        
+        // ANALYTICS VALIDATION:
+        // To verify this event in Firebase Console:
+        // 1. Run: adb shell setprop debug.firebase.analytics.app com.wawapp.client
+        // 2. Open Firebase Console → Analytics → DebugView
+        // 3. Complete auth flow and verify:
+        //    - Event: auth_completed (method: phone_pin)
+        //    - User property: user_type = client
+        //    - User ID is set
+        
         context.go('/');
       }
     });

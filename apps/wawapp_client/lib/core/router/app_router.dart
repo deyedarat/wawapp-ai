@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/quote/quote_screen.dart';
 import '../../features/track/track_screen.dart';
@@ -30,6 +31,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) => _redirect(state, authState),
     refreshListenable:
         _GoRouterRefreshStream(ref.read(authProvider.notifier).stream),
+    observers: [
+      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+    ],
     routes: [
       GoRoute(
         path: '/',

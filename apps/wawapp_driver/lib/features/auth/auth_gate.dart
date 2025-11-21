@@ -5,6 +5,8 @@ import 'create_pin_screen.dart';
 import 'phone_pin_login_screen.dart';
 import 'providers/auth_service_provider.dart';
 import '../home/driver_home_screen.dart';
+import '../../services/analytics_service.dart';
+import '../../services/fcm_service.dart';
 
 // StreamProvider for driver profile
 final driverProfileProvider =
@@ -93,6 +95,28 @@ class AuthGate extends ConsumerWidget {
         if (!hasPin) {
           debugPrint('[AuthGate] showing CreatePinScreen (no PIN yet)');
           return const CreatePinScreen();
+        }
+
+        // Set user properties after successful auth with PIN
+        final user = authState.user;
+        if (user != null) {
+          AnalyticsService.instance.setUserProperties(
+            userId: user.uid,
+            totalTrips: data?['totalTrips'] as int?,
+            averageRating: (data?['rating'] as num?)?.toDouble(),
+            isVerified: data?['isVerified'] as bool?,
+          );
+          AnalyticsService.instance.logAuthCompleted(method: 'phone_pin');
+          
+          // Initialize FCM for push notifications
+          FCMService.instance.initialize(context);
+          
+          // ANALYTICS VALIDATION:
+          // To verify: adb shell setprop debug.firebase.analytics.app com.wawapp.driver
+          // Check Firebase Console → DebugView for:
+          //   - Event: auth_completed (method: phone_pin)
+          //   - User property: user_type = driver
+          //   - User properties: total_trips, average_rating, is_verified
         }
 
         debugPrint('[AuthGate] showing DriverHomeScreen (user + PIN)');

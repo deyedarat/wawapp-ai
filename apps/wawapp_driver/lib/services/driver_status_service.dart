@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'analytics_service.dart';
 
 /// Service to manage driver online/offline status in Firestore
 class DriverStatusService {
@@ -22,6 +23,13 @@ class DriverStatusService {
       }, SetOptions(merge: true));
 
       debugPrint('[DriverStatus] Driver $driverId is now ONLINE');
+      
+      // Log analytics event and update user property
+      AnalyticsService.instance.logDriverWentOnline();
+      AnalyticsService.instance.setUserProperties(
+        userId: driverId,
+        isOnline: true,
+      );
     } on FirebaseException catch (e) {
       if (e.code == 'permission-denied') {
         debugPrint(
@@ -48,6 +56,13 @@ class DriverStatusService {
       }, SetOptions(merge: true));
 
       debugPrint('[DriverStatus] Driver $driverId is now OFFLINE');
+      
+      // Log analytics event and update user property
+      AnalyticsService.instance.logDriverWentOffline();
+      AnalyticsService.instance.setUserProperties(
+        userId: driverId,
+        isOnline: false,
+      );
     } on FirebaseException catch (e) {
       if (e.code == 'permission-denied') {
         debugPrint(

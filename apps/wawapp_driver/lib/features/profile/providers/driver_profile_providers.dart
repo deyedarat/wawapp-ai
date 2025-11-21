@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
 import '../data/driver_profile_repository.dart';
+import '../../../services/analytics_service.dart';
 
 final driverProfileRepositoryProvider = Provider<DriverProfileRepository>((ref) {
   return DriverProfileRepository(firestore: FirebaseFirestore.instance);
@@ -15,7 +16,21 @@ final driverProfileStreamProvider = StreamProvider<DriverProfile?>((ref) {
   }
 
   final repository = ref.watch(driverProfileRepositoryProvider);
-  return repository.watchProfile(user.uid);
+  return repository.watchProfile(user.uid).map((profile) {
+    if (profile != null) {
+      // Update driver-specific properties when profile loads
+      AnalyticsService.instance.setUserProperties(
+        userId: user.uid,
+        totalTrips: profile.totalTrips,
+        averageRating: profile.rating,
+        isVerified: profile.isVerified,
+      );
+      
+      // ANALYTICS VALIDATION:
+      // DebugView should show: user_type=driver, total_trips, average_rating, is_verified
+    }
+    return profile;
+  });
 });
 
 class DriverProfileUpdateState {
