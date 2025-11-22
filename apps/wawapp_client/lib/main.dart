@@ -9,7 +9,6 @@ import 'core/build_info/build_info.dart';
 import 'core/build_info/build_info_banner.dart';
 import 'core/location/location_bootstrap.dart';
 import 'firebase_options.dart';
-import 'services/fcm_service.dart';
 import 'services/notification_service.dart';
 import 'services/analytics_service.dart';
 
@@ -47,7 +46,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   void initState() {
     super.initState();
     // FCM will be initialized after authentication in phone_pin_login_screen.dart
-    AnalyticsService.instance.setUserTypeClient();
+    AnalyticsService.instance.setUserType();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       NotificationService().initialize(context);
     });
