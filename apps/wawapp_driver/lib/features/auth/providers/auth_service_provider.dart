@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../services/phone_pin_auth.dart';
+import 'package:auth_shared/auth_shared.dart';
 import '../../../services/analytics_service.dart';
 
 // Provider for PhonePinAuth service singleton
 final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
-  return PhonePinAuth.instance;
+  return PhonePinAuth(userCollection: 'drivers');
 });
 
 // OTP Stage enum
@@ -156,12 +156,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) {
         print('[AuthNotifier] Sending OTP to $phone');
       }
-      await _authService.ensurePhoneSession(phone, onCodeSent: () {
-        if (kDebugMode) print('[AuthNotifier] Code sent callback triggered');
-        state = state.copyWith(otpStage: OtpStage.codeSent);
-      });
+      await _authService.ensurePhoneSession(phone);
       if (kDebugMode) print('[AuthNotifier] OTP sent successfully');
-      state = state.copyWith(isLoading: false, phone: phone);
+      state = state.copyWith(
+        isLoading: false,
+        phone: phone,
+        otpStage: OtpStage.codeSent,
+      );
     } catch (e) {
       if (kDebugMode) print('[AuthNotifier] Send OTP error: $e');
       state = state.copyWith(
