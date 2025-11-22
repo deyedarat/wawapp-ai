@@ -7,7 +7,6 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'l10n/app_localizations.dart';
 import 'firebase_options.dart';
-import 'services/fcm_service.dart';
 import 'services/notification_service.dart';
 import 'services/analytics_service.dart';
 
@@ -40,7 +39,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   void initState() {
     super.initState();
     // FCM will be initialized after authentication in auth_gate.dart
-    AnalyticsService.instance.setUserTypeDriver();
+    AnalyticsService.instance.setUserType();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       NotificationService().initialize(context);
     });
