@@ -4,18 +4,20 @@ import 'dart:developer' as dev;
 void main() {
   // Test OrderStatus enum behavior
   print('=== OrderStatus Debug ===');
-  
+
   // What client creates
   final clientStatus = OrderStatus.assigning;
-  print('Client creates with: ${clientStatus.toFirestore()}'); // Should be "matching"
-  
-  // What driver searches for  
+  print(
+    'Client creates with: ${clientStatus.toFirestore()}',
+  ); // Should be "matching"
+
+  // What driver searches for
   final driverSearchStatus = OrderStatus.assigning.toFirestore();
   print('Driver searches for: $driverSearchStatus'); // Should be "matching"
-  
+
   // Check if they match
   print('Status match: ${clientStatus.toFirestore() == driverSearchStatus}');
-  
+
   // Check legacy compatibility
   final legacyStatus = OrderStatus.fromFirestore('matching');
   print('Legacy "matching" maps to: $legacyStatus');

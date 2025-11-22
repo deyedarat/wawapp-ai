@@ -52,7 +52,7 @@ class DriverHistoryScreen extends ConsumerWidget {
     final grouped = <DateCategory, List<app_order.Order>>{};
 
     for (final order in orders) {
-      final date = order.completedAt ?? order.updatedAt;
+      final date = order.completedAt ?? order.createdAt;
       final category = getDateCategory(date);
       grouped.putIfAbsent(category, () => []).add(order);
     }
@@ -104,10 +104,9 @@ class _OrderHistoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
-    final displayDate = order.completedAt ?? order.updatedAt;
-    final completedDate = displayDate != null 
-        ? dateFormat.format(displayDate)
-        : 'غير محدد';
+    final displayDate = order.completedAt ?? order.createdAt;
+    final completedDate =
+        displayDate != null ? dateFormat.format(displayDate) : 'غير محدد';
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -121,12 +120,28 @@ class _OrderHistoryTile extends StatelessWidget {
             Text('$completedDate'),
           ],
         ),
-        trailing: Text(
-          '${order.price} MRU',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
+        trailing: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              '${order.price} MRU',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            if (order.driverRating != null) ..[
+              const SizedBox(height: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.star, size: 16, color: Colors.amber),
+                  Text('${order.driverRating}', style: const TextStyle(fontSize: 12)),
+                ],
+              ),
+            ],
+          ],
         ),
         onTap: () {
           context.pushNamed('orderDetails', extra: order);
@@ -135,7 +150,3 @@ class _OrderHistoryTile extends StatelessWidget {
     );
   }
 }
-    );
-  }
-}
-

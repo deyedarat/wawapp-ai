@@ -11,10 +11,12 @@ class DriverEarningsScreen extends ConsumerStatefulWidget {
   const DriverEarningsScreen({super.key});
 
   @override
-  ConsumerState<DriverEarningsScreen> createState() => _DriverEarningsScreenState();
+  ConsumerState<DriverEarningsScreen> createState() =>
+      _DriverEarningsScreenState();
 }
 
-class _DriverEarningsScreenState extends ConsumerState<DriverEarningsScreen> with SingleTickerProviderStateMixin {
+class _DriverEarningsScreenState extends ConsumerState<DriverEarningsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -65,7 +67,8 @@ class _DriverEarningsScreenState extends ConsumerState<DriverEarningsScreen> wit
     );
   }
 
-  Widget _buildDailyTab(DriverEarningsState state, DriverEarningsRepository repo) {
+  Widget _buildDailyTab(
+      DriverEarningsState state, DriverEarningsRepository repo) {
     final dailyOrders = repo.getDailyEarnings(state.completedOrders);
     final total = state.todayTotal;
 
@@ -83,7 +86,8 @@ class _DriverEarningsScreenState extends ConsumerState<DriverEarningsScreen> wit
     );
   }
 
-  Widget _buildWeeklyTab(DriverEarningsState state, DriverEarningsRepository repo) {
+  Widget _buildWeeklyTab(
+      DriverEarningsState state, DriverEarningsRepository repo) {
     final weeklyOrders = repo.getWeeklyEarnings(state.completedOrders);
     final total = state.weekTotal;
 

@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../l10n/app_localizations.dart';
 import '../map/pick_route_controller.dart';
 import '../map/places_autocomplete_sheet.dart';
+import '../map/saved_location_selector_sheet.dart';
 import '../quote/providers/quote_provider.dart';
 import '../quote/models/latlng.dart' as quote_latlng;
 import '../../core/geo/distance.dart';
@@ -122,6 +123,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  void _showSavedLocationsSheet(SavedLocationSelectionMode mode) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SavedLocationSelectorSheet(
+        mode: mode,
+        onLocationSelected: () {
+          // Update text controllers when location is selected
+          final state = ref.read(routePickerProvider);
+          _pickupController.text = state.pickupAddress;
+          _dropoffController.text = state.dropoffAddress;
+        },
+      ),
+    );
+  }
+
   Set<Marker> _buildMarkers(RoutePickerState state) {
     final markers = <Marker>{};
 
@@ -205,9 +222,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           title: Text(l10n.appTitle),
           centerTitle: true,
           actions: [
-            IconButton(
-              icon: const Icon(Icons.info_outline),
-              onPressed: () => context.push('/about'),
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                switch (value) {
+                  case 'profile':
+                    context.push('/profile');
+                    break;
+                  case 'about':
+                    context.push('/about');
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'profile',
+                  child: Row(
+                    children: [
+                      Icon(Icons.person),
+                      SizedBox(width: 8),
+                      Text('الملف الشخصي'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 'about',
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline),
+                      SizedBox(width: 8),
+                      Text('حول التطبيق'),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -271,37 +318,58 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   )
                                 : Consumer(
                                     builder: (context, ref, child) {
-                                      final polygons = ref.watch(districtPolygonsProvider);
-                                      final locale = Localizations.localeOf(context);
-                                      final markersAsync = ref.watch(districtMarkersProvider(locale.languageCode));
-                                      
+                                      final polygons =
+                                          ref.watch(districtPolygonsProvider);
+                                      final locale =
+                                          Localizations.localeOf(context);
+                                      final markersAsync = ref.watch(
+                                          districtMarkersProvider(
+                                              locale.languageCode));
+
                                       return markersAsync.when(
                                         data: (districtMarkers) => GoogleMap(
-                                          onMapCreated: (GoogleMapController controller) {
-                                            dev.log('GoogleMap created successfully', name: 'WAWAPP_HOME');
+                                          onMapCreated:
+                                              (GoogleMapController controller) {
+                                            dev.log(
+                                                'GoogleMap created successfully',
+                                                name: 'WAWAPP_HOME');
                                             _mapController = controller;
-                                            WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds(routeState));
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback((_) =>
+                                                    _fitBounds(routeState));
                                           },
                                           initialCameraPosition: _nouakchott,
-                                          myLocationEnabled: _hasLocationPermission,
-                                          myLocationButtonEnabled: _hasLocationPermission,
+                                          myLocationEnabled:
+                                              _hasLocationPermission,
+                                          myLocationButtonEnabled:
+                                              _hasLocationPermission,
                                           onTap: _onMapTap,
                                           onCameraMove: _onCameraMove,
-                                          markers: {..._buildMarkers(routeState), ...districtMarkers},
+                                          markers: {
+                                            ..._buildMarkers(routeState),
+                                            ...districtMarkers
+                                          },
                                           polygons: polygons,
                                           compassEnabled: true,
                                           mapToolbarEnabled: false,
                                           zoomControlsEnabled: true,
                                         ),
                                         loading: () => GoogleMap(
-                                          onMapCreated: (GoogleMapController controller) {
-                                            dev.log('GoogleMap created successfully', name: 'WAWAPP_HOME');
+                                          onMapCreated:
+                                              (GoogleMapController controller) {
+                                            dev.log(
+                                                'GoogleMap created successfully',
+                                                name: 'WAWAPP_HOME');
                                             _mapController = controller;
-                                            WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds(routeState));
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback((_) =>
+                                                    _fitBounds(routeState));
                                           },
                                           initialCameraPosition: _nouakchott,
-                                          myLocationEnabled: _hasLocationPermission,
-                                          myLocationButtonEnabled: _hasLocationPermission,
+                                          myLocationEnabled:
+                                              _hasLocationPermission,
+                                          myLocationButtonEnabled:
+                                              _hasLocationPermission,
                                           onTap: _onMapTap,
                                           onCameraMove: _onCameraMove,
                                           markers: _buildMarkers(routeState),
@@ -311,14 +379,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           zoomControlsEnabled: true,
                                         ),
                                         error: (error, stack) => GoogleMap(
-                                          onMapCreated: (GoogleMapController controller) {
-                                            dev.log('GoogleMap created successfully', name: 'WAWAPP_HOME');
+                                          onMapCreated:
+                                              (GoogleMapController controller) {
+                                            dev.log(
+                                                'GoogleMap created successfully',
+                                                name: 'WAWAPP_HOME');
                                             _mapController = controller;
-                                            WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds(routeState));
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback((_) =>
+                                                    _fitBounds(routeState));
                                           },
                                           initialCameraPosition: _nouakchott,
-                                          myLocationEnabled: _hasLocationPermission,
-                                          myLocationButtonEnabled: _hasLocationPermission,
+                                          myLocationEnabled:
+                                              _hasLocationPermission,
+                                          myLocationButtonEnabled:
+                                              _hasLocationPermission,
                                           onTap: _onMapTap,
                                           onCameraMove: _onCameraMove,
                                           markers: _buildMarkers(routeState),
@@ -375,11 +450,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               .setCurrentLocation();
                         },
                       ),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: routeState.mapsEnabled
-                            ? () => _showPlacesSheet(true)
-                            : null,
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.bookmark),
+                            onPressed: () => _showSavedLocationsSheet(SavedLocationSelectionMode.pickup),
+                            tooltip: 'المواقع المحفوظة',
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.search),
+                            onPressed: routeState.mapsEnabled
+                                ? () => _showPlacesSheet(true)
+                                : null,
+                          ),
+                        ],
                       ),
                       border: const OutlineInputBorder(),
                     ),
@@ -394,11 +479,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.dropoff,
                       prefixIcon: const Icon(Icons.location_on),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: routeState.mapsEnabled
-                            ? () => _showPlacesSheet(false)
-                            : null,
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.bookmark),
+                            onPressed: () => _showSavedLocationsSheet(SavedLocationSelectionMode.dropoff),
+                            tooltip: 'المواقع المحفوظة',
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.search),
+                            onPressed: routeState.mapsEnabled
+                                ? () => _showPlacesSheet(false)
+                                : null,
+                          ),
+                        ],
                       ),
                       border: const OutlineInputBorder(),
                     ),

@@ -12,6 +12,8 @@ import '../../features/active/active_order_screen.dart';
 import '../../features/earnings/driver_earnings_screen.dart';
 import '../../features/history/driver_history_screen.dart';
 import '../../features/history/order_details_screen.dart';
+import '../../features/profile/driver_profile_screen.dart';
+import '../../features/profile/driver_profile_edit_screen.dart';
 import 'navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -66,6 +68,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final order = state.extra as app_order.Order;
           return OrderDetailsScreen(order: order);
         },
+      ),
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const DriverProfileScreen(),
+      ),
+      GoRoute(
+        path: '/profile/edit',
+        name: 'profileEdit',
+        builder: (context, state) => const DriverProfileEditScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

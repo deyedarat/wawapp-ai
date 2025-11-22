@@ -54,7 +54,8 @@ class AnalyticsService {
       );
       if (kDebugMode) print('[Analytics] order_accepted_by_driver: $orderId');
     } catch (e) {
-      if (kDebugMode) print('[Analytics] Error logging order_accepted_by_driver: $e');
+      if (kDebugMode)
+        print('[Analytics] Error logging order_accepted_by_driver: $e');
     }
   }
 
@@ -66,7 +67,8 @@ class AnalyticsService {
       );
       if (kDebugMode) print('[Analytics] order_cancelled_by_driver: $orderId');
     } catch (e) {
-      if (kDebugMode) print('[Analytics] Error logging order_cancelled_by_driver: $e');
+      if (kDebugMode)
+        print('[Analytics] Error logging order_cancelled_by_driver: $e');
     }
   }
 
@@ -78,7 +80,8 @@ class AnalyticsService {
       );
       if (kDebugMode) print('[Analytics] order_completed_by_driver: $orderId');
     } catch (e) {
-      if (kDebugMode) print('[Analytics] Error logging order_completed_by_driver: $e');
+      if (kDebugMode)
+        print('[Analytics] Error logging order_completed_by_driver: $e');
     }
   }
 }

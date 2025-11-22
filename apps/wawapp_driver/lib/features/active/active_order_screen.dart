@@ -110,7 +110,8 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
     }
 
     if (kDebugMode) {
-      dev.log('[Matching] ActiveOrderScreen: Building screen for driver ${user.uid}');
+      dev.log(
+          '[Matching] ActiveOrderScreen: Building screen for driver ${user.uid}');
     }
 
     return Scaffold(
@@ -118,7 +119,8 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
       body: StreamBuilder<List<app_order.Order>>(
         stream: () {
           if (kDebugMode) {
-            dev.log('[Matching] ActiveOrderScreen: Subscribing to active orders stream for driver ${user.uid}');
+            dev.log(
+                '[Matching] ActiveOrderScreen: Subscribing to active orders stream for driver ${user.uid}');
           }
           return _ordersService.getDriverActiveOrders(user.uid);
         }(),
@@ -132,7 +134,8 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
 
           if (snapshot.hasError) {
             if (kDebugMode) {
-              dev.log('[Matching] ActiveOrderScreen: Stream error: ${snapshot.error}');
+              dev.log(
+                  '[Matching] ActiveOrderScreen: Stream error: ${snapshot.error}');
             }
             final appError = AppError.from(snapshot.error!);
             return ErrorScreen(
@@ -143,7 +146,8 @@ class _ActiveOrderScreenState extends State<ActiveOrderScreen> {
 
           final orders = snapshot.data ?? [];
           if (kDebugMode) {
-            dev.log('[Matching] ActiveOrderScreen: Received ${orders.length} active orders');
+            dev.log(
+                '[Matching] ActiveOrderScreen: Received ${orders.length} active orders');
           }
 
           // Handle tracking based on active orders

@@ -10,7 +10,7 @@ class OrderDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text('طلب #${order.id.substring(0, 8)}'),
@@ -27,18 +27,24 @@ class OrderDetailsScreen extends StatelessWidget {
                 _buildInfoRow('رقم الطلب', order.id.substring(0, 8)),
                 _buildInfoRow('الحالة', 'مكتمل'),
                 _buildInfoRow('السعر', '${order.price} MRU'),
-                _buildInfoRow('المسافة', '${order.distanceKm.toStringAsFixed(1)} كم'),
+                _buildInfoRow(
+                    'المسافة', '${order.distanceKm.toStringAsFixed(1)} كم'),
                 if (order.completedAt != null)
-                  _buildInfoRow('تاريخ الإكمال', dateFormat.format(order.completedAt!)),
+                  _buildInfoRow(
+                      'تاريخ الإكمال', dateFormat.format(order.completedAt!)),
+                if (order.driverRating != null)
+                  _buildRatingRow('تقييم العميل', order.driverRating!),
               ],
             ),
             const SizedBox(height: 16),
             _buildInfoCard(
               'تفاصيل الرحلة',
               [
-                _buildLocationRow('نقطة الانطلاق', order.pickup.label, Icons.location_on, Colors.green),
+                _buildLocationRow('نقطة الانطلاق', order.pickup.label,
+                    Icons.location_on, Colors.green),
                 const SizedBox(height: 8),
-                _buildLocationRow('الوجهة', order.dropoff.label, Icons.flag, Colors.red),
+                _buildLocationRow(
+                    'الوجهة', order.dropoff.label, Icons.flag, Colors.red),
               ],
             ),
           ],
@@ -96,7 +102,8 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationRow(String label, String address, IconData icon, Color color) {
+  Widget _buildLocationRow(
+      String label, String address, IconData icon, Color color) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -124,6 +131,45 @@ class OrderDetailsScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildRatingRow(String label, int rating) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Row(
+              children: [
+                ...List.generate(5, (index) {
+                  return Icon(
+                    index < rating ? Icons.star : Icons.star_border,
+                    size: 16,
+                    color: index < rating ? Colors.amber : Colors.grey,
+                  );
+                }),
+                const SizedBox(width: 8),
+                Text(
+                  '$rating/5',
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

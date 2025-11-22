@@ -6,7 +6,7 @@ import 'phone_pin_auth.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this._authService, this._firebaseAuth)
-    : super(const AuthState()) {
+      : super(const AuthState()) {
     _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
       state = state.copyWith(user: user);
       if (user != null) {

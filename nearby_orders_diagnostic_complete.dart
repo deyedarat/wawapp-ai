@@ -4,44 +4,46 @@ import 'dart:math';
 
 void main() {
   print('=== NEARBY ORDERS DIAGNOSTIC ===\n');
-  
+
   // 1. Test OrderStatus behavior
   testOrderStatusBehavior();
-  
+
   // 2. Test distance calculation
   testDistanceCalculation();
-  
+
   // 3. Simulate order filtering
   simulateOrderFiltering();
-  
+
   // 4. Test with unlimited distance
   testUnlimitedDistance();
 }
 
 void testOrderStatusBehavior() {
   print('1. ORDER STATUS BEHAVIOR:');
-  
+
   final clientStatus = OrderStatus.assigning;
   final driverSearchStatus = OrderStatus.assigning.toFirestore();
-  
+
   print('   Client creates: OrderStatus.assigning');
   print('   Client Firestore value: "${clientStatus.toFirestore()}"');
   print('   Driver searches for: "${driverSearchStatus}"');
   print('   Match: ${clientStatus.toFirestore() == driverSearchStatus}');
-  
+
   // Test legacy compatibility
   final legacyParsed = OrderStatus.fromFirestore('matching');
-  print('   Legacy "matching" → ${legacyParsed} → "${legacyParsed.toFirestore()}"');
+  print(
+    '   Legacy "matching" → ${legacyParsed} → "${legacyParsed.toFirestore()}"',
+  );
   print('');
 }
 
 void testDistanceCalculation() {
   print('2. DISTANCE CALCULATION TEST:');
-  
+
   // Nouakchott coordinates (approximate city center)
   final driverLat = 18.0735;
   final driverLng = -15.9582;
-  
+
   // Test locations at various distances
   final testLocations = [
     {'name': 'Same location', 'lat': 18.0735, 'lng': -15.9582},
@@ -50,22 +52,25 @@ void testDistanceCalculation() {
     {'name': '8km away (limit)', 'lat': 18.1455, 'lng': -15.9582},
     {'name': '10km away', 'lat': 18.1635, 'lng': -15.9582},
   ];
-  
+
   for (final location in testLocations) {
     final distance = calculateDistance(
-      driverLat, driverLng, 
-      location['lat'] as double, 
-      location['lng'] as double
+      driverLat,
+      driverLng,
+      location['lat'] as double,
+      location['lng'] as double,
     );
     final withinLimit = distance <= 8.0;
-    print('   ${location['name']}: ${distance.toStringAsFixed(2)}km ${withinLimit ? '✓' : '✗'}');
+    print(
+      '   ${location['name']}: ${distance.toStringAsFixed(2)}km ${withinLimit ? '✓' : '✗'}',
+    );
   }
   print('');
 }
 
 void simulateOrderFiltering() {
   print('3. ORDER FILTERING SIMULATION:');
-  
+
   // Simulate orders with different statuses and distances
   final mockOrders = [
     {'id': 'order1', 'status': 'matching', 'distance': 2.5},
@@ -74,19 +79,23 @@ void simulateOrderFiltering() {
     {'id': 'order4', 'status': 'accepted', 'distance': 3.1},
     {'id': 'order5', 'status': 'matching', 'distance': 5.0},
   ];
-  
+
   print('   Total orders in Firestore: ${mockOrders.length}');
-  
+
   // Filter by status
-  final statusFiltered = mockOrders.where((order) => 
-    order['status'] == OrderStatus.assigning.toFirestore()).toList();
-  print('   After status filter (${OrderStatus.assigning.toFirestore()}): ${statusFiltered.length}');
-  
+  final statusFiltered = mockOrders
+      .where((order) => order['status'] == OrderStatus.assigning.toFirestore())
+      .toList();
+  print(
+    '   After status filter (${OrderStatus.assigning.toFirestore()}): ${statusFiltered.length}',
+  );
+
   // Filter by distance (8km limit)
-  final distanceFiltered = statusFiltered.where((order) => 
-    (order['distance'] as double) <= 8.0).toList();
+  final distanceFiltered = statusFiltered
+      .where((order) => (order['distance'] as double) <= 8.0)
+      .toList();
   print('   After distance filter (≤8km): ${distanceFiltered.length}');
-  
+
   print('   Final orders shown:');
   for (final order in distanceFiltered) {
     print('     - ${order['id']}: ${order['distance']}km');
@@ -96,18 +105,19 @@ void simulateOrderFiltering() {
 
 void testUnlimitedDistance() {
   print('4. UNLIMITED DISTANCE TEST:');
-  
+
   final mockOrders = [
     {'id': 'order1', 'status': 'matching', 'distance': 2.5},
     {'id': 'order2', 'status': 'matching', 'distance': 15.8},
     {'id': 'order3', 'status': 'matching', 'distance': 25.2},
     {'id': 'order4', 'status': 'matching', 'distance': 50.0},
   ];
-  
+
   print('   With unlimited distance (no 8km filter):');
-  final statusOnly = mockOrders.where((order) => 
-    order['status'] == OrderStatus.assigning.toFirestore()).toList();
-  
+  final statusOnly = mockOrders
+      .where((order) => order['status'] == OrderStatus.assigning.toFirestore())
+      .toList();
+
   for (final order in statusOnly) {
     print('     - ${order['id']}: ${order['distance']}km');
   }
@@ -119,7 +129,8 @@ double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
   const R = 6371; // Earth radius in km
   final dLat = (lat2 - lat1) * pi / 180;
   final dLon = (lon2 - lon1) * pi / 180;
-  final a = sin(dLat / 2) * sin(dLat / 2) +
+  final a =
+      sin(dLat / 2) * sin(dLat / 2) +
       cos(lat1 * pi / 180) *
           cos(lat2 * pi / 180) *
           sin(dLon / 2) *

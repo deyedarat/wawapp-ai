@@ -9,6 +9,7 @@ import '../models/order.dart' as app_order;
 import '../providers/order_tracking_provider.dart';
 import '../data/orders_repository.dart';
 import 'order_status_timeline.dart';
+import 'rating_bottom_sheet.dart';
 import '../../map/providers/district_layer_provider.dart';
 
 class OrderTrackingView extends ConsumerStatefulWidget {
@@ -32,6 +33,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
   bool _isFollowingDriver = true;
   LatLng? _lastDriverPosition;
   bool _isCancelling = false;
+  bool _hasShownRatingPrompt = false;
 
   void _onCameraMove(CameraPosition position) {
     ref.read(currentZoomProvider.notifier).state = position.zoom;
@@ -217,13 +219,13 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
   }
 
   Future<void> _cancelOrder() async {
-    if (widget.order == null) return;
+    if (widget.order == null || widget.order!.id == null) return;
 
     setState(() => _isCancelling = true);
 
     try {
       final repository = ref.read(ordersRepositoryProvider);
-      await repository.cancelOrder(widget.order!.id);
+      await repository.cancelOrder(widget.order!.id!);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -244,6 +246,33 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
     }
   }
 
+  void _showRatingPrompt() {
+    if (_hasShownRatingPrompt || widget.readOnly) return;
+    
+    final order = widget.order;
+    if (order == null || 
+        order.orderStatus != OrderStatus.completed || 
+        order.driverRating != null) {
+      return;
+    }
+
+    _hasShownRatingPrompt = true;
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => RatingBottomSheet(
+            orderId: order.id!,
+            onRated: () => setState(() {}),
+          ),
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -257,9 +286,10 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
       data: (location) => location,
     );
 
-    // Handle driver movement for auto-follow
+    // Handle driver movement for auto-follow and rating prompt
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _handleDriverMovement(driverLocation);
+      _showRatingPrompt();
     });
 
     return Column(
@@ -272,13 +302,15 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                 builder: (context, ref, child) {
                   final polygons = ref.watch(districtPolygonsProvider);
                   final locale = Localizations.localeOf(context);
-                  final markersAsync = ref.watch(districtMarkersProvider(locale.languageCode));
-                  
+                  final markersAsync =
+                      ref.watch(districtMarkersProvider(locale.languageCode));
+
                   return markersAsync.when(
                     data: (districtMarkers) => GoogleMap(
                       onMapCreated: (GoogleMapController controller) {
                         _mapController = controller;
-                        WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds());
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((_) => _fitBounds());
                       },
                       onCameraMoveStarted: () {
                         _isFollowingDriver = false;
@@ -286,13 +318,17 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                       onCameraMove: _onCameraMove,
                       initialCameraPosition: widget.order?.pickup != null
                           ? CameraPosition(
-                              target: LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
+                              target: LatLng(widget.order!.pickup.latitude,
+                                  widget.order!.pickup.longitude),
                               zoom: 14.0,
                             )
                           : _nouakchott,
                       myLocationEnabled: !widget.readOnly,
                       myLocationButtonEnabled: !widget.readOnly,
-                      markers: {..._buildMarkers(driverLocation), ...districtMarkers},
+                      markers: {
+                        ..._buildMarkers(driverLocation),
+                        ...districtMarkers
+                      },
                       polylines: _buildPolylines(),
                       polygons: polygons,
                       compassEnabled: true,
@@ -301,7 +337,8 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                     loading: () => GoogleMap(
                       onMapCreated: (GoogleMapController controller) {
                         _mapController = controller;
-                        WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds());
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((_) => _fitBounds());
                       },
                       onCameraMoveStarted: () {
                         _isFollowingDriver = false;
@@ -309,7 +346,8 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                       onCameraMove: _onCameraMove,
                       initialCameraPosition: widget.order?.pickup != null
                           ? CameraPosition(
-                              target: LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
+                              target: LatLng(widget.order!.pickup.latitude,
+                                  widget.order!.pickup.longitude),
                               zoom: 14.0,
                             )
                           : _nouakchott,
@@ -324,7 +362,8 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                     error: (error, stack) => GoogleMap(
                       onMapCreated: (GoogleMapController controller) {
                         _mapController = controller;
-                        WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds());
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((_) => _fitBounds());
                       },
                       onCameraMoveStarted: () {
                         _isFollowingDriver = false;
@@ -332,7 +371,8 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                       onCameraMove: _onCameraMove,
                       initialCameraPosition: widget.order?.pickup != null
                           ? CameraPosition(
-                              target: LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
+                              target: LatLng(widget.order!.pickup.latitude,
+                                  widget.order!.pickup.longitude),
                               zoom: 14.0,
                             )
                           : _nouakchott,
@@ -388,9 +428,9 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () async {
-                        final trackUrl =
-                            'https://wawapp.page.link/track/${widget.order?.hashCode ?? 'unknown'}';
-                        await Clipboard.setData(ClipboardData(text: trackUrl));
+                        final String orderId = widget.order!.id ?? 'unknown';
+                        await Clipboard.setData(ClipboardData(
+                            text: 'https://wawapp.page.link/track/$orderId'));
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('تم نسخ رابط التتبع')),
@@ -402,7 +442,9 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                     if (widget.order!.orderStatus.canClientCancel) ...[
                       const SizedBox(height: 8),
                       OutlinedButton(
-                        onPressed: _isCancelling ? null : () => _showCancelDialog(context),
+                        onPressed: _isCancelling
+                            ? null
+                            : () => _showCancelDialog(context),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.red,
                           side: const BorderSide(color: Colors.red),
@@ -411,7 +453,8 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                             ? const SizedBox(
                                 height: 16,
                                 width: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Text('إلغاء الطلب'),
                       ),

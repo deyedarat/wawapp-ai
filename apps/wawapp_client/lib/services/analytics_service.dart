@@ -36,7 +36,8 @@ class AnalyticsService {
       );
       if (kDebugMode) print('[Analytics] order_cancelled_by_client: $orderId');
     } catch (e) {
-      if (kDebugMode) print('[Analytics] Error logging order_cancelled_by_client: $e');
+      if (kDebugMode)
+        print('[Analytics] Error logging order_cancelled_by_client: $e');
     }
   }
 
@@ -48,11 +49,13 @@ class AnalyticsService {
       );
       if (kDebugMode) print('[Analytics] order_completed_viewed: $orderId');
     } catch (e) {
-      if (kDebugMode) print('[Analytics] Error logging order_completed_viewed: $e');
+      if (kDebugMode)
+        print('[Analytics] Error logging order_completed_viewed: $e');
     }
   }
 
-  Future<void> logDriverRated({required String orderId, required int rating}) async {
+  Future<void> logDriverRated(
+      {required String orderId, required int rating}) async {
     try {
       await _analytics.logEvent(
         name: 'driver_rated',
@@ -61,7 +64,8 @@ class AnalyticsService {
           'rating': rating,
         },
       );
-      if (kDebugMode) print('[Analytics] driver_rated: $orderId, rating: $rating');
+      if (kDebugMode)
+        print('[Analytics] driver_rated: $orderId, rating: $rating');
     } catch (e) {
       if (kDebugMode) print('[Analytics] Error logging driver_rated: $e');
     }

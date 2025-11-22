@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:core_shared/core_shared.dart';
 import '../models/order.dart' as app_order;
 import 'driver_status_service.dart';
+import 'analytics_service.dart';
 
 class OrdersService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -24,12 +25,16 @@ class OrdersService {
 
     if (kDebugMode) {
       dev.log('[Matching] getNearbyOrders called');
-      dev.log('[Matching] Driver position: lat=${driverPosition.latitude.toStringAsFixed(4)}, lng=${driverPosition.longitude.toStringAsFixed(4)}');
-      dev.log('[Matching] Query filters: status=$statusValue, assignedDriverId=null, maxDistance=8.0km');
+      dev.log(
+          '[Matching] Driver position: lat=${driverPosition.latitude.toStringAsFixed(4)}, lng=${driverPosition.longitude.toStringAsFixed(4)}');
+      dev.log(
+          '[Matching] Query filters: status=$statusValue, assignedDriverId=null, maxDistance=8.0km');
     }
 
     // Check if driver is online before querying orders
-    return DriverStatusService.instance.watchOnlineStatus(user.uid).asyncExpand((isOnline) {
+    return DriverStatusService.instance
+        .watchOnlineStatus(user.uid)
+        .asyncExpand((isOnline) {
       if (!isOnline) {
         if (kDebugMode) {
           dev.log('[Matching] Driver is OFFLINE - returning empty stream');
@@ -57,11 +62,14 @@ class OrdersService {
           .snapshots()
           .map((snapshot) {
         if (kDebugMode) {
-          dev.log('[Matching] Snapshot received: ${snapshot.docs.length} documents');
+          dev.log(
+              '[Matching] Snapshot received: ${snapshot.docs.length} documents');
         }
 
         if (snapshot.docs.isEmpty) {
-          if (kDebugMode) dev.log('[Matching] No orders matching filters: status=$statusValue, assignedDriverId=null');
+          if (kDebugMode)
+            dev.log(
+                '[Matching] No orders matching filters: status=$statusValue, assignedDriverId=null');
           return <app_order.Order>[];
         }
 
@@ -74,7 +82,8 @@ class OrdersService {
             final assignedDriverId = data['assignedDriverId'];
             if (assignedDriverId != null) {
               if (kDebugMode) {
-                dev.log('[Matching] ⚠️ Order ${doc.id} has assignedDriverId=$assignedDriverId, skipping');
+                dev.log(
+                    '[Matching] ⚠️ Order ${doc.id} has assignedDriverId=$assignedDriverId, skipping');
               }
               continue;
             }
@@ -91,17 +100,20 @@ class OrdersService {
               final createdAt = data['createdAt'];
               final pickupLat = data['pickup']?['lat'];
               final pickupLng = data['pickup']?['lng'];
-              dev.log('[Matching] Order ${order.id}: status=${order.status}, assignedDriverId=$assignedDriverId, createdAt=$createdAt, pickup=($pickupLat,$pickupLng), distance=${distance.toStringAsFixed(2)}km, price=${order.price}');
+              dev.log(
+                  '[Matching] Order ${order.id}: status=${order.status}, assignedDriverId=$assignedDriverId, createdAt=$createdAt, pickup=($pickupLat,$pickupLng), distance=${distance.toStringAsFixed(2)}km, price=${order.price}');
             }
 
             if (distance <= 8.0) {
               orders.add(order);
               if (kDebugMode) {
-                dev.log('[Matching] ✓ Order ${order.id} within range (${distance.toStringAsFixed(1)}km)');
+                dev.log(
+                    '[Matching] ✓ Order ${order.id} within range (${distance.toStringAsFixed(1)}km)');
               }
             } else {
               if (kDebugMode) {
-                dev.log('[Matching] ✗ Order ${order.id} too far (${distance.toStringAsFixed(1)}km)');
+                dev.log(
+                    '[Matching] ✗ Order ${order.id} too far (${distance.toStringAsFixed(1)}km)');
               }
             }
           } on Object catch (e) {
@@ -137,7 +149,8 @@ class OrdersService {
               o.pickup.lat,
               o.pickup.lng,
             );
-            dev.log('[Matching] #${i + 1}: ${o.id} (${dist.toStringAsFixed(1)}km, ${o.price}MRU)');
+            dev.log(
+                '[Matching] #${i + 1}: ${o.id} (${dist.toStringAsFixed(1)}km, ${o.price}MRU)');
           }
         }
 
@@ -146,10 +159,12 @@ class OrdersService {
         if (kDebugMode) {
           dev.log('[Matching] Stream error: $error');
           if (error.toString().contains('index')) {
-            dev.log('[Matching] ⚠️ Firestore index missing. Create composite index for: collection=orders, fields=[status,assignedDriverId,createdAt]');
+            dev.log(
+                '[Matching] ⚠️ Firestore index missing. Create composite index for: collection=orders, fields=[status,assignedDriverId,createdAt]');
           }
           if (error.toString().contains('assignedDriverId')) {
-            dev.log('[Matching] ⚠️ assignedDriverId field missing in schema. Consider migration or use fallback query.');
+            dev.log(
+                '[Matching] ⚠️ assignedDriverId field missing in schema. Consider migration or use fallback query.');
           }
         }
         return <app_order.Order>[];
@@ -254,7 +269,8 @@ class OrdersService {
   Stream<List<app_order.Order>> getDriverActiveOrders(String driverId) {
     if (kDebugMode) {
       dev.log('[Matching] getDriverActiveOrders called for driver: $driverId');
-      dev.log('[Matching] Query intent: driverId=$driverId, status IN [accepted, onRoute]');
+      dev.log(
+          '[Matching] Query intent: driverId=$driverId, status IN [accepted, onRoute]');
     }
 
     // REQUIRED COMPOSITE INDEX: orders [driverId ASC, status ASC]
@@ -270,7 +286,8 @@ class OrdersService {
         .snapshots()
         .map((snapshot) {
           if (kDebugMode) {
-            dev.log('[Matching] Active orders snapshot: ${snapshot.docs.length} documents');
+            dev.log(
+                '[Matching] Active orders snapshot: ${snapshot.docs.length} documents');
           }
 
           final orders = <app_order.Order>[];
@@ -282,7 +299,8 @@ class OrdersService {
 
               if (kDebugMode) {
                 final createdAt = data['createdAt'];
-                dev.log('[Matching] Active order ${order.id}: status=${order.status}, createdAt=$createdAt, price=${order.price}');
+                dev.log(
+                    '[Matching] Active order ${order.id}: status=${order.status}, createdAt=$createdAt, price=${order.price}');
               }
             } on Object catch (e) {
               if (kDebugMode) {
@@ -296,7 +314,8 @@ class OrdersService {
               final orderStatuses = orders
                   .map((o) => '${o.id.substring(o.id.length - 6)}:${o.status}')
                   .join(', ');
-              dev.log('[Matching] Final active orders for driver $driverId: [$orderStatuses]');
+              dev.log(
+                  '[Matching] Final active orders for driver $driverId: [$orderStatuses]');
             } else {
               dev.log('[Matching] No active orders for driver $driverId');
             }

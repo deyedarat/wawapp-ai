@@ -16,6 +16,8 @@ class Order {
   final String? driverId;
   final DateTime? createdAt;
   final DateTime? completedAt;
+  final int? driverRating;
+  final DateTime? ratedAt;
 
   const Order({
     this.id,
@@ -30,6 +32,8 @@ class Order {
     this.driverId,
     this.createdAt,
     this.completedAt,
+    this.driverRating,
+    this.ratedAt,
   });
 
   OrderStatus get orderStatus =>
@@ -58,6 +62,8 @@ class Order {
       driverId: data['driverId'] as String?,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
       completedAt: (data['completedAt'] as Timestamp?)?.toDate(),
+      driverRating: data['driverRating'] as int?,
+      ratedAt: (data['ratedAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -78,7 +84,8 @@ class Order {
   String get formattedCreatedAt => DateFormatter.formatOrderCreated(createdAt);
 
   /// Format completion date for UI display in local device time
-  String get formattedCompletedAt => DateFormatter.formatOrderCompleted(completedAt);
+  String get formattedCompletedAt =>
+      DateFormatter.formatOrderCompleted(completedAt);
 
   /// Format creation date with relative time (e.g., "2 hours ago")
   String get relativeCreatedAt => DateFormatter.formatRelative(createdAt);
