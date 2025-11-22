@@ -111,7 +111,7 @@ class _OrderHistoryTile extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ListTile(
-        title: Text('طلب #${order.id.substring(0, 8)}'),
+        title: Text('طلب #${order.id != null && order.id!.length > 8 ? order.id!.substring(0, 8) : order.id ?? 'N/A'}'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -46,11 +46,6 @@ class OrdersService {
         dev.log('[Matching] Driver is ONLINE - querying orders');
       }
 
-      // TODO: MIGRATION - Ensure Firestore schema supports these fields:
-      // - 'assignedDriverId' field should exist and be null for open orders
-      // - 'createdAt' field should be indexed for orderBy query
-      // - If schema uses different field names, update query accordingly
-
       // REQUIRED COMPOSITE INDEX: orders [status ASC, assignedDriverId ASC, createdAt DESC]
       // Deploy via: firebase deploy --only firestore:indexes
       // Or create manually in Firebase Console: https://console.firebase.google.com/project/_/firestore/indexes
@@ -327,7 +322,7 @@ class OrdersService {
           if (kDebugMode) {
             if (orders.isNotEmpty) {
               final orderStatuses = orders
-                  .map((o) => '${o.id.substring(o.id.length - 6)}:${o.status}')
+                  .map((o) => '${o.id != null && o.id!.length > 6 ? o.id!.substring(o.id!.length - 6) : o.id ?? 'N/A'}:${o.status}')
                   .join(', ');
               dev.log(
                   '[Matching] Final active orders for driver $driverId: [$orderStatuses]');

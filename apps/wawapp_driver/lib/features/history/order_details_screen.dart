@@ -13,7 +13,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('طلب #${order.id.substring(0, 8)}'),
+        title: Text('طلب #${order.id != null && order.id!.length > 8 ? order.id!.substring(0, 8) : order.id ?? 'N/A'}'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -24,7 +24,7 @@ class OrderDetailsScreen extends StatelessWidget {
             _buildInfoCard(
               'معلومات الطلب',
               [
-                _buildInfoRow('رقم الطلب', order.id.substring(0, 8)),
+                _buildInfoRow('رقم الطلب', order.id != null && order.id!.length > 8 ? order.id!.substring(0, 8) : order.id ?? 'N/A'),
                 _buildInfoRow('الحالة', 'مكتمل'),
                 _buildInfoRow('السعر', '${order.price} MRU'),
                 _buildInfoRow(

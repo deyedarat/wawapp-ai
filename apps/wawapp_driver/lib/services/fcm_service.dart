@@ -44,6 +44,8 @@ class FCMService {
         });
       }
 
+      if (!context.mounted) return;
+
       // Setup notification tap handlers
       setupNotificationHandlers(context);
 
@@ -158,7 +160,9 @@ class FCMService {
       if (kDebugMode) {
         debugPrint('[FCM] Notification tapped (background): ${message.data}');
       }
-      _handleNotificationTap(context, message, 'background');
+      if (context.mounted) {
+        _handleNotificationTap(context, message, 'background');
+      }
     });
 
     // Handle notification taps when app is TERMINATED
@@ -167,7 +171,9 @@ class FCMService {
         if (kDebugMode) {
           debugPrint('[FCM] Notification tapped (terminated): ${message.data}');
         }
-        _handleNotificationTap(context, message, 'terminated');
+        if (context.mounted) {
+          _handleNotificationTap(context, message, 'terminated');
+        }
       }
     });
 
@@ -188,7 +194,7 @@ class FCMService {
       }
 
       // Show in-app snackbar
-      if (message.notification != null) {
+      if (message.notification != null && context.mounted) {
         _showForegroundNotification(context, message);
       }
     });
@@ -218,6 +224,8 @@ class FCMService {
         debugPrint('[FCM] Navigating to: $type for order: $orderId');
       }
 
+      if (!context.mounted) return;
+
       // Driver notifications (future use)
       switch (type) {
         case 'new_order_nearby':
@@ -244,6 +252,7 @@ class FCMService {
     final body = message.notification?.body;
 
     if (title == null || body == null) return;
+    if (!context.mounted) return;
 
     // Show snackbar
     ScaffoldMessenger.of(context).showSnackBar(
@@ -278,14 +287,16 @@ class FCMService {
       // Handle initial link (app opened from terminated state via deep link)
       final PendingDynamicLinkData? initialLink =
           await FirebaseDynamicLinks.instance.getInitialLink();
-      if (initialLink != null) {
+      if (initialLink != null && context.mounted) {
         _handleDeepLink(context, initialLink.link);
       }
 
       // Handle links while app is running (foreground/background)
       FirebaseDynamicLinks.instance.onLink.listen(
         (dynamicLinkData) {
-          _handleDeepLink(context, dynamicLinkData.link);
+          if (context.mounted) {
+            _handleDeepLink(context, dynamicLinkData.link);
+          }
         },
         onError: (error) {
           if (kDebugMode) {
@@ -305,6 +316,8 @@ class FCMService {
     if (kDebugMode) {
       debugPrint('[FCM] Deep link received: $deepLink');
     }
+
+    if (!context.mounted) return;
 
     final path = deepLink.path;
     final queryParams = deepLink.queryParameters;

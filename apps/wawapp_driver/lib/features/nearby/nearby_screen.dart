@@ -191,7 +191,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
-                                          'طلب #${order.id.substring(order.id.length - 6)}',
+                                          'طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
                                           style: Theme.of(context)
                                               .textTheme
                                               .titleMedium,
@@ -222,7 +222,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                                               fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 8),
                                       ElevatedButton(
-                                        onPressed: () => _acceptOrder(order.id),
+                                        onPressed: order.id != null ? () => _acceptOrder(order.id!) : null,
                                         style: ElevatedButton.styleFrom(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 16, vertical: 8),
