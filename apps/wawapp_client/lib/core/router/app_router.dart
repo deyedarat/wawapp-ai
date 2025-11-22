@@ -14,6 +14,10 @@ import '../../features/auth/phone_pin_login_screen.dart';
 import '../../features/auth/otp_screen.dart';
 import '../../features/auth/create_pin_screen.dart';
 import '../../features/auth/providers/auth_service_provider.dart';
+import '../../features/profile/client_profile_screen.dart';
+import '../../features/profile/client_profile_edit_screen.dart';
+import '../../features/profile/saved_locations_screen.dart';
+import '../../features/profile/add_saved_location_screen.dart';
 import 'package:auth_shared/auth_shared.dart';
 import 'navigator.dart';
 
@@ -84,6 +88,34 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final orderId = state.pathParameters['orderId']!;
           return TripCompletedScreen(orderId: orderId);
+        },
+      ),
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const ClientProfileScreen(),
+      ),
+      GoRoute(
+        path: '/profile/edit',
+        name: 'profileEdit',
+        builder: (context, state) => const ClientProfileEditScreen(),
+      ),
+      GoRoute(
+        path: '/profile/locations',
+        name: 'savedLocations',
+        builder: (context, state) => const SavedLocationsScreen(),
+      ),
+      GoRoute(
+        path: '/profile/locations/add',
+        name: 'addSavedLocation',
+        builder: (context, state) => const AddSavedLocationScreen(),
+      ),
+      GoRoute(
+        path: '/profile/locations/edit/:locationId',
+        name: 'editSavedLocation',
+        builder: (context, state) {
+          final locationId = state.pathParameters['locationId']!;
+          return AddSavedLocationScreen(locationId: locationId);
         },
       ),
     ],

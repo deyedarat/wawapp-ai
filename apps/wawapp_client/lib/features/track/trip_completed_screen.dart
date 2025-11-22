@@ -15,7 +15,8 @@ class TripCompletedScreen extends ConsumerStatefulWidget {
   const TripCompletedScreen({super.key, required this.orderId});
 
   @override
-  ConsumerState<TripCompletedScreen> createState() => _TripCompletedScreenState();
+  ConsumerState<TripCompletedScreen> createState() =>
+      _TripCompletedScreenState();
 }
 
 class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
@@ -30,7 +31,8 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_hasLoggedView) {
         _hasLoggedView = true;
-        AnalyticsService.instance.logTripCompletedViewed(orderId: widget.orderId);
+        AnalyticsService.instance
+            .logTripCompletedViewed(orderId: widget.orderId);
       }
     });
   }
@@ -93,11 +95,13 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
             return const Center(child: Text('الطلب غير موجود'));
           }
 
-          final order = app_order.Order.fromFirestore({...data, 'id': widget.orderId});
+          final order =
+              app_order.Order.fromFirestore({...data, 'id': widget.orderId});
           final completedAt = data['completedAt'] as Timestamp?;
           final dateStr = completedAt != null
               ? DateFormat('yyyy-MM-dd HH:mm').format(completedAt.toDate())
               : '';
+          final isAlreadyRated = order.driverRating != null;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -122,7 +126,8 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
                         const SizedBox(height: 8),
                         Text('إلى: ${order.dropoffAddress}'),
                         const SizedBox(height: 8),
-                        Text('المسافة: ${order.distanceKm.toStringAsFixed(1)} كم'),
+                        Text(
+                            'المسافة: ${order.distanceKm.toStringAsFixed(1)} كم'),
                         const SizedBox(height: 8),
                         Text('السعر: ${order.price} MRU'),
                         if (dateStr.isNotEmpty) ...[

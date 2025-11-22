@@ -10,9 +10,11 @@ class Order {
   final double distanceKm;
   final int price;
   final DateTime? createdAt;
+  final DateTime? updatedAt;
   final DateTime? completedAt;
   final String? driverId;
   final String? assignedDriverId;
+  final int? driverRating;
 
   const Order({
     required this.id,
@@ -23,9 +25,11 @@ class Order {
     required this.distanceKm,
     required this.price,
     this.createdAt,
+    this.updatedAt,
     this.completedAt,
     this.driverId,
     this.assignedDriverId,
+    this.driverRating,
   });
 
   OrderStatus get orderStatus => OrderStatus.fromFirestore(status);
@@ -40,9 +44,11 @@ class Order {
       distanceKm: (data['distanceKm'] as num).toDouble(),
       price: data['price'] as int,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
       completedAt: (data['completedAt'] as Timestamp?)?.toDate(),
       driverId: data['driverId'] as String?,
       assignedDriverId: data['assignedDriverId'] as String?,
+      driverRating: data['driverRating'] as int?,
     );
   }
 }

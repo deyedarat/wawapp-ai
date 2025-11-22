@@ -74,41 +74,19 @@ service cloud.firestore {
       // Create: only owner
       allow create: if isSignedIn() && request.auth.uid == uid;
 
-      // Update: only owner AND prevent tampering with sensitive/admin fields
+      // Update: only owner AND prevent partial, unsafe edits to sensitive fields
       allow update: if isSignedIn()
                     && request.auth.uid == uid
-                    // Prevent partial PIN edits (must update both pinHash and pinSalt together)
                     && !(request.resource.data.diff(resource.data).affectedKeys()
                          .hasAny(['pinHash','pinSalt'])
                          && !request.resource.data.keys().hasAll(['pinHash','pinSalt']))
-                    // Prevent clients from modifying admin-only fields
-                    && (!('totalTrips' in resource.data) || request.resource.data.totalTrips == resource.data.totalTrips)
-                    && (!('averageRating' in resource.data) || request.resource.data.averageRating == resource.data.averageRating);
+                    && !request.resource.data.diff(resource.data).affectedKeys()
+                       .hasAny(['totalTrips', 'averageRating']);
+    }
 
-      // Saved locations subcollection: full CRUD for owner only
-      match /savedLocations/{locationId} {
-        allow read, delete: if isSignedIn() && request.auth.uid == uid;
-        
-        allow create: if isSignedIn() 
-                      && request.auth.uid == uid
-                      && request.resource.data.lat is number
-                      && request.resource.data.lat >= -90
-                      && request.resource.data.lat <= 90
-                      && request.resource.data.lng is number
-                      && request.resource.data.lng >= -180
-                      && request.resource.data.lng <= 180
-                      && request.resource.data.label is string;
-        
-        allow update: if isSignedIn() 
-                      && request.auth.uid == uid
-                      && request.resource.data.lat is number
-                      && request.resource.data.lat >= -90
-                      && request.resource.data.lat <= 90
-                      && request.resource.data.lng is number
-                      && request.resource.data.lng >= -180
-                      && request.resource.data.lng <= 180
-                      && request.resource.data.label is string;
-      }
+    match /users/{userId}/savedLocations/{locationId} {
+      // Full CRUD only for the authenticated owner
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
     match /drivers/{driverId} {
@@ -118,13 +96,11 @@ service cloud.firestore {
       // Create: only the driver themselves
       allow create: if isSignedIn() && request.auth.uid == driverId;
 
-      // Update: only the driver themselves AND prevent tampering with admin-only fields
+      // Update: only the driver themselves, but prevent modification of sensitive fields
       allow update: if isSignedIn() 
                     && request.auth.uid == driverId
-                    // Prevent drivers from modifying admin-only fields
-                    && (!('isVerified' in resource.data) || request.resource.data.isVerified == resource.data.isVerified)
-                    && (!('rating' in resource.data) || request.resource.data.rating == resource.data.rating)
-                    && (!('totalTrips' in resource.data) || request.resource.data.totalTrips == resource.data.totalTrips);
+                    && !request.resource.data.diff(resource.data).affectedKeys()
+                       .hasAny(['isVerified', 'rating', 'totalTrips']);
     }
   }
 }

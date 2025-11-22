@@ -37,7 +37,8 @@ class _NearbyScreenState extends State<NearbyScreen> {
     try {
       _currentPosition = await _locationService.getCurrentPosition();
       if (kDebugMode) {
-        dev.log('[Matching] NearbyScreen: Location obtained: lat=${_currentPosition!.latitude.toStringAsFixed(4)}, lng=${_currentPosition!.longitude.toStringAsFixed(4)}');
+        dev.log(
+            '[Matching] NearbyScreen: Location obtained: lat=${_currentPosition!.latitude.toStringAsFixed(4)}, lng=${_currentPosition!.longitude.toStringAsFixed(4)}');
       }
       setState(() {});
     } on Object catch (e) {
@@ -120,20 +121,23 @@ class _NearbyScreenState extends State<NearbyScreen> {
                 : StreamBuilder<List<app_order.Order>>(
                     stream: () {
                       if (kDebugMode) {
-                        dev.log('[Matching] NearbyScreen: Subscribing to nearby orders stream');
+                        dev.log(
+                            '[Matching] NearbyScreen: Subscribing to nearby orders stream');
                       }
                       return _ordersService.getNearbyOrders(_currentPosition!);
                     }(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         if (kDebugMode) {
-                          dev.log('[Matching] NearbyScreen: Waiting for stream data');
+                          dev.log(
+                              '[Matching] NearbyScreen: Waiting for stream data');
                         }
                         return const Center(child: CircularProgressIndicator());
                       }
                       if (snapshot.hasError) {
                         if (kDebugMode) {
-                          dev.log('[Matching] NearbyScreen: Stream error: ${snapshot.error}');
+                          dev.log(
+                              '[Matching] NearbyScreen: Stream error: ${snapshot.error}');
                         }
                         final appError = AppError.from(snapshot.error!);
                         return ErrorScreen(
@@ -143,7 +147,8 @@ class _NearbyScreenState extends State<NearbyScreen> {
                       }
                       final orders = snapshot.data ?? [];
                       if (kDebugMode) {
-                        dev.log('[Matching] NearbyScreen: Displaying ${orders.length} orders');
+                        dev.log(
+                            '[Matching] NearbyScreen: Displaying ${orders.length} orders');
                       }
                       if (orders.isEmpty) {
                         return const Center(

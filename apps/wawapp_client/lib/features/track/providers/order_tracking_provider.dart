@@ -33,10 +33,9 @@ final driverLocationProvider =
       final data = snapshot.data();
       if (data == null) return null;
 
-      final dataMap = data as Map<String, dynamic>;
-      final lat = (dataMap['lat'] as num?)?.toDouble();
-      final lng = (dataMap['lng'] as num?)?.toDouble();
-      final updatedAt = dataMap['updatedAt'] as Timestamp?;
+      final lat = (data['lat'] as num?)?.toDouble();
+      final lng = (data['lng'] as num?)?.toDouble();
+      final updatedAt = data['updatedAt'] as Timestamp?;
 
       if (lat == null || lng == null) return null;
 

@@ -100,7 +100,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       final user = FirebaseAuth.instance.currentUser;
       dev.log('[Matching] DriverHomeScreen: Building home screen');
       dev.log('[Matching] DriverHomeScreen: Driver online status: $_isOnline');
-      dev.log('[Matching] DriverHomeScreen: Driver ID: ${user?.uid ?? "not authenticated"}');
+      dev.log(
+          '[Matching] DriverHomeScreen: Driver ID: ${user?.uid ?? "not authenticated"}');
     }
 
     final l10n = AppLocalizations.of(context)!;
@@ -119,14 +120,17 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             ),
             PopupMenuButton<String>(
               onSelected: (value) async {
-                if (value == 'signout') {
+                if (value == 'profile') {
+                  context.push('/profile');
+                } else if (value == 'signout') {
                   final user = FirebaseAuth.instance.currentUser;
                   if (user != null) {
                     try {
                       await DriverStatusService.instance.setOffline(user.uid);
                     } catch (e) {
                       if (kDebugMode) {
-                        dev.log('[DriverHome] Error setting offline on logout: $e');
+                        dev.log(
+                            '[DriverHome] Error setting offline on logout: $e');
                       }
                     }
                   }
@@ -138,6 +142,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 }
               },
               itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'profile',
+                  child: Text('الملف الشخصي'),
+                ),
                 const PopupMenuItem(
                   value: 'signout',
                   child: Text('Sign out'),
@@ -179,7 +187,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       TextButton(
                         onPressed: () {
                           if (kDebugMode) {
-                            dev.log('[Matching] DriverHomeScreen: Navigating to nearby orders screen');
+                            dev.log(
+                                '[Matching] DriverHomeScreen: Navigating to nearby orders screen');
                           }
                           context.push('/nearby');
                         },

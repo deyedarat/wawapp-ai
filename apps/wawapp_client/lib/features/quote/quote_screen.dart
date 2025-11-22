@@ -150,7 +150,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                           );
 
                           // Log analytics event
-                          AnalyticsService.instance.logOrderCreated(orderId: orderId);
+                          AnalyticsService.instance
+                              .logOrderCreated(orderId: orderId);
 
                           if (!mounted) return;
                           final order = Order(
@@ -164,11 +165,21 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                           );
 
                           _startOrderTracking(orderId);
+                          if (!mounted) return;
                           context.push('/track', extra: order);
-                        } catch (e) {
+                        } catch (e, stackTrace) {
+                          // Debug logging for future diagnostics
+                          debugPrint(
+                              '[OrdersClient] Failed to create order: $e');
+                          debugPrint('[OrdersClient] Stack trace: $stackTrace');
+
                           if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('خطأ في إنشاء الطلب: $e')),
+                            const SnackBar(
+                              content: Text(
+                                  'حدث خطأ أثناء إنشاء الطلب. يرجى المحاولة مرة أخرى.'),
+                              backgroundColor: Colors.red,
+                            ),
                           );
                         }
                       }

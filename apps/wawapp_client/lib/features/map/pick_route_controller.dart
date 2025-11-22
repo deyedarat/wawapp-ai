@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
 import 'package:uuid/uuid.dart';
+import 'package:core_shared/core_shared.dart';
 import '../../core/geo/distance.dart';
 import '../../core/location/location_service.dart';
 
@@ -185,6 +186,19 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
       }
       _calculateDistance();
     }
+  }
+
+  Future<void> setLocationFromSavedLocation(SavedLocation savedLocation, bool isPickup) async {
+    final location = MapLatLng(savedLocation.latitude, savedLocation.longitude);
+    final address = savedLocation.address;
+
+    if (isPickup) {
+      state = state.copyWith(pickup: location, pickupAddress: address);
+    } else {
+      state = state.copyWith(dropoff: location, dropoffAddress: address);
+    }
+
+    _calculateDistance();
   }
 
   void reset() {

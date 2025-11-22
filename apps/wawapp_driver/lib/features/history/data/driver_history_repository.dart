@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_shared/core_shared.dart';
+import 'package:flutter/foundation.dart';
 import '../../../models/order.dart' as app_order;
 
 class DriverHistoryRepository {
@@ -23,7 +24,12 @@ class DriverHistoryRepository {
             .map((doc) {
               try {
                 return app_order.Order.fromFirestore(doc.id, doc.data());
-              } catch (e) {
+              } catch (e, stack) {
+                if (kDebugMode) {
+                  print('[OrdersDriver] Error mapping order ${doc.id}: $e');
+                  print('[OrdersDriver] Stack trace: $stack');
+                  print('[OrdersDriver] Document data: ${doc.data()}');
+                }
                 return null;
               }
             })

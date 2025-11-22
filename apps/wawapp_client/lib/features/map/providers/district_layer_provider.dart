@@ -27,7 +27,8 @@ final districtPolygonsProvider = Provider<Set<Polygon>>((ref) {
   }).toSet();
 });
 
-final districtMarkersProvider = FutureProvider.family<Set<Marker>, String>((ref, languageCode) async {
+final districtMarkersProvider =
+    FutureProvider.family<Set<Marker>, String>((ref, languageCode) async {
   final zoom = ref.watch(currentZoomProvider);
   if (zoom < 11 || zoom > 16) return {};
 

@@ -35,8 +35,10 @@ class _DebugNearbyScreenState extends State<DebugNearbyScreen> {
         altitudeAccuracy: 0.0,
         headingAccuracy: 0.0,
       );
-      
-      dev.log('[DEBUG] Using mock position: ${_currentPosition!.latitude}, ${_currentPosition!.longitude}');
+
+      dev.log(
+        '[DEBUG] Using mock position: ${_currentPosition!.latitude}, ${_currentPosition!.longitude}',
+      );
       setState(() {});
     } catch (e) {
       setState(() {
@@ -51,92 +53,101 @@ class _DebugNearbyScreenState extends State<DebugNearbyScreen> {
       appBar: AppBar(
         title: const Text('Debug Nearby Orders'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _initLocation,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _initLocation),
         ],
       ),
       body: _error != null
           ? Center(child: Text('Error: $_error'))
           : _currentPosition == null
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        'Driver Position: ${_currentPosition!.latitude.toStringAsFixed(4)}, ${_currentPosition!.longitude.toStringAsFixed(4)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Driver Position: ${_currentPosition!.latitude.toStringAsFixed(4)}, ${_currentPosition!.longitude.toStringAsFixed(4)}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  child: StreamBuilder<List<Map<String, dynamic>>>(
+                    stream: DebugOrdersService().getNearbyOrdersUnlimited(
+                      _currentPosition!,
                     ),
-                    Expanded(
-                      child: StreamBuilder<List<Map<String, dynamic>>>(
-                        stream: DebugOrdersService().getNearbyOrdersUnlimited(_currentPosition!),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
-                          }
-                          if (snapshot.hasError) {
-                            return Center(child: Text('Error: ${snapshot.error}'));
-                          }
-                          
-                          final orders = snapshot.data ?? [];
-                          dev.log('[DEBUG] UI received ${orders.length} orders');
-                          
-                          if (orders.isEmpty) {
-                            return const Center(
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      }
+
+                      final orders = snapshot.data ?? [];
+                      dev.log('[DEBUG] UI received ${orders.length} orders');
+
+                      if (orders.isEmpty) {
+                        return const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.inbox, size: 64, color: Colors.grey),
+                              SizedBox(height: 16),
+                              Text('No orders found'),
+                              Text('Check console logs for details'),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: orders.length,
+                        itemBuilder: (context, index) {
+                          final order = orders[index];
+                          final distance = order['distance'] as double;
+
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.inbox, size: 64, color: Colors.grey),
-                                  SizedBox(height: 16),
-                                  Text('No orders found'),
-                                  Text('Check console logs for details'),
+                                  Text(
+                                    'Order #${order['id'].toString().substring(order['id'].toString().length - 6)}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text('Status: ${order['status']}'),
+                                  Text(
+                                    'Distance: ${distance.toStringAsFixed(1)} km',
+                                  ),
+                                  Text('Price: ${order['price']} MRU'),
+                                  if (order['pickup'] != null) ...[
+                                    Text(
+                                      'Pickup: ${order['pickup']['label'] ?? 'No label'}',
+                                    ),
+                                    Text(
+                                      'Pickup Coords: ${order['pickup']['lat']}, ${order['pickup']['lng']}',
+                                    ),
+                                  ],
+                                  if (order['dropoff'] != null) ...[
+                                    Text(
+                                      'Dropoff: ${order['dropoff']['label'] ?? 'No label'}',
+                                    ),
+                                  ],
                                 ],
                               ),
-                            );
-                          }
-                          
-                          return ListView.builder(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: orders.length,
-                            itemBuilder: (context, index) {
-                              final order = orders[index];
-                              final distance = order['distance'] as double;
-                              
-                              return Card(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Order #${order['id'].toString().substring(order['id'].toString().length - 6)}',
-                                        style: const TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      Text('Status: ${order['status']}'),
-                                      Text('Distance: ${distance.toStringAsFixed(1)} km'),
-                                      Text('Price: ${order['price']} MRU'),
-                                      if (order['pickup'] != null) ...[
-                                        Text('Pickup: ${order['pickup']['label'] ?? 'No label'}'),
-                                        Text('Pickup Coords: ${order['pickup']['lat']}, ${order['pickup']['lng']}'),
-                                      ],
-                                      if (order['dropoff'] != null) ...[
-                                        Text('Dropoff: ${order['dropoff']['label'] ?? 'No label'}'),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                            ),
                           );
                         },
-                      ),
-                    ),
-                  ],
+                      );
+                    },
+                  ),
                 ),
+              ],
+            ),
     );
   }
 }

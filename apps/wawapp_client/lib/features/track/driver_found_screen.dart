@@ -177,7 +177,8 @@ class _DriverMapWidget extends StatefulWidget {
   State<_DriverMapWidget> createState() => _DriverMapWidgetState();
 }
 
-class _DriverMapWidgetState extends State<_DriverMapWidget> with WidgetsBindingObserver {
+class _DriverMapWidgetState extends State<_DriverMapWidget>
+    with WidgetsBindingObserver {
   GoogleMapController? _controller;
   Set<Marker> _markers = {};
   double _currentZoom = 15.0;
@@ -250,11 +251,12 @@ class _DriverMapWidgetState extends State<_DriverMapWidget> with WidgetsBindingO
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ref.read(currentZoomProvider.notifier).state = _currentZoom;
         });
-        
+
         final polygons = ref.watch(districtPolygonsProvider);
         final locale = Localizations.localeOf(context);
-        final markersAsync = ref.watch(districtMarkersProvider(locale.languageCode));
-        
+        final markersAsync =
+            ref.watch(districtMarkersProvider(locale.languageCode));
+
         return markersAsync.when(
           data: (districtMarkers) => GoogleMap(
             onMapCreated: (controller) {
