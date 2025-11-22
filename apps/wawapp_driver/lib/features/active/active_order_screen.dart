@@ -176,7 +176,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('طلب #${order.id.substring(order.id.length - 6)}',
+                        Text('طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
                             style: Theme.of(context).textTheme.headlineSmall),
                         const SizedBox(height: 8),
                         Text('من: ${order.pickup.label}'),
@@ -191,22 +191,22 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: order.orderStatus.canDriverStartTrip
-                      ? () => _transition(order.id, OrderStatus.onRoute)
+                  onPressed: order.orderStatus.canDriverStartTrip && order.id != null
+                      ? () => _transition(order.id!, OrderStatus.onRoute)
                       : null,
                   child: const Text('بدء الرحلة'),
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton(
-                  onPressed: order.orderStatus.canDriverCompleteTrip
-                      ? () => _transition(order.id, OrderStatus.completed)
+                  onPressed: order.orderStatus.canDriverCompleteTrip && order.id != null
+                      ? () => _transition(order.id!, OrderStatus.completed)
                       : null,
                   child: const Text('إكمال الطلب'),
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton(
-                  onPressed: order.orderStatus.canDriverCancel && !_isCancelling
-                      ? () => _showCancelDialog(order.id)
+                  onPressed: order.orderStatus.canDriverCancel && !_isCancelling && order.id != null
+                      ? () => _showCancelDialog(order.id!)
                       : null,
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.red,
