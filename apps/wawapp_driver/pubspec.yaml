@@ -24,6 +24,8 @@ dependencies:
   flutter_local_notifications: ^17.2.3
   firebase_analytics: ^11.3.3
   firebase_dynamic_links: ^6.1.10
+  auth_shared:
+    path: ../../packages/auth_shared
   core_shared:
     path: ../../packages/core_shared
 

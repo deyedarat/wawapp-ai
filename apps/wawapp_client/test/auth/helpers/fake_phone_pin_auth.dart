@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:wawapp_client/services/phone_pin_auth.dart';
+import 'package:auth_shared/auth_shared.dart';
 
 /// Fake PhonePinAuth service for testing
 /// Does not hit network or Firebase
@@ -12,6 +12,9 @@ class FakePhonePinAuth implements PhonePinAuth {
     this.initialHasPin = false,
     this.pinIsValid = true,
   });
+
+  @override
+  final String userCollection = 'users';
 
   bool shouldFailSendOtp;
   bool shouldFailVerifyOtp;
@@ -79,6 +82,7 @@ class FakePhonePinAuth implements PhonePinAuth {
     onCodeSent?.call('fake-verification-id-123', null);
   }
 
+  @override
   Future<bool> phoneExists(String phoneE164) async {
     return false;
   }
@@ -147,5 +151,6 @@ class FakePhonePinAuth implements PhonePinAuth {
     _otpSent = false;
   }
 
+  @override
   String? get lastVerificationId => null;
 }
