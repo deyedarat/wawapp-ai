@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/order.dart' as app_order;
+import 'package:core_shared/core_shared.dart';
 import '../data/driver_earnings_repository.dart';
 
 class DriverEarningsState {
-  final List<app_order.Order> completedOrders;
+  final List<Order> completedOrders;
   final int todayTotal;
   final int weekTotal;
   final int monthTotal;
@@ -21,7 +21,7 @@ class DriverEarningsState {
   });
 
   DriverEarningsState copyWith({
-    List<app_order.Order>? completedOrders,
+    List<Order>? completedOrders,
     int? todayTotal,
     int? weekTotal,
     int? monthTotal,

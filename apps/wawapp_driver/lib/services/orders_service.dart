@@ -1,18 +1,18 @@
 import 'dart:developer' as dev;
 import 'dart:math';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:core_shared/core_shared.dart';
-import '../models/order.dart' as app_order;
+
 import 'driver_status_service.dart';
 import 'analytics_service.dart';
 
 class OrdersService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Stream<List<app_order.Order>> getNearbyOrders(Position driverPosition) {
+  Stream<List<Order>> getNearbyOrders(Position driverPosition) {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       if (kDebugMode) {
@@ -39,7 +39,7 @@ class OrdersService {
         if (kDebugMode) {
           dev.log('[Matching] Driver is OFFLINE - returning empty stream');
         }
-        return Stream.value(<app_order.Order>[]);
+        return Stream.value(<Order>[]);
       }
 
       if (kDebugMode) {
@@ -70,10 +70,10 @@ class OrdersService {
           if (kDebugMode)
             dev.log(
                 '[Matching] No orders matching filters: status=$statusValue, assignedDriverId=null');
-          return <app_order.Order>[];
+          return <Order>[];
         }
 
-        final orders = <app_order.Order>[];
+        final orders = <Order>[];
         for (final doc in snapshot.docs) {
           try {
             final data = doc.data();
@@ -88,7 +88,7 @@ class OrdersService {
               continue;
             }
 
-            final order = app_order.Order.fromFirestore(doc.id, data);
+            final order = Order.fromFirestoreWithId(doc.id, data);
             final distance = _calculateDistance(
               driverPosition.latitude,
               driverPosition.longitude,
@@ -281,7 +281,7 @@ class OrdersService {
     }
   }
 
-  Stream<List<app_order.Order>> getDriverActiveOrders(String driverId) {
+  Stream<List<Order>> getDriverActiveOrders(String driverId) {
     if (kDebugMode) {
       dev.log('[Matching] getDriverActiveOrders called for driver: $driverId');
       dev.log(
@@ -305,11 +305,11 @@ class OrdersService {
                 '[Matching] Active orders snapshot: ${snapshot.docs.length} documents');
           }
 
-          final orders = <app_order.Order>[];
+          final orders = <Order>[];
           for (final doc in snapshot.docs) {
             try {
               final data = doc.data();
-              final order = app_order.Order.fromFirestore(doc.id, data);
+              final order = Order.fromFirestoreWithId(doc.id, data);
               orders.add(order);
 
               if (kDebugMode) {

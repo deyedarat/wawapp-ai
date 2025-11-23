@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:core_shared/core_shared.dart';
-import '../../models/order.dart' as app_order;
+
 import '../../widgets/error_screen.dart';
 import 'providers/history_providers.dart';
 
@@ -48,8 +48,8 @@ class DriverHistoryScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildGroupedHistory(List<app_order.Order> orders) {
-    final grouped = <DateCategory, List<app_order.Order>>{};
+  Widget _buildGroupedHistory(List<Order> orders) {
+    final grouped = <DateCategory, List<Order>>{};
 
     for (final order in orders) {
       final date = order.completedAt ?? order.createdAt;
@@ -75,7 +75,7 @@ class DriverHistoryScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSection(String title, List<app_order.Order> orders) {
+  Widget _buildSection(String title, List<Order> orders) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -97,7 +97,7 @@ class DriverHistoryScreen extends ConsumerWidget {
 }
 
 class _OrderHistoryTile extends StatelessWidget {
-  final app_order.Order order;
+  final Order order;
 
   const _OrderHistoryTile({required this.order});
 

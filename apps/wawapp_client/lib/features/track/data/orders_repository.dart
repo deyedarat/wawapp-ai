@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
-import '../models/order.dart' as app_order;
+
 import '../../../services/analytics_service.dart';
 
 class OrdersRepository {
@@ -60,7 +60,7 @@ class OrdersRepository {
     return _firestore.collection('orders').doc(orderId).snapshots();
   }
 
-  Stream<List<app_order.Order>> getUserOrders(String userId) {
+  Stream<List<Order>> getUserOrders(String userId) {
     // REQUIRED COMPOSITE INDEX: orders [ownerId ASC, createdAt DESC]
     // Deploy via: firebase deploy --only firestore:indexes
     // Or create manually: https://console.firebase.google.com/project/wawapp-952d6/firestore/indexes
@@ -79,12 +79,12 @@ class OrdersRepository {
       debugPrint('[OrdersClient] Received ${snapshot.docs.length} orders');
       return snapshot.docs
           .map((doc) =>
-              app_order.Order.fromFirestore({...doc.data(), 'id': doc.id}))
+              Order.fromFirestore({...doc.data(), 'id': doc.id}))
           .toList();
     });
   }
 
-  Stream<List<app_order.Order>> getUserOrdersByStatus(
+  Stream<List<Order>> getUserOrdersByStatus(
       String userId, OrderStatus status) {
     // REQUIRED COMPOSITE INDEX: orders [ownerId ASC, status ASC, createdAt DESC]
     // Deploy via: firebase deploy --only firestore:indexes
@@ -107,7 +107,7 @@ class OrdersRepository {
           '[OrdersClient] Received ${snapshot.docs.length} orders with status: ${status.toFirestore()}');
       return snapshot.docs
           .map((doc) =>
-              app_order.Order.fromFirestore({...doc.data(), 'id': doc.id}))
+              Order.fromFirestore({...doc.data(), 'id': doc.id}))
           .toList();
     });
   }

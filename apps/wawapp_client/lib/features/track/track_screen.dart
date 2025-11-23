@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:core_shared/core_shared.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
 import '../../l10n/app_localizations.dart';
 import '../../core/location/location_service.dart';
-import 'models/order.dart' as app_order;
+
 import 'widgets/order_tracking_view.dart';
 
 class TrackScreen extends ConsumerStatefulWidget {
-  final app_order.Order? order;
+  final Order? order;
   const TrackScreen({super.key, this.order});
 
   @override

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import '../../models/order.dart' as app_order;
+import 'package:core_shared/core_shared.dart';
+
 import '../../features/home/driver_home_screen.dart';
 import '../../features/nearby/nearby_screen.dart';
 import '../../features/wallet/wallet_screen.dart';
@@ -69,7 +70,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/order-details',
         name: 'orderDetails',
         builder: (context, state) {
-          final order = state.extra as app_order.Order;
+          final order = state.extra as Order;
           return OrderDetailsScreen(order: order);
         },
       ),

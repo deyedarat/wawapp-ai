@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:intl/intl.dart';
 import 'package:core_shared/core_shared.dart';
 import 'data/orders_repository.dart';
-import 'models/order.dart' as app_order;
+
 import 'providers/order_tracking_provider.dart';
 import '../../widgets/error_screen.dart';
 import '../../services/analytics_service.dart';
@@ -105,7 +105,7 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
           }
 
           final order =
-              app_order.Order.fromFirestore({...data, 'id': widget.orderId});
+              Order.fromFirestore({...data, 'id': widget.orderId});
           final completedAt = data['completedAt'] as Timestamp?;
           final dateStr = completedAt != null
               ? DateFormat('yyyy-MM-dd HH:mm').format(completedAt.toDate())

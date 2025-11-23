@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:core_shared/core_shared.dart';
 import 'providers/order_tracking_provider.dart';
-import 'models/order.dart' as app_order;
+
 import 'widgets/order_tracking_view.dart';
 
 class PublicTrackScreen extends ConsumerWidget {
@@ -109,20 +110,22 @@ class PublicTrackScreen extends ConsumerWidget {
               }
 
               final data = snapshot.data() as Map<String, dynamic>;
-              final order = app_order.Order(
+              final order = Order(
                 distanceKm: (data['distanceKm'] as num).toDouble(),
                 price: (data['price'] as num).toDouble(),
                 pickupAddress:
                     (data['pickup'] as Map<String, dynamic>)['label'] as String,
                 dropoffAddress: (data['dropoff']
                     as Map<String, dynamic>)['label'] as String,
-                pickup: LatLng(
-                  (data['pickup'] as Map<String, dynamic>)['lat'] as double,
-                  (data['pickup'] as Map<String, dynamic>)['lng'] as double,
+                pickup: LocationPoint(
+                  lat: (data['pickup'] as Map<String, dynamic>)['lat'] as double,
+                  lng: (data['pickup'] as Map<String, dynamic>)['lng'] as double,
+                  label: (data['pickup'] as Map<String, dynamic>)['label'] as String,
                 ),
-                dropoff: LatLng(
-                  (data['dropoff'] as Map<String, dynamic>)['lat'] as double,
-                  (data['dropoff'] as Map<String, dynamic>)['lng'] as double,
+                dropoff: LocationPoint(
+                  lat: (data['dropoff'] as Map<String, dynamic>)['lat'] as double,
+                  lng: (data['dropoff'] as Map<String, dynamic>)['lng'] as double,
+                  label: (data['dropoff'] as Map<String, dynamic>)['label'] as String,
                 ),
                 status: data['status'] as String?,
                 driverId: data['driverId'] as String?,

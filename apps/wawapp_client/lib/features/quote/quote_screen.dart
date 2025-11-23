@@ -7,7 +7,7 @@ import '../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'providers/quote_provider.dart';
 import '../map/pick_route_controller.dart';
-import '../track/models/order.dart';
+
 import '../track/data/orders_repository.dart';
 import '../../core/utils/address_utils.dart';
 import '../../core/utils/eta.dart';
@@ -162,8 +162,16 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                             price: breakdown.rounded.toDouble(),
                             pickupAddress: fromText,
                             dropoffAddress: toText,
-                            pickup: routeState.pickup!,
-                            dropoff: routeState.dropoff!,
+                            pickup: LocationPoint(
+                              lat: routeState.pickup!.latitude,
+                              lng: routeState.pickup!.longitude,
+                              label: fromText,
+                            ),
+                            dropoff: LocationPoint(
+                              lat: routeState.dropoff!.latitude,
+                              lng: routeState.dropoff!.longitude,
+                              label: toText,
+                            ),
                             status: OrderStatus.assigning.toFirestore(),
                           );
 

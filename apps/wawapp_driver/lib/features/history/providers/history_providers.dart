@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/order.dart' as app_order;
+import 'package:core_shared/core_shared.dart';
 import '../data/driver_history_repository.dart';
 
 final driverHistoryRepositoryProvider =
@@ -9,7 +9,7 @@ final driverHistoryRepositoryProvider =
 });
 
 final driverHistoryProvider =
-    StreamProvider.autoDispose<List<app_order.Order>>((ref) {
+    StreamProvider.autoDispose<List<Order>>((ref) {
   final repository = ref.watch(driverHistoryRepositoryProvider);
   final user = FirebaseAuth.instance.currentUser;
 
