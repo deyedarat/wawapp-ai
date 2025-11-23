@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/order.dart' as app_order;
+import 'package:core_shared/core_shared.dart';
 import '../../../services/orders_service.dart';
 
-final activeOrdersProvider = StreamProvider<List<app_order.Order>>((ref) {
+final activeOrdersProvider = StreamProvider<List<Order>>((ref) {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) {
     return Stream.value([]);

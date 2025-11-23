@@ -9,7 +9,7 @@ import '../../features/track/track_screen.dart';
 import '../../features/track/driver_found_screen.dart';
 import '../../features/track/public_track_screen.dart';
 import '../../features/track/trip_completed_screen.dart';
-import '../../features/track/models/order.dart';
+
 import '../../features/about/about_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
 import '../../features/auth/otp_screen.dart';
@@ -20,6 +20,7 @@ import '../../features/profile/client_profile_edit_screen.dart';
 import '../../features/profile/saved_locations_screen.dart';
 import '../../features/profile/add_saved_location_screen.dart';
 import 'package:auth_shared/auth_shared.dart';
+import 'package:core_shared/core_shared.dart';
 import 'navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {

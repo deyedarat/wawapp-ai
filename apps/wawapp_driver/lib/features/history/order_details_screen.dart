@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../models/order.dart' as app_order;
+import 'package:core_shared/core_shared.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
-  final app_order.Order order;
+  final Order order;
 
   const OrderDetailsScreen({super.key, required this.order});
 

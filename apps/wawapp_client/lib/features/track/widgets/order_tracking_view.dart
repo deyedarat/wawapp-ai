@@ -6,7 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:core_shared/core_shared.dart';
 import '../../../l10n/app_localizations.dart';
-import '../models/order.dart' as app_order;
+
 import '../providers/order_tracking_provider.dart';
 import '../data/orders_repository.dart';
 import 'order_status_timeline.dart';
@@ -14,7 +14,7 @@ import 'rating_bottom_sheet.dart';
 import '../../map/providers/district_layer_provider.dart';
 
 class OrderTrackingView extends ConsumerStatefulWidget {
-  final app_order.Order? order;
+  final Order? order;
   final bool readOnly;
   final LatLng? currentPosition;
 
@@ -139,7 +139,8 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
       );
       _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 48.0));
     } else if (pickup != null) {
-      _mapController!.animateCamera(CameraUpdate.newLatLngZoom(pickup, 15.0));
+      _mapController!.animateCamera(CameraUpdate.newLatLngZoom(
+          LatLng(pickup.latitude, pickup.longitude), 15.0));
     }
   }
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:core_shared/core_shared.dart';
-import '../../models/order.dart' as app_order;
+
 import '../../widgets/error_screen.dart';
 import 'providers/driver_earnings_provider.dart';
 import 'data/driver_earnings_repository.dart';
@@ -196,7 +196,7 @@ class _DriverEarningsScreenState extends ConsumerState<DriverEarningsScreen>
     );
   }
 
-  Widget _buildTripsList(List<app_order.Order> orders) {
+  Widget _buildTripsList(List<Order> orders) {
     if (orders.isEmpty) {
       return const Card(
         child: Padding(
@@ -219,7 +219,7 @@ class _DriverEarningsScreenState extends ConsumerState<DriverEarningsScreen>
     );
   }
 
-  Widget _buildTripCard(app_order.Order order) {
+  Widget _buildTripCard(Order order) {
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
     final fromAddress = _truncateAddress(order.pickup.label);
     final toAddress = _truncateAddress(order.dropoff.label);
