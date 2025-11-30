@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:core_shared/core_shared.dart';
 import 'providers/driver_profile_providers.dart';
+import '../auth/providers/auth_service_provider.dart';
 
 class DriverProfileEditScreen extends ConsumerStatefulWidget {
   const DriverProfileEditScreen({super.key});
@@ -55,8 +55,8 @@ class _DriverProfileEditScreenState extends ConsumerState<DriverProfileEditScree
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
+    final authState = ref.read(authProvider);
+    if (authState.user == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('خطأ: المستخدم غير مسجل الدخول')),
@@ -70,9 +70,9 @@ class _DriverProfileEditScreenState extends ConsumerState<DriverProfileEditScree
 
     final now = DateTime.now();
     final profile = DriverProfile(
-      id: user.uid,
+      id: authState.user!.uid,
       name: _nameController.text.trim(),
-      phone: user.phoneNumber ?? '',
+      phone: authState.user!.phoneNumber ?? '',
       photoUrl: currentProfile?.photoUrl,
       vehicleType: _vehicleTypeController.text.trim().isEmpty ? null : _vehicleTypeController.text.trim(),
       vehiclePlate: _vehiclePlateController.text.trim().isEmpty ? null : _vehiclePlateController.text.trim(),

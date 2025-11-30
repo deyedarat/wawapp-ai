@@ -1,20 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/analytics_service.dart';
 import '../../services/driver_status_service.dart';
+import '../auth/providers/auth_service_provider.dart';
 import 'dart:developer' as dev;
 
-class DriverHomeScreen extends StatefulWidget {
+class DriverHomeScreen extends ConsumerStatefulWidget {
   const DriverHomeScreen({super.key});
 
   @override
-  State<DriverHomeScreen> createState() => _DriverHomeScreenState();
+  ConsumerState<DriverHomeScreen> createState() => _DriverHomeScreenState();
 }
 
-class _DriverHomeScreenState extends State<DriverHomeScreen> {
+class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   bool _isOnline = false;
   bool _isTogglingStatus = false;
 
@@ -25,12 +27,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }
 
   Future<void> _loadOnlineStatus() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    final authState = ref.read(authProvider);
+    if (authState.user == null) return;
 
     try {
       final isOnline =
-          await DriverStatusService.instance.getOnlineStatus(user.uid);
+          await DriverStatusService.instance.getOnlineStatus(authState.user!.uid);
       if (mounted) {
         setState(() {
           _isOnline = isOnline;
@@ -44,8 +46,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   }
 
   Future<void> _toggleOnlineStatus(bool value) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
+    final authState = ref.read(authProvider);
+    if (authState.user == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('خطأ: المستخدم غير مسجل الدخول')),
@@ -62,9 +64,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
     try {
       if (value) {
-        await DriverStatusService.instance.setOnline(user.uid);
+        await DriverStatusService.instance.setOnline(authState.user!.uid);
       } else {
-        await DriverStatusService.instance.setOffline(user.uid);
+        await DriverStatusService.instance.setOffline(authState.user!.uid);
       }
 
       if (mounted) {
@@ -97,11 +99,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
-      final user = FirebaseAuth.instance.currentUser;
+      final authState = ref.watch(authProvider);
       dev.log('[Matching] DriverHomeScreen: Building home screen');
       dev.log('[Matching] DriverHomeScreen: Driver online status: $_isOnline');
       dev.log(
-          '[Matching] DriverHomeScreen: Driver ID: ${user?.uid ?? "not authenticated"}');
+          '[Matching] DriverHomeScreen: Driver ID: ${authState.user?.uid ?? "not authenticated"}');
     }
 
     final l10n = AppLocalizations.of(context)!;
@@ -123,10 +125,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 if (value == 'profile') {
                   context.push('/profile');
                 } else if (value == 'signout') {
-                  final user = FirebaseAuth.instance.currentUser;
-                  if (user != null) {
+                  final authState = ref.read(authProvider);
+                  if (authState.user != null) {
                     try {
-                      await DriverStatusService.instance.setOffline(user.uid);
+                      await DriverStatusService.instance.setOffline(authState.user!.uid);
                     } catch (e) {
                       if (kDebugMode) {
                         dev.log(
