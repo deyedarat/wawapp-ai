@@ -97,7 +97,7 @@ class DriverEarningsNotifier extends StateNotifier<DriverEarningsState> {
   @override
   void dispose() {
     _earningsSubscription?.cancel();
-    _authSubscription?.cancel();
+    _authSubscription?.close();
     super.dispose();
   }
 }

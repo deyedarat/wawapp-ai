@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' as dev;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'location_service.dart';
@@ -19,13 +20,16 @@ class TrackingService {
   Timer? _updateTimer;
   Position? _lastPosition;
   bool _isTracking = false;
+  int _updateIntervalSeconds = 10; // Default 10 seconds
+  int _consecutiveSmallMoves = 0;  // Track consecutive small movements
 
-  void startTracking() {
+  Future<void> startTracking() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || _isTracking) {
       return;
     }
 
+    await _loadRemoteConfig();
     debugPrint('[TRACKING] Starting tracking for driver: ${user.uid}');
     dev.log('[tracking] start');
     _isTracking = true;
@@ -56,7 +60,7 @@ class TrackingService {
   void _startLocationUpdates(String driverId) {
     _updateTimer?.cancel();
     debugPrint('[TRACKING] Starting location updates for driver: $driverId');
-    _updateTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
+    _updateTimer = Timer.periodic(Duration(seconds: _updateIntervalSeconds), (_) async {
       try {
         final position = await _locationService.getCurrentPosition();
 
@@ -67,10 +71,18 @@ class TrackingService {
             position.latitude,
             position.longitude,
           );
+          
           if (distance < 20) {
-            debugPrint(
-                '[TRACKING] Skipping update - moved only ${distance.toStringAsFixed(1)}m');
-            return; // Skip if moved less than 20m
+            _consecutiveSmallMoves++;
+            
+            // Exponential backoff: if driver barely moving, reduce write frequency
+            if (_consecutiveSmallMoves > 3) {
+              await Future.delayed(Duration(seconds: _updateIntervalSeconds * 2));
+              _consecutiveSmallMoves = 0; // Reset after backoff
+            }
+            return; // Skip write
+          } else {
+            _consecutiveSmallMoves = 0; // Reset on significant movement
           }
         }
 
@@ -97,5 +109,23 @@ class TrackingService {
     _updateTimer?.cancel();
     _updateTimer = null;
     _lastPosition = null;
+  }
+
+  Future<void> _loadRemoteConfig() async {
+    try {
+      final remoteConfig = FirebaseRemoteConfig.instance;
+      await remoteConfig.setConfigSettings(RemoteConfigSettings(
+        fetchTimeout: const Duration(seconds: 10),
+        minimumFetchInterval: const Duration(hours: 1),
+      ));
+      await remoteConfig.fetchAndActivate();
+      
+      _updateIntervalSeconds = remoteConfig.getInt('location_update_interval_sec');
+      if (_updateIntervalSeconds < 5) _updateIntervalSeconds = 5; // Min 5 seconds
+      if (_updateIntervalSeconds > 60) _updateIntervalSeconds = 60; // Max 60 seconds
+    } catch (e) {
+      print('Failed to load remote config, using default: $e');
+      _updateIntervalSeconds = 10; // Fallback
+    }
   }
 }
