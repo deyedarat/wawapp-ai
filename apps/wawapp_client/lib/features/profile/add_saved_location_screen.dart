@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:core_shared/core_shared.dart';
 import 'providers/client_profile_providers.dart';
+import '../auth/providers/auth_service_provider.dart';
 
 class AddSavedLocationScreen extends ConsumerStatefulWidget {
   final String? locationId;
@@ -36,13 +36,13 @@ class _AddSavedLocationScreenState extends ConsumerState<AddSavedLocationScreen>
   }
 
   void _loadExistingLocation() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    final authState = ref.read(authProvider);
+    if (authState.user == null) return;
 
     try {
       final locations = await ref
           .read(clientProfileRepositoryProvider)
-          .getSavedLocations(user.uid);
+          .getSavedLocations(authState.user!.uid);
       
       final location = locations.firstWhere(
         (loc) => loc.id == widget.locationId,
@@ -79,8 +79,8 @@ class _AddSavedLocationScreenState extends ConsumerState<AddSavedLocationScreen>
   Future<void> _saveLocation() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
+    final authState = ref.read(authProvider);
+    if (authState.user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('المستخدم غير مسجل الدخول')),
       );
@@ -93,7 +93,7 @@ class _AddSavedLocationScreenState extends ConsumerState<AddSavedLocationScreen>
       final now = DateTime.now();
       final location = SavedLocation(
         id: _existingLocation?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-        userId: user.uid,
+        userId: authState.user!.uid,
         name: _nameController.text.trim(),
         address: _addressController.text.trim(),
         latitude: double.parse(_latController.text.trim()),
@@ -106,11 +106,11 @@ class _AddSavedLocationScreenState extends ConsumerState<AddSavedLocationScreen>
       if (isEditing) {
         await ref
             .read(savedLocationsNotifierProvider.notifier)
-            .updateLocation(user.uid, location);
+            .updateLocation(authState.user!.uid, location);
       } else {
         await ref
             .read(savedLocationsNotifierProvider.notifier)
-            .addLocation(user.uid, location);
+            .addLocation(authState.user!.uid, location);
       }
 
       if (mounted) {
