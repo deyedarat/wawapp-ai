@@ -9,7 +9,7 @@ final driverProfileRepositoryProvider = Provider<DriverProfileRepository>((ref) 
   return DriverProfileRepository(firestore: FirebaseFirestore.instance);
 });
 
-final driverProfileStreamProvider = StreamProvider<DriverProfile?>((ref) {
+final driverProfileStreamProvider = StreamProvider.autoDispose<DriverProfile?>((ref) {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) {
     return Stream.value(null);

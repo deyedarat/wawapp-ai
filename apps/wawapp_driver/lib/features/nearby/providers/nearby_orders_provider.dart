@@ -5,7 +5,7 @@ import 'package:core_shared/core_shared.dart';
 import '../../../services/orders_service.dart';
 
 final nearbyOrdersProvider =
-    StreamProvider.family<List<Order>, Position>((ref, position) {
+    StreamProvider.family.autoDispose<List<Order>, Position>((ref, position) {
   final ordersService = OrdersService();
   return ordersService.getNearbyOrders(position);
 });

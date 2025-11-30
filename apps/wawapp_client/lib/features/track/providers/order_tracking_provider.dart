@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 final orderTrackingProvider =
-    StreamProvider.family<DocumentSnapshot?, String>((ref, orderId) {
+    StreamProvider.family.autoDispose<DocumentSnapshot?, String>((ref, orderId) {
   return FirebaseFirestore.instance
       .collection('orders')
       .doc(orderId)
@@ -21,7 +21,7 @@ class DriverLocation {
 }
 
 final driverLocationProvider =
-    StreamProvider.family<DriverLocation?, String>((ref, driverId) {
+    StreamProvider.family.autoDispose<DriverLocation?, String>((ref, driverId) {
   return FirebaseFirestore.instance
       .collection('driver_locations')
       .doc(driverId)

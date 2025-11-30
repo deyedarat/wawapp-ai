@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
 import '../../../services/orders_service.dart';
 
-final activeOrdersProvider = StreamProvider<List<Order>>((ref) {
+final activeOrdersProvider = StreamProvider.autoDispose<List<Order>>((ref) {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) {
     return Stream.value([]);

@@ -62,9 +62,10 @@ class OrdersService {
         }
 
         if (snapshot.docs.isEmpty) {
-          if (kDebugMode)
+          if (kDebugMode) {
             dev.log(
                 '[Matching] No orders matching filters: status=$statusValue, assignedDriverId=null');
+          }
           return <Order>[];
         }
 
