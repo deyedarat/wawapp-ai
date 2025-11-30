@@ -65,6 +65,7 @@ class ClientProfileRepository {
         .doc(userId)
         .collection('savedLocations')
         .orderBy('createdAt', descending: true)
+        .limit(50)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs
@@ -80,6 +81,7 @@ class ClientProfileRepository {
         .doc(userId)
         .collection('savedLocations')
         .orderBy('createdAt', descending: true)
+        .limit(50)
         .get();
     return snapshot.docs
         .map((doc) => SavedLocation.fromFirestore(doc))

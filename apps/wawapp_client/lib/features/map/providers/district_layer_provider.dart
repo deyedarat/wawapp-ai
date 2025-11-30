@@ -5,6 +5,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/district_area.dart';
 import '../data/nouakchott_districts.dart';
 
+// Cache markers by zoom level and language
+final Map<String, Set<Marker>> _markerCache = {};
+
 final currentZoomProvider = StateProvider<double>((ref) => 14.0);
 
 final districtAreasProvider = Provider<List<DistrictArea>>((ref) {
@@ -28,13 +31,22 @@ final districtPolygonsProvider = Provider<Set<Polygon>>((ref) {
 });
 
 final districtMarkersProvider =
-    FutureProvider.family<Set<Marker>, String>((ref, languageCode) async {
+    FutureProvider.family.autoDispose<Set<Marker>, String>((ref, languageCode) async {
   final zoom = ref.watch(currentZoomProvider);
   if (zoom < 11 || zoom > 16) return {};
-
+  
+  // Cache key combines zoom level and language
+  final cacheKey = '${zoom}_$languageCode';
+  
+  // Return cached markers if available
+  if (_markerCache.containsKey(cacheKey)) {
+    return _markerCache[cacheKey]!;
+  }
+  
+  // Generate new markers if not cached
   final districts = ref.watch(districtAreasProvider);
   final markers = <Marker>{};
-
+  
   for (final district in districts) {
     final icon = await _createTextMarker(district.getName(languageCode));
     markers.add(
@@ -47,7 +59,15 @@ final districtMarkersProvider =
       ),
     );
   }
-
+  
+  // Store in cache
+  _markerCache[cacheKey] = markers;
+  
+  // Clear cache when districts update
+  ref.listen(districtAreasProvider, (previous, next) {
+    _markerCache.clear();
+  });
+  
   return markers;
 });
 

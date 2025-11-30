@@ -70,6 +70,7 @@ class OrdersRepository {
         .collection('orders')
         .where('ownerId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
+        .limit(100)
         .snapshots()
         .handleError((error, stackTrace) {
       debugPrint('[OrdersClient] Error fetching user orders: $error');
@@ -97,6 +98,7 @@ class OrdersRepository {
         .where('ownerId', isEqualTo: userId)
         .where('status', isEqualTo: status.toFirestore())
         .orderBy('createdAt', descending: true)
+        .limit(100)
         .snapshots()
         .handleError((error, stackTrace) {
       debugPrint('[OrdersClient] Error fetching orders by status: $error');

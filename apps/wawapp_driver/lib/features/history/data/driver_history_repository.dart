@@ -19,6 +19,7 @@ class DriverHistoryRepository {
           OrderStatus.cancelledByDriver.toFirestore(),
         ])
         .orderBy('updatedAt', descending: true)
+        .limit(100)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) {
@@ -46,6 +47,7 @@ class DriverHistoryRepository {
         .where('driverId', isEqualTo: driverId)
         .where('status', isEqualTo: OrderStatus.completed.toFirestore())
         .orderBy('completedAt', descending: true)
+        .limit(100)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => Order.fromFirestoreWithId(doc.id, doc.data()))
