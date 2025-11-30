@@ -14,3 +14,4 @@ admin.initializeApp();
 export { expireStaleOrders } from './expireStaleOrders';
 export { aggregateDriverRating } from './aggregateDriverRating';
 export { notifyOrderEvents } from './notifyOrderEvents';
+export { cleanStaleDriverLocations } from './cleanStaleDriverLocations';
