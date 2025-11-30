@@ -1,26 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
 import '../data/client_profile_repository.dart';
 import '../../../services/analytics_service.dart';
+import '../../auth/providers/auth_service_provider.dart';
 
 final clientProfileRepositoryProvider = Provider<ClientProfileRepository>((ref) {
   return ClientProfileRepository(firestore: FirebaseFirestore.instance);
 });
 
 final clientProfileStreamProvider = StreamProvider.autoDispose<ClientProfile?>((ref) {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) {
+  final authState = ref.watch(authProvider);
+  if (authState.user == null) {
     return Stream.value(null);
   }
 
   final repository = ref.watch(clientProfileRepositoryProvider);
-  return repository.watchProfile(user.uid).map((profile) {
+  return repository.watchProfile(authState.user!.uid).map((profile) {
     if (profile != null) {
       // Update user properties when profile loads
       AnalyticsService.instance.setUserProperties(
-        userId: user.uid,
+        userId: authState.user!.uid,
         totalOrders: profile.totalTrips,
       );
       
@@ -32,13 +32,13 @@ final clientProfileStreamProvider = StreamProvider.autoDispose<ClientProfile?>((
 });
 
 final savedLocationsStreamProvider = StreamProvider.autoDispose<List<SavedLocation>>((ref) {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) {
+  final authState = ref.watch(authProvider);
+  if (authState.user == null) {
     return Stream.value([]);
   }
 
   final repository = ref.watch(clientProfileRepositoryProvider);
-  return repository.watchSavedLocations(user.uid);
+  return repository.watchSavedLocations(authState.user!.uid);
 });
 
 class ClientProfileUpdateState {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:core_shared/core_shared.dart';
 import '../../services/orders_service.dart';
 import '../../services/tracking_service.dart';
 import '../../widgets/error_screen.dart';
 import 'providers/active_order_provider.dart';
+import '../auth/providers/auth_service_provider.dart';
 import 'dart:developer' as dev;
 
 class ActiveOrderScreen extends ConsumerStatefulWidget {
@@ -99,7 +99,8 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final authState = ref.watch(authProvider);
+    final user = authState.user;
 
     if (user == null) {
       if (kDebugMode) {

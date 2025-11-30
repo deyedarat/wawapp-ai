@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
 import '../data/driver_earnings_repository.dart';
+import '../../auth/providers/auth_service_provider.dart';
 
 class DriverEarningsState {
   final List<Order> completedOrders;
@@ -42,17 +43,29 @@ class DriverEarningsState {
 
 class DriverEarningsNotifier extends StateNotifier<DriverEarningsState> {
   final DriverEarningsRepository _repository;
-  late final StreamSubscription<List<Order>> _earningsSubscription;
+  final Ref _ref;
+  StreamSubscription<List<Order>>? _earningsSubscription;
+  ProviderSubscription? _authSubscription;
 
-  DriverEarningsNotifier(this._repository)
+  DriverEarningsNotifier(this._repository, this._ref)
       : super(const DriverEarningsState()) {
-    _loadEarnings();
+    _watchAuth();
   }
 
-  void _loadEarnings() {
-    final user = FirebaseAuth.instance.currentUser;
+  void _watchAuth() {
+    _authSubscription = _ref.listen(authProvider, (previous, next) {
+      _loadEarnings(next.user);
+    });
+    // Load initial earnings
+    final authState = _ref.read(authProvider);
+    _loadEarnings(authState.user);
+  }
+
+  void _loadEarnings(User? user) {
+    _earningsSubscription?.cancel();
+    
     if (user == null) {
-      state = state.copyWith(error: 'User not authenticated');
+      state = const DriverEarningsState();
       return;
     }
 
@@ -83,7 +96,8 @@ class DriverEarningsNotifier extends StateNotifier<DriverEarningsState> {
 
   @override
   void dispose() {
-    _earningsSubscription.cancel();
+    _earningsSubscription?.cancel();
+    _authSubscription?.cancel();
     super.dispose();
   }
 }
@@ -96,5 +110,5 @@ final driverEarningsRepositoryProvider =
 final driverEarningsProvider =
     StateNotifierProvider.autoDispose<DriverEarningsNotifier, DriverEarningsState>((ref) {
   final repository = ref.watch(driverEarningsRepositoryProvider);
-  return DriverEarningsNotifier(repository);
+  return DriverEarningsNotifier(repository, ref);
 });

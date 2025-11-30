@@ -4,11 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:core_shared/core_shared.dart';
+import 'package:core_shared/core_shared.dart' hide Order;
+import 'package:core_shared/src/order.dart' as core;
 import '../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'providers/quote_provider.dart';
 import '../map/pick_route_controller.dart';
+import '../auth/providers/auth_service_provider.dart';
 
 import '../track/data/orders_repository.dart';
 import '../../core/utils/address_utils.dart';
@@ -139,7 +141,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                           final breakdown =
                               Pricing.compute(quoteState.distanceKm!);
 
-                          final user = FirebaseAuth.instance.currentUser;
+                          final authState = ref.read(authProvider);
+                          final user = authState.user;
                           if (user == null) {
                             throw Exception('User not authenticated');
                           }
@@ -168,7 +171,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                           );
 
                           if (!mounted) return;
-                          final order = Order(
+                          final order = core.Order(
                             distanceKm: quoteState.distanceKm!,
                             price: breakdown.rounded.toDouble(),
                             pickupAddress: fromText,
