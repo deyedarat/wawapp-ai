@@ -85,6 +85,31 @@ function getNotificationConfig(
     };
   }
 
+  // Driver notifications (notify driver when client cancels)
+  if (fromStatus === 'matching' && toStatus === 'cancelledByClient') {
+    return {
+      title: 'تم إلغاء الطلب',
+      body: 'ألغى العميل الطلب',
+      type: 'order_cancelled_by_client',
+    };
+  }
+
+  if (fromStatus === 'accepted' && toStatus === 'cancelledByClient') {
+    return {
+      title: 'ألغى العميل الرحلة',
+      body: 'العميل ألغى الرحلة التي قبلتها',
+      type: 'trip_cancelled_by_client',
+    };
+  }
+
+  if (fromStatus === 'matching' && toStatus === 'expired') {
+    return {
+      title: 'انتهت مهلة الطلب',
+      body: 'لم يعد الطلب متاحاً',
+      type: 'order_expired_driver',
+    };
+  }
+
   // No notification needed for this transition
   return null;
 }
@@ -97,6 +122,24 @@ async function sendNotification(
   orderId: string,
   config: NotificationConfig
 ): Promise<boolean> {
+  // Idempotency: Check if notification already sent
+  const notificationId = `${userId}_${orderId}_${config.type}`;
+  const notificationLogRef = admin.firestore()
+    .collection('notification_log')
+    .doc(notificationId);
+    
+  const alreadySent = await notificationLogRef.get();
+  
+  if (alreadySent.exists) {
+    console.log('[NotifyOrderEvents] Notification already sent, skipping (idempotent)', {
+      notification_id: notificationId,
+      user_id: userId,
+      order_id: orderId,
+      type: config.type,
+    });
+    return true; // Already sent, consider success
+  }
+
   // Generate deep link based on notification type
   let deepLink: string;
   
@@ -120,6 +163,21 @@ async function sendNotification(
       deepLink = generateDynamicLink(
         'wawappclient.page.link',
         '/error?message=Order expired'
+      );
+      break;
+    
+    case 'order_cancelled_by_client':
+    case 'trip_cancelled_by_client':
+      deepLink = generateDynamicLink(
+        'wawappdriver.page.link',
+        `/orders/nearby`
+      );
+      break;
+        
+    case 'order_expired_driver':
+      deepLink = generateDynamicLink(
+        'wawappdriver.page.link',
+        '/orders/nearby'
       );
       break;
     
@@ -191,6 +249,22 @@ async function sendNotification(
       type: config.type,
       message_id: response,
     });
+
+    // Mark notification as sent (idempotency log)
+    await notificationLogRef.set({
+      userId: userId,
+      orderId: orderId,
+      notificationType: config.type,
+      sentAt: admin.firestore.FieldValue.serverTimestamp(),
+      messageId: response,
+    });
+    
+    console.log('[NotifyOrderEvents] Notification logged for idempotency', {
+      notification_id: notificationId,
+    });
+
+    // TODO: Add Firestore TTL rule to auto-delete notification_log docs after 7 days
+    // firestore.rules: allow delete: if request.time > resource.data.sentAt + duration.value(7, 'd');
 
     // Log analytics event
     console.log('[Analytics] notification_sent', {
@@ -283,6 +357,24 @@ export const notifyOrderEvents = functions.firestore
     }
 
     await sendNotification(ownerId, orderId, notificationConfig);
+
+    // STEP 3A: Notify assigned driver if client cancelled
+    if ((beforeStatus === 'accepted' || beforeStatus === 'onRoute') &&
+        afterStatus === 'cancelledByClient') {
+      const assignedDriverId = afterData.assignedDriverId as string | undefined;
+      
+      if (assignedDriverId) {
+        console.log('[NotifyOrderEvents] Notifying assigned driver of cancellation', {
+          order_id: orderId,
+          driver_id: assignedDriverId,
+        });
+        
+        const driverNotificationConfig = getNotificationConfig(beforeStatus, afterStatus);
+        if (driverNotificationConfig) {
+          await sendNotification(assignedDriverId, orderId, driverNotificationConfig);
+        }
+      }
+    }
 
     return null;
   });
