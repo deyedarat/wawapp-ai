@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_shared/core_shared.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -22,9 +24,12 @@ class QuoteScreen extends ConsumerStatefulWidget {
 }
 
 class _QuoteScreenState extends ConsumerState<QuoteScreen> {
+  StreamSubscription<DocumentSnapshot>? _orderSubscription;
+
   void _startOrderTracking(String orderId) {
+    _orderSubscription?.cancel();
     final repo = ref.read(ordersRepositoryProvider);
-    repo.watchOrder(orderId).listen((snapshot) {
+    _orderSubscription = repo.watchOrder(orderId).listen((snapshot) {
       if (!mounted) return;
 
       final data = snapshot.data() as Map<String, dynamic>?;
@@ -39,6 +44,12 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _orderSubscription?.cancel();
+    super.dispose();
   }
 
   @override

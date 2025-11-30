@@ -9,7 +9,7 @@ final clientProfileRepositoryProvider = Provider<ClientProfileRepository>((ref) 
   return ClientProfileRepository(firestore: FirebaseFirestore.instance);
 });
 
-final clientProfileStreamProvider = StreamProvider<ClientProfile?>((ref) {
+final clientProfileStreamProvider = StreamProvider.autoDispose<ClientProfile?>((ref) {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) {
     return Stream.value(null);
@@ -31,7 +31,7 @@ final clientProfileStreamProvider = StreamProvider<ClientProfile?>((ref) {
   });
 });
 
-final savedLocationsStreamProvider = StreamProvider<List<SavedLocation>>((ref) {
+final savedLocationsStreamProvider = StreamProvider.autoDispose<List<SavedLocation>>((ref) {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) {
     return Stream.value([]);

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
@@ -41,6 +42,7 @@ class DriverEarningsState {
 
 class DriverEarningsNotifier extends StateNotifier<DriverEarningsState> {
   final DriverEarningsRepository _repository;
+  late final StreamSubscription<List<Order>> _earningsSubscription;
 
   DriverEarningsNotifier(this._repository)
       : super(const DriverEarningsState()) {
@@ -56,7 +58,7 @@ class DriverEarningsNotifier extends StateNotifier<DriverEarningsState> {
 
     state = state.copyWith(isLoading: true, error: null);
 
-    _repository.watchCompletedOrdersForDriver(user.uid).listen(
+    _earningsSubscription = _repository.watchCompletedOrdersForDriver(user.uid).listen(
       (orders) {
         final todayTotal = _repository.totalForToday(orders);
         final weekTotal = _repository.totalForCurrentWeek(orders);
@@ -78,6 +80,12 @@ class DriverEarningsNotifier extends StateNotifier<DriverEarningsState> {
       },
     );
   }
+
+  @override
+  void dispose() {
+    _earningsSubscription.cancel();
+    super.dispose();
+  }
 }
 
 final driverEarningsRepositoryProvider =
@@ -86,7 +94,7 @@ final driverEarningsRepositoryProvider =
 });
 
 final driverEarningsProvider =
-    StateNotifierProvider<DriverEarningsNotifier, DriverEarningsState>((ref) {
+    StateNotifierProvider.autoDispose<DriverEarningsNotifier, DriverEarningsState>((ref) {
   final repository = ref.watch(driverEarningsRepositoryProvider);
   return DriverEarningsNotifier(repository);
 });
