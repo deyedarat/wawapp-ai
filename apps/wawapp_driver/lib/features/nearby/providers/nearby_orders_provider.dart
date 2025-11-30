@@ -6,6 +6,6 @@ import '../../../services/orders_service.dart';
 
 final nearbyOrdersProvider =
     StreamProvider.family.autoDispose<List<Order>, Position>((ref, position) {
-  final ordersService = OrdersService();
+  final ordersService = ref.watch(ordersServiceProvider);
   return ordersService.getNearbyOrders(position);
 });

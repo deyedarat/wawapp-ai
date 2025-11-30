@@ -4,10 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
 
 import 'driver_status_service.dart';
 import 'analytics_service.dart';
+
+final ordersServiceProvider = Provider<OrdersService>((ref) {
+  return OrdersService();
+});
 
 class OrdersService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

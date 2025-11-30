@@ -9,6 +9,6 @@ final activeOrdersProvider = StreamProvider.autoDispose<List<Order>>((ref) {
     return Stream.value([]);
   }
 
-  final ordersService = OrdersService();
+  final ordersService = ref.watch(ordersServiceProvider);
   return ordersService.getDriverActiveOrders(authState.user!.uid);
 });
