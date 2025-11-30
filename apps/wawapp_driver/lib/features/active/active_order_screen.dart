@@ -17,7 +17,6 @@ class ActiveOrderScreen extends ConsumerStatefulWidget {
 }
 
 class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
-  final _ordersService = OrdersService();
   bool _isTrackingStarted = false;
   bool _isCancelling = false;
 
@@ -31,7 +30,8 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
 
   Future<void> _transition(String orderId, OrderStatus to) async {
     try {
-      await _ordersService.transition(orderId, to);
+      final ordersService = ref.read(ordersServiceProvider);
+      await ordersService.transition(orderId, to);
       if (!mounted) {
         return;
       }
@@ -77,7 +77,8 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
     setState(() => _isCancelling = true);
 
     try {
-      await _ordersService.cancelOrder(orderId);
+      final ordersService = ref.read(ordersServiceProvider);
+      await ordersService.cancelOrder(orderId);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -20,7 +20,6 @@ class NearbyScreen extends ConsumerStatefulWidget {
 }
 
 class _NearbyScreenState extends ConsumerState<NearbyScreen> {
-  final _ordersService = OrdersService();
   final _locationService = LocationService.instance;
   Position? _currentPosition;
   String? _error;
@@ -54,7 +53,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
 
   Future<void> _acceptOrder(String orderId) async {
     try {
-      await _ordersService.acceptOrder(orderId);
+      final ordersService = ref.read(ordersServiceProvider);
+      await ordersService.acceptOrder(orderId);
       if (!mounted) {
         return;
       }
