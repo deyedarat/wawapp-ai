@@ -6,7 +6,7 @@ DateTime? normalizeTimestamp(Timestamp? timestamp) {
   if (timestamp == null) return null;
   try {
     return timestamp.toDate();
-  } catch (e) {
+  } on Object catch (e) {
     return null;
   }
 }
@@ -22,7 +22,7 @@ DateTime? toLocalWithSafety(DateTime? dateTime) {
   if (dateTime == null) return null;
   try {
     return dateTime.toLocal();
-  } catch (e) {
+  } on Object catch (e) {
     return dateTime;
   }
 }

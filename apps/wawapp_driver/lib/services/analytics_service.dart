@@ -99,7 +99,7 @@ class AnalyticsService extends BaseAnalyticsService {
         value: 'driver',
       );
       if (kDebugMode) print('[Analytics] User properties set for $userId');
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[Analytics] Error setting user properties: $e');
     }
   }

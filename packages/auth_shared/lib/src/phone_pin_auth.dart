@@ -72,7 +72,7 @@ class PhonePinAuth {
             await _auth.signInWithCredential(cred);
             if (kDebugMode) print('[PhonePinAuth] Auto sign-in successful');
             completer.complete();
-          } catch (e) {
+          } on Object catch (e) {
             if (kDebugMode) print('[PhonePinAuth] Auto sign-in failed: $e');
             completer.completeError(e);
           }

@@ -61,7 +61,7 @@ class FCMService extends BaseFCMService {
           }
           context.go('/nearby');
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         debugPrint('[FCM] Navigation error: $e');
       }

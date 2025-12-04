@@ -92,7 +92,7 @@ class NotificationService {
       try {
         final data = jsonDecode(payload) as Map<String, dynamic>;
         _navigateFromMessage(data);
-      } catch (e) {
+      } on Object catch (e) {
         debugPrint('Error parsing notification payload: $e');
       }
     }

@@ -85,7 +85,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
           const SnackBar(content: Text('تم إلغاء الطلب بواسطة السائق')),
         );
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (mounted) {
         setState(() => _isCancelling = false);
         final message = e.toString().contains('current status')

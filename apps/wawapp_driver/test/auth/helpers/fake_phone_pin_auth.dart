@@ -138,6 +138,5 @@ class FakePhonePinAuth implements PhonePinAuth {
     _otpSent = false;
   }
 
-  @override
   String? get lastVerificationId => throw UnimplementedError();
 }

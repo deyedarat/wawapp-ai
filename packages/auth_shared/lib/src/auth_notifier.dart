@@ -34,7 +34,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         final hasPinHash = await _authService.hasPinHash();
         state = state.copyWith(hasPin: hasPinHash, phoneE164: user.phoneNumber);
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[AuthNotifier] Error checking PIN: $e');
     }
   }
@@ -42,7 +42,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<bool> checkPhoneExists(String phone) async {
     try {
       return await _authService.phoneExists(phone);
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[AuthNotifier] Error checking phone: $e');
       return false;
     }
@@ -118,7 +118,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       await _authService.confirmOtp(code);
       state = state.copyWith(isLoading: false, otpFlowActive: false);
-    } catch (e) {
+    } on Object catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
@@ -128,7 +128,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       await _authService.setPin(pin);
       state = state.copyWith(isLoading: false, hasPin: true);
-    } catch (e) {
+    } on Object catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
@@ -142,7 +142,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       } else {
         state = state.copyWith(isLoading: false, error: 'Invalid PIN');
       }
-    } catch (e) {
+    } on Object catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
@@ -152,7 +152,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       await _authService.signOut();
       state = const AuthState();
-    } catch (e) {
+    } on Object catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }

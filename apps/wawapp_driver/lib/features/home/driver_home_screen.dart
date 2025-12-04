@@ -38,7 +38,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
           _isOnline = isOnline;
         });
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         dev.log('[DriverHome] Error loading online status: $e');
       }
@@ -80,7 +80,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         dev.log(
             '[Matching] DriverHomeScreen: Driver toggled online status to: $value');
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         dev.log('[DriverHome] Error toggling status: $e');
       }
@@ -129,7 +129,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   if (authState.user != null) {
                     try {
                       await DriverStatusService.instance.setOffline(authState.user!.uid);
-                    } catch (e) {
+                    } on Object catch (e) {
                       if (kDebugMode) {
                         dev.log(
                             '[DriverHome] Error setting offline on logout: $e');

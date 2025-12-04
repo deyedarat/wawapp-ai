@@ -53,7 +53,8 @@ void main() {
       );
       
       // Add listener to activate provider
-      final subscription = container.listen(
+      // Add listener to activate provider
+      container.listen(
         driverEarningsProvider,
         (previous, next) {},
       );

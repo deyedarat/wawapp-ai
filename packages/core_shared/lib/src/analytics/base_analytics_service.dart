@@ -69,7 +69,7 @@ abstract class BaseAnalyticsService {
         },
       );
       if (kDebugMode) print('[Analytics] error_occurred: $errorType on $screen');
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[Analytics] Error logging error_occurred: $e');
     }
   }
@@ -87,7 +87,7 @@ abstract class BaseAnalyticsService {
         parameters: {'method': method},
       );
       if (kDebugMode) print('[Analytics] auth_completed: $method');
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[Analytics] Error logging auth_completed: $e');
     }
   }
@@ -99,7 +99,7 @@ abstract class BaseAnalyticsService {
     try {
       await _analytics.logEvent(name: 'app_opened');
       if (kDebugMode) print('[Analytics] app_opened');
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[Analytics] Error logging app_opened: $e');
     }
   }
@@ -121,7 +121,7 @@ abstract class BaseAnalyticsService {
         screenClass: screenClass,
       );
       if (kDebugMode) print('[Analytics] screen_view: $screenName');
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[Analytics] Error logging screen_view: $e');
     }
   }
@@ -148,7 +148,7 @@ abstract class BaseAnalyticsService {
       );
       if (kDebugMode)
         print('[Analytics] notification_delivered: $notificationType');
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode)
         print('[Analytics] Error logging notification_delivered: $e');
     }
@@ -179,7 +179,7 @@ abstract class BaseAnalyticsService {
       if (kDebugMode)
         print(
             '[Analytics] notification_tapped: $notificationType ($appState)');
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode)
         print('[Analytics] Error logging notification_tapped: $e');
     }
@@ -200,7 +200,7 @@ abstract class BaseAnalyticsService {
     try {
       await _analytics.logEvent(name: name, parameters: parameters);
       if (kDebugMode) print('[Analytics] $name');
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[Analytics] Error logging $name: $e');
     }
   }
@@ -213,7 +213,7 @@ abstract class BaseAnalyticsService {
     try {
       await _analytics.setUserId(id: userId);
       if (kDebugMode) print('[Analytics] User ID set: $userId');
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[Analytics] Error setting user ID: $e');
     }
   }
@@ -229,7 +229,7 @@ abstract class BaseAnalyticsService {
     try {
       await _analytics.setUserProperty(name: name, value: value);
       if (kDebugMode) print('[Analytics] User property set: $name = $value');
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[Analytics] Error setting user property $name: $e');
     }
   }
