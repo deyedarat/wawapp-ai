@@ -203,7 +203,7 @@ class OrdersService {
 
       // Log analytics event after successful acceptance
       AnalyticsService.instance.logOrderAcceptedByDriver(orderId: orderId);
-    } catch (e) {
+    } on Object catch (e) {
       if (e is AppError) rethrow;
       throw AppError.from(e);
     }
@@ -234,7 +234,7 @@ class OrdersService {
       if (to == OrderStatus.completed) {
         AnalyticsService.instance.logOrderCompletedByDriver(orderId: orderId);
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (e is AppError) rethrow;
       throw AppError.from(e);
     }
@@ -276,7 +276,7 @@ class OrdersService {
 
       // Log analytics event after successful cancellation
       AnalyticsService.instance.logOrderCancelledByDriver(orderId: orderId);
-    } catch (e) {
+    } on Object catch (e) {
       if (e is AppError) rethrow;
       throw AppError.from(e);
     }

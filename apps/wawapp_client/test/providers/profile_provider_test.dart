@@ -40,7 +40,8 @@ void main() {
       final container = ProviderContainer();
       
       // Add listener to activate provider
-      final subscription = container.listen(
+      // Add listener to activate provider
+      container.listen(
         clientProfileStreamProvider,
         (previous, next) {},
       );

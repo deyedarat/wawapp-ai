@@ -123,7 +123,7 @@ class TrackingService {
       _updateIntervalSeconds = remoteConfig.getInt('location_update_interval_sec');
       if (_updateIntervalSeconds < 5) _updateIntervalSeconds = 5; // Min 5 seconds
       if (_updateIntervalSeconds > 60) _updateIntervalSeconds = 60; // Max 60 seconds
-    } catch (e) {
+    } on Object catch (e) {
       print('Failed to load remote config, using default: $e');
       _updateIntervalSeconds = 10; // Fallback
     }

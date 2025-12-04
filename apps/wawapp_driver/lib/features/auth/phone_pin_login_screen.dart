@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'providers/auth_service_provider.dart';
 
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
@@ -15,74 +14,20 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   final _phone = TextEditingController();
   final _pin = TextEditingController();
   String? _err;
-  ProviderSubscription<AuthState>? _authSubscription;
-  bool _navigatedThisAttempt = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _navigatedThisAttempt = false;
-
-    _authSubscription =
-        ref.listenManual<AuthState>(authProvider, (previous, next) {
-      if (!_navigatedThisAttempt &&
-          previous?.otpStage != next.otpStage &&
-          next.otpStage == OtpStage.codeSent) {
-        _navigatedThisAttempt = true;
-
-        if (!mounted || !context.mounted) return;
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted || !context.mounted) return;
-
-          context.push('/otp');
-        });
-      }
-    });
-  }
 
   @override
   void dispose() {
-    _authSubscription?.close();
     _phone.dispose();
     _pin.dispose();
     super.dispose();
   }
 
-  Future<void> _continue() async {
+  Future<void> _handleOtpFlow() async {
     final phone = _phone.text.trim();
     final e164 = RegExp(r'^\+[1-9]\d{6,14}$');
+
     if (!e164.hasMatch(phone)) {
-      if (mounted) {
-        setState(
-            () => _err = 'Invalid phone format. Use E.164 like +22212345678');
-      }
-      return;
-    }
-
-    if (mounted) {
-      setState(() => _err = null);
-    }
-
-    if (!mounted) return;
-
-    // Reset navigation flag for new attempt
-    _navigatedThisAttempt = false;
-    await ref.read(authProvider.notifier).sendOtp(phone);
-  }
-
-  void _handleOtpFlow() async {
-    final phone = _phone.text.trim();
-    final e164 = RegExp(r'^\+[1-9]\d{6,14}$');
-
-    // If phone is empty or invalid, navigate to OTP screen anyway
-    // The OTP screen can handle phone input and validation
-    if (phone.isEmpty || !e164.hasMatch(phone)) {
-      if (kDebugMode) {
-        print(
-            '[PhonePinLogin] No valid phone, navigating to OTP screen for input');
-      }
-      context.push('/otp');
+      setState(() => _err = 'Invalid phone format. Use E.164 like +22212345678');
       return;
     }
 
@@ -95,19 +40,17 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     // Mark OTP flow as active in provider (survives rebuild)
     ref.read(authProvider.notifier).startOtpFlow();
 
-    // Start sending OTP and navigate immediately after
+    // Send OTP - AuthGate will automatically show OTP screen when otpStage = codeSent
     try {
       await ref.read(authProvider.notifier).sendOtp(phone);
-      if (mounted && context.mounted) {
-        if (kDebugMode) {
-          print('[PhonePinLogin] OTP sent, navigating to /otp');
-        }
-        context.push('/otp');
+      if (kDebugMode) {
+        print('[PhonePinLogin] OTP sent, AuthGate will show OTP screen');
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         print('[PhonePinLogin] OTP send failed: $e');
       }
+      // Error is already set in provider state
     }
   }
 
@@ -150,7 +93,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
                       authState.otpStage == OtpStage.sending ||
                       authState.otpStage == OtpStage.codeSent)
                   ? null
-                  : _continue,
+                  : _handleOtpFlow,
               child: authState.isLoading
                   ? const CircularProgressIndicator()
                   : const Text('Continue'),

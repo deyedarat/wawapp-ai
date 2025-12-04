@@ -140,7 +140,7 @@ abstract class BaseFCMService {
 
       // Initialize dynamic links
       await _initDynamicLinks(context);
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         debugPrint('[FCM] Initialization error: $e');
       }
@@ -168,7 +168,7 @@ abstract class BaseFCMService {
 
       return settings.authorizationStatus == AuthorizationStatus.authorized ||
           settings.authorizationStatus == AuthorizationStatus.provisional;
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         debugPrint('[FCM] Permission request error: $e');
       }
@@ -191,7 +191,7 @@ abstract class BaseFCMService {
       }
 
       return token;
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         debugPrint('[FCM] Get token error: $e');
       }
@@ -221,7 +221,7 @@ abstract class BaseFCMService {
       if (kDebugMode) {
         debugPrint('[FCM] Token saved to Firestore for user: ${user.uid}');
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         debugPrint('[FCM] Save token error: $e');
       }
@@ -247,7 +247,7 @@ abstract class BaseFCMService {
       if (kDebugMode) {
         debugPrint('[FCM] Token deleted for user: ${user.uid}');
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         debugPrint('[FCM] Delete token error: $e');
       }
@@ -359,7 +359,7 @@ abstract class BaseFCMService {
           }
         },
       );
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         debugPrint('[FCM] Dynamic links initialization error: $e');
       }

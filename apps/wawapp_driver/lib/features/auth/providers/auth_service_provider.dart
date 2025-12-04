@@ -115,7 +115,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           phone: user.phoneNumber,
         );
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) {
         print('[AuthNotifier] Error checking PIN: $e');
       }
@@ -163,7 +163,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         phone: phone,
         otpStage: OtpStage.codeSent,
       );
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[AuthNotifier] Send OTP error: $e');
       state = state.copyWith(
         isLoading: false,
@@ -189,7 +189,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await AnalyticsService.instance.logLoginSuccess('otp');
       state = state.copyWith(isLoading: false, otpFlowActive: false);
       // User will be updated via authStateChanges listener
-    } catch (e) {
+    } on Object catch (e) {
       if (kDebugMode) print('[AuthNotifier] Verify OTP error: $e');
       state = state.copyWith(
         isLoading: false,
@@ -205,7 +205,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _authService.setPin(pin);
       await AnalyticsService.instance.logPinCreated();
       state = state.copyWith(isLoading: false, hasPin: true);
-    } catch (e) {
+    } on Object catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
@@ -227,7 +227,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           error: 'Invalid PIN',
         );
       }
-    } catch (e) {
+    } on Object catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
@@ -241,7 +241,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       await _authService.signOut();
       state = const AuthState(); // Reset to initial state
-    } catch (e) {
+    } on Object catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),

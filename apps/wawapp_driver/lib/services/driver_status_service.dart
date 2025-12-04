@@ -36,7 +36,7 @@ class DriverStatusService {
             '[DriverStatus] Permission denied setting online. Check Firestore rules for /drivers/{uid}');
       }
       rethrow;
-    } catch (e) {
+    } on Object catch (e) {
       debugPrint('[DriverStatus] Error setting online: $e');
       rethrow;
     }
@@ -69,7 +69,7 @@ class DriverStatusService {
             '[DriverStatus] Permission denied setting offline. Check Firestore rules for /drivers/{uid}');
       }
       rethrow;
-    } catch (e) {
+    } on Object catch (e) {
       debugPrint('[DriverStatus] Error setting offline: $e');
       rethrow;
     }
@@ -112,7 +112,7 @@ class DriverStatusService {
       if (data == null) return false;
 
       return data['isOnline'] as bool? ?? false;
-    } catch (e) {
+    } on Object catch (e) {
       debugPrint('[DriverStatus] Error reading online status: $e');
       return false;
     }

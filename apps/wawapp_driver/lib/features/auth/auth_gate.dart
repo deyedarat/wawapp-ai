@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'create_pin_screen.dart';
+import 'otp_screen.dart';
 import 'phone_pin_login_screen.dart';
 import 'providers/auth_service_provider.dart';
 import '../home/driver_home_screen.dart';
@@ -24,16 +25,40 @@ final driverProfileProvider =
       .snapshots();
 });
 
-class AuthGate extends ConsumerWidget {
+class AuthGate extends ConsumerStatefulWidget {
   final Widget child;
   const AuthGate({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends ConsumerState<AuthGate> {
+  String? _lastInitializedUserId;
+
+  void _initializeServicesOnce(String userId, BuildContext context, Map<String, dynamic>? data) {
+    if (_lastInitializedUserId == userId) {
+      return; // Already initialized for this user
+    }
+
+    AnalyticsService.instance.setUserProperties(
+      userId: userId,
+      totalTrips: data?['totalTrips'] as int?,
+      averageRating: (data?['rating'] as num?)?.toDouble(),
+      isVerified: data?['isVerified'] as bool?,
+    );
+    AnalyticsService.instance.logAuthCompleted(method: 'phone_pin');
+    FCMService.instance.initialize(context);
+
+    _lastInitializedUserId = userId;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
     debugPrint(
-        '[AuthGate] user: ${authState.user?.uid}, isLoading: ${authState.isLoading}');
+        '[AuthGate] user: ${authState.user?.uid}, isLoading: ${authState.isLoading}, otpStage: ${authState.otpStage}');
 
     // Show loading while checking auth state
     if (authState.isLoading) {
@@ -43,8 +68,14 @@ class AuthGate extends ConsumerWidget {
       );
     }
 
-    // No user - show login screen
+    // No user - check if we're in OTP flow
     if (authState.user == null) {
+      // If OTP was sent successfully, show OTP screen
+      if (authState.otpStage == OtpStage.codeSent) {
+        debugPrint('[AuthGate] showing OtpScreen (OTP sent)');
+        return const OtpScreen();
+      }
+
       debugPrint('[AuthGate] showing PhonePinLoginScreen (no user)');
       return const PhonePinLoginScreen();
     }
@@ -98,19 +129,11 @@ class AuthGate extends ConsumerWidget {
         }
 
         // Set user properties after successful auth with PIN
+        // Initialize services only once per user to prevent infinite rebuild loop
         final user = authState.user;
         if (user != null) {
-          AnalyticsService.instance.setUserProperties(
-            userId: user.uid,
-            totalTrips: data?['totalTrips'] as int?,
-            averageRating: (data?['rating'] as num?)?.toDouble(),
-            isVerified: data?['isVerified'] as bool?,
-          );
-          AnalyticsService.instance.logAuthCompleted(method: 'phone_pin');
-          
-          // Initialize FCM for push notifications
-          FCMService.instance.initialize(context);
-          
+          _initializeServicesOnce(user.uid, context, data);
+
           // ANALYTICS VALIDATION:
           // To verify: adb shell setprop debug.firebase.analytics.app com.wawapp.driver
           // Check Firebase Console → DebugView for:

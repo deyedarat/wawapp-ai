@@ -64,7 +64,7 @@ class DriverProfileNotifier extends StateNotifier<DriverProfileUpdateState> {
     try {
       await _repository.updateProfile(profile);
       state = const DriverProfileUpdateState();
-    } catch (e) {
+    } on Object catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
@@ -74,7 +74,7 @@ class DriverProfileNotifier extends StateNotifier<DriverProfileUpdateState> {
     try {
       await _repository.updatePhotoUrl(driverId, photoUrl);
       state = const DriverProfileUpdateState();
-    } catch (e) {
+    } on Object catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
@@ -84,7 +84,7 @@ class DriverProfileNotifier extends StateNotifier<DriverProfileUpdateState> {
     try {
       await _repository.createProfile(profile);
       state = const DriverProfileUpdateState();
-    } catch (e) {
+    } on Object catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
