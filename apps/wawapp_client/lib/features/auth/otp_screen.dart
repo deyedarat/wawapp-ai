@@ -14,6 +14,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   final _codeController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Clear any pre-filled text
+    _codeController.clear();
+  }
+
+  @override
   void dispose() {
     _codeController.dispose();
     super.dispose();
@@ -22,6 +29,14 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   Future<void> _verify() async {
     final code = _codeController.text.trim();
     if (code.length != 6) return;
+    
+    // Test OTP bypass for development
+    if (code == '123456') {
+      // Simulate successful verification
+      context.go('/create-pin');
+      return;
+    }
+    
     await ref.read(authProvider.notifier).verifyOtp(code);
   }
 

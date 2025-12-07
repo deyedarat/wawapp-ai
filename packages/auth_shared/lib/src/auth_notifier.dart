@@ -133,15 +133,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> loginByPin(String pin) async {
+  Future<void> loginByPin(String pin, String phoneE164) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final isValid = await _authService.verifyPin(pin);
-      if (isValid) {
-        state = state.copyWith(isLoading: false, hasPin: true);
-      } else {
-        state = state.copyWith(isLoading: false, error: 'Invalid PIN');
-      }
+      // First authenticate with phone to get user context
+      await _authService.ensurePhoneSession(phoneE164);
+      
+      // Wait for authentication to complete, then verify PIN
+      // This will be handled by the auth state listener
+      state = state.copyWith(
+        otpStage: OtpStage.codeSent,
+        otpFlowActive: true,
+        phoneE164: phoneE164,
+      );
     } on Object catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
