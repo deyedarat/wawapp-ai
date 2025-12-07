@@ -7,5 +7,333 @@
   "request_now": "اطلب الآن",
   "track": "تتبع",
   "currency": "أوقية",
-  "estimated_price": "السعر المقدر"
+  "estimated_price": "السعر المقدر",
+  
+  "shipmentTypeTitle": "اختر نوع الحمولة",
+  "cargoDeliveryService": "خدمة توصيل البضائع",
+  "chooseShipmentTypeDescription": "اختر نوع الحمولة لنوفر لك أفضل خدمة",
+  
+  "shipmentFoodPerishables": "مواد غذائية وسريعة التلف",
+  "shipmentFurniture": "أثاث وتجهيزات منزلية",
+  "shipmentConstruction": "مواد بناء وحمولات ثقيلة",
+  "shipmentElectrical": "أجهزة كهربائية وكهرومنزلية",
+  "shipmentGeneralGoods": "بضائع عامة وكرتون",
+  "shipmentFragile": "حمولة حساسة / قابلة للكسر",
+  
+  "aboutTitle": "حول النسخة",
+  "aboutVersion": "الإصدار:",
+  "aboutBranch": "الفرع:",
+  "aboutCommit": "الكوميت:",
+  "aboutFlavor": "النكهة:",
+  "aboutFlutter": "فلاتر:",
+  
+  "currentLocation": "موقعك الحالي",
+  "locatingYou": "جاري تحديد موقعك...",
+  "canUseMapManually": "يمكنك استخدام الخريطة يدوياً لتحديد المواقع",
+  "searchPlaces": "ابحث عن موقع...",
+  "selectPickupLocation": "اختر موقع الاستلام",
+  "selectDropoffLocation": "اختر موقع التسليم",
+  "selectSavedPickupLocation": "اختر موقع الاستلام المحفوظ",
+  "selectSavedDropoffLocation": "اختر موقع التسليم المحفوظ",
+  
+  "priceBreakdown": "تفصيل السعر: أساس {base} + مسافة {distance} = {total} → حد أدنى {minFare} → تقريب {rounded}",
+  "@priceBreakdown": {
+    "placeholders": {
+      "base": {"type": "int"},
+      "distance": {"type": "int"},
+      "total": {"type": "int"},
+      "minFare": {"type": "int"},
+      "rounded": {"type": "int"}
+    }
+  },
+  "priceBreakdownWithMultiplier": "تفصيل السعر: أساس {base} + مسافة {distance} = {total} × {multiplier} = {adjusted} → حد أدنى {minFare} → تقريب {rounded}",
+  "@priceBreakdownWithMultiplier": {
+    "placeholders": {
+      "base": {"type": "int"},
+      "distance": {"type": "int"},
+      "total": {"type": "int"},
+      "multiplier": {"type": "String"},
+      "adjusted": {"type": "int"},
+      "minFare": {"type": "int"},
+      "rounded": {"type": "int"}
+    }
+  },
+  "estimatedTime": "الوقت التقريبي: {minutes} دقيقة",
+  "@estimatedTime": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "normalPrice": "سعر عادي",
+  
+  "orderCreatedSuccess": "تم إنشاء الطلب بنجاح",
+  "orderCreationError": "حدث خطأ أثناء إنشاء الطلب. يرجى المحاولة مرة أخرى.",
+  "trackOrder": "تتبع الطلب",
+  "trackOrderDebug": "تتبع الطلب • DEBUG",
+  "orderNumber": "طلب #{orderId}",
+  "@orderNumber": {
+    "placeholders": {
+      "orderId": {"type": "String"}
+    }
+  },
+  "orderStatus": "حالة الطلب",
+  "status": "الحالة: {status}",
+  "@status": {
+    "placeholders": {
+      "status": {"type": "String"}
+    }
+  },
+  "statusUnknown": "غير معروف",
+  "statusAssigning": "البحث عن سائق",
+  "statusAccepted": "تم قبول الطلب",
+  "statusEnRoute": "في الطريق",
+  "statusCompleted": "تم إكمال الطلب",
+  "statusCancelled": "تم إلغاء الطلب",
+  
+  "from": "من: {address}",
+  "@from": {
+    "placeholders": {
+      "address": {"type": "String"}
+    }
+  },
+  "to": "إلى: {address}",
+  "@to": {
+    "placeholders": {
+      "address": {"type": "String"}
+    }
+  },
+  "distance": "المسافة: {km} كم",
+  "@distance": {
+    "placeholders": {
+      "km": {"type": "String"}
+    }
+  },
+  "price": "السعر: {price} أوقية",
+  "@price": {
+    "placeholders": {
+      "price": {"type": "String"}
+    }
+  },
+  
+  "driver": "السائق",
+  "driverName": "السائق: {name}",
+  "@driverName": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "driverPhone": "الهاتف: {phone}",
+  "@driverPhone": {
+    "placeholders": {
+      "phone": {"type": "String"}
+    }
+  },
+  "vehicle": "المركبة: {vehicle}",
+  "@vehicle": {
+    "placeholders": {
+      "vehicle": {"type": "String"}
+    }
+  },
+  "driverNotFound": "---",
+  "driverOffline": "السائق غير متصل حالياً",
+  "driverEnRoute": "السائق في الطريق",
+  "driverOnWay": "السائق في الطريق إليك",
+  "driverFound": "تم العثور على سائق",
+  "driverAssigned": "تم تعيين سائق",
+  "driverLocationUnavailable": "لا يمكن تحديد موقع السائق حالياً",
+  "trackDriver": "تتبع السائق",
+  "driverLocation": "موقع السائق",
+  
+  "orderAccepted": "تم قبول طلبك!",
+  "orderCompleted": "تم إكمال الرحلة بنجاح",
+  "orderCancelled": "تم إلغاء الطلب",
+  "orderNotFound": "الطلب غير موجود",
+  "cannotShowOrder": "لا يمكن عرض هذا الطلب",
+  "checkTrackingLink": "تحقق من رابط التتبع أو حاول لاحقًا",
+  "etaMinutes": "الوقت المتوقع للوصول: 5-10 دقائق",
+  "tripCompletedSuccess": "اكتمل الطلب",
+  "notCompletedYet": "لم يكتمل بعد",
+  
+  "cancelOrder": "إلغاء الطلب",
+  "cancelOrderConfirm": "هل تريد إلغاء الطلب؟",
+  "cannotCancelOrder": "لا يمكن إلغاء الطلب الآن، ربما تم قبوله أو تغيّرت حالته.",
+  "cancelOrderError": "تعذّر إلغاء الطلب، حاول مرة أخرى.",
+  "retry": "إعادة المحاولة",
+  "goToTracking": "اذهب للتتبع",
+  "copyTrackingLink": "نسخ رابط التتبع",
+  "trackingLinkCopied": "تم نسخ رابط التتبع",
+  "close": "إغلاق",
+  "back": "العودة",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "delete": "حذف",
+  "edit": "تعديل",
+  "yes": "نعم",
+  "no": "لا",
+  "later": "لاحقاً",
+  "now": "الآن",
+  
+  "rating": "التقييم",
+  "rateDriver": "قيّم السائق",
+  "howWasExperience": "كيف كانت تجربتك؟",
+  "submitRating": "إرسال التقييم",
+  "thankYouRating": "شكرًا لتقييمك!",
+  "ratingSuccess": "تم إرسال التقييم بنجاح",
+  "ratingError": "تعذّر إرسال التقييم، حاول مرة أخرى.",
+  "ratingErrorRetry": "فشل في إرسال التقييم، حاول مرة أخرى",
+  
+  "profile": "الملف الشخصي",
+  "editProfile": "تعديل الملف الشخصي",
+  "profileSetup": "إعداد الملف الشخصي",
+  "profileNotSetup": "لم يتم إعداد الملف الشخصي بعد",
+  "name": "الاسم",
+  "phone": "الهاتف",
+  "phoneNumber": "رقم الهاتف",
+  "address": "العنوان",
+  "tripCount": "عدد الرحلات",
+  "profileSaved": "تم حفظ الملف الشخصي بنجاح",
+  "profileLoadError": "خطأ في تحميل الملف الشخصي: {error}",
+  "@profileLoadError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "profileSaveError": "خطأ في حفظ الملف الشخصي: {error}",
+  "@profileSaveError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "enterName": "يرجى إدخال الاسم",
+  "enterPhone": "يرجى إدخال رقم الهاتف",
+  "enterAddress": "يرجى إدخال العنوان",
+  "required": "مطلوب",
+  "invalidValue": "قيمة غير صحيحة",
+  "userNotLoggedIn": "المستخدم غير مسجل الدخول",
+  
+  "savedLocations": "المواقع المحفوظة",
+  "manageSavedLocations": "إدارة المواقع المفضلة لديك",
+  "noSavedLocations": "لا توجد مواقع محفوظة",
+  "noSavedLocationsYet": "لا توجد مواقع محفوظة بعد",
+  "addNewLocationHint": "اضغط على + لإضافة موقع جديد",
+  "addLocation": "إضافة الموقع",
+  "addNewLocation": "إضافة موقع جديد",
+  "editLocation": "تعديل الموقع",
+  "updateLocation": "تحديث الموقع",
+  "deleteLocation": "حذف الموقع",
+  "deleteLocationConfirm": "هل أنت متأكد من حذف \"{name}\"؟",
+  "@deleteLocationConfirm": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "locationName": "اسم الموقع",
+  "locationType": "نوع الموقع",
+  "locationNameHint": "مثال: منزل العائلة، مكتب الشركة",
+  "enterLocationName": "يرجى إدخال اسم الموقع",
+  "latitude": "خط العرض",
+  "longitude": "خط الطول",
+  "coordinatesHint": "يمكنك الحصول على الإحداثيات من خرائط جوجل أو أي تطبيق خرائط آخر",
+  "locationAdded": "تم إضافة الموقع بنجاح",
+  "locationUpdated": "تم تحديث الموقع بنجاح",
+  "locationDeleted": "تم حذف الموقع بنجاح",
+  "locationNotFound": "الموقع غير موجود",
+  "locationSaveError": "خطأ في حفظ الموقع: {error}",
+  "@locationSaveError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "locationLoadError": "خطأ في تحميل الموقع: {error}",
+  "@locationLoadError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "locationDeleteError": "خطأ في حذف الموقع: {error}",
+  "@locationDeleteError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "savedLocationsLoadError": "خطأ في تحميل المواقع المحفوظة",
+  "savedLocationsError": "خطأ في تحميل المواقع: {error}",
+  "@savedLocationsError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "pickupPoint": "نقطة الاستلام",
+  "delivery": "تسليم",
+  "locationUndefined": "موقع غير محدد",
+  "unknownAddress": "عنوان غير معروف",
+  "addressResolving": "جار تحديد العنوان...",
+  "addressResolveFailed": "تعذّر جلب العنوان. تحقّق من الإنترنت أو فعّل الموقع.",
+  "unspecified": "غير محدد",
+  
+  "language": "اللغة المفضلة",
+  "arabic": "العربية",
+  "french": "الفرنسية",
+  "english": "الإنجليزية",
+  
+  "aboutApp": "حول التطبيق",
+  "lastUpdated": "آخر تحديث: {time}",
+  "@lastUpdated": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "dateLabel": "التاريخ: {date}",
+  "@dateLabel": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "minutesAgo": "منذ {count} دقيقة",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "hoursAgo": "منذ {count} ساعة",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "daysAgo": "منذ {count} يوم",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  
+  "mapsNotAvailable": "الخريطة غير متوفرة في هذا الإصدار\\nيمكنك استخدام النقر لتحديد المواقع يدوياً",
+  "searchNotAvailable": "البحث عن الأماكن غير متوفر في هذا الإصدار. يمكنك النقر على الخريطة لتحديد الموقع.",
+  "demoNote": "ملاحظة: هذه نسخة تجريبية. الخرائط التفاعلية ستكون متاحة قريباً.",
+  "canUseDefaultLocations": "يمكنك استخدام المواقع الافتراضية أدناه",
+  "availableLocations": "المواقع المتاحة حالياً:",
+  "nouakchottCenter": "• وسط نواكشوط",
+  "nouakchottAirport": "• مطار نواكشوط",
+  "nouakchottAirportShort": "مطار نواكشوط",
+  "locationFailedGPS": "لم يتمكن من تحديد موقعك الحالي. يرجى التأكد من تفعيل GPS",
+  "driverLocationNotAvailable": "موقع السائق غير متاح",
+  
+  "nouakchottDistricts": "أحياء نواكشوط:",
+  "districtRiyadh": "الرياض",
+  "districtDarNaim": "دار النعيم",
+  "districtTevraghZeina": "تفرغ زينة",
+  "districtToujounine": "توجنين",
+  "districtArafat": "عرفات",
+  "districtSebkha": "السبخة",
+  "districtTevragh": "تيارات",
+  "districtKsar": "لكصر",
+  "districtPort": "الميناء",
+  
+  "errorUpdate": "خطأ: {error}",
+  "@errorUpdate": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

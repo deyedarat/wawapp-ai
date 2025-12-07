@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../core/build_info/build_info.dart';
+import '../../l10n/app_localizations.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final buildInfo = BuildInfoProvider.instance;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('حول النسخة'),
+        title: Text(l10n.aboutTitle),
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
       ),
@@ -19,11 +21,11 @@ class AboutScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildInfoRow('الإصدار:', buildInfo.version),
-            _buildInfoRow('الفرع:', buildInfo.branch),
-            _buildInfoRow('الكوميت:', buildInfo.commit),
-            _buildInfoRow('النكهة:', buildInfo.flavor),
-            _buildInfoRow('فلاتر:', buildInfo.flutter),
+            _buildInfoRow(l10n.aboutVersion, buildInfo.version),
+            _buildInfoRow(l10n.aboutBranch, buildInfo.branch),
+            _buildInfoRow(l10n.aboutCommit, buildInfo.commit),
+            _buildInfoRow(l10n.aboutFlavor, buildInfo.flavor),
+            _buildInfoRow(l10n.aboutFlutter, buildInfo.flutter),
           ],
         ),
       ),

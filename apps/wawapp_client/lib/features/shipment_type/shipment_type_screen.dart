@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/models/shipment_type.dart';
+import '../../l10n/app_localizations.dart';
 import 'shipment_type_provider.dart';
+import '../../l10n/app_localizations.dart';
 
 class ShipmentTypeScreen extends ConsumerWidget {
   const ShipmentTypeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isRTL = Directionality.of(context) == TextDirection.rtl;
 
@@ -19,7 +22,7 @@ class ShipmentTypeScreen extends ConsumerWidget {
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('اختر نوع الحمولة'),
+          title: Text(l10n.shipmentTypeTitle),
           centerTitle: true,
           automaticallyImplyLeading: false, // Remove back button since this is the entry screen
         ),
@@ -46,14 +49,14 @@ class ShipmentTypeScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'خدمة توصيل البضائع',
+                                l10n.cargoDeliveryService,
                                 style: theme.textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'اختر نوع الحمولة لنوفر لك أفضل خدمة',
+                                l10n.chooseShipmentTypeDescription,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: Colors.grey[600],
                                 ),
@@ -152,9 +155,9 @@ class _ShipmentTypeCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                // Arabic label
+                // Localized label
                 Text(
-                  type.arabicLabel,
+                  type.getLabel(context),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
