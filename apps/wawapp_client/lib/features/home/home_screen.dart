@@ -6,11 +6,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../l10n/app_localizations.dart';
 import '../map/pick_route_controller.dart';
 import '../map/places_autocomplete_sheet.dart';
+import '../map/saved_location_selector_sheet.dart';
 import '../quote/providers/quote_provider.dart';
 import '../quote/models/latlng.dart' as quote_latlng;
 import '../../core/geo/distance.dart';
 import '../../core/pricing/pricing.dart';
 import '../../core/location/location_service.dart';
+import '../map/providers/district_layer_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -101,12 +103,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _mapController?.animateCamera(CameraUpdate.newLatLng(location));
   }
 
+  void _onCameraMove(CameraPosition position) {
+    ref.read(currentZoomProvider.notifier).state = position.zoom;
+  }
+
   void _showPlacesSheet(bool isPickup) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) => PlacesAutocompleteSheet(
         isPickup: isPickup,
+        onLocationSelected: () {
+          // Update text controllers when location is selected
+          final state = ref.read(routePickerProvider);
+          _pickupController.text = state.pickupAddress;
+          _dropoffController.text = state.dropoffAddress;
+        },
+      ),
+    );
+  }
+
+  void _showSavedLocationsSheet(SavedLocationSelectionMode mode) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SavedLocationSelectorSheet(
+        mode: mode,
         onLocationSelected: () {
           // Update text controllers when location is selected
           final state = ref.read(routePickerProvider);
@@ -200,9 +222,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           title: Text(l10n.appTitle),
           centerTitle: true,
           actions: [
-            IconButton(
-              icon: const Icon(Icons.info_outline),
-              onPressed: () => context.push('/about'),
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                switch (value) {
+                  case 'profile':
+                    context.push('/profile');
+                    break;
+                  case 'about':
+                    context.push('/about');
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'profile',
+                  child: Row(
+                    children: [
+                      Icon(Icons.person),
+                      SizedBox(width: 8),
+                      Text('الملف الشخصي'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 'about',
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline),
+                      SizedBox(width: 8),
+                      Text('حول التطبيق'),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -244,23 +296,115 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                 ),
                               )
-                            : GoogleMap(
-                                onMapCreated: (GoogleMapController controller) {
-                                  dev.log('GoogleMap created successfully',
-                                      name: 'WAWAPP_HOME');
-                                  _mapController = controller;
-                                  WidgetsBinding.instance.addPostFrameCallback(
-                                      (_) => _fitBounds(routeState));
-                                },
-                                initialCameraPosition: _nouakchott,
-                                myLocationEnabled: _hasLocationPermission,
-                                myLocationButtonEnabled: _hasLocationPermission,
-                                onTap: _onMapTap,
-                                markers: _buildMarkers(routeState),
-                                compassEnabled: true,
-                                mapToolbarEnabled: false,
-                                zoomControlsEnabled: true,
-                              ),
+                            : !routeState.mapsEnabled
+                                ? Container(
+                                    color: Colors.grey[100],
+                                    child: const Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.map_outlined,
+                                              size: 64, color: Colors.grey),
+                                          SizedBox(height: 16),
+                                          Text(
+                                            'الخريطة غير متوفرة في هذا الإصدار\nيمكنك استخدام النقر لتحديد المواقع يدوياً',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : Consumer(
+                                    builder: (context, ref, child) {
+                                      final polygons =
+                                          ref.watch(districtPolygonsProvider);
+                                      final locale =
+                                          Localizations.localeOf(context);
+                                      final markersAsync = ref.watch(
+                                          districtMarkersProvider(
+                                              locale.languageCode));
+
+                                      return markersAsync.when(
+                                        data: (districtMarkers) => GoogleMap(
+                                          onMapCreated:
+                                              (GoogleMapController controller) {
+                                            dev.log(
+                                                'GoogleMap created successfully',
+                                                name: 'WAWAPP_HOME');
+                                            _mapController = controller;
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback((_) =>
+                                                    _fitBounds(routeState));
+                                          },
+                                          initialCameraPosition: _nouakchott,
+                                          myLocationEnabled:
+                                              _hasLocationPermission,
+                                          myLocationButtonEnabled:
+                                              _hasLocationPermission,
+                                          onTap: _onMapTap,
+                                          onCameraMove: _onCameraMove,
+                                          markers: {
+                                            ..._buildMarkers(routeState),
+                                            ...districtMarkers
+                                          },
+                                          polygons: polygons,
+                                          compassEnabled: true,
+                                          mapToolbarEnabled: false,
+                                          zoomControlsEnabled: true,
+                                        ),
+                                        loading: () => GoogleMap(
+                                          onMapCreated:
+                                              (GoogleMapController controller) {
+                                            dev.log(
+                                                'GoogleMap created successfully',
+                                                name: 'WAWAPP_HOME');
+                                            _mapController = controller;
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback((_) =>
+                                                    _fitBounds(routeState));
+                                          },
+                                          initialCameraPosition: _nouakchott,
+                                          myLocationEnabled:
+                                              _hasLocationPermission,
+                                          myLocationButtonEnabled:
+                                              _hasLocationPermission,
+                                          onTap: _onMapTap,
+                                          onCameraMove: _onCameraMove,
+                                          markers: _buildMarkers(routeState),
+                                          polygons: polygons,
+                                          compassEnabled: true,
+                                          mapToolbarEnabled: false,
+                                          zoomControlsEnabled: true,
+                                        ),
+                                        error: (error, stack) => GoogleMap(
+                                          onMapCreated:
+                                              (GoogleMapController controller) {
+                                            dev.log(
+                                                'GoogleMap created successfully',
+                                                name: 'WAWAPP_HOME');
+                                            _mapController = controller;
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback((_) =>
+                                                    _fitBounds(routeState));
+                                          },
+                                          initialCameraPosition: _nouakchott,
+                                          myLocationEnabled:
+                                              _hasLocationPermission,
+                                          myLocationButtonEnabled:
+                                              _hasLocationPermission,
+                                          onTap: _onMapTap,
+                                          onCameraMove: _onCameraMove,
+                                          markers: _buildMarkers(routeState),
+                                          polygons: polygons,
+                                          compassEnabled: true,
+                                          mapToolbarEnabled: false,
+                                          zoomControlsEnabled: true,
+                                        ),
+                                      );
+                                    },
+                                  ),
                       ),
                       if (_errorMessage == null)
                         Positioned(
@@ -306,14 +450,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               .setCurrentLocation();
                         },
                       ),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: () => _showPlacesSheet(true),
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.bookmark),
+                            onPressed: () => _showSavedLocationsSheet(SavedLocationSelectionMode.pickup),
+                            tooltip: 'المواقع المحفوظة',
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.search),
+                            onPressed: routeState.mapsEnabled
+                                ? () => _showPlacesSheet(true)
+                                : null,
+                          ),
+                        ],
                       ),
                       border: const OutlineInputBorder(),
                     ),
                     readOnly: true,
-                    onTap: () => _showPlacesSheet(true),
+                    onTap: routeState.mapsEnabled
+                        ? () => _showPlacesSheet(true)
+                        : null,
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -321,14 +479,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.dropoff,
                       prefixIcon: const Icon(Icons.location_on),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: () => _showPlacesSheet(false),
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.bookmark),
+                            onPressed: () => _showSavedLocationsSheet(SavedLocationSelectionMode.dropoff),
+                            tooltip: 'المواقع المحفوظة',
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.search),
+                            onPressed: routeState.mapsEnabled
+                                ? () => _showPlacesSheet(false)
+                                : null,
+                          ),
+                        ],
                       ),
                       border: const OutlineInputBorder(),
                     ),
                     readOnly: true,
-                    onTap: () => _showPlacesSheet(false),
+                    onTap: routeState.mapsEnabled
+                        ? () => _showPlacesSheet(false)
+                        : null,
                   ),
                   const SizedBox(height: 24),
                   SizedBox(

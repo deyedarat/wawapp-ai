@@ -1,14 +1,24 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:core_shared/core_shared.dart' hide Order;
+import 'package:core_shared/src/order.dart' as core;
 import '../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'providers/quote_provider.dart';
 import '../map/pick_route_controller.dart';
-import '../track/models/order.dart';
+import '../auth/providers/auth_service_provider.dart';
+
+import '../track/data/orders_repository.dart';
 import '../../core/utils/address_utils.dart';
 import '../../core/utils/eta.dart';
 import '../../core/pricing/pricing.dart';
+import '../../services/analytics_service.dart';
+import '../shipment_type/shipment_type_provider.dart';
+import '../../core/pricing/shipment_pricing.dart';
 
 class QuoteScreen extends ConsumerStatefulWidget {
   const QuoteScreen({super.key});
@@ -18,6 +28,34 @@ class QuoteScreen extends ConsumerStatefulWidget {
 }
 
 class _QuoteScreenState extends ConsumerState<QuoteScreen> {
+  StreamSubscription<DocumentSnapshot>? _orderSubscription;
+
+  void _startOrderTracking(String orderId) {
+    _orderSubscription?.cancel();
+    final repo = ref.read(ordersRepositoryProvider);
+    _orderSubscription = repo.watchOrder(orderId).listen((snapshot) {
+      if (!mounted) return;
+
+      final data = snapshot.data() as Map<String, dynamic>?;
+      if (data == null) return;
+
+      final status = data['status'] as String?;
+      if (status == 'accepted') {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            context.go('/driver-found/$orderId');
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _orderSubscription?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -47,24 +85,73 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
               const SizedBox(height: 16),
               Builder(
                 builder: (context) {
+                  // Get selected shipment type
+                  final shipmentType = ref.watch(selectedShipmentTypeProvider);
+                  
                   final breakdown = quoteState.distanceKm != null
-                      ? Pricing.compute(quoteState.distanceKm!)
+                      ? Pricing.computeWithShipmentType(
+                          quoteState.distanceKm!,
+                          shipmentType,
+                        )
                       : null;
                   final price = breakdown?.rounded ?? 0;
                   return Column(
                     children: [
                       Text(
                         price > 0
-                            ? '${l10n.currency} ${price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}'  
+                            ? '${l10n.currency} ${price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}'
                             : '--- ${l10n.currency}',
                         style: const TextStyle(
                             fontSize: 32, fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                       if (breakdown != null) ...[
+                        const SizedBox(height: 8),
+                        // Show shipment type
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: shipmentType.color.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: shipmentType.color.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                shipmentType.icon,
+                                size: 16,
+                                color: shipmentType.color,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                shipmentType.arabicLabel,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: shipmentType.color,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (breakdown.multiplier != 1.0) ...[
+                                const SizedBox(width: 6),
+                                Text(
+                                  ShipmentPricingMultipliers.getMultiplierDescription(shipmentType),
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: shipmentType.color,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                         const SizedBox(height: 12),
                         Text(
-                          'تفصيل السعر: أساس ${breakdown.base} + مسافة ${breakdown.distancePart} = ${breakdown.total} → حد أدنى ${PricingConfig.minFare} → تقريب ${price}',
+                          'تفصيل السعر: أساس ${breakdown.base} + مسافة ${breakdown.distancePart} = ${breakdown.total}${breakdown.multiplier != 1.0 ? ' × ${breakdown.multiplier.toStringAsFixed(2)} = ${breakdown.adjustedTotal}' : ''} → حد أدنى ${PricingConfig.minFare} → تقريب $price',
                           style: Theme.of(context).textTheme.bodySmall,
                           textAlign: TextAlign.center,
                         ),
@@ -90,28 +177,92 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: quoteState.isReady
-                    ? () {
-                        final routeState = ref.read(routePickerProvider);
-                        final fromText = AddressUtils.friendly(
-                          userInput: routeState.pickupAddress,
-                          latLng: routeState.pickup,
-                        );
-                        final toText = AddressUtils.friendly(
-                          userInput: routeState.dropoffAddress,
-                          latLng: routeState.dropoff,
-                        );
-                        final breakdown =
-                            Pricing.compute(quoteState.distanceKm!);
-                        final order = Order(
-                          distanceKm: quoteState.distanceKm!,
-                          price: breakdown.rounded.toDouble(),
-                          pickupAddress: fromText,
-                          dropoffAddress: toText,
-                          pickup: routeState.pickup!,
-                          dropoff: routeState.dropoff!,
-                          status: 'pending',
-                        );
-                        context.push('/track', extra: order);
+                    ? () async {
+                        try {
+                          final repo = ref.read(ordersRepositoryProvider);
+                          final routeState = ref.read(routePickerProvider);
+                          final fromText = AddressUtils.friendly(
+                            userInput: routeState.pickupAddress,
+                            latLng: routeState.pickup,
+                          );
+                          final toText = AddressUtils.friendly(
+                            userInput: routeState.dropoffAddress,
+                            latLng: routeState.dropoff,
+                          );
+                          
+                          // Get selected shipment type and compute price with it
+                          final shipmentType = ref.read(selectedShipmentTypeProvider);
+                          final breakdown = Pricing.computeWithShipmentType(
+                            quoteState.distanceKm!,
+                            shipmentType,
+                          );
+
+                          final authState = ref.read(authProvider);
+                          final user = authState.user;
+                          if (user == null) {
+                            throw Exception('User not authenticated');
+                          }
+
+                          final orderId = await repo.createOrder(
+                            ownerId: user.uid,
+                            pickup: {
+                              'lat': routeState.pickup!.latitude,
+                              'lng': routeState.pickup!.longitude,
+                            },
+                            dropoff: {
+                              'lat': routeState.dropoff!.latitude,
+                              'lng': routeState.dropoff!.longitude,
+                            },
+                            pickupAddress: fromText,
+                            dropoffAddress: toText,
+                            distanceKm: quoteState.distanceKm!,
+                            price: breakdown.rounded,
+                          );
+
+                          // Log analytics event
+                          AnalyticsService.instance.logOrderCreated(
+                            orderId: orderId,
+                            priceAmount: breakdown.rounded,
+                            distanceKm: quoteState.distanceKm!,
+                          );
+
+                          if (!mounted) return;
+                          final order = core.Order(
+                            distanceKm: quoteState.distanceKm!,
+                            price: breakdown.rounded.toDouble(),
+                            pickupAddress: fromText,
+                            dropoffAddress: toText,
+                            pickup: LocationPoint(
+                              lat: routeState.pickup!.latitude,
+                              lng: routeState.pickup!.longitude,
+                              label: fromText,
+                            ),
+                            dropoff: LocationPoint(
+                              lat: routeState.dropoff!.latitude,
+                              lng: routeState.dropoff!.longitude,
+                              label: toText,
+                            ),
+                            status: OrderStatus.assigning.toFirestore(),
+                          );
+
+                          _startOrderTracking(orderId);
+                          if (!mounted) return;
+                          context.push('/track', extra: order);
+                        } catch (e, stackTrace) {
+                          // Debug logging for future diagnostics
+                          debugPrint(
+                              '[OrdersClient] Failed to create order: $e');
+                          debugPrint('[OrdersClient] Stack trace: $stackTrace');
+
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'حدث خطأ أثناء إنشاء الطلب. يرجى المحاولة مرة أخرى.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
                       }
                     : null,
                 child: Text(l10n.request_now),

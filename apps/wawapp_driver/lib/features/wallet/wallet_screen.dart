@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 
 class WalletScreen extends StatelessWidget {
   const WalletScreen({super.key});
@@ -32,7 +32,8 @@ class WalletScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       const Text(
                         '0 MRU',
-                        style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 36, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -44,9 +45,12 @@ class WalletScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     children: [
-                      Text(l10n.today_earnings, style: Theme.of(context).textTheme.bodyLarge),
+                      Text(l10n.today_earnings,
+                          style: Theme.of(context).textTheme.bodyLarge),
                       const SizedBox(height: 8),
-                      const Text('0 MRU', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                      const Text('0 MRU',
+                          style: TextStyle(
+                              fontSize: 28, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),

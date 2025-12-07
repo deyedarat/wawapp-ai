@@ -1,0 +1,38 @@
+version: 1
+meta:
+  name: WawApp
+  updated_at: 2025-01-21T00:00:00Z
+flutter:
+  pubspec_paths:
+    - "apps/wawapp_client/pubspec.yaml"
+    - "apps/wawapp_driver/pubspec.yaml"
+targets:
+  flutter:
+    required: "3.35.x"
+    current:  "3.35.5"
+  dart:
+    required: "3.9.x"
+    current:  "3.9.2"
+  node:
+    required: ">=22"
+    current:  "22.20.0"
+  npm:
+    required: ">=10"
+    current:  "11.6.2"
+  java:
+    required: "17"
+  gradle_wrapper:
+    required: "8.7"
+  agp:
+    required: "8.4.2"
+  google_services_plugin:
+    required: "4.4.2"
+android_checks:
+  manifest_api_key: "android/app/src/main/res/values/api_keys.xml"
+  package_id_driver: "com.wawapp.driver"
+  package_id_client: "com.wawapp.client"
+firebase_checks:
+  android_google_services: 
+    - "apps/wawapp_driver/android/app/google-services.json"
+    - "apps/wawapp_client/android/app/google-services.json"
+  app_check_expected: true
