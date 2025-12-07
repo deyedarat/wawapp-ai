@@ -1,4 +1,5 @@
 {
+  "@@locale": "fr",
   "appTitle": "WawApp",
   "pickup": "Lieu de ramassage",
   "dropoff": "Lieu de dépôt",
@@ -6,5 +7,25 @@
   "request_now": "Commander maintenant",
   "track": "Suivre",
   "currency": "MRU",
-  "estimated_price": "Prix estimé"
+  "estimated_price": "Prix estimé",
+  
+  "greeting": "Bonjour",
+  "welcome_back": "Bon retour",
+  "start_new_shipment": "Démarrer une nouvelle expédition",
+  "select_pickup_dropoff": "Sélectionner les lieux de ramassage et dépôt",
+  "begin_shipment": "Commencer l'expédition",
+  "selected_category": "Catégorie sélectionnée",
+  "quick_select_category": "Choisir une catégorie rapidement",
+  "current_shipment": "Expédition en cours",
+  "no_active_shipments": "Aucune expédition en cours actuellement",
+  "track_shipment": "Suivre l'expédition",
+  "past_shipments": "Vos expéditions passées",
+  "view_history": "Voir l'historique",
+  "safe_reliable_delivery": "Nous transportons vos marchandises à Nouakchott en toute sécurité et professionnalisme",
+  "driver_assigned": "Chauffeur assigné",
+  "shipment_status": "Statut de l'expédition",
+  "settings": "Paramètres",
+  "language": "Langue",
+  "profile": "Profil",
+  "about_app": "À propos de l'application"
 }
