@@ -91,6 +91,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       title: 'WawApp Client',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       routerConfig: router,
       builder: (context, child) =>
           BuildInfoBanner(child: child ?? const SizedBox()),

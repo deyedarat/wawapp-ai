@@ -1,57 +1,26 @@
+/// WawApp Theme System (legacy compatibility wrapper)
+/// 
+/// This file maintains backward compatibility with existing code
+/// while delegating to the new comprehensive theme system.
+library;
+
 import 'package:flutter/material.dart';
+import '../../theme/app_theme.dart' as new_theme;
 
+/// Legacy AppTheme class for backward compatibility
+/// Delegates to the new WawAppTheme system
 class AppTheme {
-  static const Color primaryColor = Color(0xFF00A95C); // Rich Green
-  static const Color secondaryColor = Color(0xFFFFD700); // Golden Yellow
-  static const Color errorColor = Color(0xFFD01C1F); // Deep Red
-  static const Color darkSurface = Color(0xFF0B1220); // Dark Background
+  AppTheme._();
+  
+  // Legacy color constants (kept for backward compatibility)
+  static const Color primaryColor = Color(0xFF006AFF); // Updated to match new theme
+  static const Color secondaryColor = Color(0xFFFFC727); // Golden Yellow  
+  static const Color errorColor = Color(0xFFE74C3C); // Deep Red
+  static const Color darkSurface = Color(0xFF1D1D1D); // Dark Background
 
-  static ThemeData get lightTheme {
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryColor,
-        brightness: Brightness.light,
-        secondary: secondaryColor,
-        error: errorColor,
-      ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-        headlineMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-        bodyLarge: TextStyle(fontSize: 16),
-        bodyMedium: TextStyle(fontSize: 14),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
-  }
+  /// Light theme - delegates to new theme system
+  static ThemeData get lightTheme => new_theme.WawAppTheme.light();
 
-  static ThemeData get darkTheme {
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryColor,
-        brightness: Brightness.dark,
-        secondary: secondaryColor,
-        error: errorColor,
-        surface: darkSurface,
-      ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-        headlineMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-        bodyLarge: TextStyle(fontSize: 16),
-        bodyMedium: TextStyle(fontSize: 14),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
-  }
+  /// Dark theme - delegates to new theme system
+  static ThemeData get darkTheme => new_theme.WawAppTheme.dark();
 }
