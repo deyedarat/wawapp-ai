@@ -7,5 +7,25 @@
   "request_now": "اطلب الآن",
   "track": "تتبع",
   "currency": "أوقية",
-  "estimated_price": "السعر المقدر"
+  "estimated_price": "السعر المقدر",
+  
+  "greeting": "أهلاً",
+  "welcome_back": "مرحباً بعودتك",
+  "start_new_shipment": "ابدأ شحنة جديدة",
+  "select_pickup_dropoff": "حدد مواقع الالتقاط والتسليم",
+  "begin_shipment": "بدء شحنة",
+  "selected_category": "الفئة المختارة",
+  "quick_select_category": "اختر فئة بسرعة",
+  "current_shipment": "الشحنة الحالية",
+  "no_active_shipments": "لا توجد شحنات جارية حالياً",
+  "track_shipment": "تتبع الشحنة",
+  "past_shipments": "شحناتك السابقة",
+  "view_history": "عرض السجل",
+  "safe_reliable_delivery": "نقوم بنقل الحمولة داخل نواكشوط بأمان واحتراف",
+  "driver_assigned": "تم تعيين سائق",
+  "shipment_status": "حالة الشحنة",
+  "settings": "الإعدادات",
+  "language": "اللغة",
+  "profile": "الملف الشخصي",
+  "about_app": "حول التطبيق"
 }
