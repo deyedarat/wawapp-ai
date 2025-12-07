@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/models/shipment_type.dart';
 import '../../l10n/app_localizations.dart';
 import 'shipment_type_provider.dart';
-import '../../l10n/app_localizations.dart';
 
 class ShipmentTypeScreen extends ConsumerWidget {
   const ShipmentTypeScreen({super.key});
