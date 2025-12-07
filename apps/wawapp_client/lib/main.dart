@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
@@ -11,6 +13,20 @@ import 'core/location/location_bootstrap.dart';
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'services/analytics_service.dart';
+
+Future<void> _setupDebugAuth() async {
+  try {
+    final auth = FirebaseAuth.instance;
+    if (auth.currentUser == null) {
+      debugPrint('🔧 Setting up debug authentication...');
+      // Sign in anonymously for testing
+      await auth.signInAnonymously();
+      debugPrint('✅ Debug auth complete: ${auth.currentUser?.uid}');
+    }
+  } catch (e) {
+    debugPrint('Debug auth error: $e');
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +39,11 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    
+    // Debug authentication bypass for testing
+    if (kDebugMode) {
+      await _setupDebugAuth();
+    }
   } catch (e) {
     debugPrint('Firebase initialization error: $e');
   }

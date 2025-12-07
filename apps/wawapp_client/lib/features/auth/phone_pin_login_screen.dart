@@ -46,7 +46,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
   Future<void> _loginWithPin() async {
     if (_pin.text.length != 4) return;
-    await ref.read(authProvider.notifier).loginByPin(_pin.text);
+    final phone = _phone.text.trim();
+    await ref.read(authProvider.notifier).loginByPin(_pin.text, phone);
   }
 
   Future<void> _createAccount() async {
