@@ -17,6 +17,8 @@ import '../../core/utils/address_utils.dart';
 import '../../core/utils/eta.dart';
 import '../../core/pricing/pricing.dart';
 import '../../services/analytics_service.dart';
+import '../shipment_type/shipment_type_provider.dart';
+import '../../core/pricing/shipment_pricing.dart';
 
 class QuoteScreen extends ConsumerStatefulWidget {
   const QuoteScreen({super.key});
@@ -83,8 +85,14 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
               const SizedBox(height: 16),
               Builder(
                 builder: (context) {
+                  // Get selected shipment type
+                  final shipmentType = ref.watch(selectedShipmentTypeProvider);
+                  
                   final breakdown = quoteState.distanceKm != null
-                      ? Pricing.compute(quoteState.distanceKm!)
+                      ? Pricing.computeWithShipmentType(
+                          quoteState.distanceKm!,
+                          shipmentType,
+                        )
                       : null;
                   final price = breakdown?.rounded ?? 0;
                   return Column(
@@ -98,9 +106,52 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                         textAlign: TextAlign.center,
                       ),
                       if (breakdown != null) ...[
+                        const SizedBox(height: 8),
+                        // Show shipment type
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: shipmentType.color.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: shipmentType.color.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                shipmentType.icon,
+                                size: 16,
+                                color: shipmentType.color,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                shipmentType.arabicLabel,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: shipmentType.color,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (breakdown.multiplier != 1.0) ...[
+                                const SizedBox(width: 6),
+                                Text(
+                                  ShipmentPricingMultipliers.getMultiplierDescription(shipmentType),
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: shipmentType.color,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                         const SizedBox(height: 12),
                         Text(
-                          'تفصيل السعر: أساس ${breakdown.base} + مسافة ${breakdown.distancePart} = ${breakdown.total} → حد أدنى ${PricingConfig.minFare} → تقريب $price',
+                          'تفصيل السعر: أساس ${breakdown.base} + مسافة ${breakdown.distancePart} = ${breakdown.total}${breakdown.multiplier != 1.0 ? ' × ${breakdown.multiplier.toStringAsFixed(2)} = ${breakdown.adjustedTotal}' : ''} → حد أدنى ${PricingConfig.minFare} → تقريب $price',
                           style: Theme.of(context).textTheme.bodySmall,
                           textAlign: TextAlign.center,
                         ),
@@ -138,8 +189,13 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                             userInput: routeState.dropoffAddress,
                             latLng: routeState.dropoff,
                           );
-                          final breakdown =
-                              Pricing.compute(quoteState.distanceKm!);
+                          
+                          // Get selected shipment type and compute price with it
+                          final shipmentType = ref.read(selectedShipmentTypeProvider);
+                          final breakdown = Pricing.computeWithShipmentType(
+                            quoteState.distanceKm!,
+                            shipmentType,
+                          );
 
                           final authState = ref.read(authProvider);
                           final user = authState.user;
