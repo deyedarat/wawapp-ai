@@ -22,6 +22,7 @@ import '../../features/profile/add_saved_location_screen.dart';
 import 'package:auth_shared/auth_shared.dart';
 import 'package:core_shared/core_shared.dart';
 import 'navigator.dart';
+import '../../features/shipment_type/shipment_type_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -36,6 +37,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
     ],
     routes: [
+      GoRoute(
+        path: '/shipment-type',
+        name: 'shipment-type',
+        builder: (context, state) => const ShipmentTypeScreen(),
+      ),
       GoRoute(
         path: '/',
         name: 'home',
@@ -157,10 +163,16 @@ String? _redirect(GoRouterState s, AuthState st) {
     return '/login';
   }
 
-  // Logged in but on login page
+  // Logged in but on login page - redirect to shipment type selection
   if (loggedIn && s.matchedLocation == '/login') {
-    debugPrint('[Router] Redirecting to / (already authenticated)');
-    return '/';
+    debugPrint('[Router] Redirecting to /shipment-type (authenticated, from login)');
+    return '/shipment-type';
+  }
+
+  // Logged in and at root - redirect to shipment type selection (entry point after auth)
+  if (loggedIn && s.matchedLocation == '/') {
+    debugPrint('[Router] Redirecting to /shipment-type (authenticated, at root)');
+    return '/shipment-type';
   }
 
   return null;
