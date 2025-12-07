@@ -3,12 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/models/shipment_type.dart';
 import 'shipment_type_provider.dart';
+import '../../l10n/app_localizations.dart';
+
+// NEW THEME IMPORTS
+import '../../theme/colors.dart';
+import '../../theme/components.dart';
+import '../../theme/theme_extensions.dart';
 
 class ShipmentTypeScreen extends ConsumerWidget {
   const ShipmentTypeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isRTL = Directionality.of(context) == TextDirection.rtl;
 
@@ -19,77 +26,92 @@ class ShipmentTypeScreen extends ConsumerWidget {
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('اختر نوع الحمولة'),
+          title: Text(l10n.choose_shipment_type),
           centerTitle: true,
           automaticallyImplyLeading: false, // Remove back button since this is the entry screen
         ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            padding: EdgeInsetsDirectional.all(WawAppSpacing.screenPadding),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Title section with icon
-                Card(
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        Icon(
+                // Header Card
+                WawCard(
+                  elevation: WawAppElevation.medium,
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
+                        ),
+                        child: Icon(
                           Icons.local_shipping,
                           size: 40,
-                          color: theme.primaryColor,
+                          color: theme.colorScheme.primary,
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'خدمة توصيل البضائع',
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                      ),
+                      SizedBox(width: WawAppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.cargo_delivery_service,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'اختر نوع الحمولة لنوفر لك أفضل خدمة',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: Colors.grey[600],
-                                ),
+                            ),
+                            SizedBox(height: WawAppSpacing.xxs),
+                            Text(
+                              l10n.cargo_delivery_subtitle,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.textTheme.bodySmall?.color,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                // Grid of shipment type cards
-                Expanded(
-                  child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.85,
-                    ),
-                    itemCount: shipmentTypes.length,
-                    itemBuilder: (context, index) {
-                      final type = shipmentTypes[index];
-                      return _ShipmentTypeCard(
-                        type: type,
-                        onTap: () {
-                          // Save the selected type
-                          ref.read(selectedShipmentTypeProvider.notifier).state = type;
-                          
-                          // Navigate to home/map screen
-                          context.go('/');
-                        },
-                      );
-                    },
+                SizedBox(height: WawAppSpacing.lg),
+                
+                // Grid Title
+                Text(
+                  l10n.select_cargo_type,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
+                SizedBox(height: WawAppSpacing.md),
+                
+                // Grid of shipment type cards
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: WawAppSpacing.sm,
+                    mainAxisSpacing: WawAppSpacing.sm,
+                    childAspectRatio: 0.85,
+                  ),
+                  itemCount: shipmentTypes.length,
+                  itemBuilder: (context, index) {
+                    final type = shipmentTypes[index];
+                    return _ShipmentTypeCard(
+                      type: type,
+                      onTap: () {
+                        // Save the selected type
+                        ref.read(selectedShipmentTypeProvider.notifier).state = type;
+                        
+                        // Navigate to home/map screen
+                        context.go('/');
+                      },
+                    );
+                  },
                 ),
               ],
             ),
@@ -112,59 +134,74 @@ class _ShipmentTypeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isRTL = Directionality.of(context) == TextDirection.rtl;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Card(
-        elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                type.color.withOpacity(0.1),
-                type.color.withOpacity(0.05),
-              ],
-            ),
+      borderRadius: BorderRadius.circular(WawAppSpacing.radiusLg),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(WawAppSpacing.radiusLg),
+          border: Border.all(
+            color: type.color.withOpacity(0.3),
+            width: 2,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Icon with circular background
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: type.color.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    type.icon,
-                    size: 40,
-                    color: type.color,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Arabic label
-                Text(
-                  type.arabicLabel,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    height: 1.3,
-                  ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+          gradient: LinearGradient(
+            begin: AlignmentDirectional.topStart,
+            end: AlignmentDirectional.bottomEnd,
+            colors: [
+              type.color.withOpacity(0.05),
+              type.color.withOpacity(0.15),
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: type.color.withOpacity(0.15),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon with circular background
+              Container(
+                padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
+                decoration: BoxDecoration(
+                  color: type.color.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: type.color.withOpacity(0.3),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  type.icon,
+                  size: 40,
+                  color: type.color,
+                ),
+              ),
+              SizedBox(height: WawAppSpacing.md),
+              
+              // Label
+              Text(
+                isRTL ? type.arabicLabel : type.frenchLabel,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  height: 1.3,
+                  color: type.color,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ),
       ),
