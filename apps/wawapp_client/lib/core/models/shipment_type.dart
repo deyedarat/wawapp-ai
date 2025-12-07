@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Represents the type/category of shipment in a half-truck/pickup cargo delivery
 enum ShipmentType {
@@ -11,7 +12,27 @@ enum ShipmentType {
 }
 
 extension ShipmentTypeExtension on ShipmentType {
-  /// Returns the Arabic label for the shipment type
+  /// Returns the localized label for the shipment type
+  String getLabel(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (this) {
+      case ShipmentType.foodAndPerishables:
+        return l10n.shipmentFoodPerishables;
+      case ShipmentType.furnitureAndHomeSetup:
+        return l10n.shipmentFurniture;
+      case ShipmentType.constructionMaterialsAndHeavyLoad:
+        return l10n.shipmentConstruction;
+      case ShipmentType.electricalAndHomeAppliances:
+        return l10n.shipmentElectrical;
+      case ShipmentType.generalGoodsAndBoxes:
+        return l10n.shipmentGeneralGoods;
+      case ShipmentType.fragileOrSensitiveCargo:
+        return l10n.shipmentFragile;
+    }
+  }
+  
+  /// Returns the Arabic label (deprecated - use getLabel instead)
+  @Deprecated('Use getLabel(context) for proper localization')
   String get arabicLabel {
     switch (this) {
       case ShipmentType.foodAndPerishables:
