@@ -136,72 +136,76 @@ class _ShipmentTypeCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isRTL = Directionality.of(context) == TextDirection.rtl;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(WawAppSpacing.radiusLg),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(WawAppSpacing.radiusLg),
-          border: Border.all(
-            color: type.color.withOpacity(0.3),
-            width: 2,
-          ),
-          gradient: LinearGradient(
-            begin: AlignmentDirectional.topStart,
-            end: AlignmentDirectional.bottomEnd,
-            colors: [
-              type.color.withOpacity(0.05),
-              type.color.withOpacity(0.15),
-            ],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: type.color.withOpacity(0.15),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(WawAppSpacing.radiusLg),
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(WawAppSpacing.radiusLg),
+            border: Border.all(
+              color: type.color.withOpacity(0.3),
+              width: 2,
             ),
-          ],
-        ),
-        child: Padding(
-          padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Icon with circular background
-              Container(
-                padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
-                decoration: BoxDecoration(
-                  color: type.color.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: type.color.withOpacity(0.3),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  type.icon,
-                  size: 40,
-                  color: type.color,
-                ),
-              ),
-              SizedBox(height: WawAppSpacing.md),
-              
-              // Label
-              Text(
-                isRTL ? type.arabicLabel : type.frenchLabel,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  height: 1.3,
-                  color: type.color,
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+            gradient: LinearGradient(
+              begin: AlignmentDirectional.topStart,
+              end: AlignmentDirectional.bottomEnd,
+              colors: [
+                type.color.withOpacity(0.05),
+                type.color.withOpacity(0.15),
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: type.color.withOpacity(0.15),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
             ],
+          ),
+          child: Padding(
+            padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Icon with circular background
+                  Container(
+                    padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: type.color.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: type.color.withOpacity(0.3),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      type.icon,
+                      size: 40,
+                      color: type.color,
+                    ),
+                  ),
+                  SizedBox(height: WawAppSpacing.md),
+                  
+                  // Label
+                  Text(
+                    isRTL ? type.arabicLabel : type.frenchLabel,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      height: 1.3,
+                      color: type.color,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
