@@ -101,11 +101,11 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isRTL = Directionality.of(context) == TextDirection.rtl;
+    final currentDirection = Directionality.of(context);
     final orderAsync = ref.watch(orderTrackingProvider(widget.orderId));
 
     return Directionality(
-      textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+      textDirection: currentDirection,
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.trip_completed),

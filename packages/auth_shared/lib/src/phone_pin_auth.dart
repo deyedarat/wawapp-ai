@@ -136,13 +136,43 @@ class PhonePinAuth {
   }
 
   Future<void> confirmOtp(String smsCode) async {
+    if (kDebugMode) {
+      print('[PhonePinAuth] confirmOtp() called with smsCode=$smsCode');
+    }
+
     final vid = _lastVerificationId;
-    if (vid == null) throw Exception('No verification id');
-    final cred = PhoneAuthProvider.credential(
-      verificationId: vid,
-      smsCode: smsCode,
-    );
-    await _auth.signInWithCredential(cred);
+    if (vid == null) {
+      if (kDebugMode) {
+        print('[PhonePinAuth] ERROR: No verification ID available');
+      }
+      throw Exception('No verification id');
+    }
+
+    if (kDebugMode) {
+      print('[PhonePinAuth] Creating credential with verificationId=$vid');
+    }
+
+    try {
+      final cred = PhoneAuthProvider.credential(
+        verificationId: vid,
+        smsCode: smsCode,
+      );
+
+      if (kDebugMode) {
+        print('[PhonePinAuth] Signing in with credential...');
+      }
+
+      await _auth.signInWithCredential(cred);
+
+      if (kDebugMode) {
+        print('[PhonePinAuth] Sign-in successful!');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('[PhonePinAuth] Sign-in FAILED: ${e.runtimeType} - $e');
+      }
+      rethrow;
+    }
   }
 
   Future<void> setPin(String pin) async {

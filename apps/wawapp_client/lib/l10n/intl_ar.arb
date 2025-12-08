@@ -1,7 +1,6 @@
 {
   "@@locale": "ar",
-  
-  "_comment_app": "=== App General ===",
+
   "appTitle": "واو أب",
   "pickup": "موقع الاستلام",
   "dropoff": "موقع التسليم",
@@ -21,8 +20,7 @@
   "loading": "جاري التحميل...",
   "error": "خطأ",
   "success": "نجح",
-  
-  "_comment_home": "=== Home Screen ===",
+
   "greeting": "أهلاً",
   "welcome_back": "مرحباً بعودتك",
   "start_new_shipment": "ابدأ شحنة جديدة",
@@ -42,8 +40,7 @@
   "language": "اللغة",
   "profile": "الملف الشخصي",
   "about_app": "حول التطبيق",
-  
-  "_comment_quote": "=== Quote Screen ===",
+
   "price_breakdown": "تفاصيل السعر",
   "base_fare": "أجرة الأساس",
   "per_km": "لكل كم",
@@ -65,8 +62,7 @@
   "from": "من",
   "to": "إلى",
   "shipment_details": "تفاصيل الشحنة",
-  
-  "_comment_track": "=== Track Screen ===",
+
   "order_tracking": "تتبع الطلب",
   "shipment_timeline": "الجدول الزمني للشحنة",
   "order_placed": "تم تقديم الطلب",
@@ -87,8 +83,7 @@
   "waiting_for_pickup": "في انتظار الاستلام",
   "on_the_way": "في الطريق",
   "order_details": "تفاصيل الطلب",
-  
-  "_comment_locations": "=== Saved Locations ===",
+
   "saved_locations": "المواقع المحفوظة",
   "add_location": "إضافة موقع",
   "edit_location": "تعديل الموقع",
@@ -105,24 +100,22 @@
   "confirm_delete": "تأكيد الحذف",
   "delete_location_message": "هل أنت متأكد من حذف هذا الموقع؟",
   "no_saved_locations_message": "اضغط على + لإضافة موقع جديد",
-  "delete_location_confirm": "هل أنت متأكد من حذف \"{0}\"؟",
+  "delete_location_confirm": "هل أنت متأكد من حذف \"{name}\"؟",
   "@delete_location_confirm": {
     "placeholders": {
-      "0": {"type": "String"}
+      "name": {"type": "String"}
     }
   },
   "location_deleted_success": "تم حذف الموقع بنجاح",
   "error_delete_location": "خطأ في حذف الموقع",
-  
-  "_comment_history": "=== Order History ===",
+
   "order_history": "سجل الطلبات",
   "no_past_orders": "لا توجد طلبات سابقة",
   "start_your_first_shipment": "ابدأ شحنتك الأولى الآن",
   "completed_on": "اكتمل في",
   "view_details": "عرض التفاصيل",
   "reorder": "إعادة الطلب",
-  
-  "_comment_completed": "=== Trip Completed ===",
+
   "trip_completed": "اكتمل التوصيل",
   "thank_you": "شكراً لاستخدامك واو أب",
   "delivery_successful": "تم التوصيل بنجاح",
@@ -147,8 +140,7 @@
   "rating_thank_you": "شكراً لتقييمك!",
   "error_submit_rating": "تعذّر إرسال التقييم، حاول مرة أخرى",
   "order_not_found": "الطلب غير موجود",
-  
-  "_comment_profile": "=== Profile Screen ===",
+
   "my_profile": "ملفي الشخصي",
   "edit_profile": "تعديل الملف الشخصي",
   "full_name": "الاسم الكامل",
@@ -178,8 +170,7 @@
   "language_ar": "العربية",
   "language_fr": "الفرنسية",
   "language_en": "الإنجليزية",
-  
-  "_comment_settings": "=== Settings Screen ===",
+
   "app_settings": "إعدادات التطبيق",
   "general": "عام",
   "theme": "المظهر",
@@ -212,8 +203,7 @@
   "cargo_delivery_service": "خدمة توصيل البضائع",
   "cargo_delivery_subtitle": "اختر نوع الحمولة لنوفر لك أفضل خدمة",
   "select_cargo_type": "اختر نوع الشحنة",
-  
-  "_comment_notifications": "=== Notifications Screen ===",
+
   "notifications_title": "الإشعارات",
   "no_notifications": "لا توجد إشعارات",
   "mark_all_read": "تحديد الكل كمقروء",
@@ -221,9 +211,8 @@
   "today": "اليوم",
   "yesterday": "أمس",
   "earlier": "سابقاً",
-  "new": "جديد",
-  
-  "_comment_errors": "=== Error Messages ===",
+  "newLabel": "جديد",
+
   "error_occurred": "حدث خطأ",
   "try_again": "حاول مرة أخرى",
   "network_error": "خطأ في الاتصال",

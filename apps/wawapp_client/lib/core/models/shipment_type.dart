@@ -29,6 +29,24 @@ extension ShipmentTypeExtension on ShipmentType {
     }
   }
 
+  /// Returns the French label for the shipment type
+  String get frenchLabel {
+    switch (this) {
+      case ShipmentType.foodAndPerishables:
+        return 'Denrées alimentaires et périssables';
+      case ShipmentType.furnitureAndHomeSetup:
+        return 'Meubles et équipements de maison';
+      case ShipmentType.constructionMaterialsAndHeavyLoad:
+        return 'Matériaux de construction et charges lourdes';
+      case ShipmentType.electricalAndHomeAppliances:
+        return 'Appareils électriques et électroménagers';
+      case ShipmentType.generalGoodsAndBoxes:
+        return 'Marchandises générales et cartons';
+      case ShipmentType.fragileOrSensitiveCargo:
+        return 'Chargement fragile ou sensible';
+    }
+  }
+
   /// Returns the icon data for the shipment type
   IconData get icon {
     switch (this) {

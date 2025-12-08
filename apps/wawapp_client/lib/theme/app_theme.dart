@@ -68,7 +68,7 @@ class WawAppTheme {
       ),
       
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: WawAppElevation.medium,
         color: surface,
         surfaceTintColor: Colors.transparent,
@@ -222,7 +222,7 @@ class WawAppTheme {
       ),
       
       // Dialog Theme
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: surface,
         surfaceTintColor: Colors.transparent,
         elevation: WawAppElevation.veryHigh,
@@ -412,7 +412,7 @@ class WawAppTheme {
       ),
       
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: WawAppElevation.medium,
         color: surface,
         surfaceTintColor: Colors.transparent,
@@ -566,7 +566,7 @@ class WawAppTheme {
       ),
       
       // Dialog Theme
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: surface,
         surfaceTintColor: Colors.transparent,
         elevation: WawAppElevation.veryHigh,

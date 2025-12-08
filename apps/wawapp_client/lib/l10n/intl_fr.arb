@@ -1,7 +1,6 @@
 {
   "@@locale": "fr",
-  
-  "_comment_app": "=== App General ===",
+
   "appTitle": "WawApp",
   "pickup": "Lieu de ramassage",
   "dropoff": "Lieu de dépôt",
@@ -21,8 +20,7 @@
   "loading": "Chargement...",
   "error": "Erreur",
   "success": "Succès",
-  
-  "_comment_home": "=== Home Screen ===",
+
   "greeting": "Bonjour",
   "welcome_back": "Bon retour",
   "start_new_shipment": "Démarrer une nouvelle expédition",
@@ -42,8 +40,7 @@
   "language": "Langue",
   "profile": "Profil",
   "about_app": "À propos de l'application",
-  
-  "_comment_quote": "=== Quote Screen ===",
+
   "price_breakdown": "Détail du prix",
   "base_fare": "Tarif de base",
   "per_km": "par km",
@@ -65,8 +62,7 @@
   "from": "De",
   "to": "À",
   "shipment_details": "Détails de l'expédition",
-  
-  "_comment_track": "=== Track Screen ===",
+
   "order_tracking": "Suivi de la commande",
   "shipment_timeline": "Chronologie de l'expédition",
   "order_placed": "Commande passée",
@@ -87,8 +83,7 @@
   "waiting_for_pickup": "En attente de ramassage",
   "on_the_way": "En route",
   "order_details": "Détails de la commande",
-  
-  "_comment_locations": "=== Saved Locations ===",
+
   "saved_locations": "Lieux enregistrés",
   "add_location": "Ajouter un lieu",
   "edit_location": "Modifier le lieu",
@@ -105,24 +100,22 @@
   "confirm_delete": "Confirmer la suppression",
   "delete_location_message": "Êtes-vous sûr de vouloir supprimer ce lieu?",
   "no_saved_locations_message": "Appuyez sur + pour ajouter un nouveau lieu",
-  "delete_location_confirm": "Êtes-vous sûr de vouloir supprimer \"{0}\"?",
+  "delete_location_confirm": "Êtes-vous sûr de vouloir supprimer \"{name}\"?",
   "@delete_location_confirm": {
     "placeholders": {
-      "0": {"type": "String"}
+      "name": {"type": "String"}
     }
   },
   "location_deleted_success": "Lieu supprimé avec succès",
   "error_delete_location": "Erreur de suppression du lieu",
-  
-  "_comment_history": "=== Order History ===",
+
   "order_history": "Historique des commandes",
   "no_past_orders": "Aucune commande passée",
   "start_your_first_shipment": "Commencez votre première expédition maintenant",
   "completed_on": "Terminé le",
   "view_details": "Voir les détails",
   "reorder": "Recommander",
-  
-  "_comment_completed": "=== Trip Completed ===",
+
   "trip_completed": "Livraison terminée",
   "thank_you": "Merci d'utiliser WawApp",
   "delivery_successful": "Livraison réussie",
@@ -147,8 +140,7 @@
   "rating_thank_you": "Merci pour votre évaluation!",
   "error_submit_rating": "Erreur d'envoi de l'évaluation, réessayez",
   "order_not_found": "Commande introuvable",
-  
-  "_comment_profile": "=== Profile Screen ===",
+
   "my_profile": "Mon profil",
   "edit_profile": "Modifier le profil",
   "full_name": "Nom complet",
@@ -178,8 +170,7 @@
   "language_ar": "Arabe",
   "language_fr": "Français",
   "language_en": "Anglais",
-  
-  "_comment_settings": "=== Settings Screen ===",
+
   "app_settings": "Paramètres de l'application",
   "general": "Général",
   "theme": "Thème",
@@ -212,8 +203,7 @@
   "cargo_delivery_service": "Service de livraison de marchandises",
   "cargo_delivery_subtitle": "Choisissez le type de chargement pour obtenir le meilleur service",
   "select_cargo_type": "Sélectionner le type de chargement",
-  
-  "_comment_notifications": "=== Notifications Screen ===",
+
   "notifications_title": "Notifications",
   "no_notifications": "Aucune notification",
   "mark_all_read": "Tout marquer comme lu",
@@ -221,9 +211,8 @@
   "today": "Aujourd'hui",
   "yesterday": "Hier",
   "earlier": "Plus tôt",
-  "new": "Nouveau",
-  
-  "_comment_errors": "=== Error Messages ===",
+  "newLabel": "Nouveau",
+
   "error_occurred": "Une erreur s'est produite",
   "try_again": "Réessayer",
   "network_error": "Erreur de connexion",

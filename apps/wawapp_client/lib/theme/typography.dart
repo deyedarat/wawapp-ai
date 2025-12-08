@@ -237,6 +237,18 @@ class WawAppTypography {
   static TextStyle withSize(TextStyle style, double size) {
     return style.copyWith(fontSize: size);
   }
+
+  /// Badge text style
+  static TextStyle badge({Color? color}) {
+    return TextStyle(
+      fontSize: 11,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.5,
+      height: 1.2,
+      color: color ?? WawAppColors.textPrimaryLight,
+      fontFamily: fontFamily,
+    );
+  }
 }
 
 /// Typography extension for BuildContext
