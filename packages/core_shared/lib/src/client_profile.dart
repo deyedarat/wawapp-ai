@@ -33,15 +33,19 @@ class ClientProfile {
   /// Create ClientProfile from JSON map
   factory ClientProfile.fromJson(Map<String, dynamic> json) {
     return ClientProfile(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      phone: json['phone'] as String,
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? 'غير محدد',
+      phone: json['phone'] as String? ?? 'غير محدد',
       photoUrl: json['photoUrl'] as String?,
       preferredLanguage: json['preferredLanguage'] as String? ?? 'ar',
       totalTrips: json['totalTrips'] as int? ?? 0,
       averageRating: (json['averageRating'] as num?)?.toDouble() ?? 0.0,
-      createdAt: (json['createdAt'] as Timestamp).toDate(),
-      updatedAt: (json['updatedAt'] as Timestamp).toDate(),
+      createdAt: json['createdAt'] != null 
+          ? (json['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
+      updatedAt: json['updatedAt'] != null
+          ? (json['updatedAt'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 

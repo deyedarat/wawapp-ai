@@ -163,16 +163,10 @@ String? _redirect(GoRouterState s, AuthState st) {
     return '/login';
   }
 
-  // Logged in but on login page - redirect to shipment type selection
+  // Logged in but on login page - redirect to home
   if (loggedIn && s.matchedLocation == '/login') {
-    debugPrint('[Router] Redirecting to /shipment-type (authenticated, from login)');
-    return '/shipment-type';
-  }
-
-  // Logged in and at root - redirect to shipment type selection (entry point after auth)
-  if (loggedIn && s.matchedLocation == '/') {
-    debugPrint('[Router] Redirecting to /shipment-type (authenticated, at root)');
-    return '/shipment-type';
+    debugPrint('[Router] Redirecting to / (authenticated, from login)');
+    return '/';
   }
 
   return null;
