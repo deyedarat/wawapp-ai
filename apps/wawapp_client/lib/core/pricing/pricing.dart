@@ -1,6 +1,17 @@
 import '../models/shipment_type.dart';
 import 'shipment_pricing.dart';
 
+/// Type alias for pricing breakdown result
+typedef PricingBreakdown = ({
+  int total,
+  int base,
+  int distancePart,
+  int rounded,
+  double km,
+  double multiplier,
+  int adjustedTotal,
+});
+
 class PricingConfig {
   static const int base = 60;
   static const int perKm = 20;
@@ -57,7 +68,7 @@ class Pricing {
     final rounded = roundTo5(withMin);
     
     final multiplier = ShipmentPricingMultipliers.getMultiplier(
-      shipmentType ?? ShipmentType.defaultType,
+      shipmentType ?? ShipmentTypeExtension.defaultType,
     );
     
     return (

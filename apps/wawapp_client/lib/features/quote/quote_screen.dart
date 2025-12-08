@@ -18,6 +18,7 @@ import '../../core/utils/eta.dart';
 import '../../core/pricing/pricing.dart';
 import '../../services/analytics_service.dart';
 import '../shipment_type/shipment_type_provider.dart';
+import '../../core/models/shipment_type.dart';
 import '../../core/pricing/shipment_pricing.dart';
 
 // NEW THEME IMPORTS

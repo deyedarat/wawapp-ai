@@ -93,7 +93,7 @@ double applyShipmentTypeMultiplier(
   ShipmentType? type,
 ) {
   // Use generalGoodsAndBoxes as fallback if type is null
-  final shipmentType = type ?? ShipmentType.defaultType;
+  final shipmentType = type ?? ShipmentTypeExtension.defaultType;
   final multiplier = ShipmentPricingMultipliers.getMultiplier(shipmentType);
   return basePrice * multiplier;
 }

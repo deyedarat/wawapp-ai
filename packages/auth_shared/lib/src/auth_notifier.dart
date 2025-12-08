@@ -114,12 +114,41 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> verifyOtp(String code) async {
+    if (kDebugMode) {
+      print('[AuthNotifier] verifyOtp() called with code=$code');
+    }
+
     state = state.copyWith(isLoading: true, error: null);
+
     try {
+      if (kDebugMode) {
+        print('[AuthNotifier] Calling confirmOtp...');
+      }
+
       await _authService.confirmOtp(code);
+
+      if (kDebugMode) {
+        print('[AuthNotifier] confirmOtp successful, updating state');
+      }
+
       state = state.copyWith(isLoading: false, otpFlowActive: false);
-    } on Object catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+    } on Object catch (e, stackTrace) {
+      if (kDebugMode) {
+        print('[AuthNotifier] verifyOtp FAILED: ${e.runtimeType} - $e');
+        print('[AuthNotifier] Stacktrace: $stackTrace');
+      }
+
+      // Extract user-friendly error message
+      String errorMessage = e.toString();
+      if (errorMessage.contains('invalid-verification-code')) {
+        errorMessage = 'Invalid verification code. Please check and try again.';
+      } else if (errorMessage.contains('session-expired')) {
+        errorMessage = 'Verification session expired. Please request a new code.';
+      } else if (errorMessage.contains('No verification id')) {
+        errorMessage = 'No verification session found. Please request a new code.';
+      }
+
+      state = state.copyWith(isLoading: false, error: errorMessage);
     }
   }
 

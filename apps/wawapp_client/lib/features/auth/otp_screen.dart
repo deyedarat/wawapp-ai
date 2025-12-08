@@ -18,6 +18,15 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     super.initState();
     // Clear any pre-filled text
     _codeController.clear();
+
+    // Reset loading state when OTP screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentState = ref.read(authProvider);
+      if (currentState.isLoading) {
+        // Force reset loading state if stuck
+        ref.read(authProvider.notifier).state = currentState.copyWith(isLoading: false);
+      }
+    });
   }
 
   @override
