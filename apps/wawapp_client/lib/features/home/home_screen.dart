@@ -569,6 +569,81 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           
           SizedBox(height: WawAppSpacing.md),
           
+          // Map Section
+          if (routeState.mapsEnabled) ...[
+            SizedBox(height: WawAppSpacing.md),
+            Container(
+              height: 300,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
+                border: Border.all(
+                  color: WawAppColors.borderLight,
+                  width: 1,
+                ),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final polygons = ref.watch(districtPolygonsProvider);
+                  final locale = Localizations.localeOf(context);
+                  final markersAsync =
+                      ref.watch(districtMarkersProvider(locale.languageCode));
+
+                  return markersAsync.when(
+                    data: (districtMarkers) => GoogleMap(
+                      onMapCreated: (GoogleMapController controller) {
+                        _mapController = controller;
+                        if (routeState.pickup != null && routeState.dropoff != null) {
+                          _fitBounds(routeState);
+                        }
+                      },
+                      onCameraMove: _onCameraMove,
+                      onTap: _onMapTap,
+                      initialCameraPosition: routeState.pickup != null
+                          ? CameraPosition(
+                              target: routeState.pickup!,
+                              zoom: 14.0,
+                            )
+                          : _nouakchott,
+                      markers: {
+                        ..._buildMarkers(routeState),
+                        ...districtMarkers
+                      },
+                      polygons: polygons,
+                      myLocationEnabled: _hasLocationPermission,
+                      myLocationButtonEnabled: true,
+                      compassEnabled: true,
+                      mapToolbarEnabled: false,
+                      zoomControlsEnabled: true,
+                    ),
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (error, stack) => GoogleMap(
+                      onMapCreated: (GoogleMapController controller) {
+                        _mapController = controller;
+                      },
+                      onCameraMove: _onCameraMove,
+                      onTap: _onMapTap,
+                      initialCameraPosition: _nouakchott,
+                      markers: _buildMarkers(routeState),
+                      myLocationEnabled: _hasLocationPermission,
+                      myLocationButtonEnabled: true,
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: WawAppSpacing.xs),
+            Text(
+              'اضغط على الخريطة لتحديد الموقع',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: WawAppColors.textSecondaryLight,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+          
+          SizedBox(height: WawAppSpacing.md),
+          
           // Action button
           WawActionButton(
             label: l10n.begin_shipment,
