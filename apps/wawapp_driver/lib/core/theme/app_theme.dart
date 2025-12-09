@@ -10,12 +10,10 @@ class AppTheme {
         primary: DriverAppColors.primaryLight,
         secondary: DriverAppColors.secondaryLight,
         surface: DriverAppColors.surfaceLight,
-        background: DriverAppColors.backgroundLight,
         error: DriverAppColors.errorLight,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: DriverAppColors.textPrimaryLight,
-        onBackground: DriverAppColors.textPrimaryLight,
         onError: Colors.white,
       ),
       scaffoldBackgroundColor: DriverAppColors.backgroundLight,
@@ -48,7 +46,7 @@ class AppTheme {
         foregroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: DriverAppElevation.low,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(DriverAppSpacing.radiusMd),
@@ -116,12 +114,10 @@ class AppTheme {
         primary: DriverAppColors.primaryDark,
         secondary: DriverAppColors.secondaryDark,
         surface: DriverAppColors.surfaceDark,
-        background: DriverAppColors.backgroundDark,
         error: DriverAppColors.errorDark,
         onPrimary: DriverAppColors.backgroundDark,
         onSecondary: DriverAppColors.backgroundDark,
         onSurface: DriverAppColors.textPrimaryDark,
-        onBackground: DriverAppColors.textPrimaryDark,
         onError: DriverAppColors.backgroundDark,
       ),
       scaffoldBackgroundColor: DriverAppColors.backgroundDark,
@@ -154,7 +150,7 @@ class AppTheme {
         foregroundColor: DriverAppColors.textPrimaryDark,
         iconTheme: IconThemeData(color: DriverAppColors.textPrimaryDark),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: DriverAppElevation.low,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(DriverAppSpacing.radiusMd),

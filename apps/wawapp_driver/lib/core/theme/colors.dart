@@ -68,7 +68,6 @@ class DriverAppColors {
 
   // ========== Order Status Colors ==========
   static const Color pendingYellow = Color(0xFFFFA000);
-  static const Color acceptedBlue = Color(0xFF1976D2);
   static const Color enRouteBlue = Color(0xFF0288D1);
   static const Color completedGreen = Color(0xFF388E3C);
   static const Color cancelledRed = Color(0xFFD32F2F);
