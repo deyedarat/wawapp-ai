@@ -98,6 +98,10 @@ class FinancialSummary {
   final int totalDriverEarnings;
   final int totalPlatformCommission;
   final int averageCommissionRate;
+  // Phase 5.5: Wallet & Payout metrics
+  final int totalPayoutsInPeriod;
+  final int totalDriverOutstandingBalance;
+  final int platformWalletBalance;
 
   FinancialSummary({
     required this.totalOrders,
@@ -105,6 +109,9 @@ class FinancialSummary {
     required this.totalDriverEarnings,
     required this.totalPlatformCommission,
     required this.averageCommissionRate,
+    this.totalPayoutsInPeriod = 0,
+    this.totalDriverOutstandingBalance = 0,
+    this.platformWalletBalance = 0,
   });
 
   factory FinancialSummary.fromJson(Map<String, dynamic> json) {
@@ -114,6 +121,10 @@ class FinancialSummary {
       totalDriverEarnings: json['totalDriverEarnings'] as int? ?? 0,
       totalPlatformCommission: json['totalPlatformCommission'] as int? ?? 0,
       averageCommissionRate: json['averageCommissionRate'] as int? ?? 0,
+      // Phase 5.5: Wallet & Payout metrics
+      totalPayoutsInPeriod: json['totalPayoutsInPeriod'] as int? ?? 0,
+      totalDriverOutstandingBalance: json['totalDriverOutstandingBalance'] as int? ?? 0,
+      platformWalletBalance: json['platformWalletBalance'] as int? ?? 0,
     );
   }
 }

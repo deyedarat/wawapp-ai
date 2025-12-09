@@ -21,6 +21,10 @@ interface FinancialReportResponse {
     totalDriverEarnings: number;
     totalPlatformCommission: number;
     averageCommissionRate: number;
+    // Phase 5.5: Wallet & Payout metrics
+    totalPayoutsInPeriod: number;
+    totalDriverOutstandingBalance: number;
+    platformWalletBalance: number;
   };
   dailyBreakdown: DailyFinancial[];
   periodStart: string;
@@ -124,6 +128,44 @@ export const getFinancialReport = functions.https.onCall(
       const dailyBreakdown = Array.from(dailyData.values())
         .sort((a, b) => a.date.localeCompare(b.date));
 
+      // Phase 5.5: Query wallet & payout data
+      
+      // 1. Total payouts in period (completed payouts)
+      const payoutsSnapshot = await db
+        .collection('payouts')
+        .where('completedAt', '>=', startTimestamp)
+        .where('completedAt', '<=', endTimestamp)
+        .where('status', '==', 'completed')
+        .get();
+
+      let totalPayoutsInPeriod = 0;
+      payoutsSnapshot.forEach((doc) => {
+        const payout = doc.data();
+        totalPayoutsInPeriod += payout.amount || 0;
+      });
+
+      // 2. Total driver outstanding balance (current snapshot)
+      const driverWalletsSnapshot = await db
+        .collection('wallets')
+        .where('type', '==', 'driver')
+        .get();
+
+      let totalDriverOutstandingBalance = 0;
+      driverWalletsSnapshot.forEach((doc) => {
+        const wallet = doc.data();
+        totalDriverOutstandingBalance += wallet.balance || 0;
+      });
+
+      // 3. Platform wallet balance (current snapshot)
+      const platformWalletDoc = await db
+        .collection('wallets')
+        .doc('platform_main')
+        .get();
+
+      const platformWalletBalance = platformWalletDoc.exists
+        ? platformWalletDoc.data()!.balance || 0
+        : 0;
+
       // Log action for audit
       await db.collection('admin_actions').add({
         action: 'viewFinancialReport',
@@ -142,6 +184,10 @@ export const getFinancialReport = functions.https.onCall(
           totalDriverEarnings,
           totalPlatformCommission,
           averageCommissionRate,
+          // Phase 5.5: Wallet & Payout metrics
+          totalPayoutsInPeriod,
+          totalDriverOutstandingBalance,
+          platformWalletBalance,
         },
         dailyBreakdown,
         periodStart: startDate,
