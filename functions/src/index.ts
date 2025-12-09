@@ -15,3 +15,10 @@ export { expireStaleOrders } from './expireStaleOrders';
 export { aggregateDriverRating } from './aggregateDriverRating';
 export { notifyOrderEvents } from './notifyOrderEvents';
 export { cleanStaleDriverLocations } from './cleanStaleDriverLocations';
+
+// Export Admin Functions
+export { setAdminRole, removeAdminRole } from './admin/setAdminRole';
+export { getAdminStats } from './admin/getAdminStats';
+export { adminCancelOrder, adminReassignOrder } from './admin/adminOrderActions';
+export { adminBlockDriver, adminUnblockDriver, adminVerifyDriver } from './admin/adminDriverActions';
+export { adminSetClientVerification, adminBlockClient, adminUnblockClient } from './admin/adminClientActions';
