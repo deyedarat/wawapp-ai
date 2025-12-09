@@ -121,6 +121,14 @@ class AdminSidebar extends StatelessWidget {
                   isActive: currentPath.startsWith('/live-ops'),
                   isCollapsed: isCollapsed,
                 ),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.bar_chart,
+                  label: 'التقارير',
+                  path: '/reports',
+                  isActive: currentPath.startsWith('/reports'),
+                  isCollapsed: isCollapsed,
+                ),
                 Divider(
                   height: AdminSpacing.lg,
                   indent: AdminSpacing.md,
