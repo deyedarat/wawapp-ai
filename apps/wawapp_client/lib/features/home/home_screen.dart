@@ -571,7 +571,58 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           
           // Map Section
           if (routeState.mapsEnabled) ...[
-            SizedBox(height: WawAppSpacing.md),
+            // Selection Mode Toggle
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: WawAppSpacing.md,
+                vertical: WawAppSpacing.sm,
+              ),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    routeState.selectingPickup ? Icons.my_location : Icons.location_on,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  ),
+                  SizedBox(width: WawAppSpacing.xs),
+                  Expanded(
+                    child: Text(
+                      routeState.selectingPickup
+                          ? 'اضغط على الخريطة لتحديد موقع الاستلام'
+                          : 'اضغط على الخريطة لتحديد موقع التسليم',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () {
+                      ref.read(routePickerProvider.notifier).toggleSelection();
+                    },
+                    icon: Icon(
+                      Icons.swap_vert,
+                      size: 18,
+                    ),
+                    label: Text(
+                      routeState.selectingPickup ? 'تسليم' : 'استلام',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: WawAppSpacing.sm,
+                        vertical: WawAppSpacing.xxs,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: WawAppSpacing.sm),
             Container(
               height: 300,
               decoration: BoxDecoration(
