@@ -9,6 +9,7 @@ import 'providers/auth_service_provider.dart';
 import '../home/driver_home_screen.dart';
 import '../../services/analytics_service.dart';
 import '../../services/fcm_service.dart';
+import '../../core/theme/colors.dart';
 
 // StreamProvider for driver profile
 final driverProfileProvider =
@@ -98,7 +99,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error, size: 64, color: Colors.red),
+                const Icon(Icons.error, size: 64, color: DriverAppColors.errorLight),
                 const SizedBox(height: 16),
                 Text(
                   'Unable to access driver profile',

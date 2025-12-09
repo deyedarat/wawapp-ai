@@ -108,13 +108,21 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error, size: 64, color: Colors.red),
-                    const SizedBox(height: 16),
-                    Text('خطأ في الموقع: $_error'),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
+                    const Icon(Icons.error, size: 64, color: DriverAppColors.errorLight),
+                    SizedBox(height: DriverAppSpacing.md),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: DriverAppSpacing.lg),
+                      child: Text(
+                        'خطأ في الموقع: $_error',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ),
+                    SizedBox(height: DriverAppSpacing.md),
+                    DriverActionButton(
+                      label: 'إعادة المحاولة',
+                      icon: Icons.refresh,
                       onPressed: _initLocation,
-                      child: const Text('إعادة المحاولة'),
                     ),
                   ],
                 ),

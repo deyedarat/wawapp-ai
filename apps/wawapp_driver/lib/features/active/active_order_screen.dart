@@ -7,6 +7,8 @@ import '../../services/tracking_service.dart';
 import '../../widgets/error_screen.dart';
 import 'providers/active_order_provider.dart';
 import '../auth/providers/auth_service_provider.dart';
+import '../../core/theme/colors.dart';
+import '../../core/theme/components.dart';
 import 'dart:developer' as dev;
 
 class ActiveOrderScreen extends ConsumerStatefulWidget {
@@ -61,7 +63,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: DriverAppColors.accentRed),
             child: const Text('نعم'),
           ),
         ],
@@ -154,15 +156,9 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
           }
 
           if (orders.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.inbox, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text('لا توجد طلبات نشطة'),
-                ],
-              ),
+            return const DriverEmptyState(
+              icon: Icons.inbox,
+              message: 'لا توجد طلبات نشطة',
             );
           }
 
@@ -211,8 +207,8 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
                       ? () => _showCancelDialog(order.id!)
                       : null,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
+                    foregroundColor: DriverAppColors.accentRed,
+                    side: const BorderSide(color: DriverAppColors.accentRed),
                   ),
                   child: _isCancelling
                       ? const SizedBox(
