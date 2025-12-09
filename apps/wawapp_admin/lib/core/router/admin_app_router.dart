@@ -9,6 +9,8 @@ import '../../features/drivers/drivers_screen.dart';
 import '../../features/clients/clients_screen.dart';
 import '../../features/live_ops/live_ops_screen.dart';
 import '../../features/reports/reports_screen.dart';
+import '../../features/finance/wallets/wallets_screen.dart';
+import '../../features/finance/payouts/payouts_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../providers/admin_auth_providers.dart';
 
@@ -76,6 +78,16 @@ final adminRouterProvider = Provider<GoRouter>((ref) {
         path: '/reports',
         name: 'reports',
         builder: (context, state) => const ReportsScreen(),
+      ),
+      GoRoute(
+        path: '/finance/wallets',
+        name: 'wallets',
+        builder: (context, state) => const WalletsScreen(),
+      ),
+      GoRoute(
+        path: '/finance/payouts',
+        name: 'payouts',
+        builder: (context, state) => const PayoutsScreen(),
       ),
       GoRoute(
         path: '/settings',
