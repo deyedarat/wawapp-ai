@@ -7,6 +7,8 @@ import '../../l10n/app_localizations.dart';
 import '../../services/analytics_service.dart';
 import '../../services/driver_status_service.dart';
 import '../auth/providers/auth_service_provider.dart';
+import '../../core/theme/colors.dart';
+import '../../core/theme/components.dart';
 import 'dart:developer' as dev;
 
 class DriverHomeScreen extends ConsumerStatefulWidget {
@@ -158,72 +160,288 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         ),
         body: Column(
           children: [
+            // Status Card
             Container(
-              padding: const EdgeInsets.all(16),
-              color: _isOnline ? Colors.green[100] : Colors.grey[300],
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    _isOnline ? l10n.online : l10n.offline,
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  Switch(
-                    value: _isOnline,
-                    onChanged: _isTogglingStatus ? null : _toggleOnlineStatus,
+              margin: EdgeInsets.all(DriverAppSpacing.md),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: _isOnline
+                      ? [DriverAppColors.onlineGreen, DriverAppColors.onlineGreen.withOpacity(0.8)]
+                      : [DriverAppColors.offlineGrey, DriverAppColors.offlineGrey.withOpacity(0.8)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(DriverAppSpacing.radiusLg),
+                boxShadow: [
+                  BoxShadow(
+                    color: (_isOnline ? DriverAppColors.onlineGreen : DriverAppColors.offlineGrey).withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        l10n.nearby_requests,
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          if (kDebugMode) {
-                            dev.log(
-                                '[Matching] DriverHomeScreen: Navigating to nearby orders screen');
-                          }
-                          context.push('/nearby');
-                        },
-                        child: const Text('عرض الكل'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () => context.push('/earnings'),
-                    icon: const Icon(Icons.account_balance_wallet),
-                    label: const Text('الأرباح'),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 48),
+              child: Padding(
+                padding: EdgeInsets.all(DriverAppSpacing.lg),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _isOnline ? l10n.online : l10n.offline,
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: DriverAppSpacing.xxs),
+                        Text(
+                          _isOnline ? 'جاهز لاستقبال الطلبات' : 'اذهب إلى الإنترنت لاستقبال الطلبات',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.white.withOpacity(0.9),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  ElevatedButton.icon(
-                    onPressed: () => context.push('/history'),
-                    icon: const Icon(Icons.history),
-                    label: const Text('السجل'),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 48),
+                    Switch(
+                      value: _isOnline,
+                      onChanged: _isTogglingStatus ? null : _toggleOnlineStatus,
+                      activeColor: Colors.white,
+                      activeTrackColor: Colors.white.withOpacity(0.5),
+                      inactiveThumbColor: Colors.white,
+                      inactiveTrackColor: Colors.white.withOpacity(0.3),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Expanded(
-              child: Center(
-                child: Text(_isOnline ? 'في انتظار الطلبات...' : 'غير متصل'),
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(DriverAppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Quick Actions
+                    Text(
+                      'الإجراءات السريعة',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: DriverAppSpacing.md),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DriverCard(
+                            onTap: () => context.push('/nearby'),
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(DriverAppSpacing.sm),
+                                  decoration: BoxDecoration(
+                                    color: DriverAppColors.primaryLight.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.local_shipping,
+                                    size: 32,
+                                    color: DriverAppColors.primaryLight,
+                                  ),
+                                ),
+                                SizedBox(height: DriverAppSpacing.sm),
+                                Text(
+                                  'الطلبات القريبة',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: DriverAppSpacing.md),
+                        Expanded(
+                          child: DriverCard(
+                            onTap: () => context.push('/earnings'),
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(DriverAppSpacing.sm),
+                                  decoration: BoxDecoration(
+                                    color: DriverAppColors.secondaryLight.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.account_balance_wallet,
+                                    size: 32,
+                                    color: DriverAppColors.secondaryLight,
+                                  ),
+                                ),
+                                SizedBox(height: DriverAppSpacing.sm),
+                                Text(
+                                  'الأرباح',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: DriverAppSpacing.md),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DriverCard(
+                            onTap: () => context.push('/history'),
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(DriverAppSpacing.sm),
+                                  decoration: BoxDecoration(
+                                    color: DriverAppColors.infoLight.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.history,
+                                    size: 32,
+                                    color: DriverAppColors.infoLight,
+                                  ),
+                                ),
+                                SizedBox(height: DriverAppSpacing.sm),
+                                Text(
+                                  'السجل',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: DriverAppSpacing.md),
+                        Expanded(
+                          child: DriverCard(
+                            onTap: () => context.push('/wallet'),
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(DriverAppSpacing.sm),
+                                  decoration: BoxDecoration(
+                                    color: DriverAppColors.successLight.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.wallet,
+                                    size: 32,
+                                    color: DriverAppColors.successLight,
+                                  ),
+                                ),
+                                SizedBox(height: DriverAppSpacing.sm),
+                                Text(
+                                  'المحفظة',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: DriverAppSpacing.lg),
+                    // Today's Summary
+                    Text(
+                      'ملخص اليوم',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: DriverAppSpacing.md),
+                    DriverCard(
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'عدد الرحلات',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: DriverAppColors.textSecondaryLight,
+                                    ),
+                                  ),
+                                  SizedBox(height: DriverAppSpacing.xxs),
+                                  Text(
+                                    '0',
+                                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: DriverAppColors.primaryLight,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(DriverAppSpacing.sm),
+                                decoration: BoxDecoration(
+                                  color: DriverAppColors.primaryLight.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.local_shipping,
+                                  size: 28,
+                                  color: DriverAppColors.primaryLight,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Divider(height: DriverAppSpacing.lg),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'الأرباح',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: DriverAppColors.textSecondaryLight,
+                                    ),
+                                  ),
+                                  SizedBox(height: DriverAppSpacing.xxs),
+                                  Text(
+                                    '0 MRU',
+                                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: DriverAppColors.successLight,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(DriverAppSpacing.sm),
+                                decoration: BoxDecoration(
+                                  color: DriverAppColors.successLight.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.monetization_on,
+                                  size: 28,
+                                  color: DriverAppColors.successLight,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
+
           ],
         ),
       ),

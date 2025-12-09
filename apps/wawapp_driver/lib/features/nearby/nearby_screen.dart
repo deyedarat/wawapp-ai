@@ -8,6 +8,8 @@ import 'package:geolocator/geolocator.dart';
 import '../../../services/location_service.dart';
 import '../../../services/orders_service.dart';
 import '../../../widgets/error_screen.dart';
+import '../../core/theme/colors.dart';
+import '../../core/theme/components.dart';
 import 'providers/nearby_orders_provider.dart';
 import 'dart:math';
 import 'dart:developer' as dev;
@@ -153,90 +155,134 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
           dev.log('[Matching] NearbyScreen: Displaying ${orders.length} orders');
         }
         if (orders.isEmpty) {
-          return const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.inbox, size: 64, color: Colors.grey),
-                SizedBox(height: 16),
-                Text('لا توجد طلبات قريبة'),
-              ],
-            ),
+          return const DriverEmptyState(
+            icon: Icons.inbox,
+            message: 'لا توجد طلبات قريبة في الوقت الحالي',
           );
         }
         return ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: orders.length,
-                        itemBuilder: (context, index) {
-                          final order = orders[index];
-                          final distance = _calculateDistance(
-                            _currentPosition!.latitude,
-                            _currentPosition!.longitude,
-                            order.pickup.lat,
-                            order.pickup.lng,
-                          );
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(Icons.local_shipping, size: 40),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          'طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'المسافة: ${distance.toStringAsFixed(1)} كم',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text('من: ${order.pickup.label}',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis),
-                                        Text('إلى: ${order.dropoff.label}',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text('${order.price} MRU',
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                      const SizedBox(height: 8),
-                                      ElevatedButton(
-                                        onPressed: order.id != null ? () => _acceptOrder(order.id!) : null,
-                                        style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 8),
-                                        ),
-                                        child: const Text('قبول'),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+          padding: EdgeInsets.all(DriverAppSpacing.md),
+          itemCount: orders.length,
+          itemBuilder: (context, index) {
+            final order = orders[index];
+            final distance = _calculateDistance(
+              _currentPosition!.latitude,
+              _currentPosition!.longitude,
+              order.pickup.lat,
+              order.pickup.lng,
+            );
+            return DriverCard(
+              padding: EdgeInsets.all(DriverAppSpacing.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(DriverAppSpacing.sm),
+                            decoration: BoxDecoration(
+                              color: DriverAppColors.primaryLight.withOpacity(0.1),
+                              shape: BoxShape.circle,
                             ),
-                          );
-                        },
-                      );
+                            child: const Icon(
+                              Icons.local_shipping,
+                              size: 24,
+                              color: DriverAppColors.primaryLight,
+                            ),
+                          ),
+                          SizedBox(width: DriverAppSpacing.sm),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                'المسافة: ${distance.toStringAsFixed(1)} كم',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: DriverAppColors.textSecondaryLight,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: DriverAppSpacing.sm,
+                          vertical: DriverAppSpacing.xxs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: DriverAppColors.successLight.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(DriverAppSpacing.radiusFull),
+                        ),
+                        child: Text(
+                          '${order.price} MRU',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: DriverAppColors.successLight,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: DriverAppSpacing.md),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        size: 16,
+                        color: DriverAppColors.successLight,
+                      ),
+                      SizedBox(width: DriverAppSpacing.xs),
+                      Expanded(
+                        child: Text(
+                          order.pickup.label,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: DriverAppSpacing.xs),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.flag,
+                        size: 16,
+                        color: DriverAppColors.errorLight,
+                      ),
+                      SizedBox(width: DriverAppSpacing.xs),
+                      Expanded(
+                        child: Text(
+                          order.dropoff.label,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: DriverAppSpacing.md),
+                  DriverActionButton(
+                    label: 'قبول الطلب',
+                    icon: Icons.check_circle,
+                    onPressed: order.id != null ? () => _acceptOrder(order.id!) : null,
+                    isFullWidth: true,
+                  ),
+                ],
+              ),
+            );
+          },
+        );
       },
     );
   }
