@@ -79,22 +79,40 @@ class DriverStatusService {
   /// Returns a stream that emits true when online, false when offline
   Stream<bool> watchOnlineStatus(String driverId) {
     if (driverId.isEmpty) {
+      debugPrint('[DriverStatus] ❌ watchOnlineStatus: driverId is empty');
       return Stream.value(false);
     }
+
+    debugPrint('[DriverStatus] 👀 Watching online status for driver: $driverId');
+    debugPrint('[DriverStatus] 📍 Firestore path: drivers/$driverId');
 
     return _firestore
         .collection('drivers')
         .doc(driverId)
         .snapshots()
         .map((snapshot) {
-      if (!snapshot.exists) return false;
+      if (!snapshot.exists) {
+        debugPrint('[DriverStatus] ⚠️ Driver document does not exist: drivers/$driverId');
+        debugPrint('[DriverStatus] 💡 Create document by going ONLINE in the app');
+        return false;
+      }
 
       final data = snapshot.data();
-      if (data == null) return false;
+      if (data == null) {
+        debugPrint('[DriverStatus] ⚠️ Driver document exists but has null data');
+        return false;
+      }
 
-      return data['isOnline'] as bool? ?? false;
+      final isOnline = data['isOnline'] as bool? ?? false;
+      debugPrint('[DriverStatus] 📡 Driver status changed: ${isOnline ? "🟢 ONLINE" : "🔴 OFFLINE"}');
+
+      if (!isOnline) {
+        debugPrint('[DriverStatus] ℹ️ Driver is OFFLINE - nearby orders will be empty');
+      }
+
+      return isOnline;
     }).handleError((error) {
-      debugPrint('[DriverStatus] Error watching online status: $error');
+      debugPrint('[DriverStatus] ❌ Error watching online status: $error');
       return false;
     });
   }
