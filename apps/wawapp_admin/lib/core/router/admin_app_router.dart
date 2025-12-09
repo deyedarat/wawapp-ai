@@ -7,6 +7,7 @@ import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/orders/orders_screen.dart';
 import '../../features/drivers/drivers_screen.dart';
 import '../../features/clients/clients_screen.dart';
+import '../../features/live_ops/live_ops_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../providers/admin_auth_providers.dart';
 
@@ -64,6 +65,11 @@ final adminRouterProvider = Provider<GoRouter>((ref) {
         path: '/clients',
         name: 'clients',
         builder: (context, state) => const ClientsScreen(),
+      ),
+      GoRoute(
+        path: '/live-ops',
+        name: 'live-ops',
+        builder: (context, state) => const LiveOpsScreen(),
       ),
       GoRoute(
         path: '/settings',

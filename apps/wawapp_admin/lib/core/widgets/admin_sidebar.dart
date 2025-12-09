@@ -115,6 +115,19 @@ class AdminSidebar extends StatelessWidget {
                 ),
                 _buildNavItem(
                   context: context,
+                  icon: Icons.map,
+                  label: 'المراقبة الحية',
+                  path: '/live-ops',
+                  isActive: currentPath.startsWith('/live-ops'),
+                  isCollapsed: isCollapsed,
+                ),
+                Divider(
+                  height: AdminSpacing.lg,
+                  indent: AdminSpacing.md,
+                  endIndent: AdminSpacing.md,
+                ),
+                _buildNavItem(
+                  context: context,
                   icon: Icons.settings,
                   label: 'الإعدادات',
                   path: '/settings',
