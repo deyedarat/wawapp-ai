@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:core_shared/core_shared.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:geolocator/geolocator.dart';
-import '../../../services/location_service.dart';
-import '../../../services/orders_service.dart';
-import '../../../widgets/error_screen.dart';
+import '../../services/location_service.dart';
+import '../../services/orders_service.dart';
+import '../../widgets/error_screen.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/components.dart';
 import 'providers/nearby_orders_provider.dart';
@@ -42,14 +42,18 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
         dev.log(
             '[Matching] NearbyScreen: Location obtained: lat=${_currentPosition!.latitude.toStringAsFixed(4)}, lng=${_currentPosition!.longitude.toStringAsFixed(4)}');
       }
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     } on Object catch (e) {
       if (kDebugMode) {
         dev.log('[Matching] NearbyScreen: Location error: $e');
       }
-      setState(() {
-        _error = e.toString();
-      });
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+        });
+      }
     }
   }
 
@@ -137,6 +141,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   Widget _buildOrdersList() {
     if (kDebugMode) {
       dev.log('[Matching] NearbyScreen: Subscribing to nearby orders stream');
+      dev.log('[Matching] NearbyScreen: Current position: lat=${_currentPosition!.latitude.toStringAsFixed(6)}, lng=${_currentPosition!.longitude.toStringAsFixed(6)}');
     }
 
     final ordersAsync = ref.watch(nearbyOrdersProvider(_currentPosition!));
@@ -144,13 +149,14 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     return ordersAsync.when(
       loading: () {
         if (kDebugMode) {
-          dev.log('[Matching] NearbyScreen: Waiting for stream data');
+          dev.log('[Matching] NearbyScreen: ⏳ Waiting for stream data...');
         }
         return const Center(child: CircularProgressIndicator());
       },
       error: (error, stack) {
         if (kDebugMode) {
-          dev.log('[Matching] NearbyScreen: Stream error: $error');
+          dev.log('[Matching] NearbyScreen: ❌ Stream error: $error');
+          dev.log('[Matching] NearbyScreen: Stack trace: $stack');
         }
         final appError = AppError.from(error);
         return ErrorScreen(
@@ -160,7 +166,19 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       },
       data: (orders) {
         if (kDebugMode) {
-          dev.log('[Matching] NearbyScreen: Displaying ${orders.length} orders');
+          dev.log('[Matching] NearbyScreen: ✅ Stream returned ${orders.length} orders');
+          if (orders.isEmpty) {
+            dev.log('[Matching] NearbyScreen: ℹ️ Possible reasons for empty list:');
+            dev.log('[Matching] NearbyScreen:   1. Driver is OFFLINE - check driver status');
+            dev.log('[Matching] NearbyScreen:   2. No orders in Firestore with status="matching" and assignedDriverId=null');
+            dev.log('[Matching] NearbyScreen:   3. All orders are >8km away from driver');
+            dev.log('[Matching] NearbyScreen:   4. Firestore composite index not created');
+          } else {
+            for (var i = 0; i < orders.length; i++) {
+              final order = orders[i];
+              dev.log('[Matching] NearbyScreen: Order #${i + 1}: id=${order.id}, price=${order.price}MRU, pickup=${order.pickup.label}');
+            }
+          }
         }
         if (orders.isEmpty) {
           return const DriverEmptyState(

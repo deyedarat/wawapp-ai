@@ -21,7 +21,7 @@ class OrdersService {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       if (kDebugMode) {
-        dev.log('[Matching] getNearbyOrders: No authenticated user');
+        dev.log('[Matching] ❌ getNearbyOrders: No authenticated user');
       }
       return Stream.value([]);
     }
@@ -29,11 +29,15 @@ class OrdersService {
     final statusValue = OrderStatus.assigning.toFirestore();
 
     if (kDebugMode) {
-      dev.log('[Matching] getNearbyOrders called');
-      dev.log(
-          '[Matching] Driver position: lat=${driverPosition.latitude.toStringAsFixed(4)}, lng=${driverPosition.longitude.toStringAsFixed(4)}');
-      dev.log(
-          '[Matching] Query filters: status=$statusValue, assignedDriverId=null, maxDistance=8.0km');
+      dev.log('[Matching] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      dev.log('[Matching] 🔍 getNearbyOrders called');
+      dev.log('[Matching] 📍 Driver ID: ${user.uid}');
+      dev.log('[Matching] 📍 Driver position: lat=${driverPosition.latitude.toStringAsFixed(6)}, lng=${driverPosition.longitude.toStringAsFixed(6)}');
+      dev.log('[Matching] 🔎 Query filters:');
+      dev.log('[Matching]    - status = "$statusValue" (enum: OrderStatus.matching)');
+      dev.log('[Matching]    - assignedDriverId = null');
+      dev.log('[Matching]    - maxDistance = 8.0km');
+      dev.log('[Matching] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     }
 
     // Check if driver is online before querying orders
@@ -42,13 +46,15 @@ class OrdersService {
         .asyncExpand((isOnline) {
       if (!isOnline) {
         if (kDebugMode) {
-          dev.log('[Matching] Driver is OFFLINE - returning empty stream');
+          dev.log('[Matching] ⚠️ Driver is OFFLINE - returning empty stream');
+          dev.log('[Matching] 💡 Solution: Driver must go ONLINE to see orders');
+          dev.log('[Matching] 📝 Check: drivers/${user.uid} document has isOnline=true');
         }
         return Stream.value(<Order>[]);
       }
 
       if (kDebugMode) {
-        dev.log('[Matching] Driver is ONLINE - querying orders');
+        dev.log('[Matching] ✅ Driver is ONLINE - proceeding to query Firestore');
       }
 
       // REQUIRED COMPOSITE INDEX: orders [status ASC, assignedDriverId ASC, createdAt DESC]
@@ -62,16 +68,26 @@ class OrdersService {
           .snapshots()
           .map((snapshot) {
         if (kDebugMode) {
-          dev.log(
-              '[Matching] Snapshot received: ${snapshot.docs.length} documents');
+          dev.log('[Matching] 📦 Firestore snapshot received: ${snapshot.docs.length} documents');
         }
 
         if (snapshot.docs.isEmpty) {
           if (kDebugMode) {
-            dev.log(
-                '[Matching] No orders matching filters: status=$statusValue, assignedDriverId=null');
+            dev.log('[Matching] ❌ No orders found in Firestore matching filters');
+            dev.log('[Matching] 📋 Filters used:');
+            dev.log('[Matching]    - status = "$statusValue"');
+            dev.log('[Matching]    - assignedDriverId = null');
+            dev.log('[Matching] 💡 Possible reasons:');
+            dev.log('[Matching]    1. No orders created by clients yet');
+            dev.log('[Matching]    2. All orders have status != "$statusValue"');
+            dev.log('[Matching]    3. All orders already have assignedDriverId set');
+            dev.log('[Matching] 🔧 To debug: Check Firebase Console > Firestore > orders collection');
           }
           return <Order>[];
+        }
+
+        if (kDebugMode) {
+          dev.log('[Matching] ✅ Found ${snapshot.docs.length} raw documents, filtering by distance...');
         }
 
         final orders = <Order>[];
@@ -101,20 +117,23 @@ class OrdersService {
               final createdAt = data['createdAt'];
               final pickupLat = data['pickup']?['lat'];
               final pickupLng = data['pickup']?['lng'];
-              dev.log(
-                  '[Matching] Order ${order.id}: status=${order.status}, assignedDriverId=$assignedDriverId, createdAt=$createdAt, pickup=($pickupLat,$pickupLng), distance=${distance.toStringAsFixed(2)}km, price=${order.price}');
+              dev.log('[Matching] 📄 Order ${doc.id}:');
+              dev.log('[Matching]    - status: ${order.status}');
+              dev.log('[Matching]    - assignedDriverId: $assignedDriverId');
+              dev.log('[Matching]    - createdAt: $createdAt');
+              dev.log('[Matching]    - pickup: ($pickupLat, $pickupLng)');
+              dev.log('[Matching]    - distance: ${distance.toStringAsFixed(2)} km');
+              dev.log('[Matching]    - price: ${order.price} MRU');
             }
 
             if (distance <= 8.0) {
               orders.add(order);
               if (kDebugMode) {
-                dev.log(
-                    '[Matching] ✓ Order ${order.id} within range (${distance.toStringAsFixed(1)}km)');
+                dev.log('[Matching]    ✅ INCLUDED (within 8km radius)');
               }
             } else {
               if (kDebugMode) {
-                dev.log(
-                    '[Matching] ✗ Order ${order.id} too far (${distance.toStringAsFixed(1)}km)');
+                dev.log('[Matching]    ❌ EXCLUDED (too far: ${distance.toStringAsFixed(1)}km > 8km)');
               }
             }
           } on Object catch (e) {
@@ -141,18 +160,24 @@ class OrdersService {
         });
 
         if (kDebugMode) {
-          dev.log('[Matching] Final result: ${orders.length} matching orders');
-          for (var i = 0; i < orders.length; i++) {
-            final o = orders[i];
-            final dist = _calculateDistance(
-              driverPosition.latitude,
-              driverPosition.longitude,
-              o.pickup.lat,
-              o.pickup.lng,
-            );
-            dev.log(
-                '[Matching] #${i + 1}: ${o.id} (${dist.toStringAsFixed(1)}km, ${o.price}MRU)');
+          dev.log('[Matching] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          dev.log('[Matching] 📊 FINAL RESULT: ${orders.length} matching orders');
+          if (orders.isEmpty) {
+            dev.log('[Matching] ⚠️ No orders to display to driver');
+          } else {
+            dev.log('[Matching] 📋 Orders sorted by distance:');
+            for (var i = 0; i < orders.length; i++) {
+              final o = orders[i];
+              final dist = _calculateDistance(
+                driverPosition.latitude,
+                driverPosition.longitude,
+                o.pickup.lat,
+                o.pickup.lng,
+              );
+              dev.log('[Matching]    ${i + 1}. ${o.id} - ${dist.toStringAsFixed(1)}km - ${o.price}MRU');
+            }
           }
+          dev.log('[Matching] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         }
 
         return orders;
