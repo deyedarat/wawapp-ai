@@ -166,45 +166,44 @@ class _ShipmentTypeCard extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Icon with circular background
-                  Container(
-                    padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: type.color.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: type.color.withOpacity(0.3),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      type.icon,
-                      size: 40,
-                      color: type.color,
-                    ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Icon with circular background
+                Container(
+                  padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
+                  decoration: BoxDecoration(
+                    color: type.color.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: type.color.withOpacity(0.3),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                    ],
                   ),
-                  SizedBox(height: WawAppSpacing.md),
-                  
-                  // Label
-                  Text(
-                    isRTL ? type.arabicLabel : type.frenchLabel,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      height: 1.3,
-                      color: type.color,
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
+                  child: Icon(
+                    type.icon,
+                    size: 40,
+                    color: type.color,
                   ),
-                ],
-              ),
+                ),
+                SizedBox(height: WawAppSpacing.md),
+
+                // Label
+                Text(
+                  isRTL ? type.arabicLabel : type.frenchLabel,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    height: 1.3,
+                    color: type.color,
+                  ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
         ),
