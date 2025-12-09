@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auth_shared/auth_shared.dart';
 import 'create_pin_screen.dart';
 import 'otp_screen.dart';
 import 'phone_pin_login_screen.dart';

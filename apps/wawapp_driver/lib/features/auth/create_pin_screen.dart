@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auth_shared/auth_shared.dart';
 import 'providers/auth_service_provider.dart';
 
 class CreatePinScreen extends ConsumerStatefulWidget {

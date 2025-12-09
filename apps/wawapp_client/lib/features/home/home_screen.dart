@@ -36,6 +36,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String? _errorMessage;
   final TextEditingController _pickupController = TextEditingController();
   final TextEditingController _dropoffController = TextEditingController();
+  bool _hasFittedBounds = false; // Track if we've already fitted bounds
 
   @override
   void initState() {
@@ -239,19 +240,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final theme = Theme.of(context);
     final shipmentColors = context.shipmentTypeColors;
 
-    // Update text controllers when state changes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_pickupController.text != routeState.pickupAddress) {
-        _pickupController.text = routeState.pickupAddress;
-      }
-      if (_dropoffController.text != routeState.dropoffAddress) {
-        _dropoffController.text = routeState.dropoffAddress;
-      }
-      // Fit bounds when both locations are set
-      if (routeState.pickup != null && routeState.dropoff != null) {
-        _fitBounds(routeState);
-      }
-    });
+    // Update text controllers when state changes (without triggering rebuilds)
+    if (_pickupController.text != routeState.pickupAddress) {
+      _pickupController.text = routeState.pickupAddress;
+    }
+    if (_dropoffController.text != routeState.dropoffAddress) {
+      _dropoffController.text = routeState.dropoffAddress;
+    }
+
+    // Fit bounds ONCE when both locations are set and map is ready
+    if (routeState.pickup != null &&
+        routeState.dropoff != null &&
+        _mapController != null &&
+        !_hasFittedBounds) {
+      _hasFittedBounds = true;
+      // Schedule this after the current frame to avoid triggering rebuild
+      Future.microtask(() {
+        if (mounted) {
+          _fitBounds(routeState);
+        }
+      });
+    }
+
+    // Reset flag when locations change
+    if (routeState.pickup == null || routeState.dropoff == null) {
+      _hasFittedBounds = false;
+    }
 
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
@@ -644,9 +658,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     data: (districtMarkers) => GoogleMap(
                       onMapCreated: (GoogleMapController controller) {
                         _mapController = controller;
-                        if (routeState.pickup != null && routeState.dropoff != null) {
-                          _fitBounds(routeState);
-                        }
+                        dev.log('Map controller initialized', name: 'WAWAPP_HOME');
+                        // Fit bounds will be handled by the build logic when ready
                       },
                       onCameraMove: _onCameraMove,
                       onTap: _onMapTap,
