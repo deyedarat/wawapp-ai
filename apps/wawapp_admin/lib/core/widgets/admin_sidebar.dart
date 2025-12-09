@@ -129,6 +129,22 @@ class AdminSidebar extends StatelessWidget {
                   isActive: currentPath.startsWith('/reports'),
                   isCollapsed: isCollapsed,
                 ),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.account_balance_wallet,
+                  label: 'المحافظ',
+                  path: '/finance/wallets',
+                  isActive: currentPath.startsWith('/finance/wallets'),
+                  isCollapsed: isCollapsed,
+                ),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.payment,
+                  label: 'الدفعات',
+                  path: '/finance/payouts',
+                  isActive: currentPath.startsWith('/finance/payouts'),
+                  isCollapsed: isCollapsed,
+                ),
                 Divider(
                   height: AdminSpacing.lg,
                   indent: AdminSpacing.md,

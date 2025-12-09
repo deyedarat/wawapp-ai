@@ -27,3 +27,7 @@ export { adminSetClientVerification, adminBlockClient, adminUnblockClient } from
 export { getReportsOverview } from './reports/getReportsOverview';
 export { getFinancialReport } from './reports/getFinancialReport';
 export { getDriverPerformanceReport } from './reports/getDriverPerformanceReport';
+
+// Export Finance Functions (Wallet & Payout System)
+export { onOrderCompleted } from './finance/orderSettlement';
+export { adminCreatePayoutRequest, adminUpdatePayoutStatus } from './finance/adminPayouts';

@@ -166,5 +166,45 @@ service cloud.firestore {
       // No write access through client SDK (admins are managed via Cloud Functions)
       allow write: if false;
     }
+
+    // Wallets collection (Phase 5)
+    match /wallets/{walletId} {
+      // Admins can read all wallets
+      allow read: if isAdmin();
+      
+      // Drivers can read their own wallet
+      allow read: if isSignedIn() && 
+                     request.auth.uid == walletId &&
+                     resource.data.type == 'driver';
+      
+      // Only Cloud Functions can write (no direct client writes)
+      allow write: if false;
+    }
+
+    // Transactions collection (Phase 5)
+    match /transactions/{transactionId} {
+      // Admins can read all transactions
+      allow read: if isAdmin();
+      
+      // Drivers can read their own transactions
+      allow read: if isSignedIn() && 
+                     request.auth.uid == resource.data.walletId;
+      
+      // Only Cloud Functions can write
+      allow write: if false;
+    }
+
+    // Payouts collection (Phase 5)
+    match /payouts/{payoutId} {
+      // Admins can read all payouts
+      allow read: if isAdmin();
+      
+      // Drivers can read their own payouts
+      allow read: if isSignedIn() && 
+                     request.auth.uid == resource.data.driverId;
+      
+      // Only Cloud Functions can write
+      allow write: if false;
+    }
   }
 }
