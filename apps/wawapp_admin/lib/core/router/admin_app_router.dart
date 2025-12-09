@@ -2,16 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/admin_login_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/orders/orders_screen.dart';
 import '../../features/drivers/drivers_screen.dart';
 import '../../features/clients/clients_screen.dart';
 import '../../features/settings/settings_screen.dart';
+import '../../providers/admin_auth_providers.dart';
 
 final adminRouterProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authStateProvider);
+
   return GoRouter(
     initialLocation: '/',
+    redirect: (context, state) {
+      final isAuthLoading = authState.isLoading;
+      final isAuthenticated = authState.maybeWhen(
+        data: (user) => user != null,
+        orElse: () => false,
+      );
+
+      final isLoginRoute = state.matchedLocation == '/login';
+
+      // Show loading while checking auth state
+      if (isAuthLoading) return null;
+
+      // Redirect to login if not authenticated
+      if (!isAuthenticated && !isLoginRoute) {
+        return '/login';
+      }
+
+      // Redirect to dashboard if authenticated and on login page
+      if (isAuthenticated && isLoginRoute) {
+        return '/';
+      }
+
+      return null;
+    },
     routes: [
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const AdminLoginScreen(),
+      ),
       GoRoute(
         path: '/',
         name: 'dashboard',

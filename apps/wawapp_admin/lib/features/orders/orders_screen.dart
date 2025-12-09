@@ -1,85 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
+import 'package:intl/intl.dart';
 import '../../core/theme/colors.dart';
 import '../../core/widgets/admin_scaffold.dart';
 import '../../core/widgets/status_badge.dart';
+import '../../providers/admin_data_providers.dart';
+import '../../services/admin_orders_service.dart';
 
-class OrdersScreen extends StatefulWidget {
+class OrdersScreen extends ConsumerStatefulWidget {
   const OrdersScreen({super.key});
 
   @override
-  State<OrdersScreen> createState() => _OrdersScreenState();
+  ConsumerState<OrdersScreen> createState() => _OrdersScreenState();
 }
 
-class _OrdersScreenState extends State<OrdersScreen> {
-  String _selectedStatus = 'الكل';
-  final List<String> _statusFilters = [
-    'الكل',
-    'قيد التعيين',
-    'مقبول',
-    'في الطريق',
-    'مكتمل',
-    'ملغى'
-  ];
-
-  // Dummy data for demonstration
-  List<Map<String, dynamic>> get _orders => [
-    {
-      'id': 'ORD-12345',
-      'client': 'أحمد ولد محمد',
-      'driver': 'عبدالله ولد أحمد',
-      'status': 'في الطريق',
-      'pickup': 'نواكشوط - كرفور',
-      'dropoff': 'نواكشوط - تفرغ زينه',
-      'price': '500 MRU',
-      'createdAt': 'منذ 15 دقيقة',
-    },
-    {
-      'id': 'ORD-12344',
-      'client': 'فاطمة منت علي',
-      'driver': 'محمد ولد سيدي',
-      'status': 'مقبول',
-      'pickup': 'نواكشوط - تفرغ زينه',
-      'dropoff': 'نواكشوط - عرفات',
-      'price': '450 MRU',
-      'createdAt': 'منذ 30 دقيقة',
-    },
-    {
-      'id': 'ORD-12343',
-      'client': 'علي ولد محمود',
-      'driver': 'غير معيّن',
-      'status': 'قيد التعيين',
-      'pickup': 'نواكشوط - السوق الكبير',
-      'dropoff': 'نواكشوط - الميناء',
-      'price': '800 MRU',
-      'createdAt': 'منذ ساعة',
-    },
-    {
-      'id': 'ORD-12342',
-      'client': 'مريم منت أحمد',
-      'driver': 'حسن ولد عمر',
-      'status': 'مكتمل',
-      'pickup': 'نواكشوط - المطار',
-      'dropoff': 'نواكشوط - الرئاسة',
-      'price': '1200 MRU',
-      'createdAt': 'منذ ساعتين',
-    },
-  ];
-
-  List<Map<String, dynamic>> get _filteredOrders {
-    if (_selectedStatus == 'الكل') return _orders;
-    return _orders.where((order) => order['status'] == _selectedStatus).toList();
-  }
+class _OrdersScreenState extends ConsumerState<OrdersScreen> {
+  String? _selectedStatusFilter;
+  
+  final Map<String, String> _statusFilterMap = {
+    'الكل': '',
+    'قيد التعيين': 'assigning',
+    'مقبول': 'accepted',
+    'في الطريق': 'on_route',
+    'مكتمل': 'completed',
+    'ملغى': 'cancelled',
+  };
 
   @override
   Widget build(BuildContext context) {
+    final ordersAsync = ref.watch(
+      ordersStreamProvider(_selectedStatusFilter).stream,
+    );
+
     return AdminScaffold(
       title: 'إدارة الطلبات',
       actions: [
         SizedBox(width: AdminSpacing.md),
         ElevatedButton.icon(
           onPressed: () {
-            // TODO: Export orders
+            // TODO: Export orders to CSV
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('تصدير CSV قريباً')),
+            );
           },
           icon: const Icon(Icons.download),
           label: const Text('تصدير'),
@@ -100,14 +63,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 child: Wrap(
                   spacing: AdminSpacing.sm,
                   runSpacing: AdminSpacing.sm,
-                  children: _statusFilters.map((status) {
-                    final isSelected = _selectedStatus == status;
+                  children: _statusFilterMap.keys.map((label) {
+                    final value = _statusFilterMap[label]!;
+                    final isSelected = (_selectedStatusFilter ?? '') == value;
+                    
                     return FilterChip(
-                      label: Text(status),
+                      label: Text(label),
                       selected: isSelected,
                       onSelected: (selected) {
                         setState(() {
-                          _selectedStatus = status;
+                          _selectedStatusFilter = value.isEmpty ? null : value;
                         });
                       },
                       backgroundColor: AdminAppColors.surfaceLight,
@@ -127,136 +92,242 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
           SizedBox(height: AdminSpacing.lg),
 
-          // Orders table
-          Card(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                headingRowColor: WidgetStateProperty.all(
-                  AdminAppColors.backgroundLight,
-                ),
-                columns: [
-                  DataColumn(
-                    label: Text(
-                      'رقم الطلب',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'العميل',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'السائق',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'الحالة',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'نقطة الاستلام',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'نقطة التسليم',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'السعر',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'الإجراءات',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                  ),
-                ],
-                rows: _filteredOrders.map((order) {
-                  return DataRow(
-                    cells: [
-                      DataCell(
-                        Text(
-                          order['id'],
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+          // Orders table with real-time data
+          Expanded(
+            child: StreamBuilder<List<Order>>(
+              stream: ordersAsync,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                        const SizedBox(height: 16),
+                        Text('خطأ في تحميل الطلبات: ${snapshot.error}'),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () => setState(() {}),
+                          child: const Text('إعادة المحاولة'),
                         ),
-                      ),
-                      DataCell(Text(order['client'])),
-                      DataCell(Text(order['driver'])),
-                      DataCell(_buildStatusBadge(order['status'])),
-                      DataCell(
-                        Text(
-                          order['pickup'],
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                      ],
+                    ),
+                  );
+                }
+
+                final orders = snapshot.data ?? [];
+
+                if (orders.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.inbox_outlined,
+                          size: 64,
+                          color: AdminAppColors.textSecondaryLight,
                         ),
-                      ),
-                      DataCell(
+                        const SizedBox(height: 16),
                         Text(
-                          order['dropoff'],
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                          'لا توجد طلبات',
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
-                      ),
-                      DataCell(
+                        const SizedBox(height: 8),
                         Text(
-                          order['price'],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: AdminAppColors.primaryGreen,
+                          _selectedStatusFilter != null
+                              ? 'لا توجد طلبات بهذه الحالة'
+                              : 'لا توجد طلبات في النظام',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AdminAppColors.textSecondaryLight,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Orders table
+                    Expanded(
+                      child: Card(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SingleChildScrollView(
+                            child: DataTable(
+                              headingRowColor: WidgetStateProperty.all(
+                                AdminAppColors.backgroundLight,
+                              ),
+                              columns: [
+                                DataColumn(
+                                  label: Text(
+                                    'رقم الطلب',
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'العميل',
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'السائق',
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'الحالة',
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'نقطة الاستلام',
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'نقطة التسليم',
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'السعر',
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'التاريخ',
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                ),
+                                DataColumn(
+                                  label: Text(
+                                    'الإجراءات',
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                ),
+                              ],
+                              rows: orders.map((order) {
+                                return DataRow(
+                                  cells: [
+                                    DataCell(
+                                      Text(
+                                        order.id.substring(0, 8).toUpperCase(),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: 'monospace',
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Text(order.ownerId.substring(0, 8)),
+                                    ),
+                                    DataCell(
+                                      Text(
+                                        order.assignedDriverId != null
+                                            ? order.assignedDriverId!.substring(0, 8)
+                                            : 'غير معيّن',
+                                        style: TextStyle(
+                                          color: order.assignedDriverId == null
+                                              ? AdminAppColors.textSecondaryLight
+                                              : null,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(_buildStatusBadge(order.status)),
+                                    DataCell(
+                                      SizedBox(
+                                        width: 150,
+                                        child: Text(
+                                          order.pickupAddress,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      SizedBox(
+                                        width: 150,
+                                        child: Text(
+                                          order.dropoffAddress,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Text(
+                                        '${order.price?.toStringAsFixed(0) ?? '0'} MRU',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: AdminAppColors.primaryGreen,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Text(
+                                        _formatDate(order.createdAt),
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.visibility),
+                                            onPressed: () {
+                                              _showOrderDetails(context, order);
+                                            },
+                                            tooltip: 'عرض التفاصيل',
+                                            color: AdminAppColors.infoLight,
+                                          ),
+                                          if (order.status != 'completed' &&
+                                              order.status != 'cancelled')
+                                            IconButton(
+                                              icon: const Icon(Icons.cancel),
+                                              onPressed: () {
+                                                _showCancelDialog(context, order);
+                                              },
+                                              tooltip: 'إلغاء الطلب',
+                                              color: AdminAppColors.errorLight,
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
                       ),
-                      DataCell(
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.visibility),
-                              onPressed: () {
-                                _showOrderDetails(context, order);
-                              },
-                              tooltip: 'عرض التفاصيل',
-                              color: AdminAppColors.infoLight,
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.cancel),
-                              onPressed: () {
-                                _showCancelDialog(context, order['id']);
-                              },
-                              tooltip: 'إلغاء الطلب',
-                              color: AdminAppColors.errorLight,
-                            ),
-                          ],
-                        ),
+                    ),
+
+                    SizedBox(height: AdminSpacing.md),
+
+                    // Summary
+                    Text(
+                      'عرض ${orders.length} طلب',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AdminAppColors.textSecondaryLight,
                       ),
-                    ],
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-
-          SizedBox(height: AdminSpacing.md),
-
-          // Summary
-          Text(
-            'عرض ${_filteredOrders.length} من أصل ${_orders.length} طلب',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AdminAppColors.textSecondaryLight,
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -266,40 +337,70 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   Widget _buildStatusBadge(String status) {
     switch (status) {
-      case 'قيد التعيين':
-        return StatusBadge.pending(status);
-      case 'مقبول':
-        return StatusBadge.active(status);
-      case 'في الطريق':
-        return StatusBadge(label: status, color: AdminAppColors.activeBlue);
-      case 'مكتمل':
-        return StatusBadge.success(status);
-      case 'ملغى':
-        return StatusBadge.error(status);
+      case 'assigning':
+        return StatusBadge.pending('قيد التعيين');
+      case 'accepted':
+        return StatusBadge.active('مقبول');
+      case 'on_route':
+        return StatusBadge(label: 'في الطريق', color: AdminAppColors.activeBlue);
+      case 'completed':
+        return StatusBadge.success('مكتمل');
+      case 'cancelled':
+      case 'cancelled_by_driver':
+      case 'cancelled_by_client':
+      case 'cancelled_by_admin':
+        return StatusBadge.error('ملغى');
       default:
         return StatusBadge(label: status);
     }
   }
 
-  void _showOrderDetails(BuildContext context, Map<String, dynamic> order) {
+  String _formatDate(DateTime? date) {
+    if (date == null) return '-';
+    final formatter = DateFormat('yyyy-MM-dd HH:mm', 'ar');
+    return formatter.format(date);
+  }
+
+  void _showOrderDetails(BuildContext context, Order order) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('تفاصيل الطلب ${order['id']}'),
+        title: Text('تفاصيل الطلب ${order.id.substring(0, 8)}'),
         content: SizedBox(
           width: 500,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildDetailRow('العميل:', order['client']),
-              _buildDetailRow('السائق:', order['driver']),
-              _buildDetailRow('الحالة:', order['status']),
-              _buildDetailRow('نقطة الاستلام:', order['pickup']),
-              _buildDetailRow('نقطة التسليم:', order['dropoff']),
-              _buildDetailRow('السعر:', order['price']),
-              _buildDetailRow('وقت الإنشاء:', order['createdAt']),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailRow('رقم الطلب:', order.id),
+                _buildDetailRow('معرف العميل:', order.ownerId),
+                _buildDetailRow(
+                  'معرف السائق:',
+                  order.assignedDriverId ?? 'غير معيّن',
+                ),
+                _buildDetailRow('الحالة:', order.status),
+                _buildDetailRow('نقطة الاستلام:', order.pickupAddress),
+                _buildDetailRow('نقطة التسليم:', order.dropoffAddress),
+                _buildDetailRow(
+                  'المسافة:',
+                  order.distanceKm != null
+                      ? '${order.distanceKm!.toStringAsFixed(1)} كم'
+                      : '-',
+                ),
+                _buildDetailRow(
+                  'السعر:',
+                  order.price != null
+                      ? '${order.price!.toStringAsFixed(0)} MRU'
+                      : '-',
+                ),
+                _buildDetailRow('وقت الإنشاء:', _formatDate(order.createdAt)),
+                if (order.updatedAt != null)
+                  _buildDetailRow('آخر تحديث:', _formatDate(order.updatedAt)),
+                if (order.completedAt != null)
+                  _buildDetailRow('وقت الاكتمال:', _formatDate(order.completedAt)),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -329,34 +430,74 @@ class _OrdersScreenState extends State<OrdersScreen> {
             ),
           ),
           Expanded(
-            child: Text(value),
+            child: SelectableText(value),
           ),
         ],
       ),
     );
   }
 
-  void _showCancelDialog(BuildContext context, String orderId) {
+  void _showCancelDialog(BuildContext context, Order order) {
+    final reasonController = TextEditingController();
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('تأكيد الإلغاء'),
-        content: Text('هل أنت متأكد من إلغاء الطلب $orderId؟'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('هل أنت متأكد من إلغاء الطلب ${order.id.substring(0, 8)}؟'),
+            SizedBox(height: AdminSpacing.md),
+            TextField(
+              controller: reasonController,
+              decoration: const InputDecoration(
+                labelText: 'سبب الإلغاء (اختياري)',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('لا'),
           ),
           ElevatedButton(
-            onPressed: () {
-              // TODO: Cancel order
+            onPressed: () async {
               Navigator.pop(context);
+              
+              // Show loading
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('تم إلغاء الطلب $orderId'),
-                  backgroundColor: AdminAppColors.successLight,
-                ),
+                const SnackBar(content: Text('جارٍ إلغاء الطلب...')),
               );
+
+              // Cancel order
+              final service = ref.read(adminOrdersServiceProvider);
+              final success = await service.cancelOrder(
+                order.id,
+                reason: reasonController.text.isNotEmpty
+                    ? reasonController.text
+                    : null,
+              );
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      success
+                          ? 'تم إلغاء الطلب ${order.id.substring(0, 8)}'
+                          : 'فشل إلغاء الطلب',
+                    ),
+                    backgroundColor: success
+                        ? AdminAppColors.successLight
+                        : AdminAppColors.errorLight,
+                  ),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AdminAppColors.errorLight,
