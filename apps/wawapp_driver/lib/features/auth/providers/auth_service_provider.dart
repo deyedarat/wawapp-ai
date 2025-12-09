@@ -9,64 +9,7 @@ final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
   return PhonePinAuth(userCollection: 'drivers');
 });
 
-// OTP Stage enum
-enum OtpStage {
-  idle,
-  sending,
-  codeSent,
-  verifying,
-  verified,
-  failed,
-}
-
-// AuthState model
-class AuthState {
-  final bool isLoading;
-  final User? user;
-  final String? phone;
-  final bool hasPin;
-  final String? error;
-  final bool otpFlowActive; // Track OTP flow across rebuilds
-  final OtpStage otpStage;
-  final String? verificationId;
-  final int? resendToken;
-
-  const AuthState({
-    this.isLoading = false,
-    this.user,
-    this.phone,
-    this.hasPin = false,
-    this.error,
-    this.otpFlowActive = false,
-    this.otpStage = OtpStage.idle,
-    this.verificationId,
-    this.resendToken,
-  });
-
-  AuthState copyWith({
-    bool? isLoading,
-    User? user,
-    String? phone,
-    bool? hasPin,
-    String? error,
-    bool? otpFlowActive,
-    OtpStage? otpStage,
-    String? verificationId,
-    int? resendToken,
-  }) {
-    return AuthState(
-      isLoading: isLoading ?? this.isLoading,
-      user: user ?? this.user,
-      phone: phone ?? this.phone,
-      hasPin: hasPin ?? this.hasPin,
-      error: error,
-      otpFlowActive: otpFlowActive ?? this.otpFlowActive,
-      otpStage: otpStage ?? this.otpStage,
-      verificationId: verificationId ?? this.verificationId,
-      resendToken: resendToken ?? this.resendToken,
-    );
-  }
-}
+// Note: OtpStage and AuthState are now imported from auth_shared package
 
 // AuthNotifier - manages authentication state
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -82,7 +25,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (user != null) {
         _checkHasPin();
       } else {
-        state = state.copyWith(hasPin: false, phone: null);
+        state = state.copyWith(hasPin: false, phoneE164: null);
       }
     });
   }
@@ -112,7 +55,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         }
         state = state.copyWith(
           hasPin: hasPinHash,
-          phone: user.phoneNumber,
+          phoneE164: user.phoneNumber,
         );
       }
     } on Object catch (e) {
@@ -160,7 +103,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) print('[AuthNotifier] OTP sent successfully');
       state = state.copyWith(
         isLoading: false,
-        phone: phone,
+        phoneE164: phone,
         otpStage: OtpStage.codeSent,
       );
     } on Object catch (e) {
