@@ -6,6 +6,7 @@ import '../../../core/theme/colors.dart';
 import '../../../core/widgets/admin_scaffold.dart';
 import '../../../providers/finance_providers.dart';
 import '../models/wallet_models.dart';
+import '../../reports/utils/csv_export.dart';
 
 class WalletsScreen extends ConsumerStatefulWidget {
   const WalletsScreen({super.key});
@@ -83,6 +84,15 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
                 ),
               ),
               onChanged: (value) => setState(() => _searchQuery = value),
+            ),
+          ),
+          SizedBox(width: AdminSpacing.md),
+          OutlinedButton.icon(
+            onPressed: _exportAllTransactions,
+            icon: const Icon(Icons.file_download, size: 20),
+            label: const Text('تصدير جميع المعاملات'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AdminAppColors.primaryGreen,
             ),
           ),
         ],
@@ -234,6 +244,25 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
     final formatter = NumberFormat('#,###');
     return formatter.format(amount);
   }
+
+  void _exportAllTransactions() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تصدير جميع المعاملات'),
+        content: const Text(
+          'هذه الميزة تتطلب استعلام مجمع لجميع معاملات المنصة. '
+          'يمكنك تصدير معاملات سائق محدد من خلال عرض تفاصيل محفظته.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('إغلاق'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _WalletDetailsDialog extends ConsumerWidget {
@@ -262,6 +291,16 @@ class _WalletDetailsDialog extends ConsumerWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const Spacer(),
+                ElevatedButton.icon(
+                  onPressed: () => _exportTransactions(ref, walletId),
+                  icon: const Icon(Icons.file_download, size: 18),
+                  label: const Text('تصدير CSV'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AdminAppColors.primaryGreen,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+                SizedBox(width: AdminSpacing.sm),
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.of(context).pop(),
@@ -330,5 +369,25 @@ class _WalletDetailsDialog extends ConsumerWidget {
       default:
         return source;
     }
+  }
+
+  void _exportTransactions(WidgetRef ref, String walletId) {
+    final transactionsAsync = ref.read(walletTransactionsProvider(walletId));
+
+    transactionsAsync.whenData((transactions) {
+      if (transactions.isEmpty) {
+        return;
+      }
+
+      // Extract driver ID from wallet ID if applicable
+      final driverId = walletId.startsWith('driver_')
+          ? walletId.replaceFirst('driver_', '')
+          : null;
+
+      CsvExportUtil.exportTransactions(
+        transactions,
+        driverId: driverId,
+      );
+    });
   }
 }

@@ -104,6 +104,106 @@ class CsvExportUtil {
     html.Url.revokeObjectUrl(url);
   }
 
+  /// Export payouts to CSV
+  static void exportPayouts(List<dynamic> payouts, {DateTime? startDate, DateTime? endDate}) {
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+    
+    final csv = StringBuffer();
+    csv.writeln('WawApp Payouts Report');
+    if (startDate != null && endDate != null) {
+      csv.writeln('Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
+    }
+    csv.writeln('Total Payouts: ${payouts.length}');
+    csv.writeln('');
+    csv.writeln('Payout ID,Driver ID,Driver Name,Driver Phone,Amount (MRU),'
+        'Currency,Method,Status,Requested By Admin ID,Processed By Admin ID,'
+        'Created At,Updated At,Note');
+
+    for (final payout in payouts) {
+      final createdAt = payout.createdAt != null 
+          ? dateTimeFormat.format(payout.createdAt)
+          : '';
+      final updatedAt = payout.updatedAt != null
+          ? dateTimeFormat.format(payout.updatedAt)
+          : '';
+      
+      csv.writeln('${payout.id},${payout.driverId},'
+          '${_escapeCsv(payout.driverName ?? "")},'
+          '${payout.driverPhone ?? ""},'
+          '${payout.amount},'
+          '${payout.currency},'
+          '${payout.method},'
+          '${payout.status},'
+          '${payout.requestedByAdminId ?? ""},'
+          '${payout.processedByAdminId ?? ""},'
+          '$createdAt,$updatedAt,'
+          '${_escapeCsv(payout.note ?? "")}');
+    }
+
+    final now = DateTime.now();
+    final filename = startDate != null && endDate != null
+        ? 'wawapp_payouts_${dateFormat.format(startDate)}_to_${dateFormat.format(endDate)}.csv'
+        : 'wawapp_payouts_${dateFormat.format(now)}.csv';
+
+    _downloadCsv(csv.toString(), filename);
+  }
+
+  /// Export transactions for a specific driver or all transactions
+  static void exportTransactions(
+    List<dynamic> transactions, {
+    String? driverId,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+    
+    final csv = StringBuffer();
+    csv.writeln('WawApp Transactions Ledger');
+    if (driverId != null) {
+      csv.writeln('Driver ID: $driverId');
+    }
+    if (startDate != null && endDate != null) {
+      csv.writeln('Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
+    }
+    csv.writeln('Total Transactions: ${transactions.length}');
+    csv.writeln('');
+    csv.writeln('Transaction ID,Wallet ID,Type,Source,Amount (MRU),'
+        'Currency,Order ID,Admin ID,Created At,Balance Snapshot (MRU),Note');
+
+    for (final txn in transactions) {
+      final createdAt = txn.createdAt != null
+          ? dateTimeFormat.format(txn.createdAt)
+          : '';
+      
+      csv.writeln('${txn.id},${txn.walletId},'
+          '${txn.type},'
+          '${txn.source},'
+          '${txn.amount},'
+          '${txn.currency},'
+          '${txn.orderId ?? ""},'
+          '${txn.adminId ?? ""},'
+          '$createdAt,'
+          '${txn.balanceSnapshot ?? 0},'
+          '${_escapeCsv(txn.note ?? "")}');
+    }
+
+    final now = DateTime.now();
+    String filename;
+    if (driverId != null) {
+      filename = startDate != null && endDate != null
+          ? 'wawapp_driver_${driverId}_transactions_${dateFormat.format(startDate)}_to_${dateFormat.format(endDate)}.csv'
+          : 'wawapp_driver_${driverId}_transactions_${dateFormat.format(now)}.csv';
+    } else {
+      filename = startDate != null && endDate != null
+          ? 'wawapp_all_transactions_${dateFormat.format(startDate)}_to_${dateFormat.format(endDate)}.csv'
+          : 'wawapp_all_transactions_${dateFormat.format(now)}.csv';
+    }
+
+    _downloadCsv(csv.toString(), filename);
+  }
+
   /// Escape CSV values that contain commas, quotes, or newlines
   static String _escapeCsv(String value) {
     if (value.contains(',') || value.contains('"') || value.contains('\n')) {

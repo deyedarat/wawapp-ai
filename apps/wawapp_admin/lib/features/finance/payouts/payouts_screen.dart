@@ -6,6 +6,7 @@ import '../../../core/theme/colors.dart';
 import '../../../core/widgets/admin_scaffold.dart';
 import '../../../providers/finance_providers.dart';
 import '../models/wallet_models.dart';
+import '../../reports/utils/csv_export.dart';
 
 class PayoutsScreen extends ConsumerStatefulWidget {
   const PayoutsScreen({super.key});
@@ -56,15 +57,31 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
         color: Theme.of(context).colorScheme.surface,
         border: Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
       ),
-      child: Wrap(
-        spacing: AdminSpacing.sm,
+      child: Row(
         children: [
-          _buildFilterChip('الكل', 'all'),
-          _buildFilterChip('قيد الانتظار', 'requested'),
-          _buildFilterChip('معتمد', 'approved'),
-          _buildFilterChip('قيد المعالجة', 'processing'),
-          _buildFilterChip('مكتمل', 'completed'),
-          _buildFilterChip('مرفوض', 'rejected'),
+          Expanded(
+            child: Wrap(
+              spacing: AdminSpacing.sm,
+              children: [
+                _buildFilterChip('الكل', 'all'),
+                _buildFilterChip('قيد الانتظار', 'requested'),
+                _buildFilterChip('معتمد', 'approved'),
+                _buildFilterChip('قيد المعالجة', 'processing'),
+                _buildFilterChip('مكتمل', 'completed'),
+                _buildFilterChip('مرفوض', 'rejected'),
+              ],
+            ),
+          ),
+          SizedBox(width: AdminSpacing.md),
+          ElevatedButton.icon(
+            onPressed: _exportPayoutsCsv,
+            icon: const Icon(Icons.file_download, size: 20),
+            label: const Text('تصدير CSV'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AdminAppColors.primaryGreen,
+              foregroundColor: Colors.white,
+            ),
+          ),
         ],
       ),
     );
@@ -423,5 +440,29 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
       default:
         return method;
     }
+  }
+
+  void _exportPayoutsCsv() {
+    final payoutsAsync = _statusFilter == 'all'
+        ? ref.read(payoutsProvider)
+        : ref.read(payoutsByStatusProvider(_statusFilter));
+
+    payoutsAsync.whenData((payouts) {
+      if (payouts.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('لا توجد دفعات للتصدير')),
+        );
+        return;
+      }
+
+      // Import the CSV utility
+      // ignore: unused_import
+      final csvUtil = CsvExportUtil();
+      CsvExportUtil.exportPayouts(payouts);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('تم تصدير ${payouts.length} دفعة بنجاح')),
+      );
+    });
   }
 }

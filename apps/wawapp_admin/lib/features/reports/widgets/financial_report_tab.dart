@@ -67,6 +67,7 @@ class FinancialReportTab extends ConsumerWidget {
           ),
           SizedBox(height: AdminSpacing.md),
 
+          // Orders-based Metrics
           GridView.count(
             crossAxisCount: 3,
             shrinkWrap: true,
@@ -109,6 +110,49 @@ class FinancialReportTab extends ConsumerWidget {
                 value: '${data.summary.averageCommissionRate}%',
                 icon: Icons.percent,
                 color: Colors.purple,
+              ),
+            ],
+          ),
+
+          SizedBox(height: AdminSpacing.xl),
+
+          // Wallet & Payout Metrics
+          Text(
+            'مؤشرات المحافظ والدفعات',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          SizedBox(height: AdminSpacing.md),
+
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: AdminSpacing.md,
+            crossAxisSpacing: AdminSpacing.md,
+            childAspectRatio: 2.5,
+            children: [
+              _buildSummaryCard(
+                context: context,
+                title: 'المدفوعات المكتملة',
+                value: '${_formatCurrency(data.summary.totalPayoutsInPeriod)} MRU',
+                icon: Icons.payment,
+                color: Color(0xFF9C27B0), // Purple
+              ),
+              _buildSummaryCard(
+                context: context,
+                title: 'أرصدة السائقين المعلقة',
+                value: '${_formatCurrency(data.summary.totalDriverOutstandingBalance)} MRU',
+                icon: Icons.account_balance_wallet,
+                color: Color(0xFFFF9800), // Orange
+              ),
+              _buildSummaryCard(
+                context: context,
+                title: 'رصيد محفظة المنصة',
+                value: '${_formatCurrency(data.summary.platformWalletBalance)} MRU',
+                icon: Icons.business,
+                color: Color(0xFF00BCD4), // Cyan
               ),
             ],
           ),
