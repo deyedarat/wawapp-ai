@@ -9,28 +9,28 @@ import 'package:flutter/material.dart';
 class WawAppColors {
   WawAppColors._();
 
-  // Primary Brand Colors
-  static const Color primary = Color(0xFF006AFF); // Blue
-  static const Color primaryDark = Color(0xFF0052CC);
-  static const Color primaryLight = Color(0xFF4D94FF);
+  // Primary Brand Colors (Manus Visual Identity - Mauritania Flag)
+  static const Color primary = Color(0xFF00704A); // Mauritania Green
+  static const Color primaryDark = Color(0xFF005539);
+  static const Color primaryLight = Color(0xFF00A76F);
   
-  static const Color secondary = Color(0xFFFFC727); // Yellow/Gold
-  static const Color secondaryDark = Color(0xFFE6B224);
-  static const Color secondaryLight = Color(0xFFFFD659);
+  static const Color secondary = Color(0xFFF5A623); // Golden Yellow
+  static const Color secondaryDark = Color(0xFFE09419);
+  static const Color secondaryLight = Color(0xFFFFC156);
 
   // Semantic Colors (Light Theme)
-  static const Color success = Color(0xFF1ABC9C); // Green
-  static const Color warning = Color(0xFFF39C12); // Orange
-  static const Color error = Color(0xFFE74C3C); // Red
+  static const Color success = Color(0xFF00704A); // Mauritania Green
+  static const Color warning = Color(0xFFF5A623); // Golden Yellow
+  static const Color error = Color(0xFFC1272D); // Accent Red
   static const Color info = Color(0xFF3498DB); // Light Blue
 
   // Background & Surface (Light)
-  static const Color backgroundLight = Color(0xFFF7F9FC);
+  static const Color backgroundLight = Color(0xFFF8F9FA); // Manus design spec
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color cardLight = Color(0xFFFFFFFF);
   
   // Text Colors (Light Theme)
-  static const Color textPrimaryLight = Color(0xFF1C1C1C);
+  static const Color textPrimaryLight = Color(0xFF212529); // Manus design spec
   static const Color textSecondaryLight = Color(0xFF6C757D);
   static const Color textDisabledLight = Color(0xFFADB5BD);
 
@@ -39,7 +39,7 @@ class WawAppColors {
   static const Color dividerLight = Color(0xFFE9ECEF);
 
   // Dark Theme Colors
-  static const Color backgroundDark = Color(0xFF121212);
+  static const Color backgroundDark = Color(0xFF0A1612); // Manus design spec
   static const Color surfaceDark = Color(0xFF1D1D1D);
   static const Color cardDark = Color(0xFF2C2C2C);
 

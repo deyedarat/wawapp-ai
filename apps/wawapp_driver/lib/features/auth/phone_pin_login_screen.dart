@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auth_shared/auth_shared.dart';
 import 'providers/auth_service_provider.dart';
 
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
@@ -23,11 +24,28 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   }
 
   Future<void> _handleOtpFlow() async {
-    final phone = _phone.text.trim();
-    final e164 = RegExp(r'^\+[1-9]\d{6,14}$');
-
-    if (!e164.hasMatch(phone)) {
-      setState(() => _err = 'Invalid phone format. Use E.164 like +22212345678');
+    String phone = _phone.text.trim();
+    
+    // Validate and convert to E.164 format for Mauritania
+    try {
+      if (phone.startsWith('+')) {
+        // Already in E.164, validate it
+        if (!MauritaniaPhoneUtils.isValidMauritaniaE164(phone)) {
+          setState(() => _err = 'رقم هاتف غير صحيح بصيغة +222');
+          return;
+        }
+      } else {
+        // Local format, validate and convert
+        if (!MauritaniaPhoneUtils.isValidMauritaniaLocalNumber(phone)) {
+          setState(() => _err = MauritaniaPhoneUtils.getValidationError(phone));
+          return;
+        }
+        phone = MauritaniaPhoneUtils.toMauritaniaE164(phone);
+        // Update text field with E.164 format
+        _phone.text = phone;
+      }
+    } catch (e) {
+      setState(() => _err = 'رقم هاتف غير صحيح');
       return;
     }
 
@@ -69,7 +87,13 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             TextField(
               controller: _phone,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(labelText: 'Phone (+222...)'),
+              decoration: InputDecoration(
+                labelText: 'رقم الهاتف (8 أرقام)',
+                helperText: 'مثال: 22123456 أو +22222123456',
+                errorText: _err,
+                prefixText: _phone.text.startsWith('+') ? '' : '+222 ',
+              ),
+              onChanged: (_) => setState(() => _err = null),
             ),
             const SizedBox(height: 12),
             TextField(

@@ -18,6 +18,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   final _pin = TextEditingController();
   bool _isNewUser = false;
   bool _checkingPhone = false;
+  String? _phoneError;
 
   @override
   void dispose() {
@@ -28,30 +29,86 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
   Future<void> _checkPhone() async {
     final phone = _phone.text.trim();
-    if (!phone.startsWith('+')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Use E.164 format like +222...')),
-      );
+    
+    // Validate and convert to E.164 format
+    String phoneE164;
+    try {
+      if (phone.startsWith('+')) {
+        // Already in E.164, validate it
+        if (!MauritaniaPhoneUtils.isValidMauritaniaE164(phone)) {
+          setState(() {
+            _phoneError = 'رقم هاتف غير صحيح بصيغة +222';
+          });
+          return;
+        }
+        phoneE164 = phone;
+      } else {
+        // Local format, validate and convert
+        if (!MauritaniaPhoneUtils.isValidMauritaniaLocalNumber(phone)) {
+          setState(() {
+            _phoneError = MauritaniaPhoneUtils.getValidationError(phone);
+          });
+          return;
+        }
+        phoneE164 = MauritaniaPhoneUtils.toMauritaniaE164(phone);
+      }
+    } catch (e) {
+      setState(() {
+        _phoneError = 'رقم هاتف غير صحيح';
+      });
       return;
     }
 
-    setState(() => _checkingPhone = true);
+    setState(() {
+      _checkingPhone = true;
+      _phoneError = null;
+    });
+    
     final exists =
-        await ref.read(authProvider.notifier).checkPhoneExists(phone);
+        await ref.read(authProvider.notifier).checkPhoneExists(phoneE164);
     setState(() {
       _checkingPhone = false;
       _isNewUser = !exists;
+      // Update the text field with E.164 format for clarity
+      _phone.text = phoneE164;
     });
   }
 
   Future<void> _loginWithPin() async {
     if (_pin.text.length != 4) return;
-    final phone = _phone.text.trim();
+    
+    String phone = _phone.text.trim();
+    
+    // Ensure phone is in E.164 format
+    if (!phone.startsWith('+')) {
+      try {
+        phone = MauritaniaPhoneUtils.toMauritaniaE164(phone);
+      } catch (e) {
+        setState(() {
+          _phoneError = MauritaniaPhoneUtils.getValidationError(phone);
+        });
+        return;
+      }
+    }
+    
     await ref.read(authProvider.notifier).loginByPin(_pin.text, phone);
   }
 
   Future<void> _createAccount() async {
-    final phone = _phone.text.trim();
+    String phone = _phone.text.trim();
+    
+    // Ensure phone is in E.164 format
+    if (!phone.startsWith('+')) {
+      try {
+        phone = MauritaniaPhoneUtils.toMauritaniaE164(phone);
+      } catch (e) {
+        setState(() {
+          _phoneError = MauritaniaPhoneUtils.getValidationError(phone);
+        });
+        return;
+      }
+    }
+    
     debugPrint('[LoginScreen] _createAccount() called for phone=$phone');
 
     try {
@@ -114,8 +171,16 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             TextField(
               controller: _phone,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(labelText: 'Phone (+222...)'),
-              onChanged: (_) => setState(() => _isNewUser = false),
+              decoration: InputDecoration(
+                labelText: 'رقم الهاتف (8 أرقام)',
+                helperText: 'مثال: 22123456 أو +22222123456',
+                errorText: _phoneError,
+                prefixText: _phone.text.startsWith('+') ? '' : '+222 ',
+              ),
+              onChanged: (_) => setState(() {
+                _isNewUser = false;
+                _phoneError = null;
+              }),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
