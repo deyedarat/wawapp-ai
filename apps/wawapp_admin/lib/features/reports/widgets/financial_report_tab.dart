@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
 
 import '../../../core/theme/colors.dart';
 import '../../../providers/reports_providers.dart';
@@ -309,8 +311,6 @@ class FinancialReportTab extends ConsumerWidget {
 
   void _printReport() {
     // Trigger browser print dialog
-    // ignore: avoid_web_libraries_in_flutter
-    import 'dart:html' as html;
     html.window.print();
   }
 }

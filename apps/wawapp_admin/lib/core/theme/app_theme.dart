@@ -34,7 +34,7 @@ class AdminAppTheme {
       ),
 
       // Card
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: AdminElevation.low,
         color: AdminAppColors.cardLight,
         shape: RoundedRectangleBorder(
@@ -166,7 +166,7 @@ class AdminAppTheme {
       ),
 
       // Card
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: AdminElevation.low,
         color: AdminAppColors.cardDark,
         shape: RoundedRectangleBorder(

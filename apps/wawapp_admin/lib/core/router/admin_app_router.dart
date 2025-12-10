@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/admin_login_screen.dart';
+import '../../features/auth/admin_register_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/orders/orders_screen.dart';
 import '../../features/drivers/drivers_screen.dart';
@@ -27,17 +28,18 @@ final adminRouterProvider = Provider<GoRouter>((ref) {
       );
 
       final isLoginRoute = state.matchedLocation == '/login';
+      final isRegisterRoute = state.matchedLocation == '/register';
 
       // Show loading while checking auth state
       if (isAuthLoading) return null;
 
-      // Redirect to login if not authenticated
-      if (!isAuthenticated && !isLoginRoute) {
+      // Redirect to login if not authenticated (except register page)
+      if (!isAuthenticated && !isLoginRoute && !isRegisterRoute) {
         return '/login';
       }
 
-      // Redirect to dashboard if authenticated and on login page
-      if (isAuthenticated && isLoginRoute) {
+      // Redirect to dashboard if authenticated and on login/register page
+      if (isAuthenticated && (isLoginRoute || isRegisterRoute)) {
         return '/';
       }
 
@@ -48,6 +50,11 @@ final adminRouterProvider = Provider<GoRouter>((ref) {
         path: '/login',
         name: 'login',
         builder: (context, state) => const AdminLoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        name: 'register',
+        builder: (context, state) => const AdminRegisterScreen(),
       ),
       GoRoute(
         path: '/',

@@ -224,7 +224,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                   cells: [
                                     DataCell(
                                       Text(
-                                        order.id.substring(0, 8).toUpperCase(),
+                                        (order.id ?? 'N/A').substring(0, 8).toUpperCase(),
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontFamily: 'monospace',
@@ -232,7 +232,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                       ),
                                     ),
                                     DataCell(
-                                      Text(order.ownerId.substring(0, 8)),
+                                      Text((order.ownerId ?? 'N/A').substring(0, 8)),
                                     ),
                                     DataCell(
                                       Text(
@@ -246,7 +246,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                         ),
                                       ),
                                     ),
-                                    DataCell(_buildStatusBadge(order.status)),
+                                    DataCell(_buildStatusBadge(order.status ?? 'unknown')),
                                     DataCell(
                                       SizedBox(
                                         width: 150,
@@ -365,7 +365,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('تفاصيل الطلب ${order.id.substring(0, 8)}'),
+        title: Text('تفاصيل الطلب ${(order.id ?? 'N/A').substring(0, 8)}'),
         content: SizedBox(
           width: 500,
           child: SingleChildScrollView(
@@ -373,13 +373,13 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildDetailRow('رقم الطلب:', order.id),
-                _buildDetailRow('معرف العميل:', order.ownerId),
+                _buildDetailRow('رقم الطلب:', order.id ?? 'N/A'),
+                _buildDetailRow('معرف العميل:', order.ownerId ?? 'N/A'),
                 _buildDetailRow(
                   'معرف السائق:',
                   order.assignedDriverId ?? 'غير معيّن',
                 ),
-                _buildDetailRow('الحالة:', order.status),
+                _buildDetailRow('الحالة:', order.status ?? 'غير معروف'),
                 _buildDetailRow('نقطة الاستلام:', order.pickupAddress),
                 _buildDetailRow('نقطة التسليم:', order.dropoffAddress),
                 _buildDetailRow(
@@ -448,7 +448,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('هل أنت متأكد من إلغاء الطلب ${order.id.substring(0, 8)}؟'),
+            Text('هل أنت متأكد من إلغاء الطلب ${(order.id ?? 'N/A').substring(0, 8)}؟'),
             SizedBox(height: AdminSpacing.md),
             TextField(
               controller: reasonController,
@@ -477,7 +477,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
               // Cancel order
               final service = ref.read(adminOrdersServiceProvider);
               final success = await service.cancelOrder(
-                order.id,
+                order.id ?? '',
                 reason: reasonController.text.isNotEmpty
                     ? reasonController.text
                     : null,
@@ -489,7 +489,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                   SnackBar(
                     content: Text(
                       success
-                          ? 'تم إلغاء الطلب ${order.id.substring(0, 8)}'
+                          ? 'تم إلغاء الطلب ${(order.id ?? 'N/A').substring(0, 8)}'
                           : 'فشل إلغاء الطلب',
                     ),
                     backgroundColor: success

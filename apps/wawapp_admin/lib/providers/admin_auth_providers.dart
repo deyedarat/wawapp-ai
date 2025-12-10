@@ -5,11 +5,11 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/admin_auth_service.dart';
+import '../services/admin_auth_service_dev.dart'; // Using DEV mode for testing
 
-/// Admin Auth Service Provider
-final adminAuthServiceProvider = Provider<AdminAuthService>((ref) {
-  return AdminAuthService();
+/// Admin Auth Service Provider (DEV MODE)
+final adminAuthServiceProvider = Provider<AdminAuthServiceDev>((ref) {
+  return AdminAuthServiceDev();
 });
 
 /// Auth State Stream Provider

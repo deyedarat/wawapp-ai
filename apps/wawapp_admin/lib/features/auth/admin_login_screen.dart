@@ -226,6 +226,21 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                       ),
                       const SizedBox(height: 24),
 
+                      // Register link (DEV MODE)
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pushNamed('/register');
+                        },
+                        child: Text(
+                          'ليس لديك حساب؟ إنشاء حساب جديد (وضع التطوير)',
+                          style: AdminAppTextStyles.caption.copyWith(
+                            color: AdminAppColors.primaryGreen,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
                       // Footer
                       Text(
                         'Admin access only • تسجيل دخول الإدارة فقط',

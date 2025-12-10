@@ -3,16 +3,18 @@ import '../theme/colors.dart';
 import 'admin_sidebar.dart';
 
 class AdminScaffold extends StatefulWidget {
-  final Widget child;
+  final Widget? child;
+  final Widget? body;
   final String title;
   final List<Widget>? actions;
 
   const AdminScaffold({
     super.key,
-    required this.child,
+    this.child,
+    this.body,
     required this.title,
     this.actions,
-  });
+  }) : assert(child != null || body != null, 'Either child or body must be provided');
 
   @override
   State<AdminScaffold> createState() => _AdminScaffoldState();
@@ -124,7 +126,7 @@ class _AdminScaffoldState extends State<AdminScaffold> {
                 Expanded(
                   child: SingleChildScrollView(
                     padding: EdgeInsets.all(AdminSpacing.lg),
-                    child: widget.child,
+                    child: widget.child ?? widget.body!,
                   ),
                 ),
               ],

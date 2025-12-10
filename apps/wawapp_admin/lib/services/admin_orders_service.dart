@@ -5,14 +5,14 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:core_shared/core_shared.dart';
+import 'package:core_shared/core_shared.dart' as core_shared;
 
 class AdminOrdersService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   /// Get orders stream with optional filters
-  Stream<List<Order>> getOrdersStream({
+  Stream<List<core_shared.Order>> getOrdersStream({
     String? statusFilter,
     int limit = 50,
   }) {
@@ -27,17 +27,17 @@ class AdminOrdersService {
 
     return query.snapshots().map((snapshot) {
       return snapshot.docs
-          .map((doc) => Order.fromFirestoreWithId(doc.id, doc.data()))
+          .map((doc) => core_shared.Order.fromFirestoreWithId(doc.id, doc.data()))
           .toList();
     });
   }
 
   /// Get a single order by ID
-  Future<Order?> getOrderById(String orderId) async {
+  Future<core_shared.Order?> getOrderById(String orderId) async {
     try {
       final doc = await _firestore.collection('orders').doc(orderId).get();
       if (!doc.exists) return null;
-      return Order.fromFirestoreWithId(doc.id, doc.data()!);
+      return core_shared.Order.fromFirestoreWithId(doc.id, doc.data()!);
     } catch (e) {
       print('Error fetching order: $e');
       return null;

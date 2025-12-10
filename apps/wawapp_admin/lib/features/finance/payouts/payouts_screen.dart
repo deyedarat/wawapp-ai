@@ -26,6 +26,16 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
 
     return AdminScaffold(
       title: 'إدارة الدفعات',
+      actions: [
+        ElevatedButton.icon(
+          onPressed: _showCreatePayoutDialog,
+          icon: const Icon(Icons.add),
+          label: const Text('طلب دفعة جديدة'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AdminAppColors.primaryGreen,
+          ),
+        ),
+      ],
       body: Column(
         children: [
           // Filter bar
@@ -40,12 +50,6 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showCreatePayoutDialog,
-        backgroundColor: AdminAppColors.primaryGreen,
-        label: const Text('طلب دفعة جديدة'),
-        icon: const Icon(Icons.add),
       ),
     );
   }
