@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/router/admin_app_router.dart';
 import 'core/theme/app_theme.dart';
 
@@ -25,7 +26,12 @@ class AdminApp extends ConsumerWidget {
         Locale('ar'), // Arabic
         Locale('fr'), // French
       ],
-      
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+
       // Routing
       routerConfig: router,
     );

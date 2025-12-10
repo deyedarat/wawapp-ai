@@ -134,3 +134,27 @@ class AdminTypography {
     displayColor: AdminAppColors.textPrimaryDark,
   );
 }
+
+/// Convenient access to text styles (alias for AdminTypography)
+class AdminAppTextStyles {
+  AdminAppTextStyles._();
+
+  // Heading styles
+  static TextStyle get h1 => AdminTypography.lightTextTheme.displayLarge!;
+  static TextStyle get h2 => AdminTypography.lightTextTheme.displayMedium!;
+  static TextStyle get h3 => AdminTypography.lightTextTheme.displaySmall!;
+  static TextStyle get h4 => AdminTypography.lightTextTheme.headlineLarge!;
+  static TextStyle get h5 => AdminTypography.lightTextTheme.headlineMedium!;
+  static TextStyle get h6 => AdminTypography.lightTextTheme.headlineSmall!;
+
+  // Body styles
+  static TextStyle get bodyLarge => AdminTypography.lightTextTheme.bodyLarge!;
+  static TextStyle get bodyMedium => AdminTypography.lightTextTheme.bodyMedium!;
+  static TextStyle get bodySmall => AdminTypography.lightTextTheme.bodySmall!;
+
+  // Button style
+  static TextStyle get button => AdminTypography.lightTextTheme.labelLarge!;
+
+  // Caption style
+  static TextStyle get caption => AdminTypography.lightTextTheme.labelSmall!;
+}

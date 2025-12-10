@@ -39,9 +39,9 @@ class DashboardScreen extends ConsumerWidget {
 
           final totalDrivers = driverStats['total'] ?? 0;
           final onlineDrivers = driverStats['online'] ?? 0;
-          final activeOrders = orderStats['assigning'] ?? 0 + 
-                             orderStats['accepted'] ?? 0 + 
-                             orderStats['on_route'] ?? 0;
+          final activeOrders = (orderStats['assigning'] ?? 0) +
+                             (orderStats['accepted'] ?? 0) +
+                             (orderStats['on_route'] ?? 0);
           final completedToday = orderStats['completed'] ?? 0;
           final cancelledToday = orderStats['cancelled'] ?? 0;
 
