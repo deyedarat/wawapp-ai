@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auth_shared/auth_shared.dart';
 import '../../../services/analytics_service.dart';
+import '../../../services/driver_cleanup_service.dart';
 
 // Provider for PhonePinAuth service singleton
 final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
@@ -182,9 +183,30 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> logout() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
+      if (kDebugMode) {
+        print('[AuthNotifier] Starting logout process...');
+      }
+      
+      // Cleanup: stop location, set offline, clear state
+      try {
+        await DriverCleanupService.instance.cleanupBeforeLogout();
+      } on Object catch (e) {
+        if (kDebugMode) {
+          print('[AuthNotifier] Cleanup error (continuing logout): $e');
+        }
+        // Continue with logout even if cleanup fails
+      }
+      
       await _authService.signOut();
       state = const AuthState(); // Reset to initial state
+      
+      if (kDebugMode) {
+        print('[AuthNotifier] Logout complete');
+      }
     } on Object catch (e) {
+      if (kDebugMode) {
+        print('[AuthNotifier] Logout error: $e');
+      }
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),

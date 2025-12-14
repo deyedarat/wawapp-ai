@@ -174,3 +174,24 @@ class DriverProfile {
   @override
   String toString() => 'DriverProfile(id: $id, name: $name, phone: $phone)';
 }
+
+/// Extension for validating driver profile completeness
+extension DriverProfileValidation on DriverProfile {
+  /// Check if profile has all required fields for going online and accepting orders
+  bool get isCompleteForOrders {
+    return name.isNotEmpty &&
+           vehicleType != null && vehicleType!.isNotEmpty &&
+           vehiclePlate != null && vehiclePlate!.isNotEmpty &&
+           city != null && city!.isNotEmpty;
+  }
+
+  /// Get list of missing required fields
+  List<String> get missingRequiredFields {
+    final missing = <String>[];
+    if (name.isEmpty) missing.add('الاسم');
+    if (vehicleType == null || vehicleType!.isEmpty) missing.add('نوع السيارة');
+    if (vehiclePlate == null || vehiclePlate!.isEmpty) missing.add('رقم اللوحة');
+    if (city == null || city!.isEmpty) missing.add('المدينة');
+    return missing;
+  }
+}

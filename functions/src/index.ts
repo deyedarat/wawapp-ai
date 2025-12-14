@@ -22,6 +22,8 @@ export { getAdminStats } from './admin/getAdminStats';
 export { adminCancelOrder, adminReassignOrder } from './admin/adminOrderActions';
 export { adminBlockDriver, adminUnblockDriver, adminVerifyDriver } from './admin/adminDriverActions';
 export { adminSetClientVerification, adminBlockClient, adminUnblockClient } from './admin/adminClientActions';
+export { adminFixMissingDriverData } from './admin/fixMissingDriverData';
+export { adminCreateTestClient } from './admin/createTestClient';
 
 // Export Reports Functions
 export { getReportsOverview } from './reports/getReportsOverview';

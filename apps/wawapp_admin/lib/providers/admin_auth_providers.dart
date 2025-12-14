@@ -1,15 +1,36 @@
 /**
  * Admin Authentication Providers
  * Riverpod providers for admin authentication state
+ * 
+ * Automatically selects correct auth service based on environment:
+ * - DEV: Uses AdminAuthServiceDev (bypasses isAdmin check)
+ * - STAGING/PROD: Uses AdminAuthService (enforces isAdmin check)
  */
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/admin_auth_service_dev.dart'; // Using DEV mode for testing
+import '../config/app_config.dart';
+import '../services/admin_auth_service.dart';
+import '../services/admin_auth_service_dev.dart';
 
-/// Admin Auth Service Provider (DEV MODE)
-final adminAuthServiceProvider = Provider<AdminAuthServiceDev>((ref) {
-  return AdminAuthServiceDev();
+/// App Configuration Provider
+final appConfigProvider = Provider<AppConfig>((ref) {
+  return AppConfigFactory.current;
+});
+
+/// Admin Auth Service Provider
+/// Automatically selects dev or production service based on environment
+final adminAuthServiceProvider = Provider<dynamic>((ref) {
+  final config = ref.watch(appConfigProvider);
+  
+  if (config.useStrictAuth) {
+    // PRODUCTION/STAGING: Use strict auth with isAdmin claim check
+    return AdminAuthService();
+  } else {
+    // DEVELOPMENT: Use bypass auth (no claim check)
+    // ⚠️ WARNING: This allows any authenticated user to access admin panel
+    return AdminAuthServiceDev();
+  }
 });
 
 /// Auth State Stream Provider

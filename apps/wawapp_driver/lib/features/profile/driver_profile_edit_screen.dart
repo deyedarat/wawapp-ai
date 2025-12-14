@@ -137,14 +137,67 @@ class _DriverProfileEditScreenState extends ConsumerState<DriverProfileEditScree
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Profile completeness warning banner
+              Consumer(
+                builder: (context, ref, child) {
+                  final profileAsync = ref.watch(driverProfileStreamProvider);
+                  return profileAsync.when(
+                    data: (profile) {
+                      if (profile != null && !profile.isCompleteForOrders) {
+                        final missing = profile.missingRequiredFields;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade100,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.orange.shade300),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.warning, color: Colors.orange, size: 28),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'يجب إكمال المعلومات التالية للاتصال:',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      missing.join('، '),
+                                      style: const TextStyle(color: Colors.black87),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, __) => const SizedBox.shrink(),
+                  );
+                },
+              ),
               _buildSection('المعلومات الشخصية', [
                 _buildTextField(
                   controller: _nameController,
-                  label: 'الاسم',
+                  label: 'الاسم *',
                   icon: Icons.person,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'الاسم مطلوب';
+                    }
+                    if (value.trim().length < 3) {
+                      return 'الاسم يجب أن يكون 3 أحرف على الأقل';
                     }
                     return null;
                   },
@@ -152,8 +205,14 @@ class _DriverProfileEditScreenState extends ConsumerState<DriverProfileEditScree
                 const SizedBox(height: 16),
                 _buildTextField(
                   controller: _cityController,
-                  label: 'المدينة',
+                  label: 'المدينة *',
                   icon: Icons.location_city,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'المدينة مطلوبة للاتصال';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 _buildTextField(
@@ -166,18 +225,23 @@ class _DriverProfileEditScreenState extends ConsumerState<DriverProfileEditScree
               _buildSection('معلومات السيارة', [
                 _buildTextField(
                   controller: _vehicleTypeController,
-                  label: 'نوع السيارة',
+                  label: 'نوع السيارة *',
                   icon: Icons.directions_car,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'نوع السيارة مطلوب للاتصال';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 _buildTextField(
                   controller: _vehiclePlateController,
-                  label: 'رقم اللوحة',
+                  label: 'رقم اللوحة *',
                   icon: Icons.confirmation_number,
                   validator: (value) {
-                    if (_vehicleTypeController.text.trim().isNotEmpty && 
-                        (value == null || value.trim().isEmpty)) {
-                      return 'رقم اللوحة مطلوب عند إدخال معلومات السيارة';
+                    if (value == null || value.trim().isEmpty) {
+                      return 'رقم اللوحة مطلوب للاتصال';
                     }
                     return null;
                   },
