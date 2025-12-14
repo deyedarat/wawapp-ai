@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:core_shared/core_shared.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/analytics_service.dart';
 import '../../services/driver_status_service.dart';
+import '../../services/tracking_service.dart';
+import '../../services/location_service.dart';
 import '../auth/providers/auth_service_provider.dart';
+import '../profile/providers/driver_profile_providers.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/components.dart';
 import 'dart:developer' as dev;
@@ -65,10 +69,81 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     });
 
     try {
+      // Check profile completeness before going online
+      if (value) {
+        final profileAsync = await ref.read(driverProfileStreamProvider.future);
+        if (profileAsync == null || !_isProfileComplete(profileAsync)) {
+          if (mounted) {
+            _showProfileIncompleteDialog();
+          }
+          setState(() {
+            _isTogglingStatus = false;
+          });
+          return;
+        }
+
+        // CRITICAL: Verify GPS/location prerequisites before going online
+        if (kDebugMode) {
+          dev.log('[DriverHome] Verifying location prerequisites...');
+        }
+
+        final locationError = await LocationService.instance.verifyLocationPrerequisites();
+        if (locationError != null) {
+          if (kDebugMode) {
+            dev.log('[DriverHome] Location prerequisites failed: $locationError');
+          }
+
+          if (mounted) {
+            _showLocationPrerequisitesDialog(locationError);
+          }
+          setState(() {
+            _isTogglingStatus = false;
+          });
+          return;
+        }
+
+        if (kDebugMode) {
+          dev.log('[DriverHome] ✅ Location prerequisites verified');
+        }
+      }
+
+      // Set online/offline status
       if (value) {
         await DriverStatusService.instance.setOnline(authState.user!.uid);
+
+        // Start tracking when going online (this will get first GPS fix)
+        try {
+          await TrackingService.instance.startTracking();
+
+          if (kDebugMode) {
+            dev.log('[DriverHome] ✅ Tracking started with first GPS fix');
+          }
+        } on Object catch (trackingError) {
+          if (kDebugMode) {
+            dev.log('[DriverHome] ❌ Failed to start tracking: $trackingError');
+          }
+
+          // Revert online status if tracking fails
+          await DriverStatusService.instance.setOffline(authState.user!.uid);
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('فشل الحصول على موقعك: $trackingError'),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 5),
+              ),
+            );
+            setState(() {
+              _isTogglingStatus = false;
+            });
+          }
+          return;
+        }
       } else {
         await DriverStatusService.instance.setOffline(authState.user!.uid);
+        // Stop tracking when going offline
+        TrackingService.instance.stopTracking();
       }
 
       if (mounted) {
@@ -76,6 +151,13 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
           _isOnline = value;
           _isTogglingStatus = false;
         });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(value ? 'أنت الآن متصل ومتاح للطلبات' : 'أنت الآن غير متصل'),
+            backgroundColor: value ? Colors.green : Colors.grey,
+          ),
+        );
       }
 
       if (kDebugMode) {
@@ -96,6 +178,60 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         });
       }
     }
+  }
+
+  bool _isProfileComplete(DriverProfile profile) {
+    return profile.name.isNotEmpty &&
+           profile.vehicleType != null && profile.vehicleType!.isNotEmpty &&
+           profile.vehiclePlate != null && profile.vehiclePlate!.isNotEmpty &&
+           profile.city != null && profile.city!.isNotEmpty;
+  }
+
+  void _showProfileIncompleteDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('أكمل ملفك الشخصي'),
+        content: const Text(
+          'يجب عليك إكمال ملفك الشخصي قبل الاتصال. '
+          'الرجاء ملء: الاسم، نوع السيارة، رقم اللوحة، والمدينة.'
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.push('/profile/edit');
+            },
+            child: const Text('تعديل الملف الشخصي'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLocationPrerequisitesDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('تفعيل الموقع مطلوب'),
+        content: Text(
+          '$errorMessage\n\n'
+          'يجب تفعيل خدمات الموقع (GPS) والسماح للتطبيق بالوصول إلى موقعك '
+          'حتى تتمكن من الاتصال واستقبال الطلبات.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('حسناً'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

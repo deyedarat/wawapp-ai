@@ -275,8 +275,10 @@ if [ "$DEPLOY_HOSTING" = true ]; then
   # Build for web
   echo -e "${YELLOW}🔨 Building Flutter web app (production mode)...${NC}"
   echo "⚠️  This may take several minutes..."
+  echo "🔒 Building with ENVIRONMENT=prod (strict authentication)"
   if [ "$DRY_RUN" = false ]; then
-    flutter build web --release --web-renderer canvaskit
+    # CRITICAL: Must include --dart-define=ENVIRONMENT=prod for security
+    flutter build web --release --web-renderer canvaskit --dart-define=ENVIRONMENT=prod
     
     if [ $? -ne 0 ]; then
       echo -e "${RED}❌ Flutter web build failed!${NC}"
@@ -289,9 +291,9 @@ if [ "$DEPLOY_HOSTING" = true ]; then
       exit 1
     fi
     
-    echo -e "${GREEN}✅ Flutter web app built successfully!${NC}"
+    echo -e "${GREEN}✅ Flutter web app built successfully (PRODUCTION MODE)!${NC}"
   else
-    echo "[DRY RUN] Would run: flutter build web --release --web-renderer canvaskit"
+    echo "[DRY RUN] Would run: flutter build web --release --web-renderer canvaskit --dart-define=ENVIRONMENT=prod"
   fi
   echo ""
 

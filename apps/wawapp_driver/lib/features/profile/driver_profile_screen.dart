@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:core_shared/core_shared.dart';
 import '../../widgets/error_screen.dart';
 import 'providers/driver_profile_providers.dart';
+import '../auth/providers/auth_service_provider.dart';
 
 class DriverProfileScreen extends ConsumerWidget {
   const DriverProfileScreen({super.key});
@@ -72,12 +73,74 @@ class DriverProfileScreen extends ConsumerWidget {
                   _buildInfoTile('عدد الرحلات', '${profile.totalTrips}', Icons.route, readOnly: true),
                   _buildInfoTile('حالة التحقق', profile.isVerified ? 'تم التحقق ✓' : 'لم يتم التحقق', Icons.verified, readOnly: true),
                 ]),
+                const SizedBox(height: 24),
+                _buildLogoutButton(context, ref),
+                const SizedBox(height: 16),
               ],
             ),
           );
         },
       ),
     );
+  }
+
+  Widget _buildLogoutButton(BuildContext context, WidgetRef ref) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: () => _showLogoutConfirmation(context, ref),
+        icon: const Icon(Icons.logout, color: Colors.red),
+        label: const Text(
+          'تسجيل الخروج',
+          style: TextStyle(color: Colors.red),
+        ),
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Colors.red),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showLogoutConfirmation(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تسجيل الخروج'),
+        content: const Text('هل أنت متأكد من تسجيل الخروج؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('تسجيل الخروج'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Perform logout
+      await ref.read(authProvider.notifier).logout();
+
+      // Close loading indicator and navigate
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading
+        context.go('/'); // Go to root, AuthGate will redirect to login
+      }
+    }
   }
 
   Widget _buildProfileHeader(DriverProfile profile) {

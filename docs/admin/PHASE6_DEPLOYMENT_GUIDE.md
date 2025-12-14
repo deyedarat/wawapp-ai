@@ -245,7 +245,8 @@ cd apps/wawapp_admin
 flutter pub get
 
 # Build for web (production)
-flutter build web --release --web-renderer canvaskit
+# CRITICAL: Must include --dart-define=ENVIRONMENT=prod for security
+flutter build web --release --web-renderer canvaskit --dart-define=ENVIRONMENT=prod
 
 # Verify build
 ls -la build/web/
@@ -301,7 +302,8 @@ firebase deploy --only firestore:indexes
 
 ```bash
 cd apps/wawapp_admin
-flutter build web --release
+# CRITICAL: Must include environment flag for production
+flutter build web --release --dart-define=ENVIRONMENT=prod
 cd ../..
 firebase deploy --only hosting
 ```
@@ -635,7 +637,8 @@ firebase deploy --only firestore:indexes
 cd apps/wawapp_admin
 flutter clean
 flutter pub get
-flutter build web --release
+# CRITICAL: Must include environment flag
+flutter build web --release --dart-define=ENVIRONMENT=prod
 cd ../..
 firebase deploy --only hosting
 ```

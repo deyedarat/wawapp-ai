@@ -9,6 +9,7 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/colors.dart';
 import '../../theme/components.dart';
 import '../../theme/theme_extensions.dart';
+import '../auth/providers/auth_service_provider.dart';
 
 class ClientProfileScreen extends ConsumerWidget {
   const ClientProfileScreen({super.key});
@@ -223,9 +224,71 @@ class ClientProfileScreen extends ConsumerWidget {
               ],
             ),
           ),
+          
+          SizedBox(height: WawAppSpacing.lg),
+          
+          // Logout Button
+          _buildLogoutButton(context, ref, l10n),
+          SizedBox(height: WawAppSpacing.lg),
         ],
       ),
     );
+  }
+
+  Widget _buildLogoutButton(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+    return OutlinedButton.icon(
+      onPressed: () => _showLogoutConfirmation(context, ref, l10n),
+      icon: const Icon(Icons.logout),
+      label: Text(l10n.logout ?? 'Logout'),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: context.errorColor,
+        side: BorderSide(color: context.errorColor),
+        padding: EdgeInsetsDirectional.symmetric(
+          vertical: WawAppSpacing.md,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showLogoutConfirmation(BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.logout ?? 'Logout'),
+        content: Text(l10n.logout_confirmation ?? 'Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel ?? 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: context.errorColor),
+            child: Text(l10n.logout ?? 'Logout'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Perform logout
+      await ref.read(authProvider.notifier).logout();
+
+      // Close loading indicator and navigate
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading
+        context.go('/login'); // Go to login
+      }
+    }
   }
 
   Widget _buildStatColumn(BuildContext context, String label, String value, IconData icon) {
