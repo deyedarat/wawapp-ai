@@ -71,6 +71,15 @@ service cloud.firestore {
       allow write: if isSignedIn() && request.auth.uid == driverId;
     }
 
+    // Rate limiting collections
+    match /rate_limits_otp/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    match /rate_limits_pin/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
     match /users/{uid} {
       // Read: only owner
       allow read: if isSignedIn() && request.auth.uid == uid;

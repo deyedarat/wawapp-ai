@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_state.dart';
 import 'phone_pin_auth.dart';
+import 'rate_limiter.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this._authService, this._firebaseAuth)
@@ -73,6 +74,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
 
     try {
+      // Check OTP rate limit before sending
+      await RateLimiter.checkOtpRateLimit();
+      
       if (kDebugMode) {
         print('[AuthNotifier] Calling ensurePhoneSession()');
       }

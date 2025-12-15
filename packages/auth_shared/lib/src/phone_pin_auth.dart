@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'rate_limiter.dart';
 
 String _generateSalt() {
   final r = Random.secure();
@@ -188,6 +189,9 @@ class PhonePinAuth {
   }
 
   Future<bool> verifyPin(String pin) async {
+    // Check PIN rate limit before verifying
+    await RateLimiter.checkPinRateLimit();
+    
     final uid = _auth.currentUser!.uid;
     final docRef = await _userDoc();
     final snap = await docRef.get();
