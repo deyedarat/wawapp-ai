@@ -13,3 +13,4 @@ dependencies:
   cloud_firestore: ^5.4.4
   crypto: ^3.0.3
   flutter_riverpod: ^2.4.9
+  shared_preferences: ^2.2.2
