@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../services/location_service.dart';
 import '../../services/orders_service.dart';
+import '../../services/resilient_orders_service.dart';
 import '../../widgets/error_screen.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/components.dart';
@@ -59,8 +60,9 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
 
   Future<void> _acceptOrder(String orderId) async {
     try {
-      final ordersService = ref.read(ordersServiceProvider);
-      await ordersService.acceptOrder(orderId);
+      // Phase 2 TC-07: Use resilient orders service for acceptance with full observability
+      final resilientOrders = ref.read(resilientOrdersServiceProvider);
+      await resilientOrders.acceptOrder(orderId);
       if (!mounted) {
         return;
       }

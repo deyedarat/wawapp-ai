@@ -8,6 +8,7 @@ import '../../services/analytics_service.dart';
 import '../../services/driver_status_service.dart';
 import '../../services/tracking_service.dart';
 import '../../services/location_service.dart';
+import '../../services/resilient_orders_service.dart';
 import '../auth/providers/auth_service_provider.dart';
 import '../profile/providers/driver_profile_providers.dart';
 import '../../core/theme/colors.dart';
@@ -140,6 +141,26 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
           return;
         }
       } else {
+        // Phase 2 TC-08: Check if driver can go offline (block if active trip)
+        final resilientOrders = ref.read(resilientOrdersServiceProvider);
+        final canGoOffline = await resilientOrders.canGoOffline();
+        
+        if (!canGoOffline) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('لا يمكن الخروج من الخدمة أثناء رحلة نشطة'),
+                backgroundColor: Colors.orange,
+                duration: Duration(seconds: 4),
+              ),
+            );
+            setState(() {
+              _isTogglingStatus = false;
+            });
+          }
+          return; // TC-08: Block offline
+        }
+
         await DriverStatusService.instance.setOffline(authState.user!.uid);
         // Stop tracking when going offline
         TrackingService.instance.stopTracking();
