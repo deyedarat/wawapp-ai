@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
 import '../../services/orders_service.dart';
+import '../../services/resilient_orders_service.dart';
 import '../../services/tracking_service.dart';
 import '../../widgets/error_screen.dart';
 import 'providers/active_order_provider.dart';
@@ -32,8 +33,19 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
 
   Future<void> _transition(String orderId, OrderStatus to) async {
     try {
-      final ordersService = ref.read(ordersServiceProvider);
-      await ordersService.transition(orderId, to);
+      final resilientOrders = ref.read(resilientOrdersServiceProvider);
+      
+      // Phase 2 TC-09: Use resilient service for trip completion with payment monitoring
+      if (to == OrderStatus.completed) {
+        await resilientOrders.completeTrip(orderId);
+      } else if (to == OrderStatus.inProgress) {
+        // TC-09: Also add observability for trip start
+        await resilientOrders.startTrip(orderId);
+      } else {
+        // Other transitions use base method
+        await resilientOrders.transition(orderId, to);
+      }
+      
       if (!mounted) {
         return;
       }
