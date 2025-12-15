@@ -52,7 +52,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     setState(() => _err = null);
 
     if (kDebugMode) {
-      print('[PhonePinLogin] Starting OTP flow with phone: $phone');
+      print('[PhonePinLogin] Starting OTP flow');
     }
 
     // Mark OTP flow as active in provider (survives rebuild)

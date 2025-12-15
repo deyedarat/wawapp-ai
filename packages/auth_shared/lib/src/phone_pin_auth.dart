@@ -41,13 +41,13 @@ class PhonePinAuth {
   Future<void> ensurePhoneSession(String phoneE164) async {
     if (kDebugMode) {
       print(
-        '[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow for phone=$phoneE164',
+        '[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow',
       );
     }
 
     final u = _auth.currentUser;
     if (u != null) {
-      if (kDebugMode) print('[PhonePinAuth] already signed in, uid=${u.uid}');
+      if (kDebugMode) print('[PhonePinAuth] already signed in');
       return;
     }
 
@@ -55,7 +55,7 @@ class PhonePinAuth {
 
     if (kDebugMode) {
       print(
-        '[PhonePinAuth] Calling Firebase verifyPhoneNumber() for phone=$phoneE164',
+        '[PhonePinAuth] Calling Firebase verifyPhoneNumber()',
       );
     }
 
@@ -88,14 +88,14 @@ class PhonePinAuth {
         codeSent: (verificationId, resendToken) {
           if (kDebugMode) {
             print(
-              '[PhonePinAuth] codeSent callback - verificationId=$verificationId, resendToken=$resendToken',
+              '[PhonePinAuth] codeSent callback',
             );
           }
           _lastVerificationId = verificationId;
 
           if (kDebugMode) {
             print(
-              '[PhonePinAuth] Firebase Auth phone verification started successfully: verificationId isNull=${_lastVerificationId == null}',
+              '[PhonePinAuth] Firebase Auth phone verification started successfully',
             );
           }
 
@@ -104,7 +104,7 @@ class PhonePinAuth {
         codeAutoRetrievalTimeout: (vid) {
           if (kDebugMode) {
             print(
-              '[PhonePinAuth] codeAutoRetrievalTimeout callback - verificationId=$vid',
+              '[PhonePinAuth] codeAutoRetrievalTimeout callback',
             );
           }
           _lastVerificationId = vid;
@@ -121,7 +121,7 @@ class PhonePinAuth {
 
       if (kDebugMode) {
         print(
-          '[PhonePinAuth] ensurePhoneSession() completed successfully, verificationId=$_lastVerificationId',
+          '[PhonePinAuth] ensurePhoneSession() completed successfully',
         );
       }
     } catch (e, stackTrace) {
@@ -137,7 +137,7 @@ class PhonePinAuth {
 
   Future<void> confirmOtp(String smsCode) async {
     if (kDebugMode) {
-      print('[PhonePinAuth] confirmOtp() called with smsCode=$smsCode');
+      print('[PhonePinAuth] confirmOtp() called');
     }
 
     final vid = _lastVerificationId;
@@ -149,7 +149,7 @@ class PhonePinAuth {
     }
 
     if (kDebugMode) {
-      print('[PhonePinAuth] Creating credential with verificationId=$vid');
+      print('[PhonePinAuth] Creating credential');
     }
 
     try {

@@ -75,8 +75,8 @@ service cloud.firestore {
       // Read: only owner
       allow read: if isSignedIn() && request.auth.uid == uid;
       
-      // List: allow phone existence queries for unauthenticated users
-      allow list: if request.auth == null;
+      // List: authenticated users only (prevent unauthenticated phone enumeration)
+      allow list: if isSignedIn();
 
       // Create: only owner
       allow create: if isSignedIn() && request.auth.uid == uid;
@@ -125,8 +125,8 @@ service cloud.firestore {
       // Read: only the driver themselves OR any authenticated user (for matching)
       allow read: if isSignedIn() && (request.auth.uid == driverId || true);
 
-      // List: allow phone existence queries for unauthenticated users
-      allow list: if request.auth == null;
+      // List: authenticated users only (prevent unauthenticated phone enumeration)
+      allow list: if isSignedIn();
 
       // Create: only the driver themselves
       allow create: if isSignedIn() && request.auth.uid == driverId;

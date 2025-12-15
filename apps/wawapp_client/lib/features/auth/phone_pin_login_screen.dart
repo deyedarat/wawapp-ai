@@ -109,7 +109,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
       }
     }
     
-    debugPrint('[LoginScreen] _createAccount() called for phone=$phone');
+    debugPrint('[LoginScreen] _createAccount() called');
 
     try {
       await ref.read(authProvider.notifier).sendOtp(phone);
@@ -127,7 +127,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
     ref.listen(authProvider, (prev, next) {
       debugPrint(
-          '[LoginScreen] Auth state changed: otpStage=${next.otpStage}, otpFlowActive=${next.otpFlowActive}, verificationId isNull=${next.verificationId == null}, error=${next.error}');
+          '[LoginScreen] Auth state changed: otpStage=${next.otpStage}, otpFlowActive=${next.otpFlowActive}, error=${next.error}');
 
       if (next.otpStage == OtpStage.codeSent) {
         debugPrint(

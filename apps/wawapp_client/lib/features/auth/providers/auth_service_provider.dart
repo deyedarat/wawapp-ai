@@ -18,7 +18,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
     _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
       if (kDebugMode) {
         print(
-            '[ClientAuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}');
+            '[ClientAuthNotifier] Auth state changed: user=${user?.uid}');
       }
       state = state.copyWith(user: user);
       if (user != null) {
@@ -95,10 +95,10 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         isLoading: true, error: null, otpStage: OtpStage.sending);
     try {
       if (kDebugMode) {
-        print('[ClientAuthNotifier] Sending OTP to $phone');
+        print('[ClientAuthNotifier] Sending OTP');
       }
       await _authService.ensurePhoneSession(phone);
-      if (kDebugMode) print('[ClientAuthNotifier] OTP sent successfully');
+      if (kDebugMode) print('[ClientAuthNotifier] OTP request completed');
       state = state.copyWith(
         isLoading: false,
         phoneE164: phone,
