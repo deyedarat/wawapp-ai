@@ -12,6 +12,7 @@ export 'src/observability/crashlytics_keys_manager.dart';
 export 'src/observability/crashlytics_observer.dart';
 export 'src/observability/network_monitor.dart';
 export 'src/observability/stuck_state_detector.dart';
+export 'src/observability/stuck_state_widgets.dart';
 export 'src/observability/waw_log.dart';
 export 'src/order.dart';
 export 'src/order_status.dart';
