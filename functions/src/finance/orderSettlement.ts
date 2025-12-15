@@ -75,7 +75,7 @@ async function settleOrder(orderId: string, orderData: any): Promise<void> {
     const driverWalletSnap = await transaction.get(driverWalletRef);
 
     let driverBalance = 0;
-    let driverTotalCredited = 0;
+    // let driverTotalCredited = 0;
 
     if (!driverWalletSnap.exists) {
       // Create new driver wallet
@@ -94,7 +94,7 @@ async function settleOrder(orderId: string, orderData: any): Promise<void> {
       });
     } else {
       driverBalance = driverWalletSnap.data()!.balance || 0;
-      driverTotalCredited = driverWalletSnap.data()!.totalCredited || 0;
+      // driverTotalCredited = driverWalletSnap.data()!.totalCredited || 0;
     }
 
     // 2. Get platform wallet (should exist, but create if not)
@@ -102,7 +102,7 @@ async function settleOrder(orderId: string, orderData: any): Promise<void> {
     const platformWalletSnap = await transaction.get(platformWalletRef);
 
     let platformBalance = 0;
-    let platformTotalCredited = 0;
+    // let platformTotalCredited = 0;
 
     if (!platformWalletSnap.exists) {
       // Create platform wallet
@@ -121,7 +121,7 @@ async function settleOrder(orderId: string, orderData: any): Promise<void> {
       });
     } else {
       platformBalance = platformWalletSnap.data()!.balance || 0;
-      platformTotalCredited = platformWalletSnap.data()!.totalCredited || 0;
+      // platformTotalCredited = platformWalletSnap.data()!.totalCredited || 0;
     }
 
     // 3. Update driver wallet

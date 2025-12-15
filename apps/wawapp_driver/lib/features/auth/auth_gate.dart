@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auth_shared/auth_shared.dart';
@@ -60,11 +61,11 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     final authState = ref.watch(authProvider);
 
     debugPrint(
-        '[AuthGate] user: ${authState.user?.uid}, isLoading: ${authState.isLoading}, otpStage: ${authState.otpStage}');
+        '[AuthGate] NAVIGATION_DECISION | user: ${authState.user?.uid}, isLoading: ${authState.isLoading}, otpStage: ${authState.otpStage}, hasPin: ${authState.hasPin}');
 
     // Show loading while checking auth state
     if (authState.isLoading) {
-      debugPrint('[AuthGate] showing loading (auth state loading)');
+      debugPrint('[AuthGate] REDIRECT_REASON=AUTH_LOADING → CircularProgressIndicator');
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -74,11 +75,11 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     if (authState.user == null) {
       // If OTP was sent successfully, show OTP screen
       if (authState.otpStage == OtpStage.codeSent) {
-        debugPrint('[AuthGate] showing OtpScreen (OTP sent)');
+        debugPrint('[AuthGate] REDIRECT_REASON=OTP_CODE_SENT → OtpScreen');
         return const OtpScreen();
       }
 
-      debugPrint('[AuthGate] showing PhonePinLoginScreen (no user)');
+      debugPrint('[AuthGate] REDIRECT_REASON=SIGNED_OUT → PhonePinLoginScreen');
       return const PhonePinLoginScreen();
     }
 
@@ -87,13 +88,21 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 
     return driverProfileAsync.when(
       loading: () {
-        debugPrint('[AuthGate] showing loading (driver profile loading)');
+        debugPrint('[AuthGate] REDIRECT_REASON=PROFILE_LOADING → CircularProgressIndicator');
         return const Scaffold(
           body: Center(child: CircularProgressIndicator()),
         );
       },
       error: (error, stackTrace) {
-        debugPrint('[AuthGate] error loading driver profile: $error');
+        debugPrint('[AuthGate] PROFILE_ERROR: $error');
+
+        // If permission-denied, show create PIN screen instead of logging out
+        if (error.toString().contains('permission-denied')) {
+          debugPrint('[AuthGate] REDIRECT_REASON=PERMISSION_DENIED → CreatePinScreen');
+          return const CreatePinScreen();
+        }
+
+        // For other errors, show error screen
         return Scaffold(
           body: Center(
             child: Column(
@@ -119,14 +128,21 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       data: (doc) {
         debugPrint('[AuthGate] driver doc exists: ${doc?.exists}');
 
-        final data = doc?.data();
+        // If driver document doesn't exist, show CreatePinScreen
+        // The document will be created when user sets PIN (via PhonePinAuth.setPin)
+        if (doc == null || !doc.exists) {
+          debugPrint('[AuthGate] REDIRECT_REASON=NO_DRIVER_DOC → CreatePinScreen');
+          return const CreatePinScreen();
+        }
+
+        final data = doc.data();
         final hasPin =
             data?['pinHash'] != null && (data!['pinHash'] as String).isNotEmpty;
 
         debugPrint('[AuthGate] driver hasPin: $hasPin');
 
         if (!hasPin) {
-          debugPrint('[AuthGate] showing CreatePinScreen (no PIN yet)');
+          debugPrint('[AuthGate] REDIRECT_REASON=NO_PIN_HASH → CreatePinScreen');
           return const CreatePinScreen();
         }
 
@@ -144,7 +160,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
           //   - User properties: total_trips, average_rating, is_verified
         }
 
-        debugPrint('[AuthGate] showing DriverHomeScreen (user + PIN)');
+        debugPrint('[AuthGate] REDIRECT_REASON=AUTHENTICATED_WITH_PIN → DriverHomeScreen');
         return const DriverHomeScreen();
       },
     );
