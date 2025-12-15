@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -263,22 +262,22 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 if (value == 'profile') {
                   context.push('/profile');
                 } else if (value == 'signout') {
-                  final authState = ref.read(authProvider);
-                  if (authState.user != null) {
-                    try {
-                      await DriverStatusService.instance.setOffline(authState.user!.uid);
-                    } on Object catch (e) {
-                      if (kDebugMode) {
-                        dev.log(
-                            '[DriverHome] Error setting offline on logout: $e');
-                      }
-                    }
+                  if (kDebugMode) {
+                    dev.log('[DriverHome] Logout initiated by user');
                   }
+
                   await AnalyticsService.instance.logLogoutClicked();
-                  await FirebaseAuth.instance.signOut();
-                  if (context.mounted) {
-                    context.go('/login');
+
+                  // Use AuthNotifier.logout() instead of FirebaseAuth.signOut()
+                  // This ensures proper state reset and cleanup
+                  await ref.read(authProvider.notifier).logout();
+
+                  if (kDebugMode) {
+                    dev.log('[DriverHome] Logout complete, auth state reset');
                   }
+
+                  // Navigation is handled by AuthGate watching authProvider
+                  // No need for explicit context.go('/') which causes race condition
                 }
               },
               itemBuilder: (context) => [

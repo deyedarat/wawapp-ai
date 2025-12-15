@@ -20,12 +20,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
       if (kDebugMode) {
         print(
-            '[AuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}');
+            '[AuthNotifier] AUTH_STATE_TRANSITION: firebase_auth_changed | user=${user?.uid}, phone=${user?.phoneNumber}');
       }
       state = state.copyWith(user: user);
       if (user != null) {
         _checkHasPin();
       } else {
+        if (kDebugMode) {
+          print('[AuthNotifier] AUTH_STATE_TRANSITION: user_signed_out | setting hasPin=false, phoneE164=null');
+        }
         state = state.copyWith(hasPin: false, phoneE164: null);
       }
     });
@@ -184,28 +187,31 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       if (kDebugMode) {
-        print('[AuthNotifier] Starting logout process...');
+        print('[AuthNotifier] AUTH_STATE_TRANSITION: logout_initiated | user=${_firebaseAuth.currentUser?.uid}');
       }
-      
+
       // Cleanup: stop location, set offline, clear state
       try {
         await DriverCleanupService.instance.cleanupBeforeLogout();
+        if (kDebugMode) {
+          print('[AuthNotifier] Driver cleanup completed');
+        }
       } on Object catch (e) {
         if (kDebugMode) {
           print('[AuthNotifier] Cleanup error (continuing logout): $e');
         }
         // Continue with logout even if cleanup fails
       }
-      
+
       await _authService.signOut();
       state = const AuthState(); // Reset to initial state
-      
+
       if (kDebugMode) {
-        print('[AuthNotifier] Logout complete');
+        print('[AuthNotifier] AUTH_STATE_TRANSITION: logout_complete | user=null, hasPin=false, otpStage=idle');
       }
     } on Object catch (e) {
       if (kDebugMode) {
-        print('[AuthNotifier] Logout error: $e');
+        print('[AuthNotifier] AUTH_STATE_TRANSITION: logout_failed | error=$e');
       }
       state = state.copyWith(
         isLoading: false,

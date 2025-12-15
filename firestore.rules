@@ -121,20 +121,21 @@ service cloud.firestore {
     match /drivers/{driverId} {
       // Admin has full access to all drivers
       allow read, write: if isAdmin();
-      
-      // Read: only the driver themselves
-      allow read: if isSignedIn() && request.auth.uid == driverId;
-      
+
+      // Read: only the driver themselves OR any authenticated user (for matching)
+      allow read: if isSignedIn() && (request.auth.uid == driverId || true);
+
       // List: allow phone existence queries for unauthenticated users
       allow list: if request.auth == null;
 
       // Create: only the driver themselves
       allow create: if isSignedIn() && request.auth.uid == driverId;
 
-      // Update: only the driver themselves AND prevent tampering with admin-only fields
-      allow update: if isSignedIn() 
+      // Update: only the driver themselves
+      // Allow updating any fields EXCEPT admin-only fields
+      allow update: if isSignedIn()
                     && request.auth.uid == driverId
-                    // Prevent drivers from modifying admin-only fields
+                    // Only check admin fields if they exist in the current document
                     && (!('isVerified' in resource.data) || request.resource.data.isVerified == resource.data.isVerified)
                     && (!('rating' in resource.data) || request.resource.data.rating == resource.data.rating)
                     && (!('totalTrips' in resource.data) || request.resource.data.totalTrips == resource.data.totalTrips)
