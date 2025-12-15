@@ -33,6 +33,7 @@ dependencies:
     path: ../../packages/core_shared
   permission_handler: ^11.3.1
   flutter_local_notifications: ^17.2.3
+  package_info_plus: ^8.0.2
   yaml: ^3.1.2
 
 dev_dependencies:
