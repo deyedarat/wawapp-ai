@@ -13,3 +13,5 @@ dependencies:
   cloud_firestore: ^5.4.4
   crypto: ^3.0.3
   flutter_riverpod: ^2.4.9
+  core_shared:
+    path: ../core_shared

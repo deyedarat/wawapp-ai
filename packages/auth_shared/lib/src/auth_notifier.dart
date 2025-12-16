@@ -1,18 +1,26 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:core_shared/core_shared.dart';
 import 'auth_state.dart';
 import 'phone_pin_auth.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this._authService, this._firebaseAuth)
       : super(const AuthState()) {
-    _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
+    _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) async {
       state = state.copyWith(user: user);
       if (user != null) {
+        // Log login success breadcrumb
+        await BreadcrumbService.loginSuccess(userId: user.uid, screen: 'auth_gate');
+        // Update Crashlytics keys
+        await CrashlyticsKeys.setUserId(user.uid);
+        await CrashlyticsKeys.setUserRole('client'); // Will be updated by app
+        await CrashlyticsKeys.setAuthState('authenticated');
         _checkHasPin();
       } else {
         state = state.copyWith(hasPin: false, phoneE164: null);
+        await CrashlyticsKeys.setAuthState('unauthenticated');
       }
     });
   }
@@ -63,6 +71,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       return;
     }
 
+    // Log login attempt breadcrumb
+    await BreadcrumbService.loginAttempt(phone: phone, screen: 'phone_login');
+
     state = state.copyWith(
       isLoading: true,
       error: null,
@@ -98,6 +109,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
         );
         print('[AuthNotifier] Stacktrace: $stackTrace');
       }
+
+      // Log login failed breadcrumb
+      await BreadcrumbService.loginFailed(
+        screen: 'phone_login',
+        reason: e.toString(),
+      );
+
+      // Log non-fatal to Crashlytics
+      WawLog.e('auth_notifier', 'Phone session failed', e, stackTrace);
 
       state = state.copyWith(
         isLoading: false,
@@ -147,6 +167,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
       } else if (errorMessage.contains('No verification id')) {
         errorMessage = 'No verification session found. Please request a new code.';
       }
+
+      // Log login failed breadcrumb
+      await BreadcrumbService.loginFailed(
+        screen: 'otp_verification',
+        reason: errorMessage,
+      );
+
+      // Log non-fatal to Crashlytics
+      WawLog.e('auth_notifier', 'OTP verification failed', e, stackTrace);
 
       state = state.copyWith(isLoading: false, error: errorMessage);
     }

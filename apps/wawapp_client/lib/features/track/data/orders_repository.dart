@@ -21,6 +21,9 @@ class OrdersRepository {
     required double distanceKm,
     required int price,
   }) async {
+    // Log order creation attempt breadcrumb
+    await BreadcrumbService.orderCreateAttempt(userId: ownerId, screen: 'quote_screen');
+
     try {
       debugPrint('[OrdersClient] Creating order for user: $ownerId');
       debugPrint(
@@ -41,6 +44,9 @@ class OrdersRepository {
       debugPrint(
           '[OrdersClient] Order created successfully with ID: ${docRef.id}');
       
+      // Update Crashlytics custom keys
+      await CrashlyticsKeys.setActiveOrderId(docRef.id);
+      
       // Log analytics event
       AnalyticsService.instance.logOrderCreated(
         orderId: docRef.id,
@@ -52,6 +58,17 @@ class OrdersRepository {
     } catch (e, stackTrace) {
       debugPrint('[OrdersClient] Failed to create order: $e');
       debugPrint('[OrdersClient] Stack trace: $stackTrace');
+
+      // Log order creation failure breadcrumb
+      await BreadcrumbService.orderCreateFailed(
+        userId: ownerId,
+        screen: 'quote_screen',
+        reason: e.toString(),
+      );
+
+      // Log non-fatal to Crashlytics
+      WawLog.e('orders_repository', 'Order creation failed', e, stackTrace);
+
       throw AppError.from(e);
     }
   }
@@ -82,6 +99,10 @@ class OrdersRepository {
           .map((doc) =>
               Order.fromFirestore({...doc.data(), 'id': doc.id}))
           .toList();
+    }).handleError((error, stackTrace) {
+      // Log non-fatal for network/Firestore errors
+      WawLog.e('orders_repository', 'Stream error in getUserOrders', error, stackTrace);
+      throw error;
     });
   }
 
@@ -111,6 +132,10 @@ class OrdersRepository {
           .map((doc) =>
               Order.fromFirestore({...doc.data(), 'id': doc.id}))
           .toList();
+    }).handleError((error, stackTrace) {
+      // Log non-fatal for network/Firestore errors
+      WawLog.e('orders_repository', 'Stream error in getUserOrdersByStatus', error, stackTrace);
+      throw error;
     });
   }
 
