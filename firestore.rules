@@ -71,12 +71,21 @@ service cloud.firestore {
       allow write: if isSignedIn() && request.auth.uid == driverId;
     }
 
+    // Rate limiting collections
+    match /rate_limits_otp/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    match /rate_limits_pin/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
     match /users/{uid} {
       // Read: only owner
       allow read: if isSignedIn() && request.auth.uid == uid;
       
-      // List: allow phone existence queries for unauthenticated users
-      allow list: if request.auth == null;
+      // List: authenticated users only (prevent unauthenticated phone enumeration)
+      allow list: if isSignedIn();
 
       // Create: only owner
       allow create: if isSignedIn() && request.auth.uid == uid;
@@ -125,8 +134,8 @@ service cloud.firestore {
       // Read: only the driver themselves OR any authenticated user (for matching)
       allow read: if isSignedIn() && (request.auth.uid == driverId || true);
 
-      // List: allow phone existence queries for unauthenticated users
-      allow list: if request.auth == null;
+      // List: authenticated users only (prevent unauthenticated phone enumeration)
+      allow list: if isSignedIn();
 
       // Create: only the driver themselves
       allow create: if isSignedIn() && request.auth.uid == driverId;

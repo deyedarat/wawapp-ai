@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_state.dart';
 import 'phone_pin_auth.dart';
+import 'rate_limiter.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this._authService, this._firebaseAuth)
@@ -50,7 +51,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> sendOtp(String phone) async {
     if (kDebugMode) {
-      print('[AuthNotifier] sendOtp() called with phone=$phone');
+      print('[AuthNotifier] sendOtp() called');
     }
 
     if (state.otpStage == OtpStage.sending ||
@@ -73,8 +74,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
 
     try {
+      // Check OTP rate limit before sending
+      await RateLimiter.checkOtpRateLimit();
+      
       if (kDebugMode) {
-        print('[AuthNotifier] Calling ensurePhoneSession() for phone=$phone');
+        print('[AuthNotifier] Calling ensurePhoneSession()');
       }
       await _authService.ensurePhoneSession(phone);
 
@@ -88,7 +92,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       if (kDebugMode) {
         print(
-          '[AuthNotifier] ensurePhoneSession() completed, state: otpStage=${state.otpStage}, otpFlowActive=${state.otpFlowActive}, verificationId isNull=${state.verificationId == null}',
+          '[AuthNotifier] ensurePhoneSession() completed, state: otpStage=${state.otpStage}, otpFlowActive=${state.otpFlowActive}',
         );
       }
     } catch (e, stackTrace) {
@@ -115,7 +119,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> verifyOtp(String code) async {
     if (kDebugMode) {
-      print('[AuthNotifier] verifyOtp() called with code=$code');
+      print('[AuthNotifier] verifyOtp() called');
     }
 
     state = state.copyWith(isLoading: true, error: null);

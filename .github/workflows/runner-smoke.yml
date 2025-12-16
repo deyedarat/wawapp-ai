@@ -1,0 +1,11 @@
+name: Runner Smoke
+
+on:
+  workflow_dispatch:
+
+jobs:
+  adb-check:
+    runs-on: [self-hosted, android-device]
+    steps:
+      - name: Show ADB devices
+        run: adb devices -l
