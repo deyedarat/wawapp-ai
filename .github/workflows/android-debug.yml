@@ -6,35 +6,21 @@ on:
 jobs:
   run_driver_smoke:
     runs-on: [self-hosted, label-1]
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Show device
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify device
         run: adb devices -l
 
-      - name: Run driver app for 45s then stop (smoke)
-        shell: pwsh
+      - name: Flutter pub get
         working-directory: apps/wawapp_driver
-        run: |
-          flutter --version
-          flutter pub get
+        run: flutter pub get
 
-          # Start app without blocking the job forever
-          $p = Start-Process -FilePath "flutter" -ArgumentList @("run","-d","R8YW40AW58L","--debug","--verbose") -NoNewWindow -PassThru -RedirectStandardOutput "flutter_run.log" -RedirectStandardError "flutter_run.log"
+      - name: Build debug APK
+        working-directory: apps/wawapp_driver
+        run: flutter build apk --debug
 
-          Start-Sleep -Seconds 45
-
-          # Stop flutter tool (ends the run session)
-          try { Stop-Process -Id $p.Id -Force } catch {}
-
-          # Also ensure the app is stopped on the device (safe even if already stopped)
-          adb shell am force-stop com.wawapp.driver || exit 0
-
-      - name: Upload flutter run log
-        uses: actions/upload-artifact@v4
-        with:
-          name: driver-flutter-run-log
-          path: apps/wawapp_driver/flutter_run.log
-          retention-days: 3
-
+      - name: Install APK on device
+        run: adb install -r apps/wawapp_driver/build/app/outputs/flutter-apk/app-debug.apk
