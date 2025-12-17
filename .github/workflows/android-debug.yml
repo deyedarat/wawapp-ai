@@ -1,0 +1,11 @@
+name: android-debug
+
+on:
+  workflow_dispatch:
+
+jobs:
+  adb_smoke:
+    runs-on: [self-hosted, android-device]
+    steps:
+      - name: Show ADB devices
+        run: adb devices -l
