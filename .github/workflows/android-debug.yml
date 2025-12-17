@@ -4,9 +4,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  adb_smoke:
+  run_driver:
     runs-on: [self-hosted, label-1]
+    timeout-minutes: 15
+
     steps:
-      - name: Show ADB devices
-        run: adb devices -l
+      - uses: actions/checkout@v4
+
+      - name: Run driver app (debug) and capture log
+        working-directory: apps/wawapp_driver
+        run: |
+          flutter --version
+          adb devices -l
+          flutter pub get
+          flutter run -d android --debug --verbose > flutter_run.log 2>&1
+
 
