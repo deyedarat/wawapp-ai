@@ -4,19 +4,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  run_driver:
-    runs-on: [self-hosted, label-1]
+  run_driver_smoke:
+    runs-on: [self-hosted, android-device]
     timeout-minutes: 15
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run driver app (debug) and capture log
+      - name: Show device
+        run: adb devices -l
+
+      - name: Run driver app for 45s then stop (smoke)
+        shell: pwsh
         working-directory: apps/wawapp_driver
         run: |
           flutter --version
-          adb devices -l
           flutter pub get
-          flutter run -d android --debug --verbose > flutter_run.log 2>&1
 
+          # Start app without blocking the job forever
+          $p = Start-Process -FilePath "flutter" -ArgumentList @("run","-d","R8YW40AW58L","--debug","--verbose") -NoNewWindow -PassThru -RedirectStandardOutput "flutter_run.log" -RedirectStandardError "flutter_run.log"
 
+          Start-Sleep -Seconds 45
+
+          # Stop flutter tool (ends the run session)
+          try { Stop-Process -Id $p.Id -Force } catch {}
+
+          # Also ensure the app is stopped on the device (safe even if already stopped)
+          adb shell am force-stop com.wawapp.driver || exit 0
+
+      - name: Upload flutter run log
+        uses: actions/upload-artifact@v4
+        with:
+          name: driver-flutter-run-log
+          path: apps/wawapp_driver/flutter_run.log
+          retention-days: 3
