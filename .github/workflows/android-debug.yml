@@ -5,7 +5,7 @@ on:
 
 jobs:
   run_driver_smoke:
-    runs-on: [self-hosted, android-device]
+    runs-on: [self-hosted, label-1]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -37,3 +37,4 @@ jobs:
           name: driver-flutter-run-log
           path: apps/wawapp_driver/flutter_run.log
           retention-days: 3
+
