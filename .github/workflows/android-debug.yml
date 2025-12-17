@@ -21,6 +21,25 @@ jobs:
       - name: Build debug APK
         working-directory: apps/wawapp_driver
         run: flutter build apk --debug
-
+      
       - name: Install APK on device
         run: adb install -r apps/wawapp_driver/build/app/outputs/flutter-apk/app-debug.apk
+      - name: Launch app on device
+        run: |
+          adb shell am start -n com.wawapp.driver/.MainActivity
+
+      - name: Wait for app startup
+        run: |
+          powershell -command "Start-Sleep -Seconds 10"
+
+      - name: Capture logcat
+        run: |
+          adb logcat -d > driver_logcat.txt
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: driver-smoke-logs
+          path: driver_logcat.txt
+
+
