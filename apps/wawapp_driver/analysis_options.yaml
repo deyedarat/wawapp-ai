@@ -5,6 +5,8 @@ analyzer:
     - build/**
     - lib/generated/**
     - lib/l10n/**
+    - lib/debug/**
+
   errors:
     # حوّل هذه إلى Errors بحيث تفشل التحليلات/الهوكس إذا وُجدت
     use_build_context_synchronously: error
