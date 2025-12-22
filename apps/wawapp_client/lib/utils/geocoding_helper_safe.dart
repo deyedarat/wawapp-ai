@@ -1,15 +1,28 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GeocodingHelper {
-  // استخدم مفتاح API من متغيرات البيئة أو ملف منفصل
+  // API key from environment variables
   static const String _apiKey = String.fromEnvironment('GOOGLE_MAPS_API_KEY',
-      defaultValue: 'YOUR_API_KEY_HERE');
+      defaultValue: '');
 
   static Future<String> reverseGeocode(LatLng position) async {
-    if (_apiKey == 'YOUR_API_KEY_HERE') {
-      // إرجاع عنوان افتراضي إذا لم يتم تعيين المفتاح
+    // FAIL-FAST: Check for missing API key
+    if (_apiKey.isEmpty) {
+      if (kDebugMode) {
+        dev.log(
+          '🚨 ERROR: Google Maps API key is missing!\n'
+          'Returning fallback coordinates instead of address.\n'
+          'See SECRETS_MANAGEMENT.md for setup instructions.',
+          name: 'GeocodingHelperSafe',
+          level: 1000, // WARNING
+        );
+      }
+
+      // Return fallback with coordinates
       return 'نواكشوط، موريتانيا (${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)})';
     }
 

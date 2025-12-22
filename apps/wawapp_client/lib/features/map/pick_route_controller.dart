@@ -1,4 +1,5 @@
 import 'dart:developer' as dev;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
@@ -10,9 +11,27 @@ import '../../core/location/location_service.dart';
 // Use Google Maps LatLng directly to avoid conflicts
 typedef MapLatLng = LatLng;
 
+/// Provider for Google Maps API key
+/// CRITICAL: Must be set via --dart-define=GOOGLE_MAPS_API_KEY=your_key
+/// or in api_keys.xml for Android builds
 final mapsApiKeyProvider = Provider<String>((ref) {
-  const key = String.fromEnvironment('MAPS_API_KEY',
-      defaultValue: 'AIzaSyBkeDIcXg0M-zfXogKtHfyZWWdNb916vjU');
+  const key = String.fromEnvironment('GOOGLE_MAPS_API_KEY', defaultValue: '');
+
+  // FAIL-FAST: Validate API key in debug mode
+  if (kDebugMode && key.isEmpty) {
+    dev.log(
+      '🚨 CRITICAL: GOOGLE_MAPS_API_KEY is not set!\n'
+      'Maps and geocoding features will NOT work.\n'
+      '\n'
+      'Setup options:\n'
+      '1. Build with: flutter run --dart-define=GOOGLE_MAPS_API_KEY=your_key\n'
+      '2. Create api_keys.xml (see SECRETS_MANAGEMENT.md)\n'
+      '3. Copy .env.example to .env and set GOOGLE_MAPS_API_KEY\n',
+      name: 'MapApi Key',
+      level: 2000, // SEVERE
+    );
+  }
+
   return key;
 });
 
