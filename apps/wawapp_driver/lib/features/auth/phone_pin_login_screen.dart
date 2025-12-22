@@ -85,6 +85,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
         child: Column(
           children: [
             TextField(
+              key: const Key('phoneField'),
               controller: _phone,
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
@@ -113,6 +114,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
               ),
             const SizedBox(height: 8),
             ElevatedButton(
+              key: const Key('continueButton'),
               onPressed: (authState.isLoading ||
                       authState.otpStage == OtpStage.sending ||
                       authState.otpStage == OtpStage.codeSent)

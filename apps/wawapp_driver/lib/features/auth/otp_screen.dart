@@ -69,6 +69,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         child: Column(
           children: [
             TextField(
+                key: const Key('otpField'),
                 maxLength: 6,
                 controller: _code,
                 keyboardType: TextInputType.number,
@@ -80,6 +81,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                       style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
+                key: const Key('verifyButton'),
                 onPressed: authState.isLoading ? null : _verify,
                 child: authState.isLoading
                     ? const SizedBox(

@@ -84,12 +84,14 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
         child: Column(
           children: [
             TextField(
+                key: const Key('pinField'),
                 maxLength: 4,
                 controller: _p1,
                 keyboardType: TextInputType.number,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'PIN')),
             TextField(
+                key: const Key('confirmPinField'),
                 maxLength: 4,
                 controller: _p2,
                 keyboardType: TextInputType.number,
@@ -102,6 +104,7 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
                       style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
+                key: const Key('savePinButton'),
                 onPressed: authState.isLoading ? null : _save,
                 child: const Text('Save')),
           ],

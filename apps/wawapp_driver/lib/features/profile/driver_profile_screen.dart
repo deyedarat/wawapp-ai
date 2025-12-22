@@ -88,6 +88,7 @@ class DriverProfileScreen extends ConsumerWidget {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
+        key: const Key('logoutButton'),
         onPressed: () => _showLogoutConfirmation(context, ref),
         icon: const Icon(Icons.logout, color: Colors.red),
         label: const Text(
