@@ -1,4 +1,5 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../features/reports/models/reports_filter_state.dart';
@@ -26,7 +27,9 @@ final overviewReportProvider = FutureProvider<OverviewReportData?>((ref) async {
 
     return OverviewReportData.fromJson(result.data);
   } catch (e) {
-    print('Error fetching overview report: $e');
+    if (kDebugMode) {
+      print('Error fetching overview report: $e');
+    }
     rethrow;
   }
 });
@@ -48,7 +51,9 @@ final financialReportProvider = FutureProvider<FinancialReportData?>((ref) async
 
     return FinancialReportData.fromJson(result.data);
   } catch (e) {
-    print('Error fetching financial report: $e');
+    if (kDebugMode) {
+      print('Error fetching financial report: $e');
+    }
     rethrow;
   }
 });
@@ -72,7 +77,9 @@ final driverPerformanceReportProvider =
 
     return DriverPerformanceReportData.fromJson(result.data);
   } catch (e) {
-    print('Error fetching driver performance report: $e');
+    if (kDebugMode) {
+      print('Error fetching driver performance report: $e');
+    }
     rethrow;
   }
 });

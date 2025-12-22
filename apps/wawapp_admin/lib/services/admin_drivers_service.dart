@@ -5,6 +5,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:core_shared/core_shared.dart';
 
 class AdminDriversService {
@@ -39,7 +40,9 @@ class AdminDriversService {
       if (!doc.exists) return null;
       return DriverProfile.fromFirestore(doc);
     } catch (e) {
-      print('Error fetching driver: $e');
+      if (kDebugMode) {
+        print('Error fetching driver: $e');
+      }
       return null;
     }
   }
@@ -61,7 +64,9 @@ class AdminDriversService {
 
       return true;
     } catch (e) {
-      print('Error blocking driver: $e');
+      if (kDebugMode) {
+        print('Error blocking driver: $e');
+      }
       return false;
     }
   }
@@ -82,7 +87,9 @@ class AdminDriversService {
 
       return true;
     } catch (e) {
-      print('Error unblocking driver: $e');
+      if (kDebugMode) {
+        print('Error unblocking driver: $e');
+      }
       return false;
     }
   }
@@ -102,7 +109,9 @@ class AdminDriversService {
 
       return true;
     } catch (e) {
-      print('Error verifying driver: $e');
+      if (kDebugMode) {
+        print('Error verifying driver: $e');
+      }
       return false;
     }
   }
@@ -111,7 +120,7 @@ class AdminDriversService {
   Future<Map<String, int>> getDriverStats() async {
     try {
       final snapshot = await _firestore.collection('drivers').get();
-      
+
       int totalDrivers = snapshot.size;
       int onlineDrivers = 0;
       int verifiedDrivers = 0;
@@ -131,7 +140,9 @@ class AdminDriversService {
         'blocked': blockedDrivers,
       };
     } catch (e) {
-      print('Error fetching driver stats: $e');
+      if (kDebugMode) {
+        print('Error fetching driver stats: $e');
+      }
       return {};
     }
   }

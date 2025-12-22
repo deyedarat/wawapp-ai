@@ -146,11 +146,13 @@ abstract class BaseAnalyticsService {
           'app_state': 'foreground',
         },
       );
-      if (kDebugMode)
+      if (kDebugMode) {
         print('[Analytics] notification_delivered: $notificationType');
+      }
     } on Object catch (e) {
-      if (kDebugMode)
+      if (kDebugMode) {
         print('[Analytics] Error logging notification_delivered: $e');
+      }
     }
   }
 
@@ -176,12 +178,14 @@ abstract class BaseAnalyticsService {
           'app_state': appState,
         },
       );
-      if (kDebugMode)
+      if (kDebugMode) {
         print(
             '[Analytics] notification_tapped: $notificationType ($appState)');
+      }
     } on Object catch (e) {
-      if (kDebugMode)
+      if (kDebugMode) {
         print('[Analytics] Error logging notification_tapped: $e');
+      }
     }
   }
 

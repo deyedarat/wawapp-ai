@@ -17,8 +17,10 @@ void main() async {
     // Get configuration
     final config = AppConfigFactory.current;
 
-    // Log environment information
-    _logEnvironmentInfo(config);
+    // Log environment information (debug only)
+    if (kDebugMode) {
+      _logEnvironmentInfo(config);
+    }
 
     // CRITICAL: Safety check for production builds
     if (!config.useStrictAuth && kReleaseMode) {
