@@ -5,6 +5,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:core_shared/core_shared.dart';
 
 class AdminClientsService {
@@ -39,7 +40,9 @@ class AdminClientsService {
       if (!doc.exists) return null;
       return ClientProfile.fromFirestore(doc);
     } catch (e) {
-      print('Error fetching client: $e');
+      if (kDebugMode) {
+        print('Error fetching client: $e');
+      }
       return null;
     }
   }
@@ -66,7 +69,9 @@ class AdminClientsService {
       await _firestore.collection('clients').doc(clientId).update(updateData);
       return true;
     } catch (e) {
-      print('Error setting client verification: $e');
+      if (kDebugMode) {
+        print('Error setting client verification: $e');
+      }
       return false;
     }
   }
@@ -87,7 +92,9 @@ class AdminClientsService {
 
       return true;
     } catch (e) {
-      print('Error blocking client: $e');
+      if (kDebugMode) {
+        print('Error blocking client: $e');
+      }
       return false;
     }
   }
@@ -108,7 +115,9 @@ class AdminClientsService {
 
       return true;
     } catch (e) {
-      print('Error unblocking client: $e');
+      if (kDebugMode) {
+        print('Error unblocking client: $e');
+      }
       return false;
     }
   }
@@ -117,7 +126,7 @@ class AdminClientsService {
   Future<Map<String, int>> getClientStats() async {
     try {
       final snapshot = await _firestore.collection('clients').get();
-      
+
       int totalClients = snapshot.size;
       int verifiedClients = 0;
       int blockedClients = 0;
@@ -134,7 +143,9 @@ class AdminClientsService {
         'blocked': blockedClients,
       };
     } catch (e) {
-      print('Error fetching client stats: $e');
+      if (kDebugMode) {
+        print('Error fetching client stats: $e');
+      }
       return {};
     }
   }

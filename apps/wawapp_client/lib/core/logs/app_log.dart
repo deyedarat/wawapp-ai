@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Simple logging utility for debugging
 class AppLog {
   static final List<String> _logs = [];
@@ -12,8 +14,10 @@ class AppLog {
       _logs.removeAt(0);
     }
 
-    // Print in debug mode
-    print(logEntry);
+    // Print in debug mode only
+    if (kDebugMode) {
+      print(logEntry);
+    }
   }
 
   static List<String> getLogs() => List.unmodifiable(_logs);

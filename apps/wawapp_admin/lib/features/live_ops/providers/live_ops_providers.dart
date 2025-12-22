@@ -4,6 +4,7 @@
  */
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:core_shared/core_shared.dart';
@@ -110,7 +111,9 @@ final liveDriversStreamProvider = StreamProvider<List<LiveDriverMarker>>((ref) {
           totalTrips: data['totalTrips'] as int? ?? 0,
         ));
       } catch (e) {
-        print('Error parsing driver ${doc.id}: $e');
+        if (kDebugMode) {
+          print('Error parsing driver ${doc.id}: $e');
+        }
       }
     }
 
@@ -249,7 +252,9 @@ final liveOrdersStreamProvider = StreamProvider<List<LiveOrderMarker>>((ref) {
 
         markers.add(marker);
       } catch (e) {
-        print('Error parsing order ${doc.id}: $e');
+        if (kDebugMode) {
+          print('Error parsing order ${doc.id}: $e');
+        }
       }
     }
 

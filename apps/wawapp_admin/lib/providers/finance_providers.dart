@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../features/finance/models/wallet_models.dart';
@@ -119,7 +120,9 @@ class PayoutService {
 
       return result.data['payoutId'] as String;
     } catch (e) {
-      print('Error creating payout request: $e');
+      if (kDebugMode) {
+        print('Error creating payout request: $e');
+      }
       rethrow;
     }
   }
@@ -138,7 +141,9 @@ class PayoutService {
         if (note != null) 'note': note,
       });
     } catch (e) {
-      print('Error updating payout status: $e');
+      if (kDebugMode) {
+        print('Error updating payout status: $e');
+      }
       rethrow;
     }
   }

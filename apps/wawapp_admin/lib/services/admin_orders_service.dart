@@ -5,6 +5,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:core_shared/core_shared.dart' as core_shared;
 
 class AdminOrdersService {
@@ -39,7 +40,9 @@ class AdminOrdersService {
       if (!doc.exists) return null;
       return core_shared.Order.fromFirestoreWithId(doc.id, doc.data()!);
     } catch (e) {
-      print('Error fetching order: $e');
+      if (kDebugMode) {
+        print('Error fetching order: $e');
+      }
       return null;
     }
   }
@@ -63,7 +66,9 @@ class AdminOrdersService {
 
       return true;
     } catch (e) {
-      print('Error cancelling order: $e');
+      if (kDebugMode) {
+        print('Error cancelling order: $e');
+      }
       return false;
     }
   }
@@ -84,7 +89,9 @@ class AdminOrdersService {
 
       return true;
     } catch (e) {
-      print('Error reassigning order: $e');
+      if (kDebugMode) {
+        print('Error reassigning order: $e');
+      }
       return false;
     }
   }
@@ -112,7 +119,9 @@ class AdminOrdersService {
 
       return stats;
     } catch (e) {
-      print('Error fetching order stats: $e');
+      if (kDebugMode) {
+        print('Error fetching order stats: $e');
+      }
       return {};
     }
   }

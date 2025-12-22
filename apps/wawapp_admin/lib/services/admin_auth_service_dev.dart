@@ -6,6 +6,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 class AdminAuthServiceDev {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -77,7 +78,9 @@ class AdminAuthServiceDev {
       }
       return doc.data();
     } catch (e) {
-      print('Error fetching admin profile: $e');
+      if (kDebugMode) {
+        print('Error fetching admin profile: $e');
+      }
       return null;
     }
   }
