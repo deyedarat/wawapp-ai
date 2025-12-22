@@ -36,14 +36,18 @@ class TrackingService {
     }
 
     await _loadRemoteConfig();
-    debugPrint('[TRACKING] Starting tracking for driver: ${user.uid}');
+    if (kDebugMode) {
+      debugPrint('[TRACKING] Starting tracking for driver: ${user.uid}');
+    }
     dev.log('[tracking] start');
     _isTracking = true;
 
     // NEW: Subscribe to online status changes - location updates whenever driver is online
     _onlineStatusSubscription =
         DriverStatusService.instance.watchOnlineStatus(user.uid).listen((isOnline) {
-      debugPrint('[TRACKING] Online status changed: ${isOnline ? "ONLINE" : "OFFLINE"}');
+      if (kDebugMode) {
+        debugPrint('[TRACKING] Online status changed: ${isOnline ? "ONLINE" : "OFFLINE"}');
+      }
       if (isOnline) {
         _startLocationUpdates(user.uid);
       } else {
@@ -54,7 +58,9 @@ class TrackingService {
     // KEEP EXISTING: Subscribe to active orders for monitoring
     _orderSubscription =
         _ordersService.getDriverActiveOrders(user.uid).listen((orders) {
-      debugPrint('[TRACKING] Active orders count: ${orders.length}');
+      if (kDebugMode) {
+        debugPrint('[TRACKING] Active orders count: ${orders.length}');
+      }
       // When driver has active order, tracking is already running via online status
       // This subscription is kept for monitoring and future enhancements
     });
@@ -65,7 +71,9 @@ class TrackingService {
       return;
     }
 
-    debugPrint('[TRACKING] Stopping tracking');
+    if (kDebugMode) {
+      debugPrint('[TRACKING] Stopping tracking');
+    }
     dev.log('[tracking] stop');
     _isTracking = false;
     _stopLocationUpdates();
@@ -78,11 +86,15 @@ class TrackingService {
     _positionUpdatesCount = 0;
     _firstFixTimestamp = null;
 
-    debugPrint('$_logTag Starting location updates for driver: $driverId');
+    if (kDebugMode) {
+      debugPrint('$_logTag Starting location updates for driver: $driverId');
+    }
 
     // FIRST-FIX GUARANTEE: Get immediate location before starting stream
     try {
-      debugPrint('$_logTag Obtaining first GPS fix...');
+      if (kDebugMode) {
+        debugPrint('$_logTag Obtaining first GPS fix...');
+      }
       final firstPosition = await _locationService.getCurrentPosition(
         timeout: const Duration(seconds: 20),
       );
@@ -90,33 +102,45 @@ class TrackingService {
       _firstFixTimestamp = DateTime.now();
       _positionUpdatesCount++;
 
-      debugPrint('$_logTag ✅ First fix obtained in ${_firstFixTimestamp!.difference(DateTime.now()).inSeconds.abs()}s');
-      debugPrint('$_logTag First position: lat=${firstPosition.latitude}, lng=${firstPosition.longitude}, accuracy=${firstPosition.accuracy}m');
+      if (kDebugMode) {
+        debugPrint('$_logTag ✅ First fix obtained in ${_firstFixTimestamp!.difference(DateTime.now()).inSeconds.abs()}s');
+        debugPrint('$_logTag First position: lat=${firstPosition.latitude}, lng=${firstPosition.longitude}, accuracy=${firstPosition.accuracy}m');
+      }
 
       // Write first position immediately to Firestore
       await _writeLocationToFirestore(driverId, firstPosition);
       _lastPosition = firstPosition;
 
     } on TimeoutException catch (e) {
-      debugPrint('$_logTag ❌ First fix timeout: $e');
+      if (kDebugMode) {
+        debugPrint('$_logTag ❌ First fix timeout: $e');
+      }
       dev.log('[tracking] first-fix timeout: $e');
       throw Exception('Could not obtain GPS fix within 20 seconds. Please check GPS signal.');
     } on LocationServiceDisabledException {
-      debugPrint('$_logTag ❌ GPS disabled during first fix');
+      if (kDebugMode) {
+        debugPrint('$_logTag ❌ GPS disabled during first fix');
+      }
       dev.log('[tracking] gps-disabled');
       throw Exception('GPS was disabled. Please enable location services.');
     } on Object catch (e) {
-      debugPrint('$_logTag ❌ First fix error: $e');
+      if (kDebugMode) {
+        debugPrint('$_logTag ❌ First fix error: $e');
+      }
       dev.log('[tracking] first-fix error: $e');
       throw Exception('Failed to get initial location: $e');
     }
 
     // Start position stream for continuous updates
-    debugPrint('$_logTag Starting position stream for continuous updates...');
+    if (kDebugMode) {
+      debugPrint('$_logTag Starting position stream for continuous updates...');
+    }
     _locationService.startPositionStream(
       onPosition: (Position position) {
         _positionUpdatesCount++;
-        debugPrint('$_logTag Position update #$_positionUpdatesCount: lat=${position.latitude}, lng=${position.longitude}');
+        if (kDebugMode) {
+          debugPrint('$_logTag Position update #$_positionUpdatesCount: lat=${position.latitude}, lng=${position.longitude}');
+        }
 
         // Check if significant movement occurred
         if (_lastPosition != null) {
@@ -127,15 +151,21 @@ class TrackingService {
             position.longitude,
           );
 
-          debugPrint('$_logTag Distance from last position: ${distance.toStringAsFixed(1)}m');
+          if (kDebugMode) {
+            debugPrint('$_logTag Distance from last position: ${distance.toStringAsFixed(1)}m');
+          }
 
           if (distance < 20) {
             _consecutiveSmallMoves++;
-            debugPrint('$_logTag Small movement detected ($_consecutiveSmallMoves consecutive)');
+            if (kDebugMode) {
+              debugPrint('$_logTag Small movement detected ($_consecutiveSmallMoves consecutive)');
+            }
 
             // Skip write if barely moving
             if (_consecutiveSmallMoves > 3) {
-              debugPrint('$_logTag Skipping write due to minimal movement');
+              if (kDebugMode) {
+                debugPrint('$_logTag Skipping write due to minimal movement');
+              }
               return;
             }
           } else {
@@ -147,12 +177,16 @@ class TrackingService {
         _writeLocationToFirestore(driverId, position).then((_) {
           _lastPosition = position;
         }).catchError((Object error) {
-          debugPrint('$_logTag ❌ Error writing location: $error');
+          if (kDebugMode) {
+            debugPrint('$_logTag ❌ Error writing location: $error');
+          }
           dev.log('[tracking] write-error: $error');
         });
       },
       onError: (Object error) {
-        debugPrint('$_logTag ❌ Position stream error: $error');
+        if (kDebugMode) {
+          debugPrint('$_logTag ❌ Position stream error: $error');
+        }
         dev.log('[tracking] stream-error: $error');
         // Stream errors are handled but don't stop tracking
         // User will be notified through the error callback
@@ -161,7 +195,9 @@ class TrackingService {
 
     // Also start periodic timer as backup (every 30 seconds)
     _updateTimer = Timer.periodic(Duration(seconds: _updateIntervalSeconds * 3), (_) async {
-      debugPrint('$_logTag Periodic backup update (updates count: $_positionUpdatesCount)');
+      if (kDebugMode) {
+        debugPrint('$_logTag Periodic backup update (updates count: $_positionUpdatesCount)');
+      }
 
       // If stream hasn't provided updates recently, force a getCurrentPosition
       if (_lastPosition == null || DateTime.now().difference(_firstFixTimestamp!).inSeconds > 60) {
@@ -171,13 +207,17 @@ class TrackingService {
           _lastPosition = position;
           _positionUpdatesCount++;
         } on Object catch (e) {
-          debugPrint('$_logTag ❌ Periodic update error: $e');
+          if (kDebugMode) {
+            debugPrint('$_logTag ❌ Periodic update error: $e');
+          }
           dev.log('[tracking] periodic-error: $e');
         }
       }
     });
 
-    debugPrint('$_logTag Location tracking fully started for driver: $driverId');
+    if (kDebugMode) {
+      debugPrint('$_logTag Location tracking fully started for driver: $driverId');
+    }
   }
 
   /// Write location to Firestore with comprehensive logging
@@ -185,8 +225,10 @@ class TrackingService {
     final writeStartTime = DateTime.now();
 
     try {
-      debugPrint('$_logTag Writing to Firestore: driver_locations/$driverId');
-      debugPrint('$_logTag Position: lat=${position.latitude}, lng=${position.longitude}, accuracy=${position.accuracy}m');
+      if (kDebugMode) {
+        debugPrint('$_logTag Writing to Firestore: driver_locations/$driverId');
+        debugPrint('$_logTag Position: lat=${position.latitude}, lng=${position.longitude}, accuracy=${position.accuracy}m');
+      }
 
       await _firestore.collection('driver_locations').doc(driverId).set({
         'lat': position.latitude,
@@ -199,31 +241,41 @@ class TrackingService {
 
       final writeDuration = DateTime.now().difference(writeStartTime).inMilliseconds;
 
-      debugPrint('$_logTag ✅ Firestore write successful (${writeDuration}ms)');
-      debugPrint('$_logTag Path: driver_locations/$driverId');
-      debugPrint('$_logTag Data: lat=${position.latitude}, lng=${position.longitude}, updatedAt=SERVER_TIMESTAMP');
+      if (kDebugMode) {
+        debugPrint('$_logTag ✅ Firestore write successful (${writeDuration}ms)');
+        debugPrint('$_logTag Path: driver_locations/$driverId');
+        debugPrint('$_logTag Data: lat=${position.latitude}, lng=${position.longitude}, updatedAt=SERVER_TIMESTAMP');
+      }
 
       dev.log('[tracking] firestore-write lat=${position.latitude} lng=${position.longitude} accuracy=${position.accuracy}m duration=${writeDuration}ms');
 
     } on FirebaseException catch (e) {
-      debugPrint('$_logTag ❌ Firestore write failed: ${e.code} - ${e.message}');
+      if (kDebugMode) {
+        debugPrint('$_logTag ❌ Firestore write failed: ${e.code} - ${e.message}');
+      }
       dev.log('[tracking] firestore-error: ${e.code}');
 
       if (e.code == 'permission-denied') {
-        debugPrint('$_logTag ⚠️ Permission denied writing to driver_locations/$driverId');
-        debugPrint('$_logTag Check Firestore security rules');
+        if (kDebugMode) {
+          debugPrint('$_logTag ⚠️ Permission denied writing to driver_locations/$driverId');
+          debugPrint('$_logTag Check Firestore security rules');
+        }
       }
 
       rethrow;
     } on Object catch (e) {
-      debugPrint('$_logTag ❌ Unexpected error writing to Firestore: $e');
+      if (kDebugMode) {
+        debugPrint('$_logTag ❌ Unexpected error writing to Firestore: $e');
+      }
       dev.log('[tracking] write-error: $e');
       rethrow;
     }
   }
 
   void _stopLocationUpdates() {
-    debugPrint('$_logTag Stopping location updates');
+    if (kDebugMode) {
+      debugPrint('$_logTag Stopping location updates');
+    }
     _updateTimer?.cancel();
     _updateTimer = null;
     _lastPosition = null;
@@ -234,7 +286,9 @@ class TrackingService {
     // Stop position stream
     _locationService.stopPositionStream();
 
-    debugPrint('$_logTag Location updates stopped');
+    if (kDebugMode) {
+      debugPrint('$_logTag Location updates stopped');
+    }
   }
 
   Future<void> _loadRemoteConfig() async {
@@ -254,7 +308,9 @@ class TrackingService {
         _updateIntervalSeconds = 60; // Max 60 seconds
       }
     } on Object catch (e) {
-      debugPrint('$_logTag Failed to load remote config, using default: $e');
+      if (kDebugMode) {
+        debugPrint('$_logTag Failed to load remote config, using default: $e');
+      }
       _updateIntervalSeconds = 10; // Fallback
     }
   }
