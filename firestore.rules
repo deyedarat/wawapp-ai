@@ -72,11 +72,12 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      // Read: only owner
+      // Read: only owner (get by document ID)
       allow read: if isSignedIn() && request.auth.uid == uid;
-      
-      // List: allow phone existence queries for unauthenticated users
-      allow list: if request.auth == null;
+
+      // SECURITY FIX: Removed unauthenticated list access (prevented phone enumeration)
+      // List queries not needed for normal app flow - users access their own doc by UID
+      // If phone lookup is needed, use Cloud Functions with proper rate limiting
 
       // Create: only owner
       allow create: if isSignedIn() && request.auth.uid == uid;
@@ -122,11 +123,13 @@ service cloud.firestore {
       // Admin has full access to all drivers
       allow read, write: if isAdmin();
 
-      // Read: only the driver themselves OR any authenticated user (for matching)
-      allow read: if isSignedIn() && (request.auth.uid == driverId || true);
+      // SECURITY FIX: Removed "|| true" - was allowing ANY authenticated user to read ANY driver
+      // Read: only the driver themselves
+      // Note: Order matching uses driver_locations collection, not /drivers
+      allow read: if isSignedIn() && request.auth.uid == driverId;
 
-      // List: allow phone existence queries for unauthenticated users
-      allow list: if request.auth == null;
+      // SECURITY FIX: Removed unauthenticated list access (prevented phone enumeration)
+      // List queries should use driver_locations for active drivers, not /drivers collection
 
       // Create: only the driver themselves
       allow create: if isSignedIn() && request.auth.uid == driverId;
