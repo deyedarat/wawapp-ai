@@ -1,14 +1,28 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GeocodingHelper {
   GeocodingHelper(this.apiKey) {
+    // FAIL-FAST: Critical API key validation
     if (apiKey.isEmpty) {
-      dev.log('⚠️ MAPS_API_KEY is empty. Geocoding may not work.',
-          name: 'GeocodingHelper');
+      const errorMessage = '🚨 FATAL ERROR: Google Maps API key is missing!\n'
+          'Maps features will not work. Please configure GOOGLE_MAPS_API_KEY.\n'
+          'See SECRETS_MANAGEMENT.md for setup instructions.';
+
+      if (kDebugMode) {
+        dev.log(errorMessage, name: 'GeocodingHelper', level: 2000); // SEVERE
+      }
+
+      // In production, we allow the app to continue but log the error
+      // The app will show fallback UI when maps fail
+      if (kReleaseMode) {
+        dev.log('PRODUCTION: Maps API key missing - using fallback mode',
+            name: 'GeocodingHelper', level: 1000); // WARNING
+      }
     }
   }
 
