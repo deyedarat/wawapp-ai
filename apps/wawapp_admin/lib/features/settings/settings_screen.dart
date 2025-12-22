@@ -5,6 +5,15 @@ import '../../core/widgets/admin_scaffold.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
+  void _showComingSoon(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('هذه الميزة قيد التطوير - Coming Soon'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AdminScaffold(
@@ -29,9 +38,7 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.language,
                     title: 'اللغة',
                     subtitle: 'العربية',
-                    onTap: () {
-                      // TODO: Change language
-                    },
+                    onTap: () => _showComingSoon(context),
                   ),
                   Divider(height: AdminSpacing.lg),
                   _buildSettingItem(
@@ -39,9 +46,7 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.dark_mode,
                     title: 'السمة',
                     subtitle: 'فاتحة',
-                    onTap: () {
-                      // TODO: Change theme
-                    },
+                    onTap: () => _showComingSoon(context),
                   ),
                   Divider(height: AdminSpacing.lg),
                   _buildSettingItem(
@@ -49,9 +54,7 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.notifications,
                     title: 'الإشعارات',
                     subtitle: 'مفعلة',
-                    onTap: () {
-                      // TODO: Notification settings
-                    },
+                    onTap: () => _showComingSoon(context),
                   ),
                 ],
               ),
@@ -77,9 +80,7 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.monetization_on,
                     title: 'أسعار التوصيل',
                     subtitle: 'إدارة أسعار الخدمات',
-                    onTap: () {
-                      // TODO: Pricing settings
-                    },
+                    onTap: () => _showComingSoon(context),
                   ),
                   Divider(height: AdminSpacing.lg),
                   _buildSettingItem(
@@ -87,9 +88,7 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.map,
                     title: 'المناطق المخدومة',
                     subtitle: 'إدارة مناطق التغطية',
-                    onTap: () {
-                      // TODO: Coverage areas
-                    },
+                    onTap: () => _showComingSoon(context),
                   ),
                   Divider(height: AdminSpacing.lg),
                   _buildSettingItem(
@@ -97,9 +96,7 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.timer,
                     title: 'أوقات العمل',
                     subtitle: 'تحديد أوقات الخدمة',
-                    onTap: () {
-                      // TODO: Working hours
-                    },
+                    onTap: () => _showComingSoon(context),
                   ),
                 ],
               ),
@@ -125,9 +122,7 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.backup,
                     title: 'النسخ الاحتياطي',
                     subtitle: 'آخر نسخة: 2024-12-09',
-                    onTap: () {
-                      // TODO: Backup
-                    },
+                    onTap: () => _showComingSoon(context),
                   ),
                   Divider(height: AdminSpacing.lg),
                   _buildSettingItem(
@@ -135,9 +130,7 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.security,
                     title: 'الأمان والخصوصية',
                     subtitle: 'إعدادات الحماية',
-                    onTap: () {
-                      // TODO: Security settings
-                    },
+                    onTap: () => _showComingSoon(context),
                   ),
                   Divider(height: AdminSpacing.lg),
                   _buildSettingItem(
@@ -145,9 +138,7 @@ class SettingsScreen extends StatelessWidget {
                     icon: Icons.info,
                     title: 'عن التطبيق',
                     subtitle: 'الإصدار 1.0.0',
-                    onTap: () {
-                      // TODO: About
-                    },
+                    onTap: () => _showComingSoon(context),
                   ),
                 ],
               ),
