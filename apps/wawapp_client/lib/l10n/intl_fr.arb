@@ -155,6 +155,7 @@
   "terms": "Conditions d'utilisation",
   "help": "Aide",
   "logout": "Déconnexion",
+  "logout_confirmation": "Êtes-vous sûr de vouloir vous déconnecter?",
   "profile_updated": "Profil mis à jour",
   "version": "Version",
   "no_profile": "Profil non configuré",

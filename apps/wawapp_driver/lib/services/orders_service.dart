@@ -57,14 +57,15 @@ class OrdersService {
         dev.log('[Matching] ✅ Driver is ONLINE - proceeding to query Firestore');
       }
 
-      // REQUIRED COMPOSITE INDEX: orders [status ASC, assignedDriverId ASC, createdAt DESC]
-      // Deploy via: firebase deploy --only firestore:indexes
-      // Or create manually in Firebase Console: https://console.firebase.google.com/project/_/firestore/indexes
+      // NOTE: We query only by status and createdAt because some old orders
+      // don't have assignedDriverId field at all (field missing, not null).
+      // We filter for unassigned orders in-memory after fetching.
+      // REQUIRED COMPOSITE INDEX: orders [status ASC, createdAt DESC]
       return _firestore
           .collection('orders')
           .where('status', isEqualTo: statusValue)
-          .where('assignedDriverId', isNull: true)
           .orderBy('createdAt', descending: true)
+          .limit(50) // Fetch more to ensure we have enough after filtering
           .snapshots()
           .map((snapshot) {
         if (kDebugMode) {
@@ -76,18 +77,16 @@ class OrdersService {
             dev.log('[Matching] ❌ No orders found in Firestore matching filters');
             dev.log('[Matching] 📋 Filters used:');
             dev.log('[Matching]    - status = "$statusValue"');
-            dev.log('[Matching]    - assignedDriverId = null');
             dev.log('[Matching] 💡 Possible reasons:');
             dev.log('[Matching]    1. No orders created by clients yet');
             dev.log('[Matching]    2. All orders have status != "$statusValue"');
-            dev.log('[Matching]    3. All orders already have assignedDriverId set');
             dev.log('[Matching] 🔧 To debug: Check Firebase Console > Firestore > orders collection');
           }
           return <Order>[];
         }
 
         if (kDebugMode) {
-          dev.log('[Matching] ✅ Found ${snapshot.docs.length} raw documents, filtering by distance...');
+          dev.log('[Matching] ✅ Found ${snapshot.docs.length} raw documents, filtering unassigned orders...');
         }
 
         final orders = <Order>[];
@@ -95,14 +94,20 @@ class OrdersService {
           try {
             final data = doc.data();
 
-            // Additional safety check: ensure order is truly unassigned
+            // CRITICAL: Filter for unassigned orders
+            // Some old orders don't have assignedDriverId field at all (missing, not null)
+            // We need to check both: field missing OR field is null OR field is empty string
             final assignedDriverId = data['assignedDriverId'];
-            if (assignedDriverId != null) {
+            if (assignedDriverId != null && assignedDriverId != '') {
               if (kDebugMode) {
                 dev.log(
                     '[Matching] ⚠️ Order ${doc.id} has assignedDriverId=$assignedDriverId, skipping');
               }
               continue;
+            }
+
+            if (kDebugMode) {
+              dev.log('[Matching] ✅ Order ${doc.id} is unassigned (assignedDriverId=${assignedDriverId ?? "missing"})');
             }
 
             final order = Order.fromFirestoreWithId(doc.id, data);

@@ -952,6 +952,12 @@ abstract class AppLocalizations {
   /// **'تسجيل الخروج'**
   String get logout;
 
+  /// No description provided for @logout_confirmation.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل أنت متأكد من تسجيل الخروج؟'**
+  String get logout_confirmation;
+
   /// No description provided for @profile_updated.
   ///
   /// In ar, this message translates to:

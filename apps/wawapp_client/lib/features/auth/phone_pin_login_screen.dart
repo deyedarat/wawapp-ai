@@ -76,9 +76,9 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
   Future<void> _loginWithPin() async {
     if (_pin.text.length != 4) return;
-    
+
     String phone = _phone.text.trim();
-    
+
     // Ensure phone is in E.164 format
     if (!phone.startsWith('+')) {
       try {
@@ -90,8 +90,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
         return;
       }
     }
-    
-    await ref.read(authProvider.notifier).loginByPin(_pin.text, phone);
+
+    await ref.read(authProvider.notifier).loginByPin(_pin.text);
   }
 
   Future<void> _createAccount() async {

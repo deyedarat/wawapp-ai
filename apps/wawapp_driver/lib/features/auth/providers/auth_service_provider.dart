@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auth_shared/auth_shared.dart';
 import '../../../services/analytics_service.dart';
 import '../../../services/driver_cleanup_service.dart';
+import '../../../core/config/testlab_flags.dart';
+import '../../../core/config/testlab_mock_data.dart';
 
 // Provider for PhonePinAuth service singleton
 final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
@@ -224,8 +226,31 @@ class AuthNotifier extends StateNotifier<AuthState> {
 // Main auth provider - keepAlive to preserve state across navigation
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>(
   (ref) {
+    // Return mock auth state for Test Lab mode
+    if (TestLabFlags.safeEnabled) {
+      return _MockAuthNotifier();
+    }
+    
     final authService = ref.watch(phonePinAuthServiceProvider);
     final firebaseAuth = FirebaseAuth.instance;
     return AuthNotifier(authService, firebaseAuth);
   },
 );
+
+/// Mock AuthNotifier for Test Lab mode
+class _MockAuthNotifier extends AuthNotifier {
+  _MockAuthNotifier() : super(
+    PhonePinAuth(userCollection: 'drivers'),
+    FirebaseAuth.instance,
+  ) {
+    // Override the state with mock data
+    state = AuthState(
+      user: TestLabMockData.mockUser,
+      hasPin: true,
+      phoneE164: TestLabMockData.mockDriverPhone,
+      isLoading: false,
+      otpFlowActive: false,
+      otpStage: OtpStage.idle,
+    );
+  }
+}

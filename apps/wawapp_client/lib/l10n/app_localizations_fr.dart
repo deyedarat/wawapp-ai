@@ -446,6 +446,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get logout => 'Déconnexion';
 
   @override
+  String get logout_confirmation =>
+      'Êtes-vous sûr de vouloir vous déconnecter?';
+
+  @override
   String get profile_updated => 'Profil mis à jour';
 
   @override
