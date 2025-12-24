@@ -138,9 +138,9 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
         debugPrint('[LoginScreen] Error detected in auth state: ${next.error}');
       }
 
-      if (next.user != null && next.hasPin && !next.isLoading) {
+      if (next.user != null && !next.isLoading) {
         debugPrint(
-            '[LoginScreen] User authenticated with PIN, navigation handled by AuthGate');
+            '[LoginScreen] User authenticated, routing to AuthGate');
         
         // Set basic user properties immediately after auth
         AnalyticsService.instance.setUserProperties(userId: next.user!.uid);
@@ -158,7 +158,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
         //    - User property: user_type = client
         //    - User ID is set
         
-        // Let AuthGate handle navigation
+        context.go('/');
       }
     });
 
