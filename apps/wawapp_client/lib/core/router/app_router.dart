@@ -15,6 +15,7 @@ import '../../features/auth/phone_pin_login_screen.dart';
 import '../../features/auth/otp_screen.dart';
 import '../../features/auth/create_pin_screen.dart';
 import '../../features/auth/providers/auth_service_provider.dart';
+import '../../features/auth/auth_gate.dart';
 import '../../features/profile/client_profile_screen.dart';
 import '../../features/profile/client_profile_edit_screen.dart';
 import '../../features/profile/saved_locations_screen.dart';
@@ -45,7 +46,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/',
         name: 'home',
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) => const AuthGate(child: HomeScreen()),
       ),
       GoRoute(
         path: '/login',
