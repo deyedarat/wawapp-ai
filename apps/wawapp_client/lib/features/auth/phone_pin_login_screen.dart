@@ -140,7 +140,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
       if (next.user != null && next.hasPin && !next.isLoading) {
         debugPrint(
-            '[LoginScreen] User authenticated with PIN, navigating to home');
+            '[LoginScreen] User authenticated with PIN, navigation handled by AuthGate');
         
         // Set basic user properties immediately after auth
         AnalyticsService.instance.setUserProperties(userId: next.user!.uid);
@@ -158,7 +158,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
         //    - User property: user_type = client
         //    - User ID is set
         
-        context.go('/');
+        // Let AuthGate handle navigation
       }
     });
 

@@ -39,6 +39,7 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+    final isEnforced = authState.user != null && !authState.hasPin;
 
     ref.listen(authProvider, (prev, next) {
       if (next.hasPin && !next.isLoading) {
@@ -46,38 +47,44 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
       }
     });
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Create PIN')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const Text('Create a 4-digit PIN for quick login'),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _pinController,
-              keyboardType: TextInputType.number,
-              maxLength: 4,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'PIN'),
-            ),
-            TextField(
-              controller: _confirmController,
-              keyboardType: TextInputType.number,
-              maxLength: 4,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Confirm PIN'),
-            ),
-            if (authState.error != null)
-              Text(authState.error!, style: const TextStyle(color: Colors.red)),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: authState.isLoading ? null : _createPin,
-              child: authState.isLoading
-                  ? const CircularProgressIndicator()
-                  : const Text('Create PIN'),
-            ),
-          ],
+    return PopScope(
+      canPop: !isEnforced,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Create PIN'),
+          automaticallyImplyLeading: !isEnforced,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const Text('Create a 4-digit PIN for quick login'),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _pinController,
+                keyboardType: TextInputType.number,
+                maxLength: 4,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'PIN'),
+              ),
+              TextField(
+                controller: _confirmController,
+                keyboardType: TextInputType.number,
+                maxLength: 4,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Confirm PIN'),
+              ),
+              if (authState.error != null)
+                Text(authState.error!, style: const TextStyle(color: Colors.red)),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: authState.isLoading ? null : _createPin,
+                child: authState.isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text('Create PIN'),
+              ),
+            ],
+          ),
         ),
       ),
     );
