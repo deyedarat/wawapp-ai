@@ -143,7 +143,7 @@ String? _redirect(GoRouterState s, AuthState st) {
   final canOtp = (st.otpFlowActive == true) || (st.verificationId != null);
 
   debugPrint(
-      '[Router] loc=${s.matchedLocation} loggedIn=$loggedIn canOtp=$canOtp otpStage=${st.otpStage}');
+      '[Router] loc=${s.matchedLocation} loggedIn=$loggedIn hasPin=${st.hasPin} canOtp=$canOtp otpStage=${st.otpStage}');
 
   // Allow public tracking without authentication
   if (s.matchedLocation.startsWith('/track/')) {
@@ -169,6 +169,7 @@ String? _redirect(GoRouterState s, AuthState st) {
     return '/';
   }
 
+  debugPrint('[Router] No redirect needed');
   return null;
 }
 
