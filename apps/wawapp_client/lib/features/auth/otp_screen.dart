@@ -42,7 +42,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     // Test OTP bypass for development
     if (code == '123456') {
       // Simulate successful verification
-      context.go('/create-pin');
+      context.go('/');
       return;
     }
     
@@ -56,8 +56,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     ref.listen(authProvider, (prev, next) {
       debugPrint('[OtpScreen] Auth state changed - user=${next.user?.uid ?? 'null'} hasPin=${next.hasPin} isLoading=${next.isLoading}');
       if (next.user != null && !next.isLoading) {
-        debugPrint('[OtpScreen] OTP verified -> navigating to /create-pin');
-        context.go('/create-pin');
+        debugPrint('[OtpScreen] OTP verified -> navigating to /');
+        context.go('/');
       }
     });
 
