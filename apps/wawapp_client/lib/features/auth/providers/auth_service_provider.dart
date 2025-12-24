@@ -98,11 +98,16 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         print('[ClientAuthNotifier] Sending OTP to $phone');
       }
       await _authService.ensurePhoneSession(phone);
-      if (kDebugMode) print('[ClientAuthNotifier] OTP sent successfully');
+      final verificationId = _authService.lastVerificationId;
+      if (kDebugMode) {
+        print(
+            '[ClientAuthNotifier] OTP sent successfully, verificationId=$verificationId');
+      }
       state = state.copyWith(
         isLoading: false,
         phoneE164: phone,
         otpStage: OtpStage.codeSent,
+        verificationId: verificationId,
       );
     } on Object catch (e) {
       if (kDebugMode) print('[ClientAuthNotifier] Send OTP error: $e');
@@ -149,6 +154,25 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         error: e.toString(),
       );
+    }
+  }
+
+  // Check if a phone number exists in the system
+  Future<bool> checkPhoneExists(String phoneE164) async {
+    try {
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Checking if phone exists: $phoneE164');
+      }
+      final exists = await _authService.phoneExists(phoneE164);
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Phone exists: $exists');
+      }
+      return exists;
+    } on Object catch (e) {
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Error checking phone: $e');
+      }
+      return false;
     }
   }
 

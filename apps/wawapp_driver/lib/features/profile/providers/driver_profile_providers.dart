@@ -4,12 +4,19 @@ import 'package:core_shared/core_shared.dart';
 import '../data/driver_profile_repository.dart';
 import '../../../services/analytics_service.dart';
 import '../../auth/providers/auth_service_provider.dart';
+import '../../../core/config/testlab_flags.dart';
+import '../../../core/config/testlab_mock_data.dart';
 
 final driverProfileRepositoryProvider = Provider<DriverProfileRepository>((ref) {
   return DriverProfileRepository(firestore: FirebaseFirestore.instance);
 });
 
 final driverProfileStreamProvider = StreamProvider.autoDispose<DriverProfile?>((ref) {
+  // Return mock profile for Test Lab mode
+  if (TestLabFlags.safeEnabled) {
+    return Stream.value(TestLabMockData.mockDriverProfile);
+  }
+  
   final authState = ref.watch(authProvider);
   if (authState.user == null) {
     return Stream.value(null);

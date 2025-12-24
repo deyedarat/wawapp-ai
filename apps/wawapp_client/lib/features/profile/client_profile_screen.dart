@@ -71,7 +71,7 @@ class ClientProfileScreen extends ConsumerWidget {
               if (profile == null) {
                 return _buildNoProfileView(context, l10n);
               }
-              return _buildProfileView(context, l10n, profile);
+              return _buildProfileView(context, l10n, profile, ref);
             },
           ),
         ),
@@ -93,7 +93,7 @@ class ClientProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileView(BuildContext context, AppLocalizations l10n, ClientProfile profile) {
+  Widget _buildProfileView(BuildContext context, AppLocalizations l10n, ClientProfile profile, WidgetRef ref) {
     final theme = Theme.of(context);
     
     return SingleChildScrollView(
@@ -226,7 +226,7 @@ class ClientProfileScreen extends ConsumerWidget {
           ),
           
           SizedBox(height: WawAppSpacing.lg),
-          
+
           // Logout Button
           _buildLogoutButton(context, ref, l10n),
           SizedBox(height: WawAppSpacing.lg),

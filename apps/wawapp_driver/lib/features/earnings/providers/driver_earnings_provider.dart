@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
 import '../data/driver_earnings_repository.dart';
 import '../../auth/providers/auth_service_provider.dart';
+import '../../../core/config/testlab_flags.dart';
+import '../../../core/config/testlab_mock_data.dart';
 
 class DriverEarningsState {
   final List<Order> completedOrders;
@@ -66,6 +68,19 @@ class DriverEarningsNotifier extends StateNotifier<DriverEarningsState> {
     
     if (user == null) {
       state = const DriverEarningsState();
+      return;
+    }
+
+    // Return mock earnings for Test Lab mode
+    if (TestLabFlags.safeEnabled) {
+      final mockOrders = TestLabMockData.mockCompletedOrders;
+      state = DriverEarningsState(
+        completedOrders: mockOrders,
+        todayTotal: 1500, // Mock today's earnings
+        weekTotal: 8400, // Mock week's earnings
+        monthTotal: 32100, // Mock month's earnings
+        isLoading: false,
+      );
       return;
     }
 

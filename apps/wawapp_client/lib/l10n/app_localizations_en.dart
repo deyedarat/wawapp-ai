@@ -439,6 +439,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logout => 'تسجيل الخروج';
 
   @override
+  String get logout_confirmation => 'Are you sure you want to logout?';
+
+  @override
   String get profile_updated => 'تم تحديث الملف الشخصي';
 
   @override

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auth_shared/auth_shared.dart';
@@ -11,10 +10,18 @@ import '../home/driver_home_screen.dart';
 import '../../services/analytics_service.dart';
 import '../../services/fcm_service.dart';
 import '../../core/theme/colors.dart';
+import '../../core/config/testlab_flags.dart';
+import '../../core/config/testlab_mock_data.dart';
+import '../../testlab/testlab_home.dart';
 
 // StreamProvider for driver profile
 final driverProfileProvider =
     StreamProvider.autoDispose<DocumentSnapshot<Map<String, dynamic>>?>((ref) {
+  // Return mock profile for Test Lab mode
+  if (TestLabFlags.safeEnabled) {
+    return Stream.value(TestLabMockData.mockDriverDoc);
+  }
+  
   final authState = ref.watch(authProvider);
   final user = authState.user;
 
@@ -58,6 +65,12 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 
   @override
   Widget build(BuildContext context) {
+    // Check Test Lab mode first - bypass all auth logic
+    if (TestLabFlags.safeEnabled) {
+      debugPrint('[AuthGate] REDIRECT_REASON=TEST_LAB_MODE → TestLabHome');
+      return const TestLabHome();
+    }
+
     final authState = ref.watch(authProvider);
 
     debugPrint(
