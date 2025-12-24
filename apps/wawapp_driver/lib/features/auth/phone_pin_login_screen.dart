@@ -52,7 +52,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     setState(() => _err = null);
 
     if (kDebugMode) {
-      print('[PhonePinLogin] Starting OTP flow with phone: $phone');
+      print('[PhonePinLogin] DIAGNOSTIC: Starting OTP flow with phone: $phone at ${DateTime.now()}');
     }
 
     // Mark OTP flow as active in provider (survives rebuild)
@@ -62,11 +62,21 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     try {
       await ref.read(authProvider.notifier).sendOtp(phone);
       if (kDebugMode) {
-        print('[PhonePinLogin] OTP sent, AuthGate will show OTP screen');
+        print('[PhonePinLogin] DIAGNOSTIC: OTP sent, AuthGate will show OTP screen');
       }
     } on Object catch (e) {
       if (kDebugMode) {
-        print('[PhonePinLogin] OTP send failed: $e');
+        print('[PhonePinLogin] DIAGNOSTIC: OTP send failed: ${e.runtimeType} - $e');
+      }
+      // Show error to user via SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('OTP Send Failed: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
       }
       // Error is already set in provider state
     }
