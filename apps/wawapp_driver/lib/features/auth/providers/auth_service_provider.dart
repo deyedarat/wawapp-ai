@@ -101,19 +101,21 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     state = state.copyWith(
         isLoading: true, error: null, otpStage: OtpStage.sending);
+    
+    if (kDebugMode) {
+      print('[AuthNotifier] DIAGNOSTIC: sendOtp() starting for phone=$phone at ${DateTime.now()}');
+    }
+    
     try {
-      if (kDebugMode) {
-        print('[AuthNotifier] Sending OTP to $phone');
-      }
       await _authService.ensurePhoneSession(phone);
-      if (kDebugMode) print('[AuthNotifier] OTP sent successfully');
+      if (kDebugMode) print('[AuthNotifier] DIAGNOSTIC: OTP sent successfully');
       state = state.copyWith(
         isLoading: false,
         phoneE164: phone,
         otpStage: OtpStage.codeSent,
       );
     } on Object catch (e) {
-      if (kDebugMode) print('[AuthNotifier] Send OTP error: $e');
+      if (kDebugMode) print('[AuthNotifier] DIAGNOSTIC: Send OTP error: ${e.runtimeType} - $e');
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),

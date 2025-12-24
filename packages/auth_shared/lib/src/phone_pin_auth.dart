@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 
 String _generateSalt() {
@@ -43,6 +44,8 @@ class PhonePinAuth {
       print(
         '[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow for phone=$phoneE164',
       );
+      // Add Crashlytics breadcrumb for debugging
+      FirebaseCrashlytics.instance.log('OTP_SEND_START: phone=$phoneE164');
     }
 
     final u = _auth.currentUser;
@@ -55,8 +58,9 @@ class PhonePinAuth {
 
     if (kDebugMode) {
       print(
-        '[PhonePinAuth] Calling Firebase verifyPhoneNumber() for phone=$phoneE164',
+        '[PhonePinAuth] DIAGNOSTIC: Calling Firebase verifyPhoneNumber() for phone=$phoneE164 at ${DateTime.now()}',
       );
+      FirebaseCrashlytics.instance.log('OTP_VERIFY_PHONE_START: ${DateTime.now()}');
     }
 
     try {
@@ -64,23 +68,41 @@ class PhonePinAuth {
         phoneNumber: phoneE164,
         timeout: const Duration(seconds: 60),
         verificationCompleted: (cred) async {
-          if (kDebugMode)
+          if (kDebugMode) {
             print(
-              '[PhonePinAuth] verificationCompleted callback - auto sign-in',
+              '[PhonePinAuth] DIAGNOSTIC: verificationCompleted callback - auto sign-in',
             );
+            FirebaseCrashlytics.instance.log('OTP_VERIFICATION_COMPLETED');
+          }
           try {
             await _auth.signInWithCredential(cred);
             if (kDebugMode) print('[PhonePinAuth] Auto sign-in successful');
             completer.complete();
           } on Object catch (e) {
-            if (kDebugMode) print('[PhonePinAuth] Auto sign-in failed: $e');
+            if (kDebugMode) {
+              print('[PhonePinAuth] DIAGNOSTIC: Auto sign-in failed: $e');
+              FirebaseCrashlytics.instance.log('OTP_AUTO_SIGNIN_FAILED: $e');
+            }
             completer.completeError(e);
           }
         },
         verificationFailed: (e) {
           if (kDebugMode) {
             print(
-              '[PhonePinAuth] verificationFailed callback - code: ${e.code}, message: ${e.message}',
+              '[PhonePinAuth] DIAGNOSTIC: verificationFailed callback - code: ${e.code}, message: ${e.message}, details: ${e.toString()}',
+            );
+            FirebaseCrashlytics.instance.log('OTP_VERIFICATION_FAILED: code=${e.code}, message=${e.message}');
+            // Record non-fatal error for detailed analysis
+            FirebaseCrashlytics.instance.recordError(
+              'OTP Verification Failed',
+              StackTrace.current,
+              fatal: false,
+              information: [
+                'Phone: $phoneE164',
+                'Error Code: ${e.code}',
+                'Error Message: ${e.message}',
+                'Full Error: ${e.toString()}',
+              ],
             );
           }
           completer.completeError(e);
@@ -88,8 +110,9 @@ class PhonePinAuth {
         codeSent: (verificationId, resendToken) {
           if (kDebugMode) {
             print(
-              '[PhonePinAuth] codeSent callback - verificationId=$verificationId, resendToken=$resendToken',
+              '[PhonePinAuth] DIAGNOSTIC: codeSent callback - verificationId=${verificationId != null ? 'present' : 'null'}, resendToken=${resendToken != null ? 'present' : 'null'}',
             );
+            FirebaseCrashlytics.instance.log('OTP_CODE_SENT: verificationId=${verificationId != null ? 'present' : 'null'}');
           }
           _lastVerificationId = verificationId;
 
@@ -104,8 +127,9 @@ class PhonePinAuth {
         codeAutoRetrievalTimeout: (vid) {
           if (kDebugMode) {
             print(
-              '[PhonePinAuth] codeAutoRetrievalTimeout callback - verificationId=$vid',
+              '[PhonePinAuth] DIAGNOSTIC: codeAutoRetrievalTimeout callback - verificationId=$vid',
             );
+            FirebaseCrashlytics.instance.log('OTP_AUTO_RETRIEVAL_TIMEOUT: verificationId=$vid');
           }
           _lastVerificationId = vid;
         },
@@ -113,7 +137,7 @@ class PhonePinAuth {
 
       if (kDebugMode) {
         print(
-          '[PhonePinAuth] verifyPhoneNumber() call initiated, waiting for callbacks...',
+          '[PhonePinAuth] DIAGNOSTIC: verifyPhoneNumber() call initiated, waiting for callbacks...',
         );
       }
 
@@ -121,15 +145,27 @@ class PhonePinAuth {
 
       if (kDebugMode) {
         print(
-          '[PhonePinAuth] ensurePhoneSession() completed successfully, verificationId=$_lastVerificationId',
+          '[PhonePinAuth] DIAGNOSTIC: ensurePhoneSession() completed successfully, verificationId=$_lastVerificationId',
         );
+        FirebaseCrashlytics.instance.log('OTP_SEND_SUCCESS: verificationId=$_lastVerificationId');
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {
         print(
-          '[PhonePinAuth] ensurePhoneSession() EXCEPTION: ${e.runtimeType} - $e',
+          '[PhonePinAuth] DIAGNOSTIC: ensurePhoneSession() EXCEPTION: ${e.runtimeType} - $e',
         );
-        print('[PhonePinAuth] Stacktrace: $stackTrace');
+        print('[PhonePinAuth] DIAGNOSTIC: Stacktrace: $stackTrace');
+        FirebaseCrashlytics.instance.log('OTP_SEND_EXCEPTION: ${e.runtimeType} - $e');
+        // Record the exception for analysis
+        FirebaseCrashlytics.instance.recordError(
+          e,
+          stackTrace,
+          fatal: false,
+          information: [
+            'Phone: $phoneE164',
+            'Operation: ensurePhoneSession',
+          ],
+        );
       }
       rethrow;
     }
