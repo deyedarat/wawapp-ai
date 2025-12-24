@@ -54,7 +54,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final authState = ref.watch(authProvider);
 
     ref.listen(authProvider, (prev, next) {
+      debugPrint('[OtpScreen] Auth state changed - user=${next.user?.uid ?? 'null'} hasPin=${next.hasPin} isLoading=${next.isLoading}');
       if (next.user != null && !next.isLoading) {
+        debugPrint('[OtpScreen] OTP verified -> navigating to /create-pin');
         context.go('/create-pin');
       }
     });
