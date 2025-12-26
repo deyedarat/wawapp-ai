@@ -19,23 +19,17 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Verify gradle wrapper location
-      run: |
-        pwd
-        ls -la
-        ls -la apps/wawapp_driver || true
-        ls -la apps/wawapp_driver/android || true
-
+    
     - name: Make gradlew executable
-      run: chmod +x apps/wawapp_driver/android/gradlew
+      run: chmod +x gradlew
 
+      
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-
+        
     - name: Cache Gradle dependencies
       uses: actions/cache@v4
       with:
@@ -45,12 +39,26 @@ jobs:
         key: ${{ runner.os }}-gradle-deps-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-deps-
-
+          
+    - name: Locate gradlew
+      id: find-gradlew
+      run: |
+        GRADLEW_PATH=$(find . -name "gradlew" -type f | head -1)
+        if [ -z "$GRADLEW_PATH" ]; then
+          echo "Error: gradlew not found in repository"
+          exit 1
+        fi
+        GRADLEW_DIR=$(dirname "$GRADLEW_PATH")
+        chmod +x "$GRADLEW_PATH"
+        echo "gradlew-path=$GRADLEW_PATH" >> $GITHUB_OUTPUT
+        echo "gradlew-dir=$GRADLEW_DIR" >> $GITHUB_OUTPUT
+        echo "Found gradlew at: $GRADLEW_PATH"
+        
     - name: Print versions
       run: |
-        apps/wawapp_driver/android/gradlew --version
+        ${{ steps.find-gradlew.outputs.gradlew-path }} --version
         java -version
-
+        
     - name: Build WawApp Driver
-      run: apps/wawapp_driver/android/gradlew assembleDebug --no-daemon --no-build-cache --rerun-tasks --stacktrace
-      working-directory: apps/wawapp_driver/android
+      working-directory: ${{ steps.find-gradlew.outputs.gradlew-dir }}
+      run: ${{ steps.find-gradlew.outputs.gradlew-path }} :apps:wawapp_driver:assembleDebug --no-daemon --no-build-cache --rerun-tasks --stacktrace
