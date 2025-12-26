@@ -7,6 +7,7 @@ import 'package:core_shared/core_shared.dart';
 import 'providers/order_tracking_provider.dart';
 import '../map/providers/district_layer_provider.dart';
 import '../../widgets/error_screen.dart';
+import '../../core/maps/safe_camera_helper.dart';
 
 class DriverFoundScreen extends ConsumerWidget {
   final String orderId;
@@ -178,8 +179,7 @@ class _DriverMapWidget extends StatefulWidget {
 }
 
 class _DriverMapWidgetState extends State<_DriverMapWidget>
-    with WidgetsBindingObserver {
-  GoogleMapController? _controller;
+    with WidgetsBindingObserver, SafeCameraMixin {
   Set<Marker> _markers = {};
   double _currentZoom = 15.0;
 
@@ -238,8 +238,9 @@ class _DriverMapWidgetState extends State<_DriverMapWidget>
   }
 
   void _animateToDriver() {
-    _controller?.animateCamera(
+    safeAnimateCamera(
       CameraUpdate.newLatLng(widget.driverLocation.position),
+      action: 'animate_to_driver',
     );
   }
 
@@ -260,10 +261,8 @@ class _DriverMapWidgetState extends State<_DriverMapWidget>
         return markersAsync.when(
           data: (districtMarkers) => GoogleMap(
             onMapCreated: (controller) {
-              _controller = controller;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _animateToDriver();
-              });
+              onMapCreated(controller);
+              scheduleCameraOperation(() => _animateToDriver());
             },
             onCameraMove: _onCameraMove,
             initialCameraPosition: CameraPosition(
@@ -279,10 +278,8 @@ class _DriverMapWidgetState extends State<_DriverMapWidget>
           ),
           loading: () => GoogleMap(
             onMapCreated: (controller) {
-              _controller = controller;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _animateToDriver();
-              });
+              onMapCreated(controller);
+              scheduleCameraOperation(() => _animateToDriver());
             },
             onCameraMove: _onCameraMove,
             initialCameraPosition: CameraPosition(
@@ -298,10 +295,8 @@ class _DriverMapWidgetState extends State<_DriverMapWidget>
           ),
           error: (error, stack) => GoogleMap(
             onMapCreated: (controller) {
-              _controller = controller;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _animateToDriver();
-              });
+              onMapCreated(controller);
+              scheduleCameraOperation(() => _animateToDriver());
             },
             onCameraMove: _onCameraMove,
             initialCameraPosition: CameraPosition(

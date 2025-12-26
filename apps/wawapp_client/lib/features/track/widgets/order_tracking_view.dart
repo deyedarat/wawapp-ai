@@ -12,6 +12,8 @@ import '../data/orders_repository.dart';
 import 'order_status_timeline.dart';
 import 'rating_bottom_sheet.dart';
 import '../../map/providers/district_layer_provider.dart';
+import '../../../core/maps/safe_camera_helper.dart';
+import '../../../core/navigation/safe_navigation.dart';
 
 class OrderTrackingView extends ConsumerStatefulWidget {
   final Order? order;
@@ -29,8 +31,7 @@ class OrderTrackingView extends ConsumerStatefulWidget {
   ConsumerState<OrderTrackingView> createState() => _OrderTrackingViewState();
 }
 
-class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
-  GoogleMapController? _mapController;
+class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> with SafeCameraMixin {
   bool _isFollowingDriver = true;
   LatLng? _lastDriverPosition;
   bool _isCancelling = false;
@@ -113,8 +114,6 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
   }
 
   void _fitBounds() {
-    if (_mapController == null) return;
-
     final pickup = widget.order?.pickup;
     final dropoff = widget.order?.dropoff;
 
@@ -137,17 +136,21 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
               : dropoff.longitude,
         ),
       );
-      _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 48.0));
+      safeAnimateCamera(
+        CameraUpdate.newLatLngBounds(bounds, 48.0),
+        action: 'fit_bounds',
+      );
     } else if (pickup != null) {
-      _mapController!.animateCamera(CameraUpdate.newLatLngZoom(
-          LatLng(pickup.latitude, pickup.longitude), 15.0));
+      safeAnimateCamera(
+        CameraUpdate.newLatLngZoom(
+            LatLng(pickup.latitude, pickup.longitude), 15.0),
+        action: 'fit_pickup',
+      );
     }
   }
 
   void _handleDriverMovement(DriverLocation? driverLocation) {
-    if (_mapController == null ||
-        driverLocation == null ||
-        !_isFollowingDriver) {
+    if (driverLocation == null || !_isFollowingDriver || !isMapReady) {
       return;
     }
 
@@ -165,20 +168,20 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
     }
 
     _lastDriverPosition = currentPos;
-    _mapController!.animateCamera(
+    safeAnimateCamera(
       CameraUpdate.newLatLngZoom(currentPos, 16.0),
+      action: 'follow_driver',
     );
   }
 
   void _recenterOnDriver(DriverLocation driverLocation) {
-    if (_mapController == null) return;
-
     setState(() {
       _isFollowingDriver = true;
     });
 
-    _mapController!.animateCamera(
+    safeAnimateCamera(
       CameraUpdate.newLatLngZoom(driverLocation.position, 16.0),
+      action: 'recenter_driver',
     );
   }
 
@@ -203,11 +206,11 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
         content: const Text('هل تريد إلغاء الطلب؟'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => context.safeDialogPop(false),
             child: const Text('لا'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => context.safeDialogPop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('نعم'),
           ),
@@ -310,9 +313,8 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                   return markersAsync.when(
                     data: (districtMarkers) => GoogleMap(
                       onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
-                        WidgetsBinding.instance
-                            .addPostFrameCallback((_) => _fitBounds());
+                        onMapCreated(controller);
+                        scheduleCameraOperation(() => _fitBounds());
                       },
                       onCameraMoveStarted: () {
                         _isFollowingDriver = false;
@@ -338,9 +340,8 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                     ),
                     loading: () => GoogleMap(
                       onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
-                        WidgetsBinding.instance
-                            .addPostFrameCallback((_) => _fitBounds());
+                        onMapCreated(controller);
+                        scheduleCameraOperation(() => _fitBounds());
                       },
                       onCameraMoveStarted: () {
                         _isFollowingDriver = false;
@@ -363,9 +364,8 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> {
                     ),
                     error: (error, stack) => GoogleMap(
                       onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
-                        WidgetsBinding.instance
-                            .addPostFrameCallback((_) => _fitBounds());
+                        onMapCreated(controller);
+                        scheduleCameraOperation(() => _fitBounds());
                       },
                       onCameraMoveStarted: () {
                         _isFollowingDriver = false;

@@ -16,6 +16,7 @@ import 'core/location/location_bootstrap.dart';
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'services/analytics_service.dart';
+import 'core/observability/crashlytics_observer.dart';
 
 void main() async {
   // Run app initialization in error zone to catch all errors
@@ -36,6 +37,9 @@ void main() async {
 
       // Initialize Crashlytics
       await _initializeCrashlytics();
+      
+      // Initialize observability
+      await CrashlyticsObserver.initialize();
 
       if (kDebugMode) {
         debugPrint('✅ Firebase & Crashlytics initialized');

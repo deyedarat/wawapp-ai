@@ -18,12 +18,15 @@ final clientProfileStreamProvider = StreamProvider.autoDispose<ClientProfile?>((
   final repository = ref.watch(clientProfileRepositoryProvider);
   return repository.watchProfile(authState.user!.uid).map((profile) {
     if (profile != null) {
-      // Update user properties when profile loads
-      AnalyticsService.instance.setUserProperties(
-        userId: authState.user!.uid,
-        totalOrders: profile.totalTrips,
-      );
-      
+      // Schedule analytics call after current frame to avoid build-phase side-effects
+      // This prevents "setState() called during build" errors
+      Future.microtask(() {
+        AnalyticsService.instance.setUserProperties(
+          userId: authState.user!.uid,
+          totalOrders: profile.totalTrips,
+        );
+      });
+
       // ANALYTICS VALIDATION:
       // DebugView should show: user_type=client, total_orders, is_verified
     }

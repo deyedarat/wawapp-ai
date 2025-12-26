@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:core_shared/core_shared.dart';
 import 'providers/client_profile_providers.dart';
+import '../../core/navigation/safe_navigation.dart';
 
 class ClientProfileEditScreen extends ConsumerStatefulWidget {
   const ClientProfileEditScreen({super.key});
@@ -89,7 +90,7 @@ class _ClientProfileEditScreenState extends ConsumerState<ClientProfileEditScree
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('تم حفظ الملف الشخصي بنجاح')),
         );
-        context.pop();
+        context.safePop();
       }
     } catch (e) {
       if (mounted) {

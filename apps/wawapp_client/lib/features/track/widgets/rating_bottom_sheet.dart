@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/orders_repository.dart';
+import '../../../core/navigation/safe_navigation.dart';
 
 class RatingBottomSheet extends ConsumerStatefulWidget {
   final String orderId;
@@ -33,7 +34,7 @@ class _RatingBottomSheetState extends ConsumerState<RatingBottomSheet> {
       );
 
       if (mounted) {
-        Navigator.of(context).pop();
+        SafeNavigation.safeDialogPop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('تم إرسال التقييم بنجاح')),
         );
@@ -101,7 +102,7 @@ class _RatingBottomSheetState extends ConsumerState<RatingBottomSheet> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
+                  onPressed: _isSubmitting ? null : () => SafeNavigation.safeDialogPop(context),
                   child: const Text('لاحقاً'),
                 ),
               ),

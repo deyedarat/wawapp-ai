@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:core_shared/core_shared.dart';
 import 'providers/client_profile_providers.dart';
 import '../auth/providers/auth_service_provider.dart';
+import '../../core/navigation/safe_navigation.dart';
 
 class AddSavedLocationScreen extends ConsumerStatefulWidget {
   final String? locationId;
@@ -62,7 +63,7 @@ class _AddSavedLocationScreenState extends ConsumerState<AddSavedLocationScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('خطأ في تحميل الموقع: $e')),
         );
-        context.pop();
+        context.safePop();
       }
     }
   }
@@ -119,7 +120,7 @@ class _AddSavedLocationScreenState extends ConsumerState<AddSavedLocationScreen>
             content: Text(isEditing ? 'تم تحديث الموقع بنجاح' : 'تم إضافة الموقع بنجاح'),
           ),
         );
-        context.pop();
+        context.safePop();
       }
     } catch (e) {
       if (mounted) {
