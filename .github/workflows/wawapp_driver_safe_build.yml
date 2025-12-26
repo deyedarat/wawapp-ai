@@ -1,10 +1,12 @@
 name: WawApp Driver Safe Build
 
 on:
+  workflow_dispatch:
   push:
-    branches: [main, develop]
+    branches: [main, develop, driver-auth-stable-work]
   pull_request:
     branches: [main, develop]
+
 
 jobs:
   build:
