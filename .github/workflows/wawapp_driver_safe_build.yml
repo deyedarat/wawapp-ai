@@ -1,0 +1,39 @@
+name: WawApp Driver Safe Build
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches/modules-2
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-deps-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-deps-
+          
+    - name: Print versions
+      run: |
+        ./gradlew --version
+        java -version
+        
+    - name: Build WawApp Driver
+      run: ./gradlew :apps:wawapp_driver:assembleDebug --no-daemon --no-build-cache --rerun-tasks --stacktrace
