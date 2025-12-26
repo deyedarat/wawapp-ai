@@ -18,6 +18,7 @@ import '../../core/geo/distance.dart';
 import '../../core/pricing/pricing.dart';
 import '../../core/location/location_service.dart';
 import '../map/providers/district_layer_provider.dart';
+import '../../core/maps/safe_camera_helper.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -26,8 +27,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  GoogleMapController? _mapController;
+class _HomeScreenState extends ConsumerState<HomeScreen> with SafeCameraMixin {
   static const CameraPosition _nouakchott = CameraPosition(
     target: LatLng(18.0735, -15.9582),
     zoom: 14.0,
@@ -88,10 +88,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _getCurrentLocation() async {
     final position = await LocationService.getCurrentPosition();
     if (position != null) {
-      _mapController?.animateCamera(
+      await safeAnimateCamera(
         CameraUpdate.newLatLng(
           LatLng(position.latitude, position.longitude),
         ),
+        action: 'current_location',
       );
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -106,7 +107,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _onMapTap(LatLng location) async {
     await ref.read(routePickerProvider.notifier).setLocationFromTap(location);
-    _mapController?.animateCamera(CameraUpdate.newLatLng(location));
+    await safeAnimateCamera(
+      CameraUpdate.newLatLng(location),
+      action: 'map_tap',
+    );
   }
 
   void _onCameraMove(CameraPosition position) {
@@ -170,8 +174,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _fitBounds(RoutePickerState state) {
-    if (_mapController == null) return;
-
     final pickup = state.pickup;
     final dropoff = state.dropoff;
 
@@ -194,9 +196,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               : dropoff.longitude,
         ),
       );
-      _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 48.0));
+      safeAnimateCamera(
+        CameraUpdate.newLatLngBounds(bounds, 48.0),
+        action: 'fit_bounds_both',
+      );
     } else if (pickup != null) {
-      _mapController!.animateCamera(CameraUpdate.newLatLngZoom(pickup, 15.0));
+      safeAnimateCamera(
+        CameraUpdate.newLatLngZoom(pickup, 15.0),
+        action: 'fit_bounds_pickup',
+      );
     }
   }
 
@@ -251,14 +259,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Fit bounds ONCE when both locations are set and map is ready
     if (routeState.pickup != null &&
         routeState.dropoff != null &&
-        _mapController != null &&
+        isMapReady &&
         !_hasFittedBounds) {
       _hasFittedBounds = true;
       // Schedule this after the current frame to avoid triggering rebuild
-      Future.microtask(() {
-        if (mounted) {
-          _fitBounds(routeState);
-        }
+      scheduleCameraOperation(() {
+        _fitBounds(routeState);
       });
     }
 
@@ -657,7 +663,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   return markersAsync.when(
                     data: (districtMarkers) => GoogleMap(
                       onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
+                        onMapCreated(controller);
                         dev.log('Map controller initialized', name: 'WAWAPP_HOME');
                         // Fit bounds will be handled by the build logic when ready
                       },
@@ -682,9 +688,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     loading: () => const Center(child: CircularProgressIndicator()),
                     error: (error, stack) => GoogleMap(
-                      onMapCreated: (GoogleMapController controller) {
-                        _mapController = controller;
-                      },
+                      onMapCreated: onMapCreated,
                       onCameraMove: _onCameraMove,
                       onTap: _onMapTap,
                       initialCameraPosition: _nouakchott,

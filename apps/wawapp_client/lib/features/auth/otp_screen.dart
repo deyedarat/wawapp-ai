@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'providers/auth_service_provider.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
@@ -12,6 +13,7 @@ class OtpScreen extends ConsumerStatefulWidget {
 
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   final _codeController = TextEditingController();
+  bool _navigationInProgress = false;
 
   @override
   void initState() {
@@ -55,9 +57,25 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
     ref.listen(authProvider, (prev, next) {
       debugPrint('[OtpScreen] Auth state changed - user=${next.user?.uid ?? 'null'} hasPin=${next.hasPin} isLoading=${next.isLoading}');
-      if (next.user != null && !next.isLoading) {
-        debugPrint('[OtpScreen] OTP verified -> navigating to /');
-        context.go('/');
+
+      if (next.user != null && !next.isLoading && !_navigationInProgress) {
+        _navigationInProgress = true;
+
+        // Crashlytics breadcrumb
+        FirebaseCrashlytics.instance.log('[OtpScreen] Navigation triggered: OTP verified');
+        FirebaseCrashlytics.instance.setCustomKey('nav_attempt', 'otp_verified');
+        FirebaseCrashlytics.instance.setCustomKey('route_from', '/otp');
+        FirebaseCrashlytics.instance.setCustomKey('route_to', '/');
+
+        debugPrint('[OtpScreen] OTP verified -> scheduling navigation to /');
+
+        // Schedule navigation after current frame to prevent re-entrant navigation
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            debugPrint('[OtpScreen] Executing deferred navigation to /');
+            context.go('/');
+          }
+        });
       }
     });
 

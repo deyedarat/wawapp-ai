@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:core_shared/core_shared.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'providers/client_profile_providers.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -10,12 +11,17 @@ import '../../theme/colors.dart';
 import '../../theme/components.dart';
 import '../../theme/theme_extensions.dart';
 import '../auth/providers/auth_service_provider.dart';
+import '../../core/navigation/safe_navigation.dart';
 
 class ClientProfileScreen extends ConsumerWidget {
   const ClientProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Crashlytics breadcrumb for debugging build-phase issues
+    FirebaseCrashlytics.instance.setCustomKey('screen', 'ClientProfileScreen');
+    FirebaseCrashlytics.instance.log('ClientProfileScreen: build started');
+
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final profileAsync = ref.watch(clientProfileStreamProvider);
@@ -258,11 +264,11 @@ class ClientProfileScreen extends ConsumerWidget {
         content: Text(l10n.logout_confirmation ?? 'Are you sure you want to logout?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => context.safeDialogPop(false),
             child: Text(l10n.cancel ?? 'Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => context.safeDialogPop(true),
             style: TextButton.styleFrom(foregroundColor: context.errorColor),
             child: Text(l10n.logout ?? 'Logout'),
           ),
@@ -283,10 +289,10 @@ class ClientProfileScreen extends ConsumerWidget {
       // Perform logout
       await ref.read(authProvider.notifier).logout();
 
-      // Close loading indicator and navigate
+      // Safe navigation after logout - single source of truth
       if (context.mounted) {
-        Navigator.of(context).pop(); // Close loading
-        context.go('/login'); // Go to login
+        context.safeDialogPop(); // Close loading
+        SafeNavigation.safeLogoutNavigation(context);
       }
     }
   }

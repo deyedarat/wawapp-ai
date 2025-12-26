@@ -218,3 +218,44 @@ We conceptually use three external agent families:
 3) **C-Agents (Claude inside .claude/agents)**
    - wawapp-auth-agent, wawapp-fcm-agent, wawapp-geo-agent, etc.
    - They implement code changes in
+
+---
+
+# 🔒 Nexus Tool Governance (Mandatory)
+
+This project enforces **Nexus-style deterministic tool governance**
+to prevent tool hallucination and uncontrolled execution.
+
+All tool-based actions MUST follow this exact loop:
+
+## Mandatory 4-Phase Loop
+
+### 1. Discovery (REQUIRED)
+You MUST discover available tools explicitly before any execution.
+- Do NOT assume tool names.
+- Do NOT infer capabilities.
+
+### 2. Literal Mapping
+Map the request to exact discovered tool IDs.
+- If no matching tool exists, STOP immediately.
+- Respond with: **"Task impossible with current tools."**
+
+### 3. Schema Verification
+Request the input schema ONLY for the selected tool(s).
+- Never preload schemas.
+- Never guess parameters.
+
+### 4. Bridged Execution
+Execute tools strictly using:
+- Exact tool name
+- Schema-compliant parameters
+
+## Forbidden Behavior
+- ❌ Tool usage without discovery
+- ❌ Tool name hallucination
+- ❌ Schema guessing
+- ❌ Partial or speculative execution
+
+## Failure Policy
+Early failure is the correct behavior.
+A correct failure is preferred over an incorrect success.

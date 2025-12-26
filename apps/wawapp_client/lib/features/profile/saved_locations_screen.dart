@@ -10,6 +10,7 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/colors.dart';
 import '../../theme/components.dart';
 import '../../theme/theme_extensions.dart';
+import '../../core/navigation/safe_navigation.dart';
 
 class SavedLocationsScreen extends ConsumerWidget {
   const SavedLocationsScreen({super.key});
@@ -257,12 +258,12 @@ class SavedLocationsScreen extends ConsumerWidget {
         content: Text(l10n.delete_location_confirm(location.name)),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
+            onPressed: () => SafeNavigation.safeDialogPop(dialogContext),
             child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.of(dialogContext).pop();
+              SafeNavigation.safeDialogPop(dialogContext);
               final user = FirebaseAuth.instance.currentUser;
               if (user != null) {
                 try {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'providers/auth_service_provider.dart';
 import 'package:auth_shared/auth_shared.dart';
 import '../../services/analytics_service.dart';
@@ -19,6 +20,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   bool _isNewUser = false;
   bool _checkingPhone = false;
   String? _phoneError;
+  bool _navigationInProgress = false;
 
   @override
   void dispose() {
@@ -138,28 +140,41 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
         debugPrint('[LoginScreen] Error detected in auth state: ${next.error}');
       }
 
-      if (next.user != null && !next.isLoading) {
+      if (next.user != null && !next.isLoading && !_navigationInProgress) {
+        _navigationInProgress = true;
+
         debugPrint(
             '[LoginScreen] User authenticated, routing to AuthGate - user=${next.user!.uid} hasPin=${next.hasPin}');
-        
-        // Set basic user properties immediately after auth
-        AnalyticsService.instance.setUserProperties(userId: next.user!.uid);
-        AnalyticsService.instance.logAuthCompleted(method: 'phone_pin');
-        
-        // Initialize FCM for push notifications
-        FCMService.instance.initialize(context);
-        
-        // ANALYTICS VALIDATION:
-        // To verify this event in Firebase Console:
-        // 1. Run: adb shell setprop debug.firebase.analytics.app com.wawapp.client
-        // 2. Open Firebase Console → Analytics → DebugView
-        // 3. Complete auth flow and verify:
-        //    - Event: auth_completed (method: phone_pin)
-        //    - User property: user_type = client
-        //    - User ID is set
-        
-        debugPrint('[LoginScreen] Navigating to / (home)');
-        context.go('/');
+
+        // Crashlytics breadcrumb
+        FirebaseCrashlytics.instance.log('[LoginScreen] Navigation triggered: PIN login successful');
+        FirebaseCrashlytics.instance.setCustomKey('nav_attempt', 'pin_login_success');
+        FirebaseCrashlytics.instance.setCustomKey('route_from', '/login');
+        FirebaseCrashlytics.instance.setCustomKey('route_to', '/');
+
+        // Schedule side-effects after current frame
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            // Set basic user properties immediately after auth
+            AnalyticsService.instance.setUserProperties(userId: next.user!.uid);
+            AnalyticsService.instance.logAuthCompleted(method: 'phone_pin');
+
+            // Initialize FCM for push notifications
+            FCMService.instance.initialize(context);
+
+            // ANALYTICS VALIDATION:
+            // To verify this event in Firebase Console:
+            // 1. Run: adb shell setprop debug.firebase.analytics.app com.wawapp.client
+            // 2. Open Firebase Console → Analytics → DebugView
+            // 3. Complete auth flow and verify:
+            //    - Event: auth_completed (method: phone_pin)
+            //    - User property: user_type = client
+            //    - User ID is set
+
+            debugPrint('[LoginScreen] Executing deferred navigation to /');
+            context.go('/');
+          }
+        });
       }
     });
 

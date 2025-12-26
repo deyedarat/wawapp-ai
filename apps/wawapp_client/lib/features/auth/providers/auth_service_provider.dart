@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auth_shared/auth_shared.dart';
+import '../../../core/observability/crashlytics_observer.dart';
 
 // Provider for PhonePinAuth service singleton
 final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
@@ -21,7 +22,10 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
             '[ClientAuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}');
       }
       state = state.copyWith(user: user);
+      
+      // Set user context for Crashlytics
       if (user != null) {
+        CrashlyticsObserver.setUserContext(user.uid, 'client');
         _checkHasPin();
       } else {
         state = state.copyWith(hasPin: false, phoneE164: null);

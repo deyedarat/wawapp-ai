@@ -24,6 +24,7 @@ import 'package:auth_shared/auth_shared.dart';
 import 'package:core_shared/core_shared.dart';
 import 'navigator.dart';
 import '../../features/shipment_type/shipment_type_screen.dart';
+import '../observability/crashlytics_observer.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -142,6 +143,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 String? _redirect(GoRouterState s, AuthState st) {
   final loggedIn = st.user != null;
   final canOtp = (st.otpFlowActive == true) || (st.verificationId != null);
+
+  // Set route context for Crashlytics
+  CrashlyticsObserver.setRoute(s.matchedLocation, s.name ?? 'unknown');
 
   debugPrint(
       '[Router] loc=${s.matchedLocation} loggedIn=$loggedIn hasPin=${st.hasPin} canOtp=$canOtp otpStage=${st.otpStage}');
