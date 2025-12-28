@@ -47,10 +47,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-        <!-- FCM default notification channel -->
+        <!-- FCM default notification channel for new orders -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="order_updates" />
+            android:value="new_orders" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

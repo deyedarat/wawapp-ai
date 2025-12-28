@@ -14,6 +14,7 @@ admin.initializeApp();
 export { expireStaleOrders } from './expireStaleOrders';
 export { aggregateDriverRating } from './aggregateDriverRating';
 export { notifyOrderEvents } from './notifyOrderEvents';
+export { notifyNewOrder } from './notifyNewOrder'; // FIX #1: Notify drivers on order creation
 export { cleanStaleDriverLocations } from './cleanStaleDriverLocations';
 
 // Export Admin Functions
