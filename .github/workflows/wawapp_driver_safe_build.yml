@@ -40,10 +40,25 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-deps-
           
+    - name: Locate gradlew
+      id: find-gradlew
+      run: |
+        GRADLEW_PATH=$(find . -name "gradlew" -type f | head -1)
+        if [ -z "$GRADLEW_PATH" ]; then
+          echo "Error: gradlew not found in repository"
+          exit 1
+        fi
+        GRADLEW_DIR=$(dirname "$GRADLEW_PATH")
+        chmod +x "$GRADLEW_PATH"
+        echo "gradlew-path=$GRADLEW_PATH" >> $GITHUB_OUTPUT
+        echo "gradlew-dir=$GRADLEW_DIR" >> $GITHUB_OUTPUT
+        echo "Found gradlew at: $GRADLEW_PATH"
+        
     - name: Print versions
       run: |
-        ./gradlew --version
+        ${{ steps.find-gradlew.outputs.gradlew-path }} --version
         java -version
         
     - name: Build WawApp Driver
-      run: ./gradlew :apps:wawapp_driver:assembleDebug --no-daemon --no-build-cache --rerun-tasks --stacktrace
+      working-directory: ${{ steps.find-gradlew.outputs.gradlew-dir }}
+      run: ${{ steps.find-gradlew.outputs.gradlew-path }} :apps:wawapp_driver:assembleDebug --no-daemon --no-build-cache --rerun-tasks --stacktrace
