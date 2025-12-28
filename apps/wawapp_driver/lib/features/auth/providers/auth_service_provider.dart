@@ -6,6 +6,7 @@ import '../../../services/analytics_service.dart';
 import '../../../services/driver_cleanup_service.dart';
 import '../../../core/config/testlab_flags.dart';
 import '../../../core/config/testlab_mock_data.dart';
+import '../../../core/errors/auth_error_messages.dart';
 
 // Provider for PhonePinAuth service singleton
 final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
@@ -144,7 +145,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) print('[AuthNotifier] Verify OTP error: $e');
       state = state.copyWith(
         isLoading: false,
-        error: e.toString(),
+        error: AuthErrorMessages.getErrorMessage(e),
       );
     }
   }
@@ -159,7 +160,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } on Object catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: e.toString(),
+        error: AuthErrorMessages.getErrorMessage(e),
       );
     }
   }
@@ -175,13 +176,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       } else {
         state = state.copyWith(
           isLoading: false,
-          error: 'Invalid PIN',
+          error: AuthErrorMessages.pinIncorrect,
         );
       }
     } on Object catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: e.toString(),
+        error: AuthErrorMessages.getErrorMessage(e),
       );
     }
   }

@@ -50,8 +50,16 @@ class FCMService extends BaseFCMService {
 
       // Driver notifications (future use)
       switch (type) {
+        case 'new_order':
         case 'new_order_nearby':
           // Navigate to nearby orders screen
+          context.go('/nearby');
+          break;
+
+        case 'order_cancelled_by_client':
+        case 'trip_cancelled_by_client':
+        case 'order_expired_driver':
+          // Navigate to nearby orders (refresh list)
           context.go('/nearby');
           break;
 

@@ -34,6 +34,43 @@ class NotificationService {
       const InitializationSettings(android: androidSettings, iOS: iosSettings),
       onDidReceiveNotificationResponse: _onNotificationTap,
     );
+
+    // Create notification channels for Android
+    await _createNotificationChannels();
+  }
+
+  /// Create Android notification channels
+  Future<void> _createNotificationChannels() async {
+    // Channel for new order notifications (high priority)
+    const newOrdersChannel = AndroidNotificationChannel(
+      'new_orders',
+      'طلبات جديدة',
+      description: 'إشعارات الطلبات الجديدة القريبة منك',
+      importance: Importance.high,
+      sound: RawResourceAndroidNotificationSound('notification'),
+      enableVibration: true,
+      playSound: true,
+    );
+
+    // Channel for order updates (default priority)
+    const orderUpdatesChannel = AndroidNotificationChannel(
+      'order_updates',
+      'تحديثات الطلبات',
+      description: 'تحديثات حالة الطلبات الحالية',
+      importance: Importance.defaultImportance,
+      sound: RawResourceAndroidNotificationSound('notification'),
+      enableVibration: true,
+    );
+
+    await _localNotifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(newOrdersChannel);
+
+    await _localNotifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(orderUpdatesChannel);
   }
 
   Future<void> _setupFirebaseMessaging() async {
@@ -55,12 +92,27 @@ class NotificationService {
     final notification = message.notification;
     if (notification != null) {
       final payload = jsonEncode(message.data);
+      final notificationType = message.data['notificationType'] ?? message.data['type'];
+      
+      // Determine channel based on notification type
+      final channelId = notificationType == 'new_order' ? 'new_orders' : 'order_updates';
+      final channelName = notificationType == 'new_order' ? 'طلبات جديدة' : 'تحديثات الطلبات';
+      final importance = notificationType == 'new_order' ? Importance.high : Importance.defaultImportance;
+      
       _localNotifications.show(
         notification.hashCode,
         notification.title,
         notification.body,
-        const NotificationDetails(
-          android: AndroidNotificationDetails('default', 'Default'),
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channelId,
+            channelName,
+            importance: importance,
+            priority: notificationType == 'new_order' ? Priority.high : Priority.defaultPriority,
+            sound: const RawResourceAndroidNotificationSound('notification'),
+            enableVibration: true,
+            playSound: true,
+          ),
         ),
         payload: payload,
       );
