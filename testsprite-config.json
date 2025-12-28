@@ -1,0 +1,137 @@
+{
+  "testSprite": {
+    "version": "1.0",
+    "project": "WawApp",
+    "apps": {
+      "wawapp_client": {
+        "name": "WawApp Client",
+        "path": "./apps/wawapp_client",
+        "platform": "flutter",
+        "testSuites": [
+          {
+            "name": "Authentication Flow",
+            "type": "integration",
+            "scenarios": [
+              {
+                "name": "Phone OTP Login",
+                "steps": [
+                  "Launch app",
+                  "Enter phone number",
+                  "Request OTP",
+                  "Enter OTP code",
+                  "Verify login success"
+                ]
+              },
+              {
+                "name": "PIN Setup",
+                "steps": [
+                  "Complete OTP login",
+                  "Navigate to PIN setup",
+                  "Create 4-digit PIN",
+                  "Confirm PIN",
+                  "Verify PIN saved"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Order Flow",
+            "type": "integration",
+            "scenarios": [
+              {
+                "name": "Create Order",
+                "steps": [
+                  "Login as client",
+                  "Set pickup location",
+                  "Set destination",
+                  "Confirm order details",
+                  "Submit order"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "UI Components",
+            "type": "unit",
+            "scenarios": [
+              {
+                "name": "Map Widget",
+                "steps": [
+                  "Load map component",
+                  "Verify map renders",
+                  "Test location markers"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "wawapp_driver": {
+        "name": "WawApp Driver",
+        "path": "./apps/wawapp_driver",
+        "platform": "flutter",
+        "testSuites": [
+          {
+            "name": "Driver Authentication",
+            "type": "integration",
+            "scenarios": [
+              {
+                "name": "Driver Login",
+                "steps": [
+                  "Launch driver app",
+                  "Enter driver credentials",
+                  "Verify driver profile",
+                  "Check online status"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Order Management",
+            "type": "integration",
+            "scenarios": [
+              {
+                "name": "Accept Order",
+                "steps": [
+                  "Login as driver",
+                  "View available orders",
+                  "Accept order",
+                  "Navigate to pickup",
+                  "Complete trip"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Location Services",
+            "type": "unit",
+            "scenarios": [
+              {
+                "name": "GPS Tracking",
+                "steps": [
+                  "Enable location services",
+                  "Start location tracking",
+                  "Verify location updates",
+                  "Test location accuracy"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "environment": {
+      "flutter_version": "3.35.5+",
+      "dart_version": "3.0+",
+      "android_sdk": "34",
+      "test_timeout": 300,
+      "retry_count": 2
+    },
+    "reporting": {
+      "format": ["json", "html"],
+      "output_dir": "./test_results",
+      "screenshots": true,
+      "video_recording": false
+    }
+  }
+}
