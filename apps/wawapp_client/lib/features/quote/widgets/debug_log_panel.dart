@@ -43,9 +43,9 @@ class _DebugLogPanelState extends State<DebugLogPanel> {
                   const Divider(color: Colors.grey),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: AppLog.logs.length,
+                      itemCount: AppLog.getLogs().length,
                       itemBuilder: (context, index) {
-                        final log = AppLog.logs[index];
+                        final log = AppLog.getLogs()[index];
                         return Text(
                           log,
                           style: TextStyle(

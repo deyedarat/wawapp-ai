@@ -1,0 +1,72 @@
+=== WawApp Status Audit Report ===
+Timestamp: 2025-11-12T145330
+Branch: feat/phase3-analytics-deeplinks
+
+=== Recent Commits ===
+daaef45 chore(speckit): unify build/test commands + Amazon Q prewarm setup
+18bf312 feat(auth): harden auth gate (OTP->PIN enforcement) + temporary SignOut for QA
+e28b943 feat(auth): defer OTP navigation via build-time ref.listen (+state: verificationId/resendToken) [no-format]
+53d881d chore(auth): finalize safe OTP navigation and verify-by-SMS linking
+adfa96f fix: resolve GoRouter navigation conflicts in auth flow
+
+=== Environment Versions ===
+Flutter: 3.35.5 (stable)
+Dart: 3.9.2
+Java: OpenJDK 17.0.16+8
+Gradle: 8.9
+Android Gradle Plugin: 8.6.0 (inferred from settings)
+
+=== Firebase Configuration ===
+FOUND: apps/wawapp_client/android/app/google-services.json
+FOUND: apps/wawapp_driver/android/app/google-services.json
+FOUND: apps/wawapp_client/lib/firebase_options.dart
+FOUND: apps/wawapp_driver/lib/firebase_options.dart
+Status: SUCCESS
+
+=== Flutter Refresh ===
+wawapp_client: SUCCESS (41 packages with newer versions available, 1 discontinued)
+wawapp_driver: SUCCESS (37 packages with newer versions available)
+
+=== Analyzer Results ===
+Total Issues: 50
+- Errors: 2 (CRITICAL - undefined navigatorKey in both apps)
+- Warnings: 8
+- Info: 40
+Status: FAILED
+Duration: 6.6s
+
+=== Build Results ===
+
+App: wawapp_driver
+Mode: Debug
+Result: FAILED
+Duration: 149.8s
+Error: Undefined name 'navigatorKey' at lib/core/router/app_router.dart:14:19
+Artifact: N/A
+
+App: wawapp_client
+Mode: Debug
+Result: FAILED
+Duration: 160.8s
+Error: Undefined name 'navigatorKey' at lib/core/router/app_router.dart:18:19
+Artifact: N/A
+
+=== Critical Issues ===
+1. BLOCKER: Both apps fail to build due to undefined 'navigatorKey'
+   - Location: lib/core/router/app_router.dart
+   - Cause: navigatorKey not exported from main.dart
+   - Impact: Prevents all builds (Debug and Release)
+
+2. Analyzer: 50 issues detected
+   - 2 errors (navigatorKey)
+   - 8 warnings (unused variables, override issues)
+   - 40 info (style issues, print statements)
+
+=== Summary ===
+Status: BUILD FAILURE
+Both Flutter apps are currently unbuildable due to missing navigatorKey export.
+Firebase configuration is correct.
+Dependencies are up to date (within constraints).
+Immediate action required to fix navigatorKey issue before any builds can succeed.
+
+=== End of Report ===

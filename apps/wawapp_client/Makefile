@@ -20,10 +20,10 @@ analyze:
 	@flutter analyze
 
 debug:
-	@flutter run --debug
+	@flutter run --debug --dart-define=MAPS_API_KEY=AIzaSyBkeDIcXg0M-zfXogKtHfyZWWdNb916vjU
 
 release:
-	@flutter build apk --release
+	@flutter build apk --release --dart-define=MAPS_API_KEY=AIzaSyBkeDIcXg0M-zfXogKtHfyZWWdNb916vjU
 
 pack-lib:
 ifeq ($(OS),Windows_NT)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- احصل على مفتاح من Google Cloud Console -->
-    <string name="google_maps_api_key">AIzaSyA8Soo8cPB0wzFBsCe_G1_WlQD-r8Kn3uI</string>
+    <string name="google_maps_api_key">AIzaSyBkeDIcXg0M-zfXogKtHfyZWWdNb916vjU</string>
 </resources>

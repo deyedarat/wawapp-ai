@@ -1,0 +1,17 @@
+{
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.dart_tool": true,
+    "**/build": true,
+    "**/.git": true,
+    "**/android/.gradle": true,
+    "**/android/build": true,
+    "**/ios/Pods": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.dart_tool/**": true,
+    "**/build/**": true,
+    "**/.git/**": true
+  }
+}

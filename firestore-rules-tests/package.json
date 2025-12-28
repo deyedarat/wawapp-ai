@@ -1,0 +1,20 @@
+{
+  "name": "firestore-rules-tests",
+  "version": "1.0.0",
+  "description": "Firebase Security Rules Tests for WawApp",
+  "scripts": {
+    "test": "mocha --require @babel/register --timeout 10000 firestore.test.js",
+    "test:watch": "mocha --require @babel/register --timeout 10000 --watch firestore.test.js"
+  },
+  "keywords": ["firebase", "firestore", "security-rules", "testing"],
+  "author": "WawApp Team",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "@babel/register": "^7.22.15",
+    "@firebase/rules-unit-testing": "^3.0.2",
+    "mocha": "^10.2.0"
+  }
+}

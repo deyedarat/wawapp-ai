@@ -1,0 +1,19 @@
+{
+  "servers": [
+    {
+      "name": "filesystem",
+      "enabled": true,
+      "config": {
+        "roots": ["./"],
+        "readOnly": false
+      }
+    },
+    {
+      "name": "git",
+      "enabled": true,
+      "config": {
+        "repoPath": "."
+      }
+    }
+  ]
+}

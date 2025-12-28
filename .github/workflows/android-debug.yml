@@ -1,0 +1,80 @@
+name: android-debug
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run_driver_smoke:
+    runs-on: [self-hosted, label-1]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify device
+        run: adb devices -l
+
+      # (اختياري لكن مفيد) اطبع flutter/java/gradle versions
+      - name: Tool versions
+        run: |
+          flutter --version
+          java -version
+          gradle -v
+
+      # ✅ Cache pub + gradle لتسريع البناء
+      - name: Cache pub + gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            C:\Users\deye\AppData\Local\Pub\Cache
+            C:\Users\deye\.gradle\caches
+            C:\Users\deye\.gradle\wrapper
+          key: ${{ runner.os }}-wawapp-driver-${{ hashFiles('apps/wawapp_driver/pubspec.lock', 'apps/wawapp_driver/android/**', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-wawapp-driver-
+
+      - name: Flutter pub get
+        working-directory: apps/wawapp_driver
+        run: flutter pub get
+
+      - name: Build debug APK
+        working-directory: apps/wawapp_driver
+        run: flutter build apk --debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: driver-debug-apk
+          path: apps/wawapp_driver/build/app/outputs/flutter-apk/app-debug.apk
+
+      - name: Install APK on device
+        run: adb install -r apps/wawapp_driver/build/app/outputs/flutter-apk/app-debug.apk
+
+      # ✅ امسح logcat قبل التشغيل (Fail-fast)
+      - name: Clear logcat
+        run: adb logcat -c
+
+      # ✅ شغل بدون تخمين MainActivity
+      - name: Launch app (monkey)
+        run: adb shell monkey -p com.wawapp.driver -c android.intent.category.LAUNCHER 1
+
+      - name: Wait for app startup
+        run: powershell -command "Start-Sleep -Seconds 8"
+
+      # ✅ تأكد أن التطبيق فعلاً يعمل (سيسقط الـ job لو لم يعمل)
+      - name: Confirm app is running
+        run: adb shell pidof com.wawapp.driver
+
+      # ✅ التقط logcat بعد التشغيل فقط
+      - name: Capture logcat (after launch)
+        run: |
+          adb logcat -d > driver_logcat.txt
+          adb logcat -d | findstr /i "AndroidRuntime FATAL EXCEPTION ANR com.wawapp.driver" > driver_logcat_filtered.txt
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: driver-smoke-logs
+          path: |
+            driver_logcat.txt
+            driver_logcat_filtered.txt

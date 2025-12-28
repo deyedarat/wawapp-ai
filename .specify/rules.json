@@ -1,0 +1,13 @@
+{
+  "allowWritesOnlyInScopes": true,
+  "disallowPatterns": [
+    "apps/*/lib/core/**",
+    "apps/*/lib/router/**",
+    "apps/*/lib/l10n/**",
+    "apps/*/lib/data/**",
+    "apps/*/lib/theme/**"
+  ],
+  "requirePackages": ["flutter_riverpod"],
+  "forbidPackages": ["flutter_bloc", "bloc", "bloc_test"],
+  "notes": "Specify must write only in allowed scopes; Riverpod is mandatory."
+}

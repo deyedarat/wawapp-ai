@@ -1,0 +1,1150 @@
+"en": 7 untranslated message(s).
+To see a detailed report, use the untranslated-messages-file 
+option in the l10n.yaml file:
+untranslated-messages-file: desiredFileName.txt
+<other option>: <other selection> 
+
+
+This will generate a JSON format file containing all messages that 
+need to be translated.
+Launching lib\main.dart on SM A145P in debug mode...
+Running Gradle task 'assembleDebug'...                             20.2s
+√ Built build\app\outputs\flutter-apk\app-debug.apk
+Installing build\app\outputs\flutter-apk\app-debug.apk...           8.1s
+D/FlutterJNI( 3921): Beginning load of flutter...
+D/FlutterJNI( 3921): flutter (null) was loaded normally!
+I/flutter ( 3921): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FlutterGeolocator( 3921): Attaching Geolocator to activity
+I/flutter ( 3921): [App][DEBUG] 🚀 WawApp Client initializing...
+D/OpenGLRenderer( 3921): CacheManager::trimMemory(5)
+Syncing files to device SM A145P...                             
+I/IDS_TAG ( 3921): Closing IDS observe window
+I/IDS_TAG ( 3921): Getting Shared Preference for android.app.Application@1f848be uid = 10389
+I/IDS_TAG ( 3921): IDS count updated to 1 for android.app.Application@1f848be
+I/Choreographer( 3921): Skipped 136 frames!  The application may be doing too much work on its main thread.
+I/SurfaceView@24518c7( 3921): onWindowVisibilityChanged(0) true io.flutter.embedding.android.FlutterSurfaceView{24518c7 V.E...... ......I. 0,0-0,0} of ViewRootImpl@473cbc[MainActivity]
+D/SurfaceView@24518c7( 3921): 38082759 updateSurface: has no frame
+I/m.wawapp.client( 3921): Compiler allocated 6794KB to compile void android.view.ViewRootImpl.performTraversals()
+D/BufferQueueConsumer( 3921): [](id:f5100000000,api:0,p:-1,c:3921) connect: controlledByApp=false
+I/BLASTBufferQueue_Java( 3921): new BLASTBufferQueue, mName= ViewRootImpl@473cbc[MainActivity] mNativeObject= 0xb40000702b912200 sc.mNativeObject= 0xb4000070379c3d40 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3028 android.view.ViewRootImpl.relayoutWindow:10131 android.view.ViewRootImpl.performTraversals:4110 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 android.view.Choreographer.doCallbacks:1153 android.view.Choreographer.doFrame:1079 android.view.Choreographer$FrameDisplayEventReceiver.run:1646 
+I/BLASTBufferQueue_Java( 3921): update, w= 1080 h= 2408 mName = ViewRootImpl@473cbc[MainActivity] mNativeObject= 0xb40000702b912200 sc.mNativeObject= 0xb4000070379c3d40 format= -3 caller= android.graphics.BLASTBufferQueue.<init>:89 android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3028 android.view.ViewRootImpl.relayoutWindow:10131 android.view.ViewRootImpl.performTraversals:4110 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 
+E/FBI     ( 3921): Can't load library: dlopen failed: library "libmagtsync.so" not found
+I/ViewRootImpl@473cbc[MainActivity]( 3921): Relayout returned: old=(0,0,1080,2408) new=(0,0,1080,2408) relayoutAsync=false req=(1080,2408)0 dur=31 res=0x403 s={true 0xb400007037bb2000} ch=true seqId=0
+D/ViewRootImpl@473cbc[MainActivity]( 3921): mThreadedRenderer.initialize() mSurface={isValid=true 0xb400007037bb2000} hwInitialized=true
+D/SurfaceView@24518c7( 3921): 38082759 updateSurface: has no frame
+I/SurfaceView@24518c7( 3921): windowStopped(false) true io.flutter.embedding.android.FlutterSurfaceView{24518c7 V.E...... ......ID 0,0-1080,2273} of ViewRootImpl@473cbc[MainActivity]
+D/SurfaceView@24518c7( 3921): 38082759 updateSurface: has no frame
+D/ViewRootImpl@473cbc[MainActivity]( 3921): reportNextDraw android.view.ViewRootImpl.performTraversals:4718 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 
+I/SurfaceView( 3921): 38082759 Changes: creating=true format=true size=true visible=true alpha=false hint=false visible=true left=true top=true z=false attached=true lifecycleStrategy=false
+D/BufferQueueConsumer( 3921): [](id:f5100000001,api:0,p:-1,c:3921) connect: controlledByApp=false
+I/BLASTBufferQueue_Java( 3921): update, w= 1080 h= 2273 mName = null mNativeObject= 0xb40000702b912580 sc.mNativeObject= 0xb4000070379c4280 format= 4 caller= android.view.SurfaceView.createBlastSurfaceControls:1517 android.view.SurfaceView.updateSurface:1193 android.view.SurfaceView.lambda$new$0:258 android.view.SurfaceView.$r8$lambda$cm3nmzErr-srXoT_KjIYQgdhFN0:0 android.view.SurfaceView$$ExternalSyntheticLambda2.onPreDraw:2 android.view.ViewTreeObserver.dispatchOnPreDraw:1204 
+I/SurfaceView@24518c7( 3921): 38082759 Cur surface: Surface(name=null)/@0x92a3cc6
+I/SurfaceView@24518c7( 3921): pST: sr = Rect(0, 0 - 1080, 2273) sw = 1080 sh = 2273
+D/SurfaceView@24518c7( 3921): 38082759 performSurfaceTransaction RenderWorker position = [0, 0, 1080, 2273] surfaceSize = 1080x2273
+I/SurfaceView@24518c7( 3921): updateSurface: mVisible = true mSurface.isValid() = true
+I/SurfaceView@24518c7( 3921): updateSurface: mSurfaceCreated = false surfaceChanged = true visibleChanged = true
+I/SurfaceView( 3921): 38082759 visibleChanged -- surfaceCreated
+I/SurfaceView@24518c7( 3921): surfaceCreated 1 #8 io.flutter.embedding.android.FlutterSurfaceView{24518c7 V.E...... ......ID 0,0-1080,2273}
+E/gralloc4( 3921): ERROR: Format allocation info not found for format: 38
+E/gralloc4( 3921): ERROR: Format allocation info not found for format: 0
+E/gralloc4( 3921): Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+E/gralloc4( 3921): ERROR: Unrecognized and/or unsupported format 0x38 and usage 0xb00
+E/gralloc4( 3921): Allocation for the given description will not succeed. error: -22
+E/Gralloc4( 3921): isSupported(1, 1, 56, 1, ...) failed with 5
+E/GraphicBufferAllocator( 3921): Failed to allocate (4 x 4) layerCount 1 format 56 usage b00: 5
+E/AHardwareBuffer( 3921): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -5), handle=0x0
+E/gralloc4( 3921): ERROR: Format allocation info not found for format: 3b
+E/gralloc4( 3921): ERROR: Format allocation info not found for format: 0
+E/gralloc4( 3921): Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+E/gralloc4( 3921): ERROR: Unrecognized and/or unsupported format 0x3b and usage 0xb00
+E/gralloc4( 3921): Allocation for the given description will not succeed. error: -22
+E/Gralloc4( 3921): isSupported(1, 1, 59, 1, ...) failed with 5
+E/GraphicBufferAllocator( 3921): Failed to allocate (4 x 4) layerCount 1 format 59 usage b00: 5
+E/AHardwareBuffer( 3921): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -5), handle=0x0
+E/gralloc4( 3921): ERROR: Format allocation info not found for format: 38
+E/gralloc4( 3921): ERROR: Format allocation info not found for format: 0
+E/gralloc4( 3921): Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+E/gralloc4( 3921): ERROR: Unrecognized and/or unsupported format 0x38 and usage 0xb00
+E/gralloc4( 3921): Allocation for the given description will not succeed. error: -22
+E/Gralloc4( 3921): isSupported(1, 1, 56, 1, ...) failed with 5
+E/GraphicBufferAllocator( 3921): Failed to allocate (4 x 4) layerCount 1 format 56 usage b00: 5
+E/AHardwareBuffer( 3921): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -5), handle=0x0
+E/gralloc4( 3921): ERROR: Format allocation info not found for format: 3b
+E/gralloc4( 3921): ERROR: Format allocation info not found for format: 0
+E/gralloc4( 3921): Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+E/gralloc4( 3921): ERROR: Unrecognized and/or unsupported format 0x3b and usage 0xb00
+E/gralloc4( 3921): Allocation for the given description will not succeed. error: -22
+E/Gralloc4( 3921): isSupported(1, 1, 59, 1, ...) failed with 5
+E/GraphicBufferAllocator( 3921): Failed to allocate (4 x 4) layerCount 1 format 59 usage b00: 5
+E/AHardwareBuffer( 3921): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -5), handle=0x0
+D/hw-ProcessState( 3921): Binder ioctl to enable oneway spam detection failed: Invalid argument
+Syncing files to device SM A145P...                                252ms
+
+Flutter run key commands.
+r Hot reload. 
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on SM A145P is available at: http://127.0.0.1:64018/Q67ZvBW_Axg=/
+I/SurfaceView( 3921): 38082759 surfaceChanged -- format=4 w=1080 h=2273
+I/SurfaceView@24518c7( 3921): surfaceChanged (1080,2273) 1 #8 io.flutter.embedding.android.FlutterSurfaceView{24518c7 V.E...... ......ID 0,0-1080,2273}
+I/SurfaceView( 3921): 38082759 surfaceRedrawNeeded
+V/SurfaceView@24518c7( 3921): Layout: x=0 y=0 w=1080 h=2273, frame=Rect(0, 0 - 1080, 2273)
+D/SessionLifecycleService( 3921): Service created on process 3921
+D/SessionLifecycleService( 3921): Service bound to new client on process 3921
+D/SessionLifecycleService( 3921): App has not yet foregrounded. Using previously stored session.
+D/SessionLifecycleService( 3921): Client android.os.Messenger@6fd5f52 bound at 158874974. Clients: 1
+D/FlutterGeolocator( 3921): Creating service.
+D/FlutterGeolocator( 3921): Binding to location service.
+D/OpenGLRenderer( 3921): HWUI - treat SMPTE_170M as sRGB
+I/Choreographer( 3921): Skipped 39 frames!  The application may be doing too much work on its main thread.
+The Flutter DevTools debugger and profiler on SM A145P is available at: http://127.0.0.1:9101?uri=http://127.0.0.1:64018/Q67ZvBW_Axg=/
+I/InsetsSourceConsumer( 3921): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.wawapp.client/com.wawapp.client.MainActivity
+I/InsetsSourceConsumer( 3921): applyRequestedVisibilityToControl: visible=true, type=statusBars, host=com.wawapp.client/com.wawapp.client.MainActivity
+D/SessionLifecycleClient( 3921): Connected to SessionLifecycleService. Queue size 1
+D/SessionLifecycleClient( 3921): Sending lifecycle 1 to service
+D/SessionLifecycleService( 3921): Activity foregrounding at 158875075.
+D/SessionLifecycleService( 3921): Cold start detected.
+D/SessionLifecycleService( 3921): Generated new session.
+D/SessionLifecycleService( 3921): Broadcasting new session
+D/SessionFirelogPublisher( 3921): Data Collection is enabled for at least one Subscriber
+D/EventGDTLogger( 3921): Session Event Type: SESSION_START
+D/FlutterGeolocator( 3921): Geolocator foreground service connected
+D/FlutterGeolocator( 3921): Initializing Geolocator services
+D/FlutterGeolocator( 3921): Flutter engine connected. Connected engine count 1
+D/SessionFirelogPublisher( 3921): Successfully logged Session Start event.
+D/SessionLifecycleClient( 3921): Session update received.
+D/SessionLifecycleClient( 3921): Notified CRASHLYTICS of new session ba83ebef2a92489d934ecef4fe21c18a
+D/CompatibilityChangeReporter( 3921): Compat change id reported: 194532703; UID 10389; state: ENABLED
+D/CompatibilityChangeReporter( 3921): Compat change id reported: 253665015; UID 10389; state: ENABLED
+D/FirebaseAuth( 3921): Notifying id token listeners about user ( eRT1WoKSk8ZD0DwV17ega2033EC3 ).
+I/flutter ( 3921): [App][ERROR] Firebase initialization error
+I/flutter ( 3921): [App][ERROR] Error: [core/duplicate-app] A Firebase App named "[DEFAULT]" already exists
+I/flutter ( 3921): [App][ERROR] Stack: #0      MethodChannelFirebase.initializeApp (package:firebase_core_platform_interface/src/method_channel/method_channel_firebase.dart:131:11)
+I/flutter ( 3921): <asynchronous suspension>
+I/flutter ( 3921): #1      Firebase.initializeApp (package:firebase_core/src/firebase.dart:66:31)
+I/flutter ( 3921): <asynchronous suspension>
+I/flutter ( 3921): #2      main (package:wawapp_client/main.dart:25:7)
+I/flutter ( 3921): <asynchronous suspension>
+I/flutter ( 3921): 
+I/flutter ( 3921): [App][DEBUG] 📍 Ensuring location ready...
+I/flutter ( 3921): [App][DEBUG] ✅ WawApp initialization complete
+I/flutter ( 3921): [Router] loc=/ loggedIn=false canOtp=false otpStage=OtpStage.idle
+I/flutter ( 3921): [Router] Redirecting to /login (not authenticated)
+I/flutter ( 3921): [Router] loc=/login loggedIn=false canOtp=false otpStage=OtpStage.idle
+I/flutter ( 3921): [LoginScreen] Auth state changed: otpStage=OtpStage.idle, otpFlowActive=false, verificationId isNull=true, error=null
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<AuthNotifier, AuthState> updated
+I/flutter ( 3921): [Router] loc=/ loggedIn=false canOtp=false otpStage=OtpStage.idle
+I/flutter ( 3921): [Router] Redirecting to /login (not authenticated)
+I/flutter ( 3921): [Router] loc=/login loggedIn=false canOtp=false otpStage=OtpStage.idle
+I/flutter ( 3921): [ProviderObserver][DEBUG] Provider<GoRouter> updated
+I/flutter ( 3921): [Router] loc=/ loggedIn=true canOtp=false otpStage=OtpStage.idle
+W/libc    ( 3921): Access denied finding property "persist.vendor.debug.gpud.enable"
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x08010000 -> 0x00000000)
+D/BLASTBufferQueue( 3921): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0#1](f:0,a:0) onFrameAvailable the first frame is available
+D/BLASTBufferQueue( 3921): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0#1](f:0,a:1) acquireNextBufferLocked size=1080x2273 mFrameNumber=1 applyTransaction=true mTimestamp=158880981858161(auto) mPendingTransactions.size=0 graphicBufferId=16840566767630 transform=0
+I/Choreographer( 3921): Skipped 324 frames!  The application may be doing too much work on its main thread.
+I/SurfaceView( 3921): 38082759 finishedDrawing
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x08010000 -> 0x00000000)
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x08010000 -> 0x00000000)
+D/ProfileInstaller( 3921): Installing profile for com.wawapp.client
+W/System  ( 3921): Ignoring header X-Firebase-Locale because its value was null.
+W/DynamiteModule( 3921): Local module descriptor class for com.google.android.gms.providerinstaller.dynamite not found.
+I/DynamiteModule( 3921): Considering local module com.google.android.gms.providerinstaller.dynamite:0 and remote module com.google.android.gms.providerinstaller.dynamite:0
+W/ProviderInstaller( 3921): Failed to load providerinstaller module: No acceptable module com.google.android.gms.providerinstaller.dynamite found. Local version is 0 and remote version is 0.
+D/ConnectivityManager( 3921): StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4736)] [android.net.ConnectivityManager.registerDefaultNetworkCallbackForUid(ConnectivityManager.java:5461)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5428)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5402)] [com.google.firebase.firestore.remote.AndroidConnectivityMonitor.configureNetworkMonitoring(AndroidConnectivityMonitor.java:87)] [com.google.firebase.firestore.remote.AndroidConnectivityMonitor.<init>(AndroidConnectivityMonitor.java:64)] [com.google.firebase.firestore.remote.RemoteComponenetProvider.createConnectivityMonitor(RemoteComponenetProvider.java:94)] [com.google.firebase.firestore.remote.RemoteComponenetProvider.initialize(RemoteComponenetProvider.java:41)] [com.google.firebase.firestore.core.ComponentProvider.initialize(ComponentProvider.java:158)] [com.google.firebase.firestore.core.FirestoreClient.initialize(FirestoreClient.java:284)] [com.google.firebase.firestore.core.FirestoreClient.lambda$new$0$com-google-firebase-firestore-core-FirestoreClient(FirestoreClient.java:109)] [com.google.firebase.firestore.core.FirestoreClient$$ExternalSyntheticLambda10.run(D8$$SyntheticClass:0)] [com.google.firebase.firestore.util.AsyncQueue.lambda$enqueue$2(AsyncQueue.java:445)] [com.google.firebase.firestore.util.AsyncQueue$$ExternalSyntheticLambda4.call(D8$$SyntheticClass:0)] [com.google.firebase.firestore.util.AsyncQueue$SynchronizedShutdownAwareExecutor.lambda$executeAndReportResult$1(AsyncQueue.java:330)] [com.google.firebase.firestore.util.AsyncQueue$SynchronizedShutdownAwareExecutor$$ExternalSyntheticLambda2.run(D8$$SyntheticClass:0)] [java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)] [java.util.concurrent.FutureTask.run(FutureTask.java:317)] [java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:348)] [java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1156)] [java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:651)] [com.google.firebase.firestore.util.AsyncQueue$SynchronizedShutdownAwareExecutor$DelayedStartFactory.run(AsyncQueue.java:235)] [java.lang.Thread.run(Thread.java:1119)]
+D/MapsInitializer( 3921): preferredRenderer: null
+D/zzcc    ( 3921): preferredRenderer: null
+I/zzcc    ( 3921): Making Creator dynamically
+I/DynamiteModule( 3921): Considering local module com.google.android.gms.maps_core_dynamite:0 and remote module com.google.android.gms.maps_core_dynamite:254125200
+I/DynamiteModule( 3921): Selected remote version of com.google.android.gms.maps_core_dynamite, version >= 254125200
+D/nativeloader( 3921): Configuring clns-7 for other apk /system/framework/com.android.media.remotedisplay.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~KQvS2Wk8VY59NJvy7KM74Q==/com.google.android.gms--rE83TfCpVTjDV1FkZAieA==/lib/arm64:/data/app/~~KQvS2Wk8VY59NJvy7KM74Q==/com.google.android.gms--rE83TfCpVTjDV1FkZAieA==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+V/DynamiteModule( 3921): Dynamite loader version >= 2, using loadModule2NoCrashUtils
+D/nativeloader( 3921): Extending system_exposed_libraries: libaudiomirroring_jni.audiomirroring.samsung.so:libexifa.camera.samsung.so:libjpega.camera.samsung.so:libOpenCv.camera.samsung.so:libImageScreener.camera.samsung.so:libHpr_RecGAE_cvFeature_v1.0.camera.samsung.so:libHprFace_GAE_api.camera.samsung.so:libHprFace_GAE_jni.camera.samsung.so:libObjectAndSceneClassification_2.5_OD.camera.samsung.so:libQREngine.camera.samsung.so:libInteractiveSegmentation.camera.samsung.so:libsmart_cropping.camera.samsung.so:libFacePreProcessing.camera.samsung.so:libFacePreProcessing_jni.camera.samsung.so:libhumantracking_util.camera.samsung.so:libsurfaceutil.camera.samsung.so:libsecimaging.camera.samsung.so:libsce_v1.crypto.samsung.so:lib_vnd_client.dk.samsung.so:lib_native_client.dk.samsung.so:lib_nativeJni.dk.samsung.so:lib.engmodejni.samsung.so:libSFEffect.fonteffect.samsung.so:libknox_remotedesktopclient.knox.samsung.so:libheifcapture_jni.media.samsung.so:libjpegsq.media.samsung.so:libslljpeg.media.samsung.so:libsemimagecrop_jni.media.samsung.
+W/m.wawapp.client( 3921): Loading /data/misc/apexdata/com.android.art/dalvik-cache/arm64/system@framework@com.android.location.provider.jar@classes.odex non-executable as it requires an image which we failed to load
+D/nativeloader( 3921): Configuring clns-8 for other apk /system/framework/com.android.location.provider.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~KQvS2Wk8VY59NJvy7KM74Q==/com.google.android.gms--rE83TfCpVTjDV1FkZAieA==/lib/arm64:/data/app/~~KQvS2Wk8VY59NJvy7KM74Q==/com.google.android.gms--rE83TfCpVTjDV1FkZAieA==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+D/nativeloader( 3921): Extending system_exposed_libraries: libaudiomirroring_jni.audiomirroring.samsung.so:libexifa.camera.samsung.so:libjpega.camera.samsung.so:libOpenCv.camera.samsung.so:libImageScreener.camera.samsung.so:libHpr_RecGAE_cvFeature_v1.0.camera.samsung.so:libHprFace_GAE_api.camera.samsung.so:libHprFace_GAE_jni.camera.samsung.so:libObjectAndSceneClassification_2.5_OD.camera.samsung.so:libQREngine.camera.samsung.so:libInteractiveSegmentation.camera.samsung.so:libsmart_cropping.camera.samsung.so:libFacePreProcessing.camera.samsung.so:libFacePreProcessing_jni.camera.samsung.so:libhumantracking_util.camera.samsung.so:libsurfaceutil.camera.samsung.so:libsecimaging.camera.samsung.so:libsce_v1.crypto.samsung.so:lib_vnd_client.dk.samsung.so:lib_native_client.dk.samsung.so:lib_nativeJni.dk.samsung.so:lib.engmodejni.samsung.so:libSFEffect.fonteffect.samsung.so:libknox_remotedesktopclient.knox.samsung.so:libheifcapture_jni.media.samsung.so:libjpegsq.media.samsung.so:libslljpeg.media.samsung.so:libsemimagecrop_jni.media.samsung.
+W/m.wawapp.client( 3921): Loading /data/app/~~KQvS2Wk8VY59NJvy7KM74Q==/com.google.android.gms--rE83TfCpVTjDV1FkZAieA==/oat/arm64/base.odex non-executable as it requires an image which we failed to load
+D/nativeloader( 3921): Configuring clns-9 for other apk /data/app/~~KQvS2Wk8VY59NJvy7KM74Q==/com.google.android.gms--rE83TfCpVTjDV1FkZAieA==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~KQvS2Wk8VY59NJvy7KM74Q==/com.google.android.gms--rE83TfCpVTjDV1FkZAieA==/lib/arm64:/data/app/~~KQvS2Wk8VY59NJvy7KM74Q==/com.google.android.gms--rE83TfCpVTjDV1FkZAieA==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+D/zzcc    ( 3921): early loading native code
+D/nativeloader( 3921): Configuring clns-10 for other apk . target_sdk_version=36, uses_libraries=ALL, library_path=/data/user_de/0/com.google.android.gms/app_chimera/m/000005d1/dl-MapsCoreDynamite.integ_254125200100400.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand
+D/nativeloader( 3921): Extending system_exposed_libraries: libaudiomirroring_jni.audiomirroring.samsung.so:libexifa.camera.samsung.so:libjpega.camera.samsung.so:libOpenCv.camera.samsung.so:libImageScreener.camera.samsung.so:libHpr_RecGAE_cvFeature_v1.0.camera.samsung.so:libHprFace_GAE_api.camera.samsung.so:libHprFace_GAE_jni.camera.samsung.so:libObjectAndSceneClassification_2.5_OD.camera.samsung.so:libQREngine.camera.samsung.so:libInteractiveSegmentation.camera.samsung.so:libsmart_cropping.camera.samsung.so:libFacePreProcessing.camera.samsung.so:libFacePreProcessing_jni.camera.samsung.so:libhumantracking_util.camera.samsung.so:libsurfaceutil.camera.samsung.so:libsecimaging.camera.samsung.so:libsce_v1.crypto.samsung.so:lib_vnd_client.dk.samsung.so:lib_native_client.dk.samsung.so:lib_nativeJni.dk.samsung.so:lib.engmodejni.samsung.so:libSFEffect.fonteffect.samsung.so:libknox_remotedesktopclient.knox.samsung.so:libheifcapture_jni.media.samsung.so:libjpegsq.media.samsung.so:libslljpeg.media.samsung.so:libsemimagecrop_jni.media.samsung.
+D/nativeloader( 3921): Load /data/user_de/0/com.google.android.gms/app_chimera/m/000005d1/dl-MapsCoreDynamite.integ_254125200100400.apk!/lib/arm64-v8a/libgmm-jni.so using isolated ns clns-10 (caller=/data/user_de/0/com.google.android.gms/app_chimera/m/000005d1/dl-MapsCoreDynamite.integ_254125200100400.apk): ok
+I/native  ( 3921): I0000 00:00:1764682775.334457    3921 jni_init.cc:30] Initializing JNI...
+I/Google Android Maps SDK( 3921): Google Play services client version: 19020000
+E/GoogleApiManager( 3921): Failed to get service from broker. 
+E/GoogleApiManager( 3921): java.lang.SecurityException: Unknown calling package name 'com.google.android.gms'.
+E/GoogleApiManager( 3921): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3091)
+E/GoogleApiManager( 3921): 	at android.os.Parcel.createException(Parcel.java:3075)
+E/GoogleApiManager( 3921): 	at android.os.Parcel.readException(Parcel.java:3058)
+E/GoogleApiManager( 3921): 	at android.os.Parcel.readException(Parcel.java:3000)
+E/GoogleApiManager( 3921): 	at bcwz.a(:com.google.android.gms@254435029@25.44.35 (190400-831510661):36)
+E/GoogleApiManager( 3921): 	at bcva.z(:com.google.android.gms@254435029@25.44.35 (190400-831510661):143)
+E/GoogleApiManager( 3921): 	at bcbk.run(:com.google.android.gms@254435029@25.44.35 (190400-831510661):42)
+E/GoogleApiManager( 3921): 	at android.os.Handler.handleCallback(Handler.java:958)
+E/GoogleApiManager( 3921): 	at android.os.Handler.dispatchMessage(Handler.java:99)
+E/GoogleApiManager( 3921): 	at cpec.mr(:com.google.android.gms@254435029@25.44.35 (190400-831510661):1)
+E/GoogleApiManager( 3921): 	at cpec.dispatchMessage(:com.google.android.gms@254435029@25.44.35 (190400-831510661):5)
+E/GoogleApiManager( 3921): 	at android.os.Looper.loopOnce(Looper.java:230)
+E/GoogleApiManager( 3921): 	at android.os.Looper.loop(Looper.java:319)
+E/GoogleApiManager( 3921): 	at android.os.HandlerThread.run(HandlerThread.java:67)
+W/GoogleApiManager( 3921): Not showing notification since connectionResult is not user-facing: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+W/FlagRegistrar( 3921): Failed to register com.google.android.gms.providerinstaller#com.wawapp.client
+W/FlagRegistrar( 3921): fuhu: 17: 17: API: Phenotype.API is not available on this device. Connection failed with: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+W/FlagRegistrar( 3921): 	at fuhw.a(:com.google.android.gms@254435029@25.44.35 (190400-831510661):13)
+W/FlagRegistrar( 3921): 	at grop.d(:com.google.android.gms@254435029@25.44.35 (190400-831510661):3)
+W/FlagRegistrar( 3921): 	at gror.run(:com.google.android.gms@254435029@25.44.35 (190400-831510661):130)
+W/FlagRegistrar( 3921): 	at grqy.execute(:com.google.android.gms@254435029@25.44.35 (190400-831510661):1)
+W/FlagRegistrar( 3921): 	at groz.f(:com.google.android.gms@254435029@25.44.35 (190400-831510661):1)
+W/FlagRegistrar( 3921): 	at groz.m(:com.google.android.gms@254435029@25.44.35 (190400-831510661):99)
+W/FlagRegistrar( 3921): 	at groz.r(:com.google.android.gms@254435029@25.44.35 (190400-831510661):17)
+W/FlagRegistrar( 3921): 	at fmzm.hy(:com.google.android.gms@254435029@25.44.35 (190400-831510661):35)
+W/FlagRegistrar( 3921): 	at fani.run(:com.google.android.gms@254435029@25.44.35 (190400-831510661):12)
+W/FlagRegistrar( 3921): 	at grqy.execute(:com.google.android.gms@254435029@25.44.35 (190400-831510661):1)
+W/FlagRegistrar( 3921): 	at fanj.b(:com.google.android.gms@254435029@25.44.35 (190400-831510661):18)
+W/FlagRegistrar( 3921): 	at fany.b(:com.google.android.gms@254435029@25.44.35 (190400-831510661):36)
+W/FlagRegistrar( 3921): 	at faoa.d(:com.google.android.gms@254435029@25.44.35 (190400-831510661):25)
+W/FlagRegistrar( 3921): 	at bbyt.c(:com.google.android.gms@254435029@25.44.35 (190400-831510661):9)
+W/FlagRegistrar( 3921): 	at bcbi.q(:com.google.android.gms@254435029@25.44.35 (190400-831510661):48)
+W/FlagRegistrar( 3921): 	at bcbi.d(:com.google.android.gms@254435029@25.44.35 (190400-831510661):10)
+W/FlagRegistrar( 3921): 	at bcbi.g(:com.google.android.gms@254435029@25.44.35 (190400-831510661):185)
+W/FlagRegistrar( 3921): 	at bcbi.onConnectionFailed(:com.google.android.gms@254435029@25.44.35 (190400-831510661):2)
+W/FlagRegistrar( 3921): 	at bcbk.run(:com.google.android.gms@254435029@25.44.35 (190400-831510661):70)
+W/FlagRegistrar( 3921): 	at android.os.Handler.handleCallback(Handler.java:958)
+W/FlagRegistrar( 3921): 	at android.os.Handler.dispatchMessage(Handler.java:99)
+W/FlagRegistrar( 3921): 	at cpec.mr(:com.google.android.gms@254435029@25.44.35 (190400-831510661):1)
+W/FlagRegistrar( 3921): 	at cpec.dispatchMessage(:com.google.android.gms@254435029@25.44.35 (190400-831510661):5)
+W/FlagRegistrar( 3921): 	at android.os.Looper.loopOnce(Looper.java:230)
+W/FlagRegistrar( 3921): 	at android.os.Looper.loop(Looper.java:319)
+W/FlagRegistrar( 3921): 	at android.os.HandlerThread.run(HandlerThread.java:67)
+W/FlagRegistrar( 3921): Caused by: bbxa: 17: API: Phenotype.API is not available on this device. Connection failed with: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+W/FlagRegistrar( 3921): 	at bcum.a(:com.google.android.gms@254435029@25.44.35 (190400-831510661):15)
+W/FlagRegistrar( 3921): 	at bbyw.a(:com.google.android.gms@254435029@25.44.35 (190400-831510661):1)
+W/FlagRegistrar( 3921): 	at bbyt.c(:com.google.android.gms@254435029@25.44.35 (190400-831510661):5)
+W/FlagRegistrar( 3921): 	... 12 more
+D/bo      ( 3921): SDK type: 1, version: 254125200
+D/hp      ( 3921): maps_core_dynamite module version in use (0 represents standalone library): 254125200
+D/hp      ( 3921): Added event: 109
+D/nativeloader( 3921): Load /data/app/~~KQvS2Wk8VY59NJvy7KM74Q==/com.google.android.gms--rE83TfCpVTjDV1FkZAieA==/base.apk!/lib/arm64-v8a/libconscrypt_gmscore_jni.so using class loader ns clns-9 (caller=/data/app/~~KQvS2Wk8VY59NJvy7KM74Q==/com.google.android.gms--rE83TfCpVTjDV1FkZAieA==/base.apk): ok
+D/hp      ( 3921): Added event: 112
+D/MapsInitializer( 3921): loadedRenderer: LATEST
+D/zzcc    ( 3921): preferredRenderer: null
+V/NativeCrypto( 3921): Registering com/google/android/gms/org/conscrypt/NativeCrypto's 328 native methods...
+D/bo      ( 3921): SDK type: 1, version: 254125200
+I/Google Android Maps SDK( 3921): Google Play services package version: 254435029
+I/Google Android Maps SDK( 3921): Google Play services maps renderer version(maps_core): 254125200
+D/bo      ( 3921): SDK type: 1, version: 254125200
+I/m.wawapp.client( 3921): hiddenapi: Accessing hidden method Ljava/security/spec/ECParameterSpec;->getCurveName()Ljava/lang/String; (runtime_flags=0, domain=core-platform, api=unsupported) from Lcom/google/android/gms/org/conscrypt/Platform; (domain=app) using reflection: allowed
+D/de      ( 3921): about to start loading native library asynchronously
+W/x       ( 3921): Suppressed StrictMode policy violation: StrictModeDiskReadViolation
+I/o       ( 3921): Using GMM server: https://clients4.google.com/glm/mmap
+W/x       ( 3921): Suppressed StrictMode policy violation: StrictModeDiskReadViolation
+W/x       ( 3921): Suppressed StrictMode policy violation: StrictModeDiskWriteViolation
+D/o       ( 3921): Using Non-null serverVersionMetadataManager to load previous metadata.
+I/ProviderInstaller( 3921): Installed default security provider GmsCore_OpenSSL
+W/x       ( 3921): Suppressed StrictMode policy violation: StrictModeDiskReadViolation
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~qNCRlxrKwy5WM2xpDm9HBQ==/com.anthropic.claude-anNecYgZ58hffV_n__pnKA==/base.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~qNCRlxrKwy5WM2xpDm9HBQ==/com.anthropic.claude-anNecYgZ58hffV_n__pnKA==/split_config.ar.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~qNCRlxrKwy5WM2xpDm9HBQ==/com.anthropic.claude-anNecYgZ58hffV_n__pnKA==/split_config.arm64_v8a.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~qNCRlxrKwy5WM2xpDm9HBQ==/com.anthropic.claude-anNecYgZ58hffV_n__pnKA==/split_config.en.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~qNCRlxrKwy5WM2xpDm9HBQ==/com.anthropic.claude-anNecYgZ58hffV_n__pnKA==/split_config.xxhdpi.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~jdM3e8UeyAcWpLMM9h6iUw==/com.openai.chatgpt-xQeIRfJAJuEJucehgXLp9g==/base.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~jdM3e8UeyAcWpLMM9h6iUw==/com.openai.chatgpt-xQeIRfJAJuEJucehgXLp9g==/split_config.ar.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~jdM3e8UeyAcWpLMM9h6iUw==/com.openai.chatgpt-xQeIRfJAJuEJucehgXLp9g==/split_config.arm64_v8a.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~jdM3e8UeyAcWpLMM9h6iUw==/com.openai.chatgpt-xQeIRfJAJuEJucehgXLp9g==/split_config.en.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~jdM3e8UeyAcWpLMM9h6iUw==/com.openai.chatgpt-xQeIRfJAJuEJucehgXLp9g==/split_config.xxhdpi.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~G7GLX1qsVrIZym9fFgGdtA==/com.opera.mini.native-NXY-_vK8lrjAjQyCbkeKCw==/base.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~G7GLX1qsVrIZym9fFgGdtA==/com.opera.mini.native-NXY-_vK8lrjAjQyCbkeKCw==/split_config.ar.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~G7GLX1qsVrIZym9fFgGdtA==/com.opera.mini.native-NXY-_vK8lrjAjQyCbkeKCw==/split_config.arm64_v8a.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~G7GLX1qsVrIZym9fFgGdtA==/com.opera.mini.native-NXY-_vK8lrjAjQyCbkeKCw==/split_config.en.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~G7GLX1qsVrIZym9fFgGdtA==/com.opera.mini.native-NXY-_vK8lrjAjQyCbkeKCw==/split_config.xxhdpi.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~G7GLX1qsVrIZym9fFgGdtA==/com.opera.mini.native-NXY-_vK8lrjAjQyCbkeKCw==/split_pangle_ads.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~G7GLX1qsVrIZym9fFgGdtA==/com.opera.mini.native-NXY-_vK8lrjAjQyCbkeKCw==/split_pangle_ads.config.ar.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~G7GLX1qsVrIZym9fFgGdtA==/com.opera.mini.native-NXY-_vK8lrjAjQyCbkeKCw==/split_pangle_ads.config.arm64_v8a.apk' with 1 weak references
+W/m.wawapp.client( 3921): ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~G7GLX1qsVrIZym9fFgGdtA==/com.opera.mini.native-NXY-_vK8lrjAjQyCbkeKCw==/split_pangle_ads.config.en.apk' with 1 weak references
+D/ConnectivityManager( 3921): StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4736)] [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4904)] [android.net.ConnectivityManager.registerNetworkCallback(ConnectivityManager.java:5321)] [android.net.ConnectivityManager.registerNetworkCallback(ConnectivityManager.java:5291)] [m140.fii.c(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:52)] [m140.fii.<init>(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:140)] [com.google.maps.api.android.lib6.impl.hx.<init>(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:1)] [com.google.android.gms.maps.internal.CreatorImpl.c(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:1382)] [com.google.android.gms.maps.internal.CreatorImpl.newMapViewDelegate(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:23)] [com.google.android.gms.maps.internal.h.bt(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:311)] [m140.ayg.onTransact(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:21)]
+D/ConnectivityManager( 3921): StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4736)] [android.net.ConnectivityManager.registerDefaultNetworkCallbackForUid(ConnectivityManager.java:5461)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5428)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5402)] [io.grpc.android.AndroidChannelBuilder$AndroidChannel.configureNetworkMonitoring(AndroidChannelBuilder.java:217)] [io.grpc.android.AndroidChannelBuilder$AndroidChannel.<init>(AndroidChannelBuilder.java:198)] [io.grpc.android.AndroidChannelBuilder.build(AndroidChannelBuilder.java:169)] [com.google.firebase.firestore.remote.GrpcCallProvider.initChannel(GrpcCallProvider.java:116)] [com.google.firebase.firestore.remote.GrpcCallProvider.lambda$initChannelTask$6$com-google-firebase-firestore-remote-GrpcCallProvider(GrpcCallProvider.java:242)] [com.google.firebase.firestore.remote.GrpcCallProvider$$ExternalSyntheticLambda4.call(D8$$SyntheticClass:0)] [com.google.android.gms.tasks.zzz.run(com.google.android.gms:play-services-tasks@@18.1.0:1)] [com.google.firebase.firestore.util.ThrottledForwardingExecutor.lambda$execute$0$com-google-firebase-firestore-util-ThrottledForwardingExecutor(ThrottledForwardingExecutor.java:54)] [com.google.firebase.firestore.util.ThrottledForwardingExecutor$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)] [java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1156)] [java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:651)] [java.lang.Thread.run(Thread.java:1119)]
+D/CompatibilityChangeReporter( 3921): Compat change id reported: 210923482; UID 10389; state: ENABLED
+D/CompatibilityChangeReporter( 3921): Compat change id reported: 171228096; UID 10389; state: ENABLED
+I/m.wawapp.client( 3921): hiddenapi: Accessing hidden field Ljava/net/Socket;->impl:Ljava/net/SocketImpl; (runtime_flags=0, domain=core-platform, api=unsupported) from Lcom/google/android/gms/org/conscrypt/Platform; (domain=app) using reflection: allowed
+D/FirebaseAuth( 3921): Notifying id token listeners about user ( eRT1WoKSk8ZD0DwV17ega2033EC3 ).
+D/CompatibilityChangeReporter( 3921): Compat change id reported: 247079863; UID 10389; state: ENABLED
+D/libMEOW ( 3921): meow new tls: 0xb400006f88880580
+D/libMEOW ( 3921): applied 2 plugins for [com.wawapp.client]:
+D/libMEOW ( 3921):   plugin 1: [libMEOW_gift.so]:
+D/libMEOW ( 3921):   plugin 2: [libMEOW_semaphore]:
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/GMM-SatelliteConnectivity( 3921): CELL  isActiveNetworkSatellite: false
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/m.wawapp.client( 3921): hiddenapi: Accessing hidden method Ljava/security/spec/ECParameterSpec;->setCurveName(Ljava/lang/String;)V (runtime_flags=0, domain=core-platform, api=unsupported) from Lcom/google/android/gms/org/conscrypt/Platform; (domain=app) using reflection: allowed
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+D/ConnectivityManager( 3921): StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4736)] [android.net.ConnectivityManager.registerDefaultNetworkCallbackForUid(ConnectivityManager.java:5461)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5428)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5402)] [m140.n$$ExternalSyntheticApiModelOutline1.m(D8$$SyntheticClass:27)] [m140.avu.b(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:49)] [m140.auw.f(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:9)] [m140.aut.a(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:1)] [m140.ahn.<init>(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:95)] [com.google.maps.api.android.lib6.phoenix.z.<init>(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:1)] [m140.ago.a(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:3)] [m140.avm.a(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:193)] [m140.agq.c(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:12)] [m140.fki.<init>(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:11)] [m140.fkj.a(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:19)] [m140.jfy.d(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:12)] [m140.jfy.a(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:7)] [m140.evo.run(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:47)] [java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:524)] [m140.bnr$a.run(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:14)] [java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1156)] [java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:651)] [m140.bog.run(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:40)] [java.lang.Thread.run(Thread.java:1119)]
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/PlatformViewsController( 3921): Hosting view in view hierarchy for platform view: 0
+I/PlatformViewsController( 3921): PlatformView is using SurfaceProducer backend
+D/CompatibilityChangeReporter( 3921): Compat change id reported: 236825255; UID 10389; state: ENABLED
+W/JavaCronetEngine( 3921): using the fallback Cronet Engine implementation. Performance will suffer and many HTTP client features, including caching, will not work.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+D/BufferQueueConsumer( 3921): [](id:f5100000002,api:0,p:-1,c:3921) connect: controlledByApp=true
+D/NativeCustomFrequencyManager( 3921): [NativeCFMS] BpCustomFrequencyManager::BpCustomFrequencyManager()
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+D/OpenGLRenderer( 3921): CFMS:: SetUp Pid : 3921    Tid : 4073
+W/WindowOnBackDispatcher( 3921): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher( 3921): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+I/Choreographer( 3921): Skipped 117 frames!  The application may be doing too much work on its main thread.
+I/ViewRootImpl@473cbc[MainActivity]( 3921): Setup new sync=wmsSync-ViewRootImpl@473cbc[MainActivity]#1
+I/ViewRootImpl@473cbc[MainActivity]( 3921): Creating new active sync group ViewRootImpl@473cbc[MainActivity]#2
+I/ViewRootImpl@473cbc[MainActivity]( 3921): registerCallbacksForSync syncBuffer=false
+D/BufferQueueConsumer( 3921): [](id:f5100000003,api:0,p:-1,c:3921) connect: controlledByApp=true
+D/NativeCustomFrequencyManager( 3921): [NativeCFMS] BpCustomFrequencyManager::BpCustomFrequencyManager()
+D/BufferQueueConsumer( 3921): [](id:f5100000004,api:0,p:-1,c:3921) connect: controlledByApp=true
+D/libMEOW ( 3921): meow new tls: 0xb400006f7757e6c0
+D/libMEOW ( 3921): applied 2 plugins for [com.wawapp.client]:
+D/libMEOW ( 3921):   plugin 1: [libMEOW_gift.so]:
+D/libMEOW ( 3921):   plugin 2: [libMEOW_semaphore]:
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+D/OpenGLRenderer( 3921): CFMS:: SetUp Pid : 3921    Tid : 4073
+D/SurfaceView( 3921): 38082759 updateSurfacePosition RenderWorker, frameNr = 1, position = [0, 0, 1080, 2273] surfaceSize = 1080x2273
+I/SurfaceView@24518c7( 3921): uSP: rtp = Rect(0, 0 - 1080, 2273) rtsw = 1080 rtsh = 2273
+I/SurfaceView@24518c7( 3921): onSSPAndSRT: pl = 0 pt = 0 sx = 1.0 sy = 1.0
+I/SurfaceView@24518c7( 3921): aOrMT: ViewRootImpl@473cbc[MainActivity] t = android.view.SurfaceControl$Transaction@1500dba fN = 1 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1666 android.graphics.RenderNode$CompositePositionUpdateListener.positionChanged:369 
+I/ViewRootImpl@473cbc[MainActivity]( 3921): mWNT: t=0xb400006f85eff000 mBlastBufferQueue=0xb40000702b912200 fn= 1 mRenderHdrSdrRatio=1.0 caller= android.view.SurfaceView.applyOrMergeTransaction:1598 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:1666 
+I/ViewRootImpl@473cbc[MainActivity]( 3921): Received frameDrawingCallback syncResult=0 frameNum=1.
+I/ViewRootImpl@473cbc[MainActivity]( 3921): mWNT: t=0xb400006f88b06880 mBlastBufferQueue=0xb40000702b912200 fn= 1 mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$8.onFrameDraw:13841 android.view.ThreadedRenderer$1.onFrameDraw:792 <bottom of call stack> 
+I/ViewRootImpl@473cbc[MainActivity]( 3921): Setting up sync and frameCommitCallback
+D/BLASTBufferQueue( 3921): [ViewRootImpl@473cbc[MainActivity]#0](f:0,a:0) onFrameAvailable the first frame is available
+D/BLASTBufferQueue( 3921): [ViewRootImpl@473cbc[MainActivity]#0](f:0,a:1) acquireNextBufferLocked size=1080x2408 mFrameNumber=1 applyTransaction=true mTimestamp=158883065107700(auto) mPendingTransactions.size=0 graphicBufferId=16840566767635 transform=0
+I/ViewRootImpl@473cbc[MainActivity]( 3921): Received frameCommittedCallback lastAttemptedDrawFrameNum=1 didProduceBuffer=true
+D/OpenGLRenderer( 3921): CFMS:: SetUp Pid : 3921    Tid : 4073
+I/ViewRootImpl@473cbc[MainActivity]( 3921): reportDrawFinished seqId=0
+I/OpenGLRenderer( 3921): Davey! duration=1977ms; Flags=1, FrameTimelineVsyncId=30360817, IntendedVsync=158881055386544, Vsync=158882984814473, InputEventId=0, HandleInputStart=158882995728392, AnimationStart=158882995735776, PerformTraversalsStart=158882996544930, DrawStart=158883006327161, FrameDeadline=158881072053211, FrameInterval=158882995017315, FrameStartTime=16666667, SyncQueued=158883017218546, SyncStart=158883051228930, IssueDrawCommandsStart=158883054894469, SwapBuffers=158883063051776, FrameCompleted=158883067332700, DequeueBufferDuration=4075692, QueueBufferDuration=1303308, GpuCompleted=158883067332700, SwapBuffersCompleted=158883066869546, DisplayPresentTime=0, CommandSubmissionCompleted=158883063051776, 
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<AuthNotifier, AuthState> updated
+I/flutter ( 3921): [Router] loc=/ loggedIn=true canOtp=false otpStage=OtpStage.idle
+I/flutter ( 3921): [Analytics] User property set: user_type = client
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+D/BufferQueueConsumer( 3921): [SurfaceTexture-0-3921-0](id:f5100000004,api:0,p:-1,c:3921) disconnect
+V/GoogleMapController( 3921): Controller was disposed before GoogleMap was ready.
+V/GoogleMapController( 3921): Controller was disposed before GoogleMap was ready.
+V/GoogleMapController( 3921): Controller was disposed before GoogleMap was ready.
+V/GoogleMapController( 3921): Controller was disposed before GoogleMap was ready.
+D/Google Android Maps SDK( 3921): For capability in capabilities, log:
+D/Google Android Maps SDK( 3921): "AdvancedMarkers: false: Capabilities unavailable without a Map ID."Data-driven styling: false
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+D/libMEOW ( 3921): meow delete tls: 0xb400006f7757e6c0
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+D/BufferQueueConsumer( 3921): [ImageReader-1x1f22m6-3921-0](id:f5100000002,api:0,p:-1,c:3921) disconnect
+D/BufferQueueConsumer( 3921): [ImageReader-990x844f22m6-3921-1](id:f5100000003,api:0,p:-1,c:3921) disconnect
+I/flutter ( 3921): [ProviderObserver][DEBUG] Provider<GoRouter> updated
+I/flutter ( 3921): [Router] loc=/ loggedIn=true canOtp=false otpStage=OtpStage.idle
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+D/MapsInitializer( 3921): preferredRenderer: null
+D/zzcc    ( 3921): preferredRenderer: null
+I/Google Android Maps SDK( 3921): Google Play services package version: 254435029
+I/Google Android Maps SDK( 3921): Google Play services maps renderer version(maps_core): 254125200
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/PlatformViewsController( 3921): Hosting view in view hierarchy for platform view: 1
+I/PlatformViewsController( 3921): PlatformView is using SurfaceProducer backend
+D/BufferQueueConsumer( 3921): [](id:f5100000005,api:0,p:-1,c:3921) connect: controlledByApp=true
+D/NativeCustomFrequencyManager( 3921): [NativeCFMS] BpCustomFrequencyManager::BpCustomFrequencyManager()
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+D/OpenGLRenderer( 3921): CFMS:: SetUp Pid : 3921    Tid : 4073
+D/BufferQueueConsumer( 3921): [](id:f5100000006,api:0,p:-1,c:3921) connect: controlledByApp=true
+D/NativeCustomFrequencyManager( 3921): [NativeCFMS] BpCustomFrequencyManager::BpCustomFrequencyManager()
+D/BufferQueueConsumer( 3921): [](id:f5100000007,api:0,p:-1,c:3921) connect: controlledByApp=true
+D/libMEOW ( 3921): meow new tls: 0xb400006f77729580
+D/libMEOW ( 3921): applied 2 plugins for [com.wawapp.client]:
+D/libMEOW ( 3921):   plugin 1: [libMEOW_gift.so]:
+D/libMEOW ( 3921):   plugin 2: [libMEOW_semaphore]:
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+D/OpenGLRenderer( 3921): CFMS:: SetUp Pid : 3921    Tid : 4073
+I/ViewRootImpl@473cbc[MainActivity]( 3921): handleWindowFocusChanged: 1 0 call from android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged:0
+D/ViewRootImpl@473cbc[MainActivity]( 3921): mThreadedRenderer.initializeIfNeeded()#2 mSurface={isValid=true 0xb400007037bb2000}
+D/InputMethodManagerUtils( 3921): startInputInner - Id : 0
+I/InputMethodManager( 3921): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+D/BufferQueueConsumer( 3921): [ImageReader-1x1f22m6-3921-2](id:f5100000005,api:0,p:-1,c:3921) disconnect
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/GoogleMapController( 3921): Installing custom TextureView driven invalidator.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/flutter ( 3921): [ProviderObserver][DEBUG] AutoDisposeFutureProvider<Set<Marker>> updated
+D/InputMethodManagerUtils( 3921): startInputInner - Id : 0
+I/InsetsController( 3921): onStateChanged: host=com.wawapp.client/com.wawapp.client.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7209, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2408), mDisplayCutout=DisplayCutout{insets=Rect(0, 64 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(468, 0 - 612, 64), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2408 physicalDisplayWidth=1080 physicalDisplayHeight=2408 density={2.8125} cutoutSpec={M 0,0 H -25.6‬ V 22.75555555555556 H 25.6‬ V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2408), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 64) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=1080 displayHeight=2408 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {85b50000 mType=statusBars mFrame=[0,0][1080,64] mVisible=true mFlags=[]}, InsetsSource: {85b50005 mType=mandatorySystemGestures mFrame=[0,0][1080,98] mVisible=true mFlags=[]}, InsetsSource: {85b50006 mType=tappableElement mFrame=[0,0][1080,64] mVisible=true mFlags=[]}, InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,64] mVisible=true mFlags=[]}, InsetsSource: {19020001 mType=navigationBars mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {19020004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {19020005 mType=mandatorySystemGestures mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {19020006 mType=tappableElement mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {19020024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]} }
+I/InsetsSourceConsumer( 3921): applyRequestedVisibilityToControl: visible=false, type=ime, host=com.wawapp.client/com.wawapp.client.MainActivity
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/DynamiteModule( 3921): Local module descriptor class for com.google.android.gms.googlecertificates not found.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/DynamiteModule( 3921): Considering local module com.google.android.gms.googlecertificates:0 and remote module com.google.android.gms.googlecertificates:7
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/DynamiteModule( 3921): Selected remote version of com.google.android.gms.googlecertificates, version >= 7
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/m.wawapp.client( 3921): ClassLoaderContext classpath element checksum mismatch. expected=2043115254, found=2315353233 (DLC[];PCL[base.apk*2043115254]{PCL[/system/framework/org.apache.http.legacy.jar*365604909]#PCL[/system/framework/com.android.media.remotedisplay.jar*2114713712]#PCL[/system/framework/com.android.location.provider.jar*3994156537]#PCL[/system/framework/org.apache.http.legacy.jar*365604909]} | DLC[];PCL[/data/app/~~Dq_vovA8mfnnhajOGFYz4A==/com.wawapp.client-o_WUVbLCdiTUE-QTf7BKdg==/base.apk*2315353233]{PCL[/system/framework/org.apache.http.legacy.jar*365604909]})
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/m.wawapp.client( 3921): Compiler allocated 6407KB to compile void m140.ejb.W(m140.enq, m140.fhm, android.content.res.Resources, m140.elh, m140.ewf, boolean, m140.djr, java.util.Map, boolean, boolean, boolean, boolean)
+I/m.wawapp.client( 3921): Background concurrent copying GC freed 6650KB AllocSpace bytes, 69(7900KB) LOS objects, 46% free, 28MB/52MB, paused 204us,195us total 142.242ms
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/m.wawapp.client( 3921): Compiler allocated 4469KB to compile void m140.eeb.c(m140.dkg, m140.ect, m140.eew, m140.elt, boolean)
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/m.wawapp.client( 3921): Compiler allocated 5752KB to compile void m140.era.o()
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/m.wawapp.client( 3921): Background concurrent copying GC freed 14MB AllocSpace bytes, 65(14MB) LOS objects, 45% free, 28MB/52MB, paused 732us,286us total 186.660ms
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/m.wawapp.client( 3921): Long monitor contention with owner androidmapsapi-TilePrep_1 (4330) at void m140.esa.run()(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:1926) waiters=1 in void m140.esa.run() for 120ms
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/m.wawapp.client( 3921): Background concurrent copying GC freed 11MB AllocSpace bytes, 45(20MB) LOS objects, 48% free, 25MB/49MB, paused 171us,340us total 147.835ms
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/GoogleApiManager( 3921): Failed to get service from broker. 
+E/GoogleApiManager( 3921): java.lang.SecurityException: Unknown calling package name 'com.google.android.gms'.
+E/GoogleApiManager( 3921): 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3091)
+E/GoogleApiManager( 3921): 	at android.os.Parcel.createException(Parcel.java:3075)
+E/GoogleApiManager( 3921): 	at android.os.Parcel.readException(Parcel.java:3058)
+E/GoogleApiManager( 3921): 	at android.os.Parcel.readException(Parcel.java:3000)
+E/GoogleApiManager( 3921): 	at bcwz.a(:com.google.android.gms@254435029@25.44.35 (190400-831510661):36)
+E/GoogleApiManager( 3921): 	at bcva.z(:com.google.android.gms@254435029@25.44.35 (190400-831510661):143)
+E/GoogleApiManager( 3921): 	at bcbk.run(:com.google.android.gms@254435029@25.44.35 (190400-831510661):42)
+E/GoogleApiManager( 3921): 	at android.os.Handler.handleCallback(Handler.java:958)
+E/GoogleApiManager( 3921): 	at android.os.Handler.dispatchMessage(Handler.java:99)
+E/GoogleApiManager( 3921): 	at cpec.mr(:com.google.android.gms@254435029@25.44.35 (190400-831510661):1)
+E/GoogleApiManager( 3921): 	at cpec.dispatchMessage(:com.google.android.gms@254435029@25.44.35 (190400-831510661):5)
+E/GoogleApiManager( 3921): 	at android.os.Looper.loopOnce(Looper.java:230)
+E/GoogleApiManager( 3921): 	at android.os.Looper.loop(Looper.java:319)
+E/GoogleApiManager( 3921): 	at android.os.HandlerThread.run(HandlerThread.java:67)
+W/GoogleApiManager( 3921): Not showing notification since connectionResult is not user-facing: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+D/CompatibilityChangeReporter( 3921): Compat change id reported: 289878283; UID 10389; state: ENABLED
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<RoutePickerNotifier, RoutePickerState> updated
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<RoutePickerNotifier, RoutePickerState> updated
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<RoutePickerNotifier, RoutePickerState> updated
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<RoutePickerNotifier, RoutePickerState> updated
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<RoutePickerNotifier, RoutePickerState> updated
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<RoutePickerNotifier, RoutePickerState> updated
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<QuoteNotifier, QuoteState> updated
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<QuoteNotifier, QuoteState> updated
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<QuoteNotifier, QuoteState> updated
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<QuoteNotifier, QuoteState> updated
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateNotifierProvider<QuoteNotifier, QuoteState> updated
+I/flutter ( 3921): [Router] loc=/quote loggedIn=true canOtp=false otpStage=OtpStage.idle
+W/WindowOnBackDispatcher( 3921): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher( 3921): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+I/flutter ( 3921): [OrdersClient] Creating order for user: eRT1WoKSk8ZD0DwV17ega2033EC3
+I/flutter ( 3921): [OrdersClient] Pickup: 32JF+4RJ, Nouakchott, Nouakchott-Ouest, Dropoff: 32CJ+79P, Nouakchott, South Nouakchott
+I/flutter ( 3921): [OrdersClient] Order created successfully with ID: ZUJNd1l2iRLOcftO9WFk
+I/flutter ( 3921): [Router] loc=/track loggedIn=true canOtp=false otpStage=OtpStage.idle
+I/flutter ( 3921): [TRACK] User tried to track an order they do not own: orderId=null, ownerId=null, uid=eRT1WoKSk8ZD0DwV17ega2033EC3
+I/flutter ( 3921): [Analytics] order_created
+I/flutter ( 3921): [Analytics] order_created
+E/FlutterGeolocator( 3921): Geolocator position updates started
+D/MapsInitializer( 3921): preferredRenderer: null
+D/zzcc    ( 3921): preferredRenderer: null
+I/Google Android Maps SDK( 3921): Google Play services package version: 254435029
+I/Google Android Maps SDK( 3921): Google Play services maps renderer version(maps_core): 254125200
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/PlatformViewsController( 3921): Hosting view in view hierarchy for platform view: 2
+I/PlatformViewsController( 3921): PlatformView is using SurfaceProducer backend
+D/BufferQueueConsumer( 3921): [](id:f5100000008,api:0,p:-1,c:3921) connect: controlledByApp=true
+D/NativeCustomFrequencyManager( 3921): [NativeCFMS] BpCustomFrequencyManager::BpCustomFrequencyManager()
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+D/OpenGLRenderer( 3921): CFMS:: SetUp Pid : 3921    Tid : 4073
+W/WindowOnBackDispatcher( 3921): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher( 3921): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/BufferQueueConsumer( 3921): [](id:f5100000009,api:0,p:-1,c:3921) connect: controlledByApp=true
+D/NativeCustomFrequencyManager( 3921): [NativeCFMS] BpCustomFrequencyManager::BpCustomFrequencyManager()
+D/BufferQueueConsumer( 3921): [](id:f510000000a,api:0,p:-1,c:3921) connect: controlledByApp=true
+D/libMEOW ( 3921): meow new tls: 0xb400006f48008380
+D/libMEOW ( 3921): applied 2 plugins for [com.wawapp.client]:
+D/libMEOW ( 3921):   plugin 1: [libMEOW_gift.so]:
+D/libMEOW ( 3921):   plugin 2: [libMEOW_semaphore]:
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+D/OpenGLRenderer( 3921): CFMS:: SetUp Pid : 3921    Tid : 4073
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/GoogleMapController( 3921): Installing custom TextureView driven invalidator.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+D/BufferQueueConsumer( 3921): [ImageReader-1x1f22m6-3921-4](id:f5100000008,api:0,p:-1,c:3921) disconnect
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/m.wawapp.client( 3921): Background concurrent copying GC freed 13MB AllocSpace bytes, 96(12MB) LOS objects, 49% free, 24MB/48MB, paused 524us,194us total 197.587ms
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateProvider<double> updated
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/flutter ( 3921): [ProviderObserver][DEBUG] Provider<Set<Polygon>> updated
+I/flutter ( 3921): [ProviderObserver][DEBUG] AutoDisposeFutureProvider<Set<Marker>> updated
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateProvider<double> updated
+I/flutter ( 3921): [ProviderObserver][DEBUG] Provider<Set<Polygon>> updated
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/flutter ( 3921): [ProviderObserver][DEBUG] StateProvider<double> updated
+I/flutter ( 3921): [ProviderObserver][DEBUG] Provider<Set<Polygon>> updated
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+I/flutter ( 3921): [ProviderObserver][DEBUG] AutoDisposeFutureProvider<Set<Marker>> updated
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+D/SessionLifecycleClient( 3921): Sending lifecycle 2 to service
+D/SessionLifecycleService( 3921): Activity backgrounding at 158931698
+I/ViewRootImpl@473cbc[MainActivity]( 3921): handleWindowFocusChanged: 0 0 call from android.view.ViewRootImpl.-$$Nest$mhandleWindowFocusChanged:0
+I/ImeFocusController( 3921): onPreWindowFocus: skipped, hasWindowFocus=false mHasImeFocus=true
+I/ImeFocusController( 3921): onPostWindowFocus: skipped, hasWindowFocus=false mHasImeFocus=true
+I/TRuntime.CctTransportBackend( 3921): Making request to: https://firebaselogging-pa.googleapis.com/v1/firelog/legacy/batchlog
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+E/FrameEvents( 3921): updateAcquireFence: Did not find frame.
+W/ImageReader_JNI( 3921): Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+I/gralloc4( 3921): @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+D/InputTransport( 3921): Input channel destroyed: 'ClientS', fd=220
+I/ViewRootImpl@473cbc[MainActivity]( 3921): handleAppVisibility mAppVisible = true visible = false
+I/SurfaceView@24518c7( 3921): onWindowVisibilityChanged(8) false io.flutter.embedding.android.FlutterSurfaceView{24518c7 V.E...... ........ 0,0-1080,2273} of ViewRootImpl@473cbc[MainActivity]
+I/SurfaceView( 3921): 38082759 Changes: creating=false format=false size=false visible=true alpha=false hint=false visible=true left=false top=false z=false attached=true lifecycleStrategy=false
+I/SurfaceView@24518c7( 3921): 38082759 Cur surface: Surface(name=null)/@0x92a3cc6
+I/SurfaceView( 3921): 38082759 surfaceDestroyed
+I/SurfaceView@24518c7( 3921): surfaceDestroyed callback.size 1 #2 io.flutter.embedding.android.FlutterSurfaceView{24518c7 V.E...... ........ 0,0-1080,2273}
+I/SurfaceView@24518c7( 3921): updateSurface: mVisible = false mSurface.isValid() = true
+D/BLASTBufferQueue( 3921): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0#1](f:0,a:1) destructor()
+D/BufferQueueConsumer( 3921): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0#1(BLAST Consumer)1](id:f5100000001,api:0,p:-1,c:3921) disconnect
+I/SurfaceView@24518c7( 3921): releaseSurfaces: viewRoot = ViewRootImpl@473cbc[MainActivity]
+V/SurfaceView@24518c7( 3921): Layout: x=0 y=0 w=1080 h=2273, frame=Rect(0, 0 - 1080, 2273)
+I/ViewRootImpl@473cbc[MainActivity]( 3921): destroyHardwareResources: Callers=android.view.ViewRootImpl.performTraversals:3932 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 android.view.Choreographer.doCallbacks:1153 android.view.Choreographer.doFrame:1079 android.view.Choreographer$FrameDisplayEventReceiver.run:1646 android.os.Handler.handleCallback:958 android.os.Handler.dispatchMessage:99 
+D/SurfaceView( 3921): 143143450 windowPositionLost, frameNr = 0
+D/BLASTBufferQueue( 3921): [ViewRootImpl@473cbc[MainActivity]#0](f:0,a:1) destructor()
+D/BufferQueueConsumer( 3921): [ViewRootImpl@473cbc[MainActivity]#0(BLAST Consumer)0](id:f5100000000,api:0,p:-1,c:3921) disconnect
+I/ViewRootImpl@473cbc[MainActivity]( 3921): Relayout returned: old=(0,0,1080,2408) new=(0,0,1080,2408) relayoutAsync=false req=(1080,2408)8 dur=9 res=0x402 s={false 0x0} ch=true seqId=0
+I/SurfaceView@24518c7( 3921): windowStopped(true) false io.flutter.embedding.android.FlutterSurfaceView{24518c7 V.E...... ........ 0,0-1080,2273} of ViewRootImpl@473cbc[MainActivity]
+D/SurfaceView@24518c7( 3921): updateSurface: surface is not valid
+I/SurfaceView@24518c7( 3921): releaseSurfaces: viewRoot = ViewRootImpl@473cbc[MainActivity]
+D/SurfaceView@24518c7( 3921): updateSurface: surface is not valid
+I/SurfaceView@24518c7( 3921): releaseSurfaces: viewRoot = ViewRootImpl@473cbc[MainActivity]
+D/ConnectivityManager( 3921): StackLog: [android.net.ConnectivityManager.unregisterNetworkCallback(ConnectivityManager.java:5571)] [m140.fii.d(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:20)] [com.google.maps.api.android.lib6.impl.i.onTrimMemory(:com.google.android.gms.policy_maps_core_dynamite@254125201@254125200025.815771884.815771884:54)] [android.content.ComponentCallbacksController.lambda$dispatchTrimMemory$1(ComponentCallbacksController.java:109)] [android.content.ComponentCallbacksController$$ExternalSyntheticLambda1.accept(Unknown Source:4)] [android.content.ComponentCallbacksController.forAllComponentCallbacks(ComponentCallbacksController.java:124)] [android.content.ComponentCallbacksController.dispatchTrimMemory(ComponentCallbacksController.java:107)] [android.app.Application.onTrimMemory(Application.java:308)] [android.app.ActivityThread.handleTrimMemory(ActivityThread.java:7274)] [android.app.ActivityThread.-$$Nest$mhandleTrimMemory(Unknown Source:0)] [android.app.ActivityThread$ApplicationThread.$r8$lambda$jsQe3dM6MF6rTESBpFm4N1cH4V4(Unknown Source:0)] [android.app.ActivityThread$ApplicationThread$$ExternalSyntheticLambda2.accept(Unknown Source:8)] [com.android.internal.util.function.pooled.PooledLambdaImpl.doInvoke(PooledLambdaImpl.java:281)] [com.android.internal.util.function.pooled.PooledLambdaImpl.invoke(PooledLambdaImpl.java:204)] [com.android.internal.util.function.pooled.OmniFunction.run(OmniFunction.java:87)] [android.view.Choreographer$CallbackRecord.run(Choreographer.java:1689)] [android.view.Choreographer$CallbackRecord.run(Choreographer.java:1698)] [android.view.Choreographer.doCallbacks(Choreographer.java:1153)] [android.view.Choreographer.doFrame(Choreographer.java:1081)] [android.view.Choreographer$FrameDisplayEventReceiver.run(Choreographer.java:1646)]
+D/OpenGLRenderer( 3921): CacheManager::trimMemory(20)
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+W/ProxyAndroidLoggerBackend( 3921): Too many Flogger logs received before configuration. Dropping old logs.
+I/ViewRootImpl@473cbc[MainActivity]( 3921): stopped(true) old = false
+D/ViewRootImpl@473cbc[MainActivity]( 3921): WindowStopped on com.wawapp.client/com.wawapp.client.MainActivity set to true
+D/SurfaceView@24518c7( 3921): updateSurface: surface is not valid
+I/SurfaceView@24518c7( 3921): releaseSurfaces: viewRoot = ViewRootImpl@473cbc[MainActivity]
+D/BufferQueueConsumer( 3921): [ImageReader-990x844f22m6-3921-3](id:f5100000006,api:0,p:-1,c:3921) disconnect
+D/OpenGLRenderer( 3921): CacheManager::trimMemory(20)
+D/BufferQueueConsumer( 3921): [ImageReader-1080x909f22m6-3921-5](id:f5100000009,api:0,p:-1,c:3921) disconnect
+D/SurfaceView@24518c7( 3921): updateSurface: surface is not valid
+I/SurfaceView@24518c7( 3921): releaseSurfaces: viewRoot = ViewRootImpl@473cbc[MainActivity]
+I/FA      ( 3921): Application backgrounded at: timestamp_millis: 1764682825268
+I/TRuntime.CctTransportBackend( 3921): Status Code: 200
