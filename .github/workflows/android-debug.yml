@@ -21,6 +21,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Debug git ref info
+        run: |
+          echo "github.ref: ${{ github.ref }}"
+          echo "github.ref_name: ${{ github.ref_name }}"
+          echo "github.sha: ${{ github.sha }}"
+          echo "git branch --show-current: $(git branch --show-current)"
+          echo "git rev-parse --short HEAD: $(git rev-parse --short HEAD)"
+          echo "git log -1 --oneline: $(git log -1 --oneline)"
+
       # Cache dependencies BEFORE any build tasks
       - name: Cache Gradle dependencies
         uses: actions/cache@v4
