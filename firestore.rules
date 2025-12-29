@@ -8,6 +8,7 @@ service cloud.firestore {
     function isAdmin() { return request.auth != null && request.auth.token.isAdmin == true; }
     function isOwner() { return resource.data.ownerId == request.auth.uid; }
     function isDriver() { return resource.data.driverId == request.auth.uid; }
+    function isAssignedDriver() { return resource.data.assignedDriverId == request.auth.uid; }
     function validStatusTransition() {
       let currentStatus = resource.data.status;
       let newStatus = request.resource.data.status;
@@ -55,14 +56,14 @@ service cloud.firestore {
         && request.resource.data.dropoffAddress is string
         && request.resource.data.dropoffAddress.size() > 0;
 
-      allow read: if isSignedIn() && (isOwner() || isDriver() || resource.data.status == "matching");
+      allow read: if isSignedIn() && (isOwner() || isDriver() || isAssignedDriver() || resource.data.status == "matching");
       
       allow update: if isSignedIn()
         && request.resource.data.price == resource.data.price
         && request.resource.data.ownerId == resource.data.ownerId
-        && ((validStatusTransition() && ((request.resource.data.status == "accepted" && request.resource.data.driverId == request.auth.uid) ||
+        && ((validStatusTransition() && ((request.resource.data.status == "accepted" && request.resource.data.assignedDriverId == request.auth.uid) ||
             (request.resource.data.status == "cancelledByClient" && isOwner()) ||
-            (request.resource.data.status in ["onRoute", "completed", "cancelled", "cancelledByDriver"] && isDriver()))) ||
+            (request.resource.data.status in ["onRoute", "completed", "cancelled", "cancelledByDriver"] && isAssignedDriver()))) ||
             (isRatingUpdate() && isOwner()));
     }
 

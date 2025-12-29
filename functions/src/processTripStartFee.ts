@@ -143,7 +143,7 @@ export const processTripStartFee = functions.firestore
     try {
       await admin.firestore().runTransaction(async (transaction) => {
         // Check idempotency: if ledger doc exists, fee already deducted
-        const ledgerRef = admin.firestore().collection('wallet_transactions').doc(ledgerDocId);
+        const ledgerRef = admin.firestore().collection('transactions').doc(ledgerDocId);
         const existingLedger = await transaction.get(ledgerRef);
 
         if (existingLedger.exists) {
@@ -155,7 +155,7 @@ export const processTripStartFee = functions.firestore
         }
 
         // Get driver's wallet
-        const walletRef = admin.firestore().collection('driver_wallets').doc(assignedDriverId);
+        const walletRef = admin.firestore().collection('wallets').doc(assignedDriverId);
         const walletDoc = await transaction.get(walletRef);
 
         if (!walletDoc.exists) {
@@ -189,21 +189,28 @@ export const processTripStartFee = functions.firestore
         }
 
         // Deduct fee from wallet
-        const newBalance = currentBalance - tripStartFee;
         transaction.update(walletRef, {
-          balance: newBalance,
+          balance: admin.firestore.FieldValue.increment(-tripStartFee),
+          totalDebited: admin.firestore.FieldValue.increment(tripStartFee),
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
-        // Create ledger transaction record
+        // Create transaction record using existing schema
         transaction.set(ledgerRef, {
-          driverId: assignedDriverId,
+          id: ledgerDocId,
+          walletId: assignedDriverId,
+          type: 'debit',
+          source: 'trip_start_fee',
+          amount: tripStartFee,
+          currency: 'MRU',
           orderId: orderId,
-          type: 'trip_start_fee',
-          amount: -tripStartFee, // Negative for deduction
           balanceBefore: currentBalance,
-          balanceAfter: newBalance,
-          description: `Trip start fee for order ${orderId}`,
+          balanceAfter: currentBalance - tripStartFee,
+          note: `Trip start fee for order #${orderId}`,
+          metadata: {
+            orderPrice,
+            feeRate: 0.1,
+          },
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
@@ -218,7 +225,7 @@ export const processTripStartFee = functions.firestore
           driver_id: assignedDriverId,
           fee_amount: tripStartFee,
           balance_before: currentBalance,
-          balance_after: newBalance,
+          balance_after: currentBalance - tripStartFee,
         });
 
         // Log analytics event
