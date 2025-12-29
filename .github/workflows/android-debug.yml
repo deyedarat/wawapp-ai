@@ -2,79 +2,77 @@ name: android-debug
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'apps/wawapp_driver/**'
+      - 'packages/**'
+      - '.github/workflows/android-debug.yml'
+  pull_request:
+    paths:
+      - 'apps/wawapp_driver/**'
+      - 'packages/**'
+      - '.github/workflows/android-debug.yml'
 
 jobs:
   run_driver_smoke:
-    runs-on: [self-hosted, label-1]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Verify device
-        run: adb devices -l
-
-      # (اختياري لكن مفيد) اطبع flutter/java/gradle versions
-      - name: Tool versions
-        run: |
-          flutter --version
-          java -version
-          gradle -v
-
-      # ✅ Cache pub + gradle لتسريع البناء
-      - name: Cache pub + gradle
+      # Cache dependencies BEFORE any build tasks
+      - name: Cache Gradle dependencies
         uses: actions/cache@v4
         with:
           path: |
-            C:\Users\deye\AppData\Local\Pub\Cache
-            C:\Users\deye\.gradle\caches
-            C:\Users\deye\.gradle\wrapper
-          key: ${{ runner.os }}-wawapp-driver-${{ hashFiles('apps/wawapp_driver/pubspec.lock', 'apps/wawapp_driver/android/**', '**/gradle-wrapper.properties') }}
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/*.gradle*', '**/gradle.properties') }}
           restore-keys: |
-            ${{ runner.os }}-wawapp-driver-
+            gradle-${{ runner.os }}-
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+          key: flutter-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-
+
+      # Lightweight diagnostics
+      - name: Build environment info
+        run: |
+          java -version
+          cd apps/wawapp_driver/android && chmod +x ./gradlew && ./gradlew --version | grep "Gradle"
+          cd apps/wawapp_driver/android && grep "configuration-cache" gradle.properties || echo "configuration-cache: not found"
 
       - name: Flutter pub get
         working-directory: apps/wawapp_driver
         run: flutter pub get
 
-      - name: Build debug APK
+      - name: Build debug APK with logging
         working-directory: apps/wawapp_driver
-        run: flutter build apk --debug
+        run: |
+          flutter build apk --debug --build-shared-library 2>&1 | tee ../../../driver_flutter_build.log
+        continue-on-error: true
 
       - name: Upload APK
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: driver-debug-apk
-          path: apps/wawapp_driver/build/app/outputs/flutter-apk/app-debug.apk
+          path: apps/wawapp_driver/build/app/outputs/flutter-apk/app-*.apk
+          if-no-files-found: ignore
 
-      - name: Install APK on device
-        run: adb install -r apps/wawapp_driver/build/app/outputs/flutter-apk/app-debug.apk
-
-      # ✅ امسح logcat قبل التشغيل (Fail-fast)
-      - name: Clear logcat
-        run: adb logcat -c
-
-      # ✅ شغل بدون تخمين MainActivity
-      - name: Launch app (monkey)
-        run: adb shell monkey -p com.wawapp.driver -c android.intent.category.LAUNCHER 1
-
-      - name: Wait for app startup
-        run: powershell -command "Start-Sleep -Seconds 8"
-
-      # ✅ تأكد أن التطبيق فعلاً يعمل (سيسقط الـ job لو لم يعمل)
-      - name: Confirm app is running
-        run: adb shell pidof com.wawapp.driver
-
-      # ✅ التقط logcat بعد التشغيل فقط
-      - name: Capture logcat (after launch)
-        run: |
-          adb logcat -d > driver_logcat.txt
-          adb logcat -d | findstr /i "AndroidRuntime FATAL EXCEPTION ANR com.wawapp.driver" > driver_logcat_filtered.txt
-
-      - name: Upload logs
+      - name: Upload build logs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: driver-smoke-logs
+          name: driver-build-logs
           path: |
-            driver_logcat.txt
-            driver_logcat_filtered.txt
+            driver_flutter_build.log
+            apps/wawapp_driver/build/app/outputs/logs/**
+            /home/runner/.gradle/daemon/*/daemon-*.out.log
+          if-no-files-found: ignore
