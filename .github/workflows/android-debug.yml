@@ -63,7 +63,6 @@ jobs:
           java -version
           cd apps/wawapp_driver/android && chmod +x ./gradlew && ./gradlew --version | grep "Gradle"
           cd apps/wawapp_driver/android && grep "configuration-cache" gradle.properties || echo "configuration-cache: not found"
-
  - name: Set up Flutter
     uses: subosito/flutter-action@v2
        with:
@@ -97,5 +96,6 @@ jobs:
             apps/wawapp_driver/build/app/outputs/logs/**
             /home/runner/.gradle/daemon/*/daemon-*.out.log
           if-no-files-found: ignore
+
 
 
