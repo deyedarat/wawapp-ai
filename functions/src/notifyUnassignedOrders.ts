@@ -1,18 +1,24 @@
 /**
- * Cloud Function: Notify Drivers of Unassigned Orders
+ * Cloud Function: Notify Drivers of Unassigned Orders & Acceptance Confirmations
  * 
  * Phase A: Sends repeated FCM notifications to eligible drivers every 60 seconds
  * for orders that remain unassigned (status in [requested, assigning/matching] AND assignedDriverId == null).
  * 
+ * Phase B: Sends exactly one driver confirmation notification 5 minutes after order acceptance.
+ * 
  * Rules:
- * - Unassigned = status in [requested, assigning, matching] AND assignedDriverId == null
- * - Stop immediately when: status in [accepted, onRoute, completed, cancelledByClient, cancelledByDriver, expired] OR assignedDriverId != null
- * - Max notifications per (driver, order): 10 total
- * - Deduplication required (no duplicate pushes on retries)
+ * Phase A - Unassigned = status in [requested, assigning, matching] AND assignedDriverId == null
+ * Phase A - Stop immediately when: status in [accepted, onRoute, completed, cancelledByClient, cancelledByDriver, expired] OR assignedDriverId != null
+ * Phase A - Max notifications per (driver, order): 10 total
+ * Phase A - Deduplication required (no duplicate pushes on retries)
+ * 
+ * Phase B - Acceptance is when status becomes 'accepted' AND assignedDriverId != null
+ * Phase B - Send only if: status == 'accepted', assignedDriverId unchanged, acceptConfirmSentAt is null, now - acceptedAt >= 5 minutes
+ * Phase B - Idempotency: set acceptConfirmSentAt after sending
  * 
  * Runs every 1 minute via Cloud Scheduler.
  * 
- * Author: WawApp Development Team (Phase A Implementation)
+ * Author: WawApp Development Team (Phase A & B Implementation)
  * Last Updated: 2025-12-28
  */
 
@@ -332,8 +338,198 @@ async function sendDriverNotification(
 }
 
 /**
- * Process a single unassigned order
+ * Send acceptance confirmation notification to assigned driver
  */
+async function sendAcceptanceConfirmation(
+  driverId: string,
+  orderId: string,
+  orderData: any
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Get driver's FCM token
+    const driverDoc = await admin
+      .firestore()
+      .collection('drivers')
+      .doc(driverId)
+      .get();
+
+    if (!driverDoc.exists) {
+      return { success: false, error: 'driver_not_found' };
+    }
+
+    const driverData = driverDoc.data();
+    const fcmToken = driverData?.fcmToken as string | undefined;
+
+    if (!fcmToken) {
+      return { success: false, error: 'no_fcm_token' };
+    }
+
+    // Prepare notification message
+    const message: admin.messaging.Message = {
+      token: fcmToken,
+      notification: {
+        title: 'تأكيد قبول الطلب',
+        body: `تم قبول طلبك بنجاح. ${orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${
+          orderData.dropoffAddress?.label || 'الوجهة'
+        }`,
+      },
+      data: {
+        notificationType: 'acceptance_confirmation',
+        orderId: orderId,
+        pickupLat: String(orderData.pickupAddress?.latitude || 0),
+        pickupLng: String(orderData.pickupAddress?.longitude || 0),
+        dropoffLat: String(orderData.dropoffAddress?.latitude || 0),
+        dropoffLng: String(orderData.dropoffAddress?.longitude || 0),
+        clientName: orderData.clientName || 'عميل',
+        acceptedAt: String(orderData.acceptedAt?.toMillis() || Date.now()),
+      },
+      android: {
+        priority: 'high',
+        notification: {
+          sound: 'default',
+          channelId: 'acceptance_confirmations',
+          priority: 'high',
+          visibility: 'public',
+        },
+        ttl: 300000, // 5 minutes TTL
+      },
+      apns: {
+        payload: {
+          aps: {
+            sound: 'default',
+            badge: 1,
+            contentAvailable: true,
+          },
+        },
+      },
+    };
+
+    // Send notification
+    const response = await admin.messaging().send(message);
+
+    console.log('[NotifyAcceptConfirm] Confirmation sent to driver', {
+      driver_id: driverId,
+      order_id: orderId,
+      message_id: response,
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    // Handle invalid/expired FCM tokens
+    if (
+      error.code === 'messaging/invalid-registration-token' ||
+      error.code === 'messaging/registration-token-not-registered'
+    ) {
+      console.warn('[NotifyAcceptConfirm] Invalid FCM token, removing from driver', {
+        driver_id: driverId,
+        error_code: error.code,
+      });
+
+      // Remove invalid token (non-blocking)
+      admin
+        .firestore()
+        .collection('drivers')
+        .doc(driverId)
+        .update({ fcmToken: admin.firestore.FieldValue.delete() })
+        .catch((err) =>
+          console.error('[NotifyAcceptConfirm] Failed to remove invalid token:', err)
+        );
+
+      return { success: false, error: 'invalid_token' };
+    }
+
+    console.error('[NotifyAcceptConfirm] Failed to send confirmation', {
+      driver_id: driverId,
+      order_id: orderId,
+      error_code: error.code || 'unknown',
+      error_message: error.message,
+    });
+
+    return { success: false, error: error.code || 'unknown' };
+  }
+}
+
+/**
+ * Process acceptance confirmations for orders accepted 5+ minutes ago
+ */
+async function processAcceptanceConfirmations(): Promise<void> {
+  const db = admin.firestore();
+  const now = admin.firestore.Timestamp.now();
+  const fiveMinutesAgo = new admin.firestore.Timestamp(
+    now.seconds - (5 * 60), // 5 minutes in seconds
+    now.nanoseconds
+  );
+
+  try {
+    // Query for accepted orders that need confirmation
+    const acceptedOrdersSnapshot = await db
+      .collection('orders')
+      .where('status', '==', 'accepted')
+      .where('acceptedAt', '<=', fiveMinutesAgo)
+      .where('acceptConfirmSentAt', '==', null)
+      .limit(50) // Process in batches
+      .get();
+
+    if (acceptedOrdersSnapshot.empty) {
+      console.log('[NotifyAcceptConfirm] No orders need acceptance confirmation.');
+      return;
+    }
+
+    console.log(`[NotifyAcceptConfirm] Found ${acceptedOrdersSnapshot.size} orders needing confirmation.`);
+
+    for (const doc of acceptedOrdersSnapshot.docs) {
+      const orderData = doc.data();
+      const orderId = doc.id;
+      const assignedDriverId = orderData.assignedDriverId;
+
+      // Safety checks
+      if (
+        orderData.status !== 'accepted' ||
+        !assignedDriverId ||
+        orderData.acceptConfirmSentAt !== null
+      ) {
+        console.log('[NotifyAcceptConfirm] Skipping order (race condition avoided)', {
+          order_id: orderId,
+          status: orderData.status,
+          has_driver: !!assignedDriverId,
+          already_sent: orderData.acceptConfirmSentAt !== null,
+        });
+        continue;
+      }
+
+      console.log('[NotifyAcceptConfirm] Processing acceptance confirmation', {
+        order_id: orderId,
+        driver_id: assignedDriverId,
+        accepted_at: orderData.acceptedAt?.toDate?.()?.toISOString() || 'unknown',
+        age_minutes: Math.floor((now.seconds - (orderData.acceptedAt?.seconds || now.seconds)) / 60),
+      });
+
+      // Send confirmation notification
+      const result = await sendAcceptanceConfirmation(assignedDriverId, orderId, orderData);
+
+      if (result.success) {
+        // Mark as sent (idempotency)
+        await db.collection('orders').doc(orderId).update({
+          acceptConfirmSentAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        console.log('[NotifyAcceptConfirm] Confirmation sent and marked', {
+          order_id: orderId,
+          driver_id: assignedDriverId,
+        });
+      } else {
+        console.warn('[NotifyAcceptConfirm] Failed to send confirmation', {
+          order_id: orderId,
+          driver_id: assignedDriverId,
+          error: result.error,
+        });
+      }
+    }
+  } catch (error) {
+    console.error('[NotifyAcceptConfirm] Error processing acceptance confirmations:', error);
+  }
+}
 async function processUnassignedOrder(orderId: string, orderData: any): Promise<void> {
   // Validate pickup location - support both formats
   const pickupLat = orderData.pickupAddress?.latitude || orderData.pickup?.lat;
@@ -424,9 +620,7 @@ export const notifyUnassignedOrders = functions
     console.log('[NotifyUnassignedOrders] Function triggered at:', now.toDate().toISOString());
 
     try {
-      // Query for unassigned orders:
-      // - status in ['requested', 'assigning', 'matching'] (unassigned states)
-      // - assignedDriverId == null (no driver has claimed it)
+      // Phase A: Process unassigned orders
       const unassignedOrdersSnapshot = await db
         .collection('orders')
         .where('status', 'in', ['requested', 'assigning', 'matching'])
@@ -434,63 +628,54 @@ export const notifyUnassignedOrders = functions
         .limit(BATCH_LIMIT)
         .get();
 
-      if (unassignedOrdersSnapshot.empty) {
-        console.log('[NotifyUnassignedOrders] No unassigned orders found.');
-        return null;
-      }
+      if (!unassignedOrdersSnapshot.empty) {
+        console.log(`[NotifyUnassignedOrders] Found ${unassignedOrdersSnapshot.size} unassigned orders to process.`);
 
-      console.log(`[NotifyUnassignedOrders] Found ${unassignedOrdersSnapshot.size} unassigned orders to process.`);
+        let processedCount = 0;
+        let skippedCount = 0;
 
-      let processedCount = 0;
-      let skippedCount = 0;
+        // Process each unassigned order
+        for (const doc of unassignedOrdersSnapshot.docs) {
+          const orderData = doc.data();
+          const orderId = doc.id;
 
-      // Process each unassigned order
-      for (const doc of unassignedOrdersSnapshot.docs) {
-        const orderData = doc.data();
-        const orderId = doc.id;
+          // Safety check: double-verify order is still unassigned
+          if (
+            ['requested', 'assigning', 'matching'].includes(orderData.status) &&
+            orderData.assignedDriverId === null
+          ) {
+            console.log('[NotifyUnassignedOrders] Processing unassigned order', {
+              order_id: orderId,
+              status: orderData.status,
+              created_at: orderData.createdAt?.toDate?.()?.toISOString() || 'unknown',
+              age_minutes: Math.floor((now.seconds - (orderData.createdAt?.seconds || now.seconds)) / 60),
+            });
 
-        // Safety check: double-verify order is still unassigned
-        if (
-          ['requested', 'assigning', 'matching'].includes(orderData.status) &&
-          orderData.assignedDriverId === null
-        ) {
-          console.log('[NotifyUnassignedOrders] Processing unassigned order', {
-            order_id: orderId,
-            status: orderData.status,
-            created_at: orderData.createdAt?.toDate?.()?.toISOString() || 'unknown',
-            age_minutes: Math.floor((now.seconds - (orderData.createdAt?.seconds || now.seconds)) / 60),
-          });
-
-          await processUnassignedOrder(orderId, orderData);
-          processedCount++;
-        } else {
-          console.log('[NotifyUnassignedOrders] Skipping order (race condition avoided)', {
-            order_id: orderId,
-            current_status: orderData.status,
-            has_driver: orderData.assignedDriverId !== null,
-          });
-          skippedCount++;
+            await processUnassignedOrder(orderId, orderData);
+            processedCount++;
+          } else {
+            console.log('[NotifyUnassignedOrders] Skipping order (race condition avoided)', {
+              order_id: orderId,
+              current_status: orderData.status,
+              has_driver: orderData.assignedDriverId !== null,
+            });
+            skippedCount++;
+          }
         }
+
+        console.log('[NotifyUnassignedOrders] Phase A completed', {
+          processed: processedCount,
+          skipped: skippedCount,
+          total_queried: unassignedOrdersSnapshot.size,
+        });
+      } else {
+        console.log('[NotifyUnassignedOrders] No unassigned orders found.');
       }
 
-      console.log('[NotifyUnassignedOrders] Processing completed', {
-        processed: processedCount,
-        skipped: skippedCount,
-        total_queried: unassignedOrdersSnapshot.size,
-      });
+      // Phase B: Process acceptance confirmations
+      await processAcceptanceConfirmations();
 
-      // Log warning if we hit the batch limit
-      if (unassignedOrdersSnapshot.size === BATCH_LIMIT) {
-        console.warn(`[NotifyUnassignedOrders] WARNING: Hit batch limit of ${BATCH_LIMIT}. More unassigned orders may exist. Will process in next run.`);
-      }
-
-      // Log analytics event
-      console.log('[Analytics] unassigned_orders_notification_batch', {
-        processed_count: processedCount,
-        total_unassigned: unassignedOrdersSnapshot.size,
-      });
-
-      return { processed: processedCount, total: unassignedOrdersSnapshot.size };
+      return { success: true };
 
     } catch (error) {
       console.error('[NotifyUnassignedOrders] Error processing unassigned orders:', error);

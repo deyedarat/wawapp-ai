@@ -16,6 +16,7 @@ export { aggregateDriverRating } from './aggregateDriverRating';
 export { notifyOrderEvents } from './notifyOrderEvents';
 export { notifyNewOrder } from './notifyNewOrder'; // FIX #1: Notify drivers on order creation
 export { notifyUnassignedOrders } from './notifyUnassignedOrders'; // Phase A: Repeated notifications for unassigned orders
+export { trackOrderAcceptance } from './trackOrderAcceptance'; // Phase B: Track order acceptance timestamp
 export { cleanStaleDriverLocations } from './cleanStaleDriverLocations';
 
 // Export Admin Functions
