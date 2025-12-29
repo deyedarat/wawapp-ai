@@ -11,7 +11,7 @@ plugins {
 android {
     namespace = "com.wawapp.driver"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "25.1.8937393"
 
     compileOptions {
         // Support for Java 8+ APIs

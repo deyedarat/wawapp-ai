@@ -100,10 +100,20 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
+
     // FCM will be initialized after authentication in auth_gate.dart
-    AnalyticsService.instance.setUserType();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      NotificationService().initialize(context);
+
+    // Defer analytics to background (non-blocking)
+    Future.microtask(() {
+      AnalyticsService.instance.setUserType();
+    });
+
+    // Delay notification service init by 1 second
+    // This allows app to render smoothly first
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        NotificationService().initialize(context);
+      }
     });
   }
 

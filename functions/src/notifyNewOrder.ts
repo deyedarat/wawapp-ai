@@ -49,8 +49,7 @@ interface EligibleDriver {
   driverId: string;
   distance: number;
   fcmToken?: string;
-  online: boolean;
-  available: boolean;
+  isOnline: boolean;
 }
 
 /**
@@ -80,10 +79,14 @@ async function findEligibleDrivers(
       const locationData = locationDoc.data();
       const driverId = locationDoc.id;
 
+      // Support both field name formats: lat/lng (driver app) and latitude/longitude (legacy)
+      const driverLat = locationData.latitude || locationData.lat;
+      const driverLng = locationData.longitude || locationData.lng;
+
       // Skip if location data is incomplete or inaccurate
       if (
-        !locationData.latitude ||
-        !locationData.longitude ||
+        !driverLat ||
+        !driverLng ||
         (locationData.accuracy && locationData.accuracy > MIN_DRIVER_ACCURACY_METERS)
       ) {
         continue;
@@ -93,8 +96,8 @@ async function findEligibleDrivers(
       const distance = calculateDistance(
         pickupLat,
         pickupLng,
-        locationData.latitude,
-        locationData.longitude
+        driverLat,
+        driverLng
       );
 
       // Skip if driver is too far
@@ -115,12 +118,11 @@ async function findEligibleDrivers(
 
       const driverData = driverDoc.data();
 
-      // Check if driver is online and available
-      const online = driverData?.online === true;
-      const available = driverData?.available === true;
+      // Check if driver is online
+      const isOnline = driverData?.isOnline === true;
 
-      // Only notify online AND available drivers
-      if (!online || !available) {
+      // Only notify online drivers
+      if (!isOnline) {
         continue;
       }
 
@@ -128,8 +130,7 @@ async function findEligibleDrivers(
         driverId,
         distance,
         fcmToken: driverData?.fcmToken as string | undefined,
-        online,
-        available,
+        isOnline,
       });
     }
 
@@ -280,19 +281,18 @@ export const notifyNewOrder = functions.firestore
       return null;
     }
 
-    // Validate pickup location
-    if (
-      !orderData.pickupAddress?.latitude ||
-      !orderData.pickupAddress?.longitude
-    ) {
+    // Validate pickup location - support both formats
+    const pickupLat = orderData.pickupAddress?.latitude || orderData.pickup?.lat;
+    const pickupLng = orderData.pickupAddress?.longitude || orderData.pickup?.lng;
+    
+    if (!pickupLat || !pickupLng) {
       console.warn('[NotifyNewOrder] Order missing pickup coordinates', {
         order_id: orderId,
+        pickup_address: orderData.pickupAddress,
+        pickup: orderData.pickup,
       });
       return null;
     }
-
-    const pickupLat = orderData.pickupAddress.latitude;
-    const pickupLng = orderData.pickupAddress.longitude;
 
     // Find eligible drivers near pickup location
     const eligibleDrivers = await findEligibleDrivers(pickupLat, pickupLng);

@@ -10,6 +10,7 @@ import '../../services/tracking_service.dart';
 import '../../services/location_service.dart';
 import '../auth/providers/auth_service_provider.dart';
 import '../profile/providers/driver_profile_providers.dart';
+import 'providers/driver_status_provider.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/components.dart';
 import 'dart:developer' as dev;
@@ -22,31 +23,13 @@ class DriverHomeScreen extends ConsumerStatefulWidget {
 }
 
 class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
-  bool _isOnline = false;
   bool _isTogglingStatus = false;
 
   @override
   void initState() {
     super.initState();
-    _loadOnlineStatus();
-  }
-
-  Future<void> _loadOnlineStatus() async {
-    final authState = ref.read(authProvider);
-    if (authState.user == null) return;
-
-    try {
-      final isOnline =
-          await DriverStatusService.instance.getOnlineStatus(authState.user!.uid);
-      if (mounted) {
-        setState(() {
-          _isOnline = isOnline;
-        });
-      }
-    } on Object catch (e) {
-      if (kDebugMode) {
-        dev.log('[DriverHome] Error loading online status: $e');
-      }
+    if (kDebugMode) {
+      dev.log('[DriverHome] Screen initialized');
     }
   }
 
@@ -147,7 +130,6 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
       if (mounted) {
         setState(() {
-          _isOnline = value;
           _isTogglingStatus = false;
         });
 
@@ -160,8 +142,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       }
 
       if (kDebugMode) {
-        dev.log(
-            '[Matching] DriverHomeScreen: Driver toggled online status to: $value');
+        dev.log('[DriverHome] Driver toggled online status to: $value');
       }
     } on Object catch (e) {
       if (kDebugMode) {
@@ -235,13 +216,15 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) {
-      final authState = ref.watch(authProvider);
-      dev.log('[Matching] DriverHomeScreen: Building home screen');
-      dev.log('[Matching] DriverHomeScreen: Driver online status: $_isOnline');
-      dev.log(
-          '[Matching] DriverHomeScreen: Driver ID: ${authState.user?.uid ?? "not authenticated"}');
-    }
+    // Watch the online status stream (non-blocking, real-time)
+    final onlineStatusAsync = ref.watch(driverOnlineStatusProvider);
+
+    // Extract boolean value with default fallback
+    final isOnline = onlineStatusAsync.when(
+      data: (status) => status,
+      loading: () => false, // Show offline during load
+      error: (_, __) => false, // Show offline on error
+    );
 
     final l10n = AppLocalizations.of(context)!;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
@@ -300,7 +283,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               margin: EdgeInsets.all(DriverAppSpacing.md),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: _isOnline
+                  colors: isOnline
                       ? [DriverAppColors.onlineGreen, DriverAppColors.onlineGreen.withOpacity(0.8)]
                       : [DriverAppColors.offlineGrey, DriverAppColors.offlineGrey.withOpacity(0.8)],
                   begin: Alignment.topLeft,
@@ -309,7 +292,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 borderRadius: BorderRadius.circular(DriverAppSpacing.radiusLg),
                 boxShadow: [
                   BoxShadow(
-                    color: (_isOnline ? DriverAppColors.onlineGreen : DriverAppColors.offlineGrey).withOpacity(0.3),
+                    color: (isOnline ? DriverAppColors.onlineGreen : DriverAppColors.offlineGrey).withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -324,7 +307,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _isOnline ? l10n.online : l10n.offline,
+                          isOnline ? l10n.online : l10n.offline,
                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -332,7 +315,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                         ),
                         SizedBox(height: DriverAppSpacing.xxs),
                         Text(
-                          _isOnline ? 'جاهز لاستقبال الطلبات' : 'اذهب إلى الإنترنت لاستقبال الطلبات',
+                          isOnline ? 'جاهز لاستقبال الطلبات' : 'اذهب إلى الإنترنت لاستقبال الطلبات',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.white.withOpacity(0.9),
                           ),
@@ -340,7 +323,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                       ],
                     ),
                     Switch(
-                      value: _isOnline,
+                      value: isOnline,
                       onChanged: _isTogglingStatus ? null : _toggleOnlineStatus,
                       activeColor: Colors.white,
                       activeTrackColor: Colors.white.withOpacity(0.5),
