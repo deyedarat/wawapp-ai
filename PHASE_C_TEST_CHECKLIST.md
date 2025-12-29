@@ -122,18 +122,18 @@
 - [ ] Audit logs capture driver reassignments
 
 ### 17. Data Integrity
-- [ ] Wallet balances remain consistent
-- [ ] Ledger transactions match wallet changes
+- [ ] Wallet balances remain consistent (existing wallets collection)
+- [ ] Transaction records match wallet changes (existing transactions collection)
 - [ ] Order timestamps are accurate
 - [ ] No orphaned transactions or inconsistent states
 
 ## Production Readiness
 
 ### 18. Wallet Management
-- [ ] Driver wallet creation process works
+- [ ] Driver wallet creation process works (uses existing wallets collection)
 - [ ] Wallet top-up functionality integrated
 - [ ] Balance display in driver app accurate
-- [ ] Transaction history accessible to drivers
+- [ ] Transaction history accessible to drivers (existing transactions collection)
 
 ### 19. Notification Delivery
 - [ ] Insufficient balance notifications reach drivers
@@ -143,8 +143,8 @@
 
 ### 20. Rollback & Recovery
 - [ ] Functions can be disabled if needed
-- [ ] Manual wallet adjustments possible for support
-- [ ] Ledger transactions can be audited/reversed if needed
+- [ ] Manual wallet adjustments possible for support (existing wallets collection)
+- [ ] Transaction records can be audited/reversed if needed (existing transactions collection)
 - [ ] Order status can be manually corrected
 
 ## Success Criteria
