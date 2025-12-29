@@ -1,4 +1,4 @@
-name: android-debug
+hname: android-debug
 
 on:
   workflow_dispatch:
@@ -97,4 +97,5 @@ jobs:
             apps/wawapp_driver/build/app/outputs/logs/**
             /home/runner/.gradle/daemon/*/daemon-*.out.log
           if-no-files-found: ignore
+
 
