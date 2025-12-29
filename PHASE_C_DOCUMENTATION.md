@@ -15,25 +15,28 @@ Phase C implements atomic trip start fee deduction (10% of order price) when ord
 - **Set by**: `enforceOrderExclusivity` Cloud Function
 - **Purpose**: Server-side exclusivity enforcement
 
-## New Collections
+## Existing Collections Used
 
-### wallet_transactions
+### wallets
+- **Document ID**: Driver's UID
+- **Fields**: `balance`, `totalCredited`, `totalDebited`, `pendingPayout`, `type`, `ownerId`, `currency`
+- **Usage**: Unified wallet system for all financial operations
+
+### transactions
 - **Document ID**: `${orderId}_start_fee` for trip start fees (idempotency)
 - **Fields**:
-  - `driverId` (string): Driver's UID
+  - `id` (string): Transaction document ID
+  - `walletId` (string): Driver's UID
+  - `type` (string): "debit"
+  - `source` (string): "trip_start_fee"
+  - `amount` (number): Positive value (deduction amount)
+  - `currency` (string): "MRU"
   - `orderId` (string): Order document ID
-  - `type` (string): "trip_start_fee"
-  - `amount` (number): Negative value (deduction)
   - `balanceBefore` (number): Wallet balance before transaction
   - `balanceAfter` (number): Wallet balance after transaction
-  - `description` (string): Human-readable description
+  - `note` (string): Human-readable description
+  - `metadata` (object): Additional data (orderPrice, feeRate)
   - `createdAt` (timestamp): Transaction timestamp
-
-### driver_wallets
-- **Document ID**: Driver's UID
-- **Fields**:
-  - `balance` (number): Current wallet balance in MRU
-  - `updatedAt` (timestamp): Last update timestamp
 
 ## Implementation Details
 
@@ -41,19 +44,19 @@ Phase C implements atomic trip start fee deduction (10% of order price) when ord
 - **Trigger**: Firestore onUpdate for orders/{orderId}
 - **Logic**: Detects accepted → onRoute transition with assignedDriverId != null
 - **Fee Calculation**: `Math.round(orderPrice * 0.1)` (10%, rounded to nearest integer)
-- **Idempotency**: Uses fixed ledger doc ID `${orderId}_start_fee`
+- **Idempotency**: Uses fixed transaction doc ID `${orderId}_start_fee`
 - **Atomic Transaction**:
   1. Check if fee already deducted (idempotency)
   2. Read driver wallet balance
   3. Verify balance >= fee
-  4. Deduct fee from wallet
-  5. Create ledger transaction record
+  4. Deduct fee from wallet (increment totalDebited)
+  5. Create transaction record
   6. Set startedAt timestamp on order
 
 ### 2. Insufficient Balance Handling
 - **Action**: Revert order status to 'accepted'
 - **Notification**: Send FCM to driver with required amount
-- **No Fee Deduction**: No ledger record created
+- **No Fee Deduction**: No transaction record created
 - **Channel**: "wallet_notifications"
 
 ### 3. Order Exclusivity (`enforceOrderExclusivity.ts`)
@@ -75,7 +78,7 @@ Following existing finance patterns:
 
 If trip is cancelled after fee deduction:
 - Fee is NOT refunded to driver
-- Ledger transaction remains permanent
+- Transaction record remains permanent
 - Driver must complete trip to earn revenue
 
 ## Android Notification Channel
@@ -97,16 +100,16 @@ val channel = NotificationChannel(
 ## Firestore Rules Additions
 
 ```javascript
-// Wallet transactions (Cloud Functions only)
-match /wallet_transactions/{docId} {
-  allow read, write: if false; // Cloud Functions only
-}
+// Existing rules already cover wallets and transactions collections
+// Phase C uses existing collections, no additional rules needed
 
-// Driver wallets (read-only for drivers, write for Cloud Functions)
-match /driver_wallets/{driverId} {
-  allow read: if request.auth != null && request.auth.uid == driverId;
-  allow write: if false; // Cloud Functions only
-}
+// Enhanced order update rules to enforce assigned driver transitions:
+function isAssignedDriver() { return resource.data.assignedDriverId == request.auth.uid; }
+
+allow update: if isSignedIn()
+  && validStatusTransition() 
+  && request.resource.data.status in ["onRoute", "completed", "cancelled", "cancelledByDriver"] 
+  && isAssignedDriver(); // Only assigned driver can transition
 ```
 
 ## Security & Exclusivity
