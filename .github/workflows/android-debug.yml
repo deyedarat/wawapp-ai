@@ -1,4 +1,4 @@
-hname: android-debug
+name: android-debug
 
 on:
   workflow_dispatch:
