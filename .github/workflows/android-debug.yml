@@ -3,11 +3,18 @@ name: android-debug
 on:
   workflow_dispatch:
   push:
+    branches:
+      - driver-auth-stable-work
+      - 'feature/**'
+      - 'feat/**'
     paths:
       - 'apps/wawapp_driver/**'
       - 'packages/**'
       - '.github/workflows/android-debug.yml'
   pull_request:
+    branches:
+      - main
+      - develop
     paths:
       - 'apps/wawapp_driver/**'
       - 'packages/**'
