@@ -19,6 +19,9 @@ export { notifyUnassignedOrders } from './notifyUnassignedOrders'; // Phase A: R
 export { trackOrderAcceptance } from './trackOrderAcceptance'; // Phase B: Track order acceptance timestamp
 export { processTripStartFee } from './processTripStartFee'; // Phase C: Trip start fee deduction
 export { enforceOrderExclusivity } from './enforceOrderExclusivity'; // Phase C: Order exclusivity guards
+export { createTopupRequest } from './createTopupRequest'; // Phase D: Driver top-up requests
+export { approveTopupRequest, rejectTopupRequest } from './approveTopupRequest'; // Phase D: Admin top-up approval
+export { enforceWalletBalance } from './enforceWalletBalance'; // Phase D: Wallet balance enforcement
 export { cleanStaleDriverLocations } from './cleanStaleDriverLocations';
 
 // Export Admin Functions
