@@ -2,7 +2,15 @@ name: fast-checks
 
 on:
   push:
+    paths:
+      - 'apps/wawapp_driver/**'
+      - 'packages/**'
+      - '.github/workflows/fast-checks.yml'
   pull_request:
+    paths:
+      - 'apps/wawapp_driver/**'
+      - 'packages/**'
+      - '.github/workflows/fast-checks.yml'
   workflow_dispatch:
 
 jobs:
@@ -15,10 +23,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Cache dependencies BEFORE Flutter setup
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/*.gradle*', '**/gradle.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
+          cache-key: flutter-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+
+      # Lightweight diagnostics
+      - name: Build environment info
+        working-directory: apps/wawapp_driver
+        run: |
+          java -version
+          cd android && chmod +x ./gradlew && ./gradlew --version | grep "Gradle"
+          cd android && grep "configuration-cache" gradle.properties || echo "configuration-cache: not found"
 
       - name: Validate Firebase configuration
         run: |
@@ -41,10 +69,7 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Show analyze help
-        run: flutter analyze -h
-
-      - name: Flutter analyze
+      - name: Flutter analyze (fast)
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Flutter test
