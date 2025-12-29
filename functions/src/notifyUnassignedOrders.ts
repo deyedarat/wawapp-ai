@@ -179,7 +179,7 @@ async function hasReachedNotificationLimit(
 }
 
 /**
- * Increment notification count for driver-order pair
+ * Increment notification count for driver-order pair using transaction
  */
 async function incrementNotificationCount(
   driverId: string,
@@ -191,13 +191,18 @@ async function incrementNotificationCount(
       .collection('driver_order_notifications')
       .doc(`${driverId}_${orderId}`);
 
-    await docRef.set({
-      driverId,
-      orderId,
-      count: admin.firestore.FieldValue.increment(1),
-      lastNotifiedAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    }, { merge: true });
+    await admin.firestore().runTransaction(async (transaction) => {
+      const doc = await transaction.get(docRef);
+      const currentCount = doc.exists ? (doc.data()?.count || 0) : 0;
+      
+      transaction.set(docRef, {
+        driverId,
+        orderId,
+        count: currentCount + 1,
+        lastNotifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
+    });
   } catch (error) {
     console.error('[NotifyUnassignedOrders] Error incrementing notification count:', error);
     // Don't throw - notification failure shouldn't block the process
