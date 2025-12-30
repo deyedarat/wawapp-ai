@@ -46,6 +46,9 @@
 - [ ] Driver receives notification about insufficient balance
 - [ ] Driver with positive balance can accept orders normally
 - [ ] Balance check happens immediately on order acceptance
+- [ ] **NEW**: Check failure → revert to matching + walletGuard.reason=CHECK_FAILED
+- [ ] **NEW**: Insufficient balance → revert to matching + walletGuard.reason=INSUFFICIENT_BALANCE
+- [ ] **NEW**: Repeat trigger with walletGuard present → no-op (no repeated notifications)
 
 ### 7. Atomic Transaction Testing
 - [ ] Approval process is fully atomic (all succeed or all fail)

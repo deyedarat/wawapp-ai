@@ -47,7 +47,12 @@ Phase D implements manual driver top-up requests with admin approval only, using
 - **Type**: Firestore onUpdate trigger
 - **Logic**: When order status becomes 'accepted'
 - **Check**: Assigned driver wallet balance > 0
-- **Action**: If insufficient, revert to 'matching' and notify driver
+- **Action**: If insufficient or check fails, revert to 'matching' and notify driver
+- **Fail-Closed**: On wallet check errors, revert order (no fail-open)
+- **Loop Guard**: Uses `walletGuard` field to prevent repeated reverts
+  - `walletGuard.reason`: 'INSUFFICIENT_BALANCE' | 'CHECK_FAILED'
+  - `walletGuard.blockedAt`: Timestamp when blocked
+  - `walletGuard.driverId`: Driver who was blocked
 
 ## Transaction Schema
 

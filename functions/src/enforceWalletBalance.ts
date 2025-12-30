@@ -16,11 +16,12 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 /**
- * Send insufficient balance notification to driver
+ * Send notification to driver based on wallet guard reason
  */
-async function sendInsufficientBalanceNotification(
+async function sendWalletNotification(
   driverId: string,
-  orderId: string
+  orderId: string,
+  reason: 'INSUFFICIENT_BALANCE' | 'CHECK_FAILED'
 ): Promise<void> {
   try {
     const driverDoc = await admin
@@ -30,7 +31,7 @@ async function sendInsufficientBalanceNotification(
       .get();
 
     if (!driverDoc.exists) {
-      console.warn('[WalletBalance] Driver not found for notification', { driver_id: driverId });
+      console.warn('[WalletBalanceGuard] Driver not found for notification', { driver_id: driverId });
       return;
     }
 
@@ -38,18 +39,21 @@ async function sendInsufficientBalanceNotification(
     const fcmToken = driverData?.fcmToken as string | undefined;
 
     if (!fcmToken) {
-      console.log('[WalletBalance] No FCM token for driver', { driver_id: driverId });
+      console.log('[WalletBalanceGuard] No FCM token for driver', { driver_id: driverId });
       return;
     }
 
+    const isCheckFailed = reason === 'CHECK_FAILED';
     const message: admin.messaging.Message = {
       token: fcmToken,
       notification: {
-        title: 'رصيد غير كافي',
-        body: 'تحتاج إلى رصيد في محفظتك لقبول الطلبات. يرجى طلب شحن المحفظة.',
+        title: isCheckFailed ? 'خطأ في التحقق من الرصيد' : 'رصيد غير كافي',
+        body: isCheckFailed 
+          ? 'تعذر التحقق من الرصيد، حاول مرة أخرى بعد قليل'
+          : 'تحتاج إلى رصيد في محفظتك لقبول الطلبات. يرجى طلب شحن المحفظة.',
       },
       data: {
-        notificationType: 'insufficient_balance_order',
+        notificationType: isCheckFailed ? 'wallet_check_failed' : 'insufficient_balance_order',
         orderId: orderId,
       },
       android: {
@@ -72,14 +76,16 @@ async function sendInsufficientBalanceNotification(
 
     await admin.messaging().send(message);
 
-    console.log('[WalletBalance] Insufficient balance notification sent', {
+    console.log('[WalletBalanceGuard] Notification sent', {
       driver_id: driverId,
       order_id: orderId,
+      reason: reason,
     });
   } catch (error) {
-    console.error('[WalletBalance] Failed to send notification', {
+    console.error('[WalletBalanceGuard] Failed to send notification', {
       driver_id: driverId,
       order_id: orderId,
+      reason: reason,
       error: error,
     });
   }
@@ -109,7 +115,18 @@ export const enforceWalletBalance = functions.firestore
       return null;
     }
 
-    console.log('[WalletBalance] Order accepted, checking driver wallet balance', {
+    // Fix #2: Loop Guard - Check if walletGuard already exists
+    const existingWalletGuard = afterData.walletGuard;
+    if (existingWalletGuard && existingWalletGuard.reason) {
+      console.log('[WalletBalanceGuard] walletGuard exists, skipping to prevent loops', {
+        order_id: orderId,
+        driver_id: assignedDriverId,
+        existing_reason: existingWalletGuard.reason,
+      });
+      return null;
+    }
+
+    console.log('[WalletBalanceGuard] Order accepted, checking driver wallet balance', {
       order_id: orderId,
       driver_id: assignedDriverId,
       status_transition: `${beforeStatus} → ${afterStatus}`,
@@ -128,7 +145,7 @@ export const enforceWalletBalance = functions.firestore
         currentBalance = walletDoc.data()?.balance || 0;
       }
 
-      console.log('[WalletBalance] Driver wallet balance check', {
+      console.log('[WalletBalanceGuard] Driver wallet balance check', {
         order_id: orderId,
         driver_id: assignedDriverId,
         current_balance: currentBalance,
@@ -136,24 +153,29 @@ export const enforceWalletBalance = functions.firestore
 
       // If balance is 0 or negative, reject the acceptance
       if (currentBalance <= 0) {
-        console.warn('[WalletBalance] Insufficient balance, reverting order acceptance', {
+        console.warn('[WalletBalanceGuard] Insufficient balance, reverting order acceptance', {
           order_id: orderId,
           driver_id: assignedDriverId,
           current_balance: currentBalance,
         });
 
-        // Revert order to matching status
+        // Revert order to matching status with walletGuard
         await change.after.ref.update({
           status: 'matching',
           assignedDriverId: null,
           driverId: null,
+          walletGuard: {
+            blockedAt: admin.firestore.FieldValue.serverTimestamp(),
+            reason: 'INSUFFICIENT_BALANCE',
+            driverId: assignedDriverId,
+          },
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
         // Send notification to driver
-        await sendInsufficientBalanceNotification(assignedDriverId, orderId);
+        await sendWalletNotification(assignedDriverId, orderId, 'INSUFFICIENT_BALANCE');
 
-        console.log('[WalletBalance] Order reverted to matching due to insufficient balance', {
+        console.log('[WalletBalanceGuard] Order reverted to matching due to insufficient balance', {
           order_id: orderId,
           driver_id: assignedDriverId,
         });
@@ -165,7 +187,7 @@ export const enforceWalletBalance = functions.firestore
           balance: currentBalance,
         });
       } else {
-        console.log('[WalletBalance] Driver has sufficient balance, order acceptance allowed', {
+        console.log('[WalletBalanceGuard] Driver has sufficient balance, order acceptance allowed', {
           order_id: orderId,
           driver_id: assignedDriverId,
           current_balance: currentBalance,
@@ -173,18 +195,33 @@ export const enforceWalletBalance = functions.firestore
       }
 
     } catch (error) {
-      console.error('[WalletBalance] Error checking wallet balance', {
+      console.error('[WalletBalanceGuard] Error checking wallet balance', {
         order_id: orderId,
         driver_id: assignedDriverId,
         error: error,
       });
 
-      // On error, allow the order to proceed (fail-open for availability)
-      // but log the issue for investigation
-      console.warn('[WalletBalance] Allowing order due to wallet check error (fail-open)', {
+      // Fix #1: Change to Fail-Closed - revert order on wallet check error
+      console.warn('[WalletBalanceGuard] Reverting order due to wallet check error (fail-closed)', {
         order_id: orderId,
         driver_id: assignedDriverId,
       });
+
+      // Revert order to matching status with walletGuard
+      await change.after.ref.update({
+        status: 'matching',
+        assignedDriverId: null,
+        driverId: null,
+        walletGuard: {
+          blockedAt: admin.firestore.FieldValue.serverTimestamp(),
+          reason: 'CHECK_FAILED',
+          driverId: assignedDriverId,
+        },
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // Send notification to driver
+      await sendWalletNotification(assignedDriverId, orderId, 'CHECK_FAILED');
     }
 
     return null;
