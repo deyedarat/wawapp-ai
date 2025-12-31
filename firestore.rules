@@ -254,5 +254,23 @@ service cloud.firestore {
       // This prevents users from resetting their own rate limits
       allow read, write: if false;
     }
+
+    // R1: In-app notifications collection
+    match /notifications/{notificationId} {
+      // Users can read their own notifications
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      // Only admins and Cloud Functions can create notifications
+      allow create: if isAdmin();
+
+      // Users can mark their own notifications as read
+      allow update: if isSignedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead', 'readAt'])
+        && request.resource.data.isRead == true;
+
+      // Users can delete their own notifications
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
   }
 }
