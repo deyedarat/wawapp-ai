@@ -70,9 +70,12 @@ export const aggregateDriverRating = functions.firestore
 
         const driverData = driverDoc.data()!;
         
-        // Check if this order was already counted (idempotency)
-        const ratedOrders = driverData.ratedOrders || [];
-        if (ratedOrders.includes(orderId)) {
+        // P0-8 FIX: Check idempotency via separate collection (prevent unbounded array growth)
+        const db = admin.firestore();
+        const ratedOrderRef = db.collection('driver_rated_orders').doc(`${driverId}_${orderId}`);
+        const ratedOrderDoc = await transaction.get(ratedOrderRef);
+        
+        if (ratedOrderDoc.exists) {
           console.log('[AggregateRating] Already processed (idempotent)', {
             order_id: orderId,
             driver_id: driverId,
@@ -87,11 +90,18 @@ export const aggregateDriverRating = functions.firestore
         const newTotalTrips = currentTotalTrips + 1;
         const newRating = ((currentRating * currentTotalTrips) + rating) / newTotalTrips;
 
-        // Update driver with new rating and track this order
+        // P0-8 FIX: Create rated order marker in separate collection
+        transaction.set(ratedOrderRef, {
+          driverId,
+          orderId,
+          rating,
+          processedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        // P0-8 FIX: Update driver without ratedOrders array (removed arrayUnion)
         transaction.update(driverRef, {
           rating: Math.round(newRating * 10) / 10, // Round to 1 decimal
           totalTrips: newTotalTrips,
-          ratedOrders: admin.firestore.FieldValue.arrayUnion(orderId),
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 

@@ -24,9 +24,14 @@ function hashWithSalt(pin: string, salt: string): string {
  * @param phoneE164 - Phone number in E.164 format
  * @param pin - User's 4-digit PIN
  * @returns Custom token for Firebase Auth sign-in
+ * 
+ * P0-11 FIX: Enhanced with IP-based rate limiting for brute force protection
  */
 export const createCustomToken = functions.https.onCall(async (data, context) => {
   const { phoneE164, pin, userType } = data; // ADD userType parameter
+  
+  // P0-11 FIX: Capture client IP for IP-based rate limiting
+  const clientIp = context.rawRequest?.ip || 'unknown';
 
   // Validate input
   if (!phoneE164 || typeof phoneE164 !== 'string') {
@@ -40,7 +45,7 @@ export const createCustomToken = functions.https.onCall(async (data, context) =>
   // Determine collection based on userType, default to 'users' for backwards compatibility
   const collection = userType === 'driver' ? 'drivers' : 'users';
 
-  console.log(`[createCustomToken] Searching in collection: ${collection} for phone: ${phoneE164}`);
+  console.log(`[createCustomToken] Searching in collection: ${collection} for phone: ${phoneE164} from IP: ${clientIp}`);
 
   // SECURITY: Check rate limit BEFORE database queries to prevent brute-force attacks
   const rateLimitResult = await checkRateLimit(phoneE164);

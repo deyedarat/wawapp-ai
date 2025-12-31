@@ -56,6 +56,8 @@ export const onOrderCompleted = functions.firestore
 
 /**
  * Settle an order into driver and platform wallets
+ * 
+ * P0-1 FIX: Idempotency check moved INSIDE transaction to prevent race condition
  */
 async function settleOrder(orderId: string, orderData: any): Promise<void> {
   const db = admin.firestore();
@@ -70,6 +72,15 @@ async function settleOrder(orderId: string, orderData: any): Promise<void> {
 
   // Execute settlement in a transaction
   await db.runTransaction(async (transaction) => {
+    // P0-1 FIX: Check idempotency INSIDE transaction (CRITICAL)
+    const orderRef = db.collection('orders').doc(orderId);
+    const orderSnap = await transaction.get(orderRef);
+    
+    if (orderSnap.data()?.settledAt) {
+      console.log(`Order ${orderId}: Already settled (idempotent - race condition prevented)`);
+      return;  // Exit transaction safely
+    }
+    
     // 1. Get or create driver wallet
     const driverWalletRef = db.collection('wallets').doc(driverId);
     const driverWalletSnap = await transaction.get(driverWalletRef);
@@ -180,8 +191,7 @@ async function settleOrder(orderId: string, orderData: any): Promise<void> {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    // 7. Mark order as settled
-    const orderRef = db.collection('orders').doc(orderId);
+    // 7. Mark order as settled (orderRef already fetched at top of transaction)
     transaction.update(orderRef, {
       settledAt: admin.firestore.FieldValue.serverTimestamp(),
       driverEarning,

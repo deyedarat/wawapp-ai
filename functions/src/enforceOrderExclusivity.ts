@@ -43,21 +43,57 @@ export const enforceOrderExclusivity = functions.firestore
       return null;
     }
 
-    // Check for driver change after assignment (potential security issue)
+    // P0-12 FIX: Check for unauthorized driver change and revert if needed
     if (previousDriverId && previousDriverId !== currentDriverId) {
-      console.warn('[OrderExclusivity] Driver change detected', {
+      console.error('[OrderExclusivity] UNAUTHORIZED driver change detected', {
         order_id: orderId,
         previous_driver: previousDriverId,
         current_driver: currentDriverId,
         status: currentStatus,
       });
 
-      // Allow admin reassignments but log for audit
-      console.log('[Analytics] driver_reassignment', {
+      // Check if this is an admin reassignment (check recent admin actions)
+      const db = admin.firestore();
+      const adminActions = await db
+        .collection('admin_actions')
+        .where('action', '==', 'reassignOrder')
+        .where('orderId', '==', orderId)
+        .where('newDriverId', '==', currentDriverId)
+        .orderBy('performedAt', 'desc')
+        .limit(1)
+        .get();
+
+      const isAdminReassignment = !adminActions.empty &&
+        (Date.now() - adminActions.docs[0].data().performedAt.toMillis()) < 60000;  // Within last minute
+
+      if (!isAdminReassignment) {
+        // P0-12 FIX: REVERT unauthorized change
+        await change.after.ref.update({
+          assignedDriverId: previousDriverId,
+          driverId: previousDriverId,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          securityAlert: {
+            type: 'unauthorized_driver_change',
+            detectedAt: admin.firestore.FieldValue.serverTimestamp(),
+            attemptedBy: currentDriverId,
+            revertedFrom: currentDriverId,
+            revertedTo: previousDriverId,
+          },
+        });
+
+        console.error('[OrderExclusivity] Reverted unauthorized driver change', {
+          order_id: orderId,
+          reverted_to: previousDriverId,
+        });
+
+        return null;  // Exit early after reversion
+      }
+
+      // Admin reassignment allowed
+      console.log('[OrderExclusivity] Admin reassignment allowed', {
         order_id: orderId,
         previous_driver: previousDriverId,
         current_driver: currentDriverId,
-        status: currentStatus,
       });
     }
 

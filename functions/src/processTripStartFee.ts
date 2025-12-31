@@ -174,11 +174,32 @@ export const processTripStartFee = functions.firestore
             required_fee: tripStartFee,
           });
 
-          // Revert order status to accepted
-          transaction.update(change.after.ref, {
-            status: 'accepted',
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-          });
+          // P0-7 FIX: Check loop guard to prevent infinite loop
+          const revertCount = afterData.feeRevertCount || 0;
+          
+          if (revertCount >= 3) {
+            // P0-7 FIX: Too many reverts, cancel order instead
+            transaction.update(change.after.ref, {
+              status: 'cancelled',
+              cancellationReason: 'Insufficient driver wallet balance after multiple attempts',
+              cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
+              updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+            
+            console.error('[TripStartFee] Order cancelled due to repeated insufficient balance', {
+              order_id: orderId,
+              driver_id: assignedDriverId,
+              revert_count: revertCount,
+            });
+          } else {
+            // P0-7 FIX: Revert with counter increment
+            transaction.update(change.after.ref, {
+              status: 'accepted',
+              feeRevertCount: admin.firestore.FieldValue.increment(1),
+              lastFeeRevertAt: admin.firestore.FieldValue.serverTimestamp(),
+              updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+          }
 
           // Send notification to driver (outside transaction)
           setImmediate(() => {
