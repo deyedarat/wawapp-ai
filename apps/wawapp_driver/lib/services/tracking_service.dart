@@ -193,27 +193,8 @@ class TrackingService {
       },
     );
 
-    // Also start periodic timer as backup (every 30 seconds)
-    _updateTimer = Timer.periodic(Duration(seconds: _updateIntervalSeconds * 3), (_) async {
-      if (kDebugMode) {
-        debugPrint('$_logTag Periodic backup update (updates count: $_positionUpdatesCount)');
-      }
-
-      // If stream hasn't provided updates recently, force a getCurrentPosition
-      if (_lastPosition == null || DateTime.now().difference(_firstFixTimestamp!).inSeconds > 60) {
-        try {
-          final position = await _locationService.getCurrentPosition();
-          await _writeLocationToFirestore(driverId, position);
-          _lastPosition = position;
-          _positionUpdatesCount++;
-        } on Object catch (e) {
-          if (kDebugMode) {
-            debugPrint('$_logTag ❌ Periodic update error: $e');
-          }
-          dev.log('[tracking] periodic-error: $e');
-        }
-      }
-    });
+    // Removed redundant periodic timer (Memory Optimization Phase 1)
+    // Position stream is already active and sufficient for tracking
 
     if (kDebugMode) {
       debugPrint('$_logTag Location tracking fully started for driver: $driverId');

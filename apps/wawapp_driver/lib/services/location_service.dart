@@ -147,7 +147,7 @@ class LocationService {
 
     const locationSettings = LocationSettings(
       accuracy: LocationAccuracy.high,
-      distanceFilter: 10, // Only emit when moved 10+ meters
+      distanceFilter: 50, // Only emit when moved 50+ meters (Memory Optimization Phase 1)
     );
 
     _positionStreamSubscription = Geolocator.getPositionStream(
