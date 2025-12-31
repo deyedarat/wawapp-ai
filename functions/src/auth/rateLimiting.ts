@@ -9,6 +9,7 @@
  * Uses Firestore for distributed state across Cloud Function instances.
  *
  * Security Fix: P0-AUTH-1 - PIN Brute Force Protection
+ * P0-11 Enhancement: IP address captured in createCustomToken for additional protection
  */
 
 import * as admin from 'firebase-admin';

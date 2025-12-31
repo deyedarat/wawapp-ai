@@ -71,30 +71,32 @@ export const approveTopupRequest = functions.https.onCall(async (data, context) 
       let currentBalance = 0;
 
       if (!walletDoc.exists) {
-        // Create new driver wallet
+        // P0-9 FIX: Create wallet with initial balance directly (atomic)
         console.log('[ApproveTopup] Creating wallet for driver', { driver_id: driverId });
         transaction.set(walletRef, {
           id: driverId,
           type: 'driver',
           ownerId: driverId,
-          balance: 0,
-          totalCredited: 0,
+          balance: amount,  // P0-9 FIX: Set initial balance directly
+          totalCredited: amount,  // P0-9 FIX: Set initial total
           totalDebited: 0,
           pendingPayout: 0,
           currency: FINANCE_CONFIG.DEFAULT_CURRENCY,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
+        
+        currentBalance = 0;  // For transaction record
       } else {
         currentBalance = walletDoc.data()!.balance || 0;
+        
+        // P0-9 FIX: Update existing wallet (separate from creation)
+        transaction.update(walletRef, {
+          balance: admin.firestore.FieldValue.increment(amount),
+          totalCredited: admin.firestore.FieldValue.increment(amount),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
       }
-
-      // Update wallet balance
-      transaction.update(walletRef, {
-        balance: admin.firestore.FieldValue.increment(amount),
-        totalCredited: admin.firestore.FieldValue.increment(amount),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
 
       // Create transaction record
       const transactionRef = admin.firestore().collection('transactions').doc(`topup_${requestId}`);

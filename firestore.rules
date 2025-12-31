@@ -12,6 +12,7 @@ service cloud.firestore {
     function validStatusTransition() {
       let currentStatus = resource.data.status;
       let newStatus = request.resource.data.status;
+      // P0-5 FIX: Removed "cancelledByClient" from onRoute transitions (can't cancel after trip started)
       return (currentStatus == "matching" && newStatus in ["accepted", "cancelled", "cancelledByClient", "cancelledByDriver"]) ||
              (currentStatus == "accepted" && newStatus in ["onRoute", "cancelled", "cancelledByClient", "cancelledByDriver"]) ||
              (currentStatus == "onRoute" && newStatus in ["completed", "cancelled", "cancelledByDriver"]);
@@ -33,7 +34,8 @@ service cloud.firestore {
         && request.resource.data.status == "matching"
         && request.resource.data.ownerId == request.auth.uid
         && request.resource.data.price is int
-        && request.resource.data.price >= 0
+        && request.resource.data.price > 0  // P0-6 FIX: Prevent free orders
+        && request.resource.data.price <= 100000  // P0-6 FIX: Max price sanity check
         && request.resource.data.distanceKm is number
         && request.resource.data.distanceKm >= 0
         && request.resource.data.distanceKm < 100
@@ -56,19 +58,28 @@ service cloud.firestore {
         && request.resource.data.dropoffAddress is string
         && request.resource.data.dropoffAddress.size() > 0;
 
-      allow read: if isSignedIn() && (isOwner() || isDriver() || isAssignedDriver() || resource.data.status == "matching");
+      // P0-2 FIX: Removed public access to matching orders to prevent PII leakage
+      // Drivers must use Cloud Function getNearbyOrders() for server-side matching
+      allow read: if isSignedIn() && (isOwner() || isAssignedDriver());
       
       allow update: if isSignedIn()
         && request.resource.data.price == resource.data.price
         && request.resource.data.ownerId == resource.data.ownerId
+        // P0-12 FIX: Prevent changing assignedDriverId after it's set (prevent order theft)
+        && (
+          !('assignedDriverId' in resource.data) ||  // First assignment OK
+          request.resource.data.assignedDriverId == resource.data.assignedDriverId  // No change allowed
+        )
         && ((validStatusTransition() && ((request.resource.data.status == "accepted" && request.resource.data.assignedDriverId == request.auth.uid) ||
-            (request.resource.data.status == "cancelledByClient" && isOwner()) ||
+            (request.resource.data.status == "cancelledByClient" && isOwner() && resource.data.status in ["matching", "accepted"]) ||  // P0-5 FIX: Only allow client cancel before onRoute
             (request.resource.data.status in ["onRoute", "completed", "cancelled", "cancelledByDriver"] && isAssignedDriver()))) ||
             (isRatingUpdate() && isOwner()));
     }
 
     match /driver_locations/{driverId} {
-      allow read: if isSignedIn();
+      // P0-3 FIX: Only owner can read/write to prevent stalking
+      // Clients get driver location via Cloud Function that validates order ownership
+      allow read: if isSignedIn() && request.auth.uid == driverId;
       allow write: if isSignedIn() && request.auth.uid == driverId;
     }
 
@@ -84,15 +95,16 @@ service cloud.firestore {
       allow create: if isSignedIn() && request.auth.uid == uid;
 
       // Update: only owner AND prevent tampering with sensitive/admin fields
+      // P0-4 FIX: Strict validation to prevent adding OR modifying admin fields
       allow update: if isSignedIn()
                     && request.auth.uid == uid
                     // Prevent partial PIN edits (must update both pinHash and pinSalt together)
                     && !(request.resource.data.diff(resource.data).affectedKeys()
                          .hasAny(['pinHash','pinSalt'])
                          && !request.resource.data.keys().hasAll(['pinHash','pinSalt']))
-                    // Prevent clients from modifying admin-only fields
-                    && (!('totalTrips' in resource.data) || request.resource.data.totalTrips == resource.data.totalTrips)
-                    && (!('averageRating' in resource.data) || request.resource.data.averageRating == resource.data.averageRating);
+                    // P0-4 FIX: Prevent adding OR modifying admin-only fields
+                    && !request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['totalTrips', 'averageRating', 'isVerified', 'isAdmin']);
 
       // Saved locations subcollection: full CRUD for owner only
       match /savedLocations/{locationId} {
@@ -137,13 +149,11 @@ service cloud.firestore {
 
       // Update: only the driver themselves
       // Allow updating any fields EXCEPT admin-only fields
+      // P0-4 FIX: Strict validation to prevent adding OR modifying admin fields
       allow update: if isSignedIn()
                     && request.auth.uid == driverId
-                    // Only check admin fields if they exist in the current document
-                    && (!('isVerified' in resource.data) || request.resource.data.isVerified == resource.data.isVerified)
-                    && (!('rating' in resource.data) || request.resource.data.rating == resource.data.rating)
-                    && (!('totalTrips' in resource.data) || request.resource.data.totalTrips == resource.data.totalTrips)
-                    && (!('ratedOrders' in resource.data) || request.resource.data.ratedOrders == resource.data.ratedOrders);
+                    && !request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['isVerified', 'rating', 'totalTrips', 'ratedOrders', 'isBlocked']);
     }
 
     match /clients/{clientId} {
@@ -157,11 +167,11 @@ service cloud.firestore {
       allow create: if isSignedIn() && request.auth.uid == clientId;
 
       // Update: only the client themselves AND prevent tampering with admin-only fields
+      // P0-4 FIX: Strict validation to prevent adding OR modifying admin fields
       allow update: if isSignedIn() 
                     && request.auth.uid == clientId
-                    && (!('isVerified' in resource.data) || request.resource.data.isVerified == resource.data.isVerified)
-                    && (!('totalTrips' in resource.data) || request.resource.data.totalTrips == resource.data.totalTrips)
-                    && (!('averageRating' in resource.data) || request.resource.data.averageRating == resource.data.averageRating);
+                    && !request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['isVerified', 'totalTrips', 'averageRating', 'isBlocked']);
     }
 
     match /admins/{adminId} {
@@ -177,10 +187,15 @@ service cloud.firestore {
       // Admins can read all wallets
       allow read: if isAdmin();
       
-      // Drivers can read their own wallet
+      // P0-10 FIX: Triple-check driver wallet access + explicit platform wallet protection
       allow read: if isSignedIn() && 
                      request.auth.uid == walletId &&
-                     resource.data.type == 'driver';
+                     resource.data.ownerId == request.auth.uid &&
+                     resource.data.type == 'driver' &&
+                     walletId != 'PLATFORM_WALLET';
+      
+      // Platform wallet: admins only (explicit rule)
+      allow read: if walletId == 'PLATFORM_WALLET' && isAdmin();
       
       // Only Cloud Functions can write (no direct client writes)
       allow write: if false;
