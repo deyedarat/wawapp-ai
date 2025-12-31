@@ -228,6 +228,48 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  // Verify current PIN (for PIN change flow)
+  Future<bool> verifyCurrentPin(String pin) async {
+    try {
+      final phoneE164 = _firebaseAuth.currentUser?.phoneNumber;
+      if (phoneE164 == null) {
+        if (kDebugMode) {
+          print('[ClientAuthNotifier] Cannot verify PIN: no phone number');
+        }
+        return false;
+      }
+
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Verifying current PIN');
+      }
+
+      // Use verifyPin but don't sign in again (user is already signed in)
+      final isValid = await _authService.verifyPin(pin, phoneE164);
+      return isValid;
+    } on Object catch (e) {
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Error verifying current PIN: $e');
+      }
+      return false;
+    }
+  }
+
+  // Set new PIN (for PIN change flow)
+  Future<void> setPin(String pin) async {
+    try {
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Setting new PIN');
+      }
+      await _authService.setPin(pin);
+      state = state.copyWith(hasPin: true);
+    } on Object catch (e) {
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Error setting PIN: $e');
+      }
+      rethrow;
+    }
+  }
+
   // Logout
   Future<void> logout() async {
     state = state.copyWith(isLoading: true, error: null);
