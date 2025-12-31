@@ -69,10 +69,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
           dev.log('[DriverHome] Verifying location prerequisites...');
         }
 
-        final locationError = await LocationService.instance.verifyLocationPrerequisites();
+        final locationError =
+            await LocationService.instance.verifyLocationPrerequisites();
         if (locationError != null) {
           if (kDebugMode) {
-            dev.log('[DriverHome] Location prerequisites failed: $locationError');
+            dev.log(
+                '[DriverHome] Location prerequisites failed: $locationError');
           }
 
           if (mounted) {
@@ -135,7 +137,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(value ? 'أنت الآن متصل ومتاح للطلبات' : 'أنت الآن غير متصل'),
+            content: Text(
+                value ? 'أنت الآن متصل ومتاح للطلبات' : 'أنت الآن غير متصل'),
             backgroundColor: value ? Colors.green : Colors.grey,
           ),
         );
@@ -162,9 +165,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
   bool _isProfileComplete(DriverProfile profile) {
     return profile.name.isNotEmpty &&
-           profile.vehicleType != null && profile.vehicleType!.isNotEmpty &&
-           profile.vehiclePlate != null && profile.vehiclePlate!.isNotEmpty &&
-           profile.city != null && profile.city!.isNotEmpty;
+        profile.vehicleType != null &&
+        profile.vehicleType!.isNotEmpty &&
+        profile.vehiclePlate != null &&
+        profile.vehiclePlate!.isNotEmpty &&
+        profile.city != null &&
+        profile.city!.isNotEmpty;
   }
 
   void _showProfileIncompleteDialog() {
@@ -172,10 +178,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('أكمل ملفك الشخصي'),
-        content: const Text(
-          'يجب عليك إكمال ملفك الشخصي قبل الاتصال. '
-          'الرجاء ملء: الاسم، نوع السيارة، رقم اللوحة، والمدينة.'
-        ),
+        content: const Text('يجب عليك إكمال ملفك الشخصي قبل الاتصال. '
+            'الرجاء ملء: الاسم، نوع السيارة، رقم اللوحة، والمدينة.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -284,15 +288,24 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: isOnline
-                      ? [DriverAppColors.onlineGreen, DriverAppColors.onlineGreen.withOpacity(0.8)]
-                      : [DriverAppColors.offlineGrey, DriverAppColors.offlineGrey.withOpacity(0.8)],
+                      ? [
+                          DriverAppColors.onlineGreen,
+                          DriverAppColors.onlineGreen.withOpacity(0.8)
+                        ]
+                      : [
+                          DriverAppColors.offlineGrey,
+                          DriverAppColors.offlineGrey.withOpacity(0.8)
+                        ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(DriverAppSpacing.radiusLg),
                 boxShadow: [
                   BoxShadow(
-                    color: (isOnline ? DriverAppColors.onlineGreen : DriverAppColors.offlineGrey).withOpacity(0.3),
+                    color: (isOnline
+                            ? DriverAppColors.onlineGreen
+                            : DriverAppColors.offlineGrey)
+                        .withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -308,17 +321,23 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                       children: [
                         Text(
                           isOnline ? l10n.online : l10n.offline,
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         SizedBox(height: DriverAppSpacing.xxs),
                         Text(
-                          isOnline ? 'جاهز لاستقبال الطلبات' : 'اذهب إلى الإنترنت لاستقبال الطلبات',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
-                          ),
+                          isOnline
+                              ? 'جاهز لاستقبال الطلبات'
+                              : 'اذهب إلى الإنترنت لاستقبال الطلبات',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
                         ),
                       ],
                     ),
@@ -344,8 +363,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                     Text(
                       'الإجراءات السريعة',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     SizedBox(height: DriverAppSpacing.md),
                     Row(
@@ -358,7 +377,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 Container(
                                   padding: EdgeInsets.all(DriverAppSpacing.sm),
                                   decoration: BoxDecoration(
-                                    color: DriverAppColors.primaryLight.withOpacity(0.1),
+                                    color: DriverAppColors.primaryLight
+                                        .withOpacity(0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -386,7 +406,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 Container(
                                   padding: EdgeInsets.all(DriverAppSpacing.sm),
                                   decoration: BoxDecoration(
-                                    color: DriverAppColors.secondaryLight.withOpacity(0.1),
+                                    color: DriverAppColors.secondaryLight
+                                        .withOpacity(0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -418,7 +439,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 Container(
                                   padding: EdgeInsets.all(DriverAppSpacing.sm),
                                   decoration: BoxDecoration(
-                                    color: DriverAppColors.infoLight.withOpacity(0.1),
+                                    color: DriverAppColors.infoLight
+                                        .withOpacity(0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -446,7 +468,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 Container(
                                   padding: EdgeInsets.all(DriverAppSpacing.sm),
                                   decoration: BoxDecoration(
-                                    color: DriverAppColors.successLight.withOpacity(0.1),
+                                    color: DriverAppColors.successLight
+                                        .withOpacity(0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -472,8 +495,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                     Text(
                       'ملخص اليوم',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     SizedBox(height: DriverAppSpacing.md),
                     DriverCard(
@@ -487,24 +510,32 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 children: [
                                   Text(
                                     'عدد الرحلات',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: DriverAppColors.textSecondaryLight,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: DriverAppColors
+                                              .textSecondaryLight,
+                                        ),
                                   ),
                                   SizedBox(height: DriverAppSpacing.xxs),
                                   Text(
                                     '0',
-                                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: DriverAppColors.primaryLight,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: DriverAppColors.primaryLight,
+                                        ),
                                   ),
                                 ],
                               ),
                               Container(
                                 padding: EdgeInsets.all(DriverAppSpacing.sm),
                                 decoration: BoxDecoration(
-                                  color: DriverAppColors.primaryLight.withOpacity(0.1),
+                                  color: DriverAppColors.primaryLight
+                                      .withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -524,24 +555,32 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 children: [
                                   Text(
                                     'الأرباح',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: DriverAppColors.textSecondaryLight,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: DriverAppColors
+                                              .textSecondaryLight,
+                                        ),
                                   ),
                                   SizedBox(height: DriverAppSpacing.xxs),
                                   Text(
                                     '0 MRU',
-                                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: DriverAppColors.successLight,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: DriverAppColors.successLight,
+                                        ),
                                   ),
                                 ],
                               ),
                               Container(
                                 padding: EdgeInsets.all(DriverAppSpacing.sm),
                                 decoration: BoxDecoration(
-                                  color: DriverAppColors.successLight.withOpacity(0.1),
+                                  color: DriverAppColors.successLight
+                                      .withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -559,7 +598,6 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 ),
               ),
             ),
-
           ],
         ),
       ),

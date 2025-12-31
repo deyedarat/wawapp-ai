@@ -7,7 +7,7 @@ import '../observability/crashlytics_observer.dart';
 /// Safe wrapper for Google Maps camera operations to prevent channel-error crashes
 class SafeCameraHelper {
   static const String _tag = 'SafeCameraHelper';
-  
+
   /// Safely animate camera with proper error handling and state checks
   static Future<void> animateCamera({
     required GoogleMapController? controller,
@@ -18,20 +18,20 @@ class SafeCameraHelper {
   }) async {
     final mapReady = controller != null;
     final controllerReady = mapReady;
-    
+
     CrashlyticsObserver.logMapOperation(
       action: action ?? 'animate',
       mapReady: mapReady,
       controllerReady: controllerReady,
       screen: screenName,
     );
-    
+
     // Guard: Check if widget is still mounted
     if (!mounted) return;
-    
+
     // Guard: Check if controller is available
     if (controller == null) return;
-    
+
     try {
       await controller.animateCamera(cameraUpdate);
     } catch (e, stackTrace) {
@@ -45,11 +45,11 @@ class SafeCameraHelper {
           'Action: ${action ?? 'unknown'}',
         ],
       );
-      
+
       debugPrint('[$_tag] Camera animation failed: $e');
     }
   }
-  
+
   /// Schedule camera operation after current frame to avoid build-time calls
   static void scheduleAfterFrame({
     required VoidCallback operation,
@@ -61,8 +61,6 @@ class SafeCameraHelper {
       }
     });
   }
-  
-
 }
 
 /// Mixin to provide safe camera operations to StatefulWidgets with GoogleMaps
@@ -70,27 +68,27 @@ mixin SafeCameraMixin<T extends StatefulWidget> on State<T> {
   GoogleMapController? _mapController;
   final Completer<GoogleMapController> _controllerCompleter = Completer();
   bool _mapReady = false;
-  
+
   /// Get the map controller safely
   GoogleMapController? get mapController => _mapController;
-  
+
   /// Check if map is ready for camera operations
   bool get isMapReady => _mapReady && _mapController != null;
-  
+
   /// Handle map creation with proper initialization
   void onMapCreated(GoogleMapController controller) {
     _mapController = controller;
     _mapReady = true;
-    
+
     if (!_controllerCompleter.isCompleted) {
       _controllerCompleter.complete(controller);
     }
-    
+
     // Set Crashlytics context
     FirebaseCrashlytics.instance.setCustomKey('map_ready', 'true');
     FirebaseCrashlytics.instance.setCustomKey('screen', runtimeType.toString());
   }
-  
+
   /// Safely animate camera with all safety checks
   Future<void> safeAnimateCamera(
     CameraUpdate cameraUpdate, {
@@ -104,7 +102,7 @@ mixin SafeCameraMixin<T extends StatefulWidget> on State<T> {
       action: action,
     );
   }
-  
+
   /// Schedule camera operation after frame
   void scheduleCameraOperation(VoidCallback operation) {
     SafeCameraHelper.scheduleAfterFrame(
@@ -112,7 +110,7 @@ mixin SafeCameraMixin<T extends StatefulWidget> on State<T> {
       mounted: mounted,
     );
   }
-  
+
   /// Wait for map to be ready before performing operations
   Future<void> whenMapReady(VoidCallback operation) async {
     if (isMapReady) {
@@ -128,7 +126,7 @@ mixin SafeCameraMixin<T extends StatefulWidget> on State<T> {
       }
     }
   }
-  
+
   @override
   void dispose() {
     _mapController = null;

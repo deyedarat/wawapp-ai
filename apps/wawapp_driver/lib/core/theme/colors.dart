@@ -8,24 +8,28 @@ class DriverAppColors {
   // ========== Primary Colors (Manus Visual Identity) ==========
   // Based on Mauritania flag colors
   static const Color primaryLight = Color(0xFF00704A); // Mauritania Green
-  static const Color primaryDark = Color(0xFF00A76F); // Lighter Mauritania Green
-  
-  static const Color secondaryLight = Color(0xFFF5A623); // Golden Yellow (from Mauritania flag)
+  static const Color primaryDark =
+      Color(0xFF00A76F); // Lighter Mauritania Green
+
+  static const Color secondaryLight =
+      Color(0xFFF5A623); // Golden Yellow (from Mauritania flag)
   static const Color secondaryDark = Color(0xFFFFC156); // Lighter Golden Yellow
 
   // ========== Status Colors ==========
-  static const Color onlineGreen = Color(0xFF00704A); // Use primary green for online
+  static const Color onlineGreen =
+      Color(0xFF00704A); // Use primary green for online
   static const Color offlineGrey = Color(0xFF9E9E9E);
-  static const Color busyOrange = Color(0xFFF5A623); // Use golden yellow for busy
+  static const Color busyOrange =
+      Color(0xFFF5A623); // Use golden yellow for busy
   static const Color acceptedBlue = Color(0xFF2196F3);
   static const Color accentRed = Color(0xFFC1272D); // Mauritania Red accent
-  
+
   // ========== Semantic Colors (Light) ==========
   static const Color successLight = Color(0xFF10B981);
   static const Color warningLight = Color(0xFFF59E0B);
   static const Color errorLight = Color(0xFFEF4444);
   static const Color infoLight = Color(0xFF3B82F6);
-  
+
   // ========== Semantic Colors (Dark) ==========
   static const Color successDark = Color(0xFF34D399);
   static const Color warningDark = Color(0xFFFBBF24);

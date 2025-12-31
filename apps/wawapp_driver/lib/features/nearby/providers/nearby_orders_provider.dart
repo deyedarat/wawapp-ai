@@ -11,7 +11,7 @@ final nearbyOrdersProvider =
   if (TestLabFlags.safeEnabled) {
     return Stream.value(TestLabMockData.mockNearbyOrders);
   }
-  
+
   final ordersService = ref.watch(ordersServiceProvider);
   return ordersService.getNearbyOrders(position);
 });

@@ -118,14 +118,20 @@ class PublicTrackScreen extends ConsumerWidget {
                 dropoffAddress: (data['dropoff']
                     as Map<String, dynamic>)['label'] as String,
                 pickup: LocationPoint(
-                  lat: (data['pickup'] as Map<String, dynamic>)['lat'] as double,
-                  lng: (data['pickup'] as Map<String, dynamic>)['lng'] as double,
-                  label: (data['pickup'] as Map<String, dynamic>)['label'] as String,
+                  lat:
+                      (data['pickup'] as Map<String, dynamic>)['lat'] as double,
+                  lng:
+                      (data['pickup'] as Map<String, dynamic>)['lng'] as double,
+                  label: (data['pickup'] as Map<String, dynamic>)['label']
+                      as String,
                 ),
                 dropoff: LocationPoint(
-                  lat: (data['dropoff'] as Map<String, dynamic>)['lat'] as double,
-                  lng: (data['dropoff'] as Map<String, dynamic>)['lng'] as double,
-                  label: (data['dropoff'] as Map<String, dynamic>)['label'] as String,
+                  lat: (data['dropoff'] as Map<String, dynamic>)['lat']
+                      as double,
+                  lng: (data['dropoff'] as Map<String, dynamic>)['lng']
+                      as double,
+                  label: (data['dropoff'] as Map<String, dynamic>)['label']
+                      as String,
                 ),
                 status: data['status'] as String?,
                 driverId: data['driverId'] as String?,

@@ -13,7 +13,7 @@ class WawAppColors {
   static const Color primary = Color(0xFF00704A); // Mauritania Green
   static const Color primaryDark = Color(0xFF005539);
   static const Color primaryLight = Color(0xFF00A76F);
-  
+
   static const Color secondary = Color(0xFFF5A623); // Golden Yellow
   static const Color secondaryDark = Color(0xFFE09419);
   static const Color secondaryLight = Color(0xFFFFC156);
@@ -28,7 +28,7 @@ class WawAppColors {
   static const Color backgroundLight = Color(0xFFF8F9FA); // Manus design spec
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color cardLight = Color(0xFFFFFFFF);
-  
+
   // Text Colors (Light Theme)
   static const Color textPrimaryLight = Color(0xFF212529); // Manus design spec
   static const Color textSecondaryLight = Color(0xFF6C757D);
@@ -74,7 +74,7 @@ class WawAppColors {
   // Disabled States
   static const Color disabledLight = Color(0xFFE9ECEF);
   static const Color disabledDark = Color(0xFF3A3A3A);
-  
+
   // Button disabled colors with 25% opacity as per requirements
   static Color get primaryDisabled => primary.withOpacity(0.25);
   static Color get secondaryDisabled => secondary.withOpacity(0.25);
@@ -103,7 +103,7 @@ class WawAppSpacing {
   static const double buttonHeight = 52.0;
   static const double inputHeight = 56.0;
   static const double appBarHeight = 56.0;
-  
+
   // Border radius
   static const double radiusXs = 4.0;
   static const double radiusSm = 8.0;

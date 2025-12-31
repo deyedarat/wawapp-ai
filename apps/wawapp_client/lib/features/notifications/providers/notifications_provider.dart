@@ -4,12 +4,14 @@ import '../../../services/in_app_notification_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 /// Provider for InAppNotificationService
-final inAppNotificationServiceProvider = Provider<InAppNotificationService>((ref) {
+final inAppNotificationServiceProvider =
+    Provider<InAppNotificationService>((ref) {
   return InAppNotificationService();
 });
 
 /// Provider for notifications list stream
-final notificationsStreamProvider = StreamProvider.autoDispose<List<NotificationModel>>((ref) {
+final notificationsStreamProvider =
+    StreamProvider.autoDispose<List<NotificationModel>>((ref) {
   final service = ref.watch(inAppNotificationServiceProvider);
   final user = FirebaseAuth.instance.currentUser;
 

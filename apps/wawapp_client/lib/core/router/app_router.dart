@@ -34,7 +34,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     navigatorKey: appNavigatorKey,
     initialLocation: '/',
     redirect: (context, state) => _redirect(state, authState),
-    refreshListenable: _GoRouterRefreshStream(ref.read(authProvider.notifier).stream),
+    refreshListenable:
+        _GoRouterRefreshStream(ref.read(authProvider.notifier).stream),
     observers: [
       FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
     ],
@@ -143,21 +144,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 String? _redirect(GoRouterState s, AuthState st) {
   final loggedIn = st.user != null;
   final hasPin = st.hasPin;
-  final canOtp = st.otpFlowActive || st.otpStage == OtpStage.sending || st.otpStage == OtpStage.codeSent;
+  final canOtp = st.otpFlowActive ||
+      st.otpStage == OtpStage.sending ||
+      st.otpStage == OtpStage.codeSent;
   final isLoading = st.isLoading || st.isPinCheckLoading;
 
   // Set route context for Crashlytics
   CrashlyticsObserver.setRoute(s.matchedLocation, s.name ?? 'unknown');
 
-  debugPrint(
-    '[Router] NAVIGATION_CHECK | '
-    'location=${s.matchedLocation} | '
-    'user=${st.user?.uid ?? 'null'} | '
-    'hasPin=$hasPin | '
-    'canOtp=$canOtp | '
-    'otpStage=${st.otpStage} | '
-    'isLoading=$isLoading'
-  );
+  debugPrint('[Router] NAVIGATION_CHECK | '
+      'location=${s.matchedLocation} | '
+      'user=${st.user?.uid ?? 'null'} | '
+      'hasPin=$hasPin | '
+      'canOtp=$canOtp | '
+      'otpStage=${st.otpStage} | '
+      'isLoading=$isLoading');
 
   // 1. ALLOW: Public tracking routes (no auth required)
   if (s.matchedLocation.startsWith('/track/')) {
@@ -166,7 +167,9 @@ String? _redirect(GoRouterState s, AuthState st) {
   }
 
   // 2. WAIT: Still loading auth state (prevent premature redirects)
-  if (isLoading && s.matchedLocation != '/login' && s.matchedLocation != '/otp') {
+  if (isLoading &&
+      s.matchedLocation != '/login' &&
+      s.matchedLocation != '/otp') {
     debugPrint('[Router] ⏳ Auth loading - staying on current route');
     return null;
   }
@@ -204,11 +207,15 @@ String? _redirect(GoRouterState s, AuthState st) {
   // 6. FULLY AUTHENTICATED: User has account + PIN
   if (loggedIn && hasPin) {
     // Redirect away from auth screens to home
-    if (s.matchedLocation == '/login' || s.matchedLocation == '/otp' || s.matchedLocation == '/create-pin') {
-      debugPrint('[Router] → Redirecting to / (authenticated with PIN, leaving auth screen)');
+    if (s.matchedLocation == '/login' ||
+        s.matchedLocation == '/otp' ||
+        s.matchedLocation == '/create-pin') {
+      debugPrint(
+          '[Router] → Redirecting to / (authenticated with PIN, leaving auth screen)');
       return '/';
     }
-    debugPrint('[Router] ✓ Authenticated - allowing access to ${s.matchedLocation}');
+    debugPrint(
+        '[Router] ✓ Authenticated - allowing access to ${s.matchedLocation}');
     return null;
   }
 

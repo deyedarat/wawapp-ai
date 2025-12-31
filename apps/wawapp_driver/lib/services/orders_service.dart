@@ -32,9 +32,11 @@ class OrdersService {
       dev.log('[Matching] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       dev.log('[Matching] 🔍 getNearbyOrders called');
       dev.log('[Matching] 📍 Driver ID: ${user.uid}');
-      dev.log('[Matching] 📍 Driver position: lat=${driverPosition.latitude.toStringAsFixed(6)}, lng=${driverPosition.longitude.toStringAsFixed(6)}');
+      dev.log(
+          '[Matching] 📍 Driver position: lat=${driverPosition.latitude.toStringAsFixed(6)}, lng=${driverPosition.longitude.toStringAsFixed(6)}');
       dev.log('[Matching] 🔎 Query filters:');
-      dev.log('[Matching]    - status = "$statusValue" (enum: OrderStatus.matching)');
+      dev.log(
+          '[Matching]    - status = "$statusValue" (enum: OrderStatus.matching)');
       dev.log('[Matching]    - assignedDriverId = null');
       dev.log('[Matching]    - maxDistance = 8.0km');
       dev.log('[Matching] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -47,14 +49,17 @@ class OrdersService {
       if (!isOnline) {
         if (kDebugMode) {
           dev.log('[Matching] ⚠️ Driver is OFFLINE - returning empty stream');
-          dev.log('[Matching] 💡 Solution: Driver must go ONLINE to see orders');
-          dev.log('[Matching] 📝 Check: drivers/${user.uid} document has isOnline=true');
+          dev.log(
+              '[Matching] 💡 Solution: Driver must go ONLINE to see orders');
+          dev.log(
+              '[Matching] 📝 Check: drivers/${user.uid} document has isOnline=true');
         }
         return Stream.value(<Order>[]);
       }
 
       if (kDebugMode) {
-        dev.log('[Matching] ✅ Driver is ONLINE - proceeding to query Firestore');
+        dev.log(
+            '[Matching] ✅ Driver is ONLINE - proceeding to query Firestore');
       }
 
       // NOTE: We query only by status and createdAt because some old orders
@@ -69,24 +74,29 @@ class OrdersService {
           .snapshots()
           .map((snapshot) {
         if (kDebugMode) {
-          dev.log('[Matching] 📦 Firestore snapshot received: ${snapshot.docs.length} documents');
+          dev.log(
+              '[Matching] 📦 Firestore snapshot received: ${snapshot.docs.length} documents');
         }
 
         if (snapshot.docs.isEmpty) {
           if (kDebugMode) {
-            dev.log('[Matching] ❌ No orders found in Firestore matching filters');
+            dev.log(
+                '[Matching] ❌ No orders found in Firestore matching filters');
             dev.log('[Matching] 📋 Filters used:');
             dev.log('[Matching]    - status = "$statusValue"');
             dev.log('[Matching] 💡 Possible reasons:');
             dev.log('[Matching]    1. No orders created by clients yet');
-            dev.log('[Matching]    2. All orders have status != "$statusValue"');
-            dev.log('[Matching] 🔧 To debug: Check Firebase Console > Firestore > orders collection');
+            dev.log(
+                '[Matching]    2. All orders have status != "$statusValue"');
+            dev.log(
+                '[Matching] 🔧 To debug: Check Firebase Console > Firestore > orders collection');
           }
           return <Order>[];
         }
 
         if (kDebugMode) {
-          dev.log('[Matching] ✅ Found ${snapshot.docs.length} raw documents, filtering unassigned orders...');
+          dev.log(
+              '[Matching] ✅ Found ${snapshot.docs.length} raw documents, filtering unassigned orders...');
         }
 
         final orders = <Order>[];
@@ -107,7 +117,8 @@ class OrdersService {
             }
 
             if (kDebugMode) {
-              dev.log('[Matching] ✅ Order ${doc.id} is unassigned (assignedDriverId=${assignedDriverId ?? "missing"})');
+              dev.log(
+                  '[Matching] ✅ Order ${doc.id} is unassigned (assignedDriverId=${assignedDriverId ?? "missing"})');
             }
 
             final order = Order.fromFirestoreWithId(doc.id, data);
@@ -127,7 +138,8 @@ class OrdersService {
               dev.log('[Matching]    - assignedDriverId: $assignedDriverId');
               dev.log('[Matching]    - createdAt: $createdAt');
               dev.log('[Matching]    - pickup: ($pickupLat, $pickupLng)');
-              dev.log('[Matching]    - distance: ${distance.toStringAsFixed(2)} km');
+              dev.log(
+                  '[Matching]    - distance: ${distance.toStringAsFixed(2)} km');
               dev.log('[Matching]    - price: ${order.price} MRU');
             }
 
@@ -138,7 +150,8 @@ class OrdersService {
               }
             } else {
               if (kDebugMode) {
-                dev.log('[Matching]    ❌ EXCLUDED (too far: ${distance.toStringAsFixed(1)}km > 8km)');
+                dev.log(
+                    '[Matching]    ❌ EXCLUDED (too far: ${distance.toStringAsFixed(1)}km > 8km)');
               }
             }
           } on Object catch (e) {
@@ -166,7 +179,8 @@ class OrdersService {
 
         if (kDebugMode) {
           dev.log('[Matching] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-          dev.log('[Matching] 📊 FINAL RESULT: ${orders.length} matching orders');
+          dev.log(
+              '[Matching] 📊 FINAL RESULT: ${orders.length} matching orders');
           if (orders.isEmpty) {
             dev.log('[Matching] ⚠️ No orders to display to driver');
           } else {
@@ -179,7 +193,8 @@ class OrdersService {
                 o.pickup.lat,
                 o.pickup.lng,
               );
-              dev.log('[Matching]    ${i + 1}. ${o.id} - ${dist.toStringAsFixed(1)}km - ${o.price}MRU');
+              dev.log(
+                  '[Matching]    ${i + 1}. ${o.id} - ${dist.toStringAsFixed(1)}km - ${o.price}MRU');
             }
           }
           dev.log('[Matching] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -206,7 +221,9 @@ class OrdersService {
   Future<void> acceptOrder(String orderId) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw const AppError(type: AppErrorType.permissionDenied, message: 'Driver not authenticated');
+      throw const AppError(
+          type: AppErrorType.permissionDenied,
+          message: 'Driver not authenticated');
     }
 
     try {
@@ -215,13 +232,16 @@ class OrdersService {
         final orderDoc = await transaction.get(orderRef);
 
         if (!orderDoc.exists) {
-          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+          throw const AppError(
+              type: AppErrorType.notFound, message: 'Order not found');
         }
 
         final currentStatus =
             OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
         if (currentStatus != OrderStatus.assigning) {
-          throw const AppError(type: AppErrorType.permissionDenied, message: 'Order was already taken');
+          throw const AppError(
+              type: AppErrorType.permissionDenied,
+              message: 'Order was already taken');
         }
 
         final update = OrderStatus.accepted.createTransitionUpdate(
@@ -246,14 +266,17 @@ class OrdersService {
         final orderDoc = await transaction.get(orderRef);
 
         if (!orderDoc.exists) {
-          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+          throw const AppError(
+              type: AppErrorType.notFound, message: 'Order not found');
         }
 
         final currentStatus =
             OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
 
         if (!currentStatus.canTransitionTo(to)) {
-          throw const AppError(type: AppErrorType.permissionDenied, message: 'Invalid status transition');
+          throw const AppError(
+              type: AppErrorType.permissionDenied,
+              message: 'Invalid status transition');
         }
 
         final update = to.createTransitionUpdate();
@@ -273,7 +296,9 @@ class OrdersService {
   Future<void> cancelOrder(String orderId) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw const AppError(type: AppErrorType.permissionDenied, message: 'Driver not authenticated');
+      throw const AppError(
+          type: AppErrorType.permissionDenied,
+          message: 'Driver not authenticated');
     }
 
     try {
@@ -282,20 +307,26 @@ class OrdersService {
         final orderDoc = await transaction.get(orderRef);
 
         if (!orderDoc.exists) {
-          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+          throw const AppError(
+              type: AppErrorType.notFound, message: 'Order not found');
         }
 
         final data = orderDoc.data()!;
         final driverId = data['driverId'] as String?;
 
         if (driverId != user.uid) {
-          throw const AppError(type: AppErrorType.permissionDenied, message: 'Not authorized to cancel this order');
+          throw const AppError(
+              type: AppErrorType.permissionDenied,
+              message: 'Not authorized to cancel this order');
         }
 
-        final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
+        final currentStatus =
+            OrderStatus.fromFirestore(data['status'] as String);
 
         if (!currentStatus.canDriverCancel) {
-          throw const AppError(type: AppErrorType.permissionDenied, message: 'Cannot cancel order in current status');
+          throw const AppError(
+              type: AppErrorType.permissionDenied,
+              message: 'Cannot cancel order in current status');
         }
 
         transaction.update(
@@ -358,7 +389,8 @@ class OrdersService {
           if (kDebugMode) {
             if (orders.isNotEmpty) {
               final orderStatuses = orders
-                  .map((o) => '${o.id != null && o.id!.length > 6 ? o.id!.substring(o.id!.length - 6) : o.id ?? 'N/A'}:${o.status}')
+                  .map((o) =>
+                      '${o.id != null && o.id!.length > 6 ? o.id!.substring(o.id!.length - 6) : o.id ?? 'N/A'}:${o.status}')
                   .join(', ');
               dev.log(
                   '[Matching] Final active orders for driver $driverId: [$orderStatuses]');

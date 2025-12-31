@@ -30,23 +30,23 @@ final districtPolygonsProvider = Provider<Set<Polygon>>((ref) {
   }).toSet();
 });
 
-final districtMarkersProvider =
-    FutureProvider.family.autoDispose<Set<Marker>, String>((ref, languageCode) async {
+final districtMarkersProvider = FutureProvider.family
+    .autoDispose<Set<Marker>, String>((ref, languageCode) async {
   final zoom = ref.watch(currentZoomProvider);
   if (zoom < 11 || zoom > 16) return {};
-  
+
   // Cache key combines zoom level and language
   final cacheKey = '${zoom}_$languageCode';
-  
+
   // Return cached markers if available
   if (_markerCache.containsKey(cacheKey)) {
     return _markerCache[cacheKey]!;
   }
-  
+
   // Generate new markers if not cached
   final districts = ref.watch(districtAreasProvider);
   final markers = <Marker>{};
-  
+
   for (final district in districts) {
     final icon = await _createTextMarker(district.getName(languageCode));
     markers.add(
@@ -59,15 +59,15 @@ final districtMarkersProvider =
       ),
     );
   }
-  
+
   // Store in cache
   _markerCache[cacheKey] = markers;
-  
+
   // Clear cache when districts update
   ref.listen(districtAreasProvider, (previous, next) {
     _markerCache.clear();
   });
-  
+
   return markers;
 });
 

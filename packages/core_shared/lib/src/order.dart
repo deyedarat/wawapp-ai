@@ -8,26 +8,26 @@ class Order {
   final String? ownerId;
   final double distanceKm;
   final double price;
-  
+
   // Address fields (from Client app)
   final String pickupAddress;
   final String dropoffAddress;
-  
+
   // Location coordinates
   final LocationPoint pickup;
   final LocationPoint dropoff;
-  
+
   final String? status;
   final String? driverId;
-  
+
   // Driver-specific field: separate assigned driver tracking
   final String? assignedDriverId;
-  
+
   // Timestamps
   final DateTime? createdAt;
   final DateTime? updatedAt; // from Driver app
   final DateTime? completedAt;
-  
+
   // Rating fields
   final int? driverRating;
   final DateTime? ratedAt; // from Client app
@@ -65,8 +65,12 @@ class Order {
       ownerId: data['ownerId'] as String?,
       distanceKm: (data['distanceKm'] as num).toDouble(),
       price: (data['price'] as num).toDouble(),
-      pickupAddress: data['pickupAddress'] as String? ?? pickupData['label'] as String? ?? '',
-      dropoffAddress: data['dropoffAddress'] as String? ?? dropoffData['label'] as String? ?? '',
+      pickupAddress: data['pickupAddress'] as String? ??
+          pickupData['label'] as String? ??
+          '',
+      dropoffAddress: data['dropoffAddress'] as String? ??
+          dropoffData['label'] as String? ??
+          '',
       pickup: LocationPoint.fromMap(pickupData),
       dropoff: LocationPoint.fromMap(dropoffData),
       status: data['status'] as String?,
@@ -91,8 +95,12 @@ class Order {
       ownerId: data['ownerId'] as String?,
       distanceKm: (data['distanceKm'] as num).toDouble(),
       price: (data['price'] as num).toDouble(),
-      pickupAddress: data['pickupAddress'] as String? ?? pickupData['label'] as String? ?? '',
-      dropoffAddress: data['dropoffAddress'] as String? ?? dropoffData['label'] as String? ?? '',
+      pickupAddress: data['pickupAddress'] as String? ??
+          pickupData['label'] as String? ??
+          '',
+      dropoffAddress: data['dropoffAddress'] as String? ??
+          dropoffData['label'] as String? ??
+          '',
       pickup: LocationPoint.fromMap(pickupData),
       dropoff: LocationPoint.fromMap(dropoffData),
       status: data['status'] as String?,
@@ -120,7 +128,8 @@ class Order {
         'assignedDriverId': assignedDriverId,
         'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
         'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
-        'completedAt': completedAt != null ? Timestamp.fromDate(completedAt!) : null,
+        'completedAt':
+            completedAt != null ? Timestamp.fromDate(completedAt!) : null,
         'driverRating': driverRating,
         'ratedAt': ratedAt != null ? Timestamp.fromDate(ratedAt!) : null,
       };

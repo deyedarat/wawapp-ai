@@ -15,7 +15,8 @@ final bankAppsProvider = FutureProvider<List<BankAppConfig>>((ref) async {
 });
 
 /// Provider for top-up requests stream
-final topupRequestsStreamProvider = StreamProvider.autoDispose<List<TopupRequestModel>>((ref) {
+final topupRequestsStreamProvider =
+    StreamProvider.autoDispose<List<TopupRequestModel>>((ref) {
   final service = ref.watch(topupServiceProvider);
   final user = FirebaseAuth.instance.currentUser;
 

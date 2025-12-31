@@ -112,10 +112,12 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error, size: 64, color: DriverAppColors.errorLight),
+                    const Icon(Icons.error,
+                        size: 64, color: DriverAppColors.errorLight),
                     SizedBox(height: DriverAppSpacing.md),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: DriverAppSpacing.lg),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: DriverAppSpacing.lg),
                       child: Text(
                         'خطأ في الموقع: $_error',
                         textAlign: TextAlign.center,
@@ -141,7 +143,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   Widget _buildOrdersList() {
     if (kDebugMode) {
       dev.log('[Matching] NearbyScreen: Subscribing to nearby orders stream');
-      dev.log('[Matching] NearbyScreen: Current position: lat=${_currentPosition!.latitude.toStringAsFixed(6)}, lng=${_currentPosition!.longitude.toStringAsFixed(6)}');
+      dev.log(
+          '[Matching] NearbyScreen: Current position: lat=${_currentPosition!.latitude.toStringAsFixed(6)}, lng=${_currentPosition!.longitude.toStringAsFixed(6)}');
     }
 
     final ordersAsync = ref.watch(nearbyOrdersProvider(_currentPosition!));
@@ -166,17 +169,24 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       },
       data: (orders) {
         if (kDebugMode) {
-          dev.log('[Matching] NearbyScreen: ✅ Stream returned ${orders.length} orders');
+          dev.log(
+              '[Matching] NearbyScreen: ✅ Stream returned ${orders.length} orders');
           if (orders.isEmpty) {
-            dev.log('[Matching] NearbyScreen: ℹ️ Possible reasons for empty list:');
-            dev.log('[Matching] NearbyScreen:   1. Driver is OFFLINE - check driver status');
-            dev.log('[Matching] NearbyScreen:   2. No orders in Firestore with status="matching" and assignedDriverId=null');
-            dev.log('[Matching] NearbyScreen:   3. All orders are >8km away from driver');
-            dev.log('[Matching] NearbyScreen:   4. Firestore composite index not created');
+            dev.log(
+                '[Matching] NearbyScreen: ℹ️ Possible reasons for empty list:');
+            dev.log(
+                '[Matching] NearbyScreen:   1. Driver is OFFLINE - check driver status');
+            dev.log(
+                '[Matching] NearbyScreen:   2. No orders in Firestore with status="matching" and assignedDriverId=null');
+            dev.log(
+                '[Matching] NearbyScreen:   3. All orders are >8km away from driver');
+            dev.log(
+                '[Matching] NearbyScreen:   4. Firestore composite index not created');
           } else {
             for (var i = 0; i < orders.length; i++) {
               final order = orders[i];
-              dev.log('[Matching] NearbyScreen: Order #${i + 1}: id=${order.id}, price=${order.price}MRU, pickup=${order.pickup.label}');
+              dev.log(
+                  '[Matching] NearbyScreen: Order #${i + 1}: id=${order.id}, price=${order.price}MRU, pickup=${order.pickup.label}');
             }
           }
         }
@@ -210,7 +220,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                           Container(
                             padding: EdgeInsets.all(DriverAppSpacing.sm),
                             decoration: BoxDecoration(
-                              color: DriverAppColors.primaryLight.withOpacity(0.1),
+                              color:
+                                  DriverAppColors.primaryLight.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -225,15 +236,21 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                             children: [
                               Text(
                                 'طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
                               Text(
                                 'المسافة: ${distance.toStringAsFixed(1)} كم',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: DriverAppColors.textSecondaryLight,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: DriverAppColors.textSecondaryLight,
+                                    ),
                               ),
                             ],
                           ),
@@ -246,7 +263,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: DriverAppColors.successLight.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(DriverAppSpacing.radiusFull),
+                          borderRadius: BorderRadius.circular(
+                              DriverAppSpacing.radiusFull),
                         ),
                         child: Text(
                           '${order.price} MRU',
@@ -301,7 +319,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                   DriverActionButton(
                     label: 'قبول الطلب',
                     icon: Icons.check_circle,
-                    onPressed: order.id != null ? () => _acceptOrder(order.id!) : null,
+                    onPressed:
+                        order.id != null ? () => _acceptOrder(order.id!) : null,
                     isFullWidth: true,
                   ),
                 ],

@@ -37,7 +37,8 @@ class DriverProfileScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.person_outline, size: 64, color: Colors.grey),
+                  const Icon(Icons.person_outline,
+                      size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
                   const Text('لم يتم إعداد الملف الشخصي بعد'),
                   const SizedBox(height: 16),
@@ -59,20 +60,35 @@ class DriverProfileScreen extends ConsumerWidget {
                 _buildInfoSection('المعلومات الشخصية', [
                   _buildInfoTile('الاسم', profile.name, Icons.person),
                   _buildInfoTile('الهاتف', profile.phone, Icons.phone),
-                  _buildInfoTile('المدينة', profile.city ?? 'غير محدد', Icons.location_city),
-                  _buildInfoTile('المنطقة', profile.region ?? 'غير محدد', Icons.location_on),
+                  _buildInfoTile('المدينة', profile.city ?? 'غير محدد',
+                      Icons.location_city),
+                  _buildInfoTile('المنطقة', profile.region ?? 'غير محدد',
+                      Icons.location_on),
                 ]),
                 const SizedBox(height: 16),
                 _buildInfoSection('معلومات السيارة', [
-                  _buildInfoTile('نوع السيارة', profile.vehicleType ?? 'غير محدد', Icons.directions_car),
-                  _buildInfoTile('رقم اللوحة', profile.vehiclePlate ?? 'غير محدد', Icons.confirmation_number),
-                  _buildInfoTile('اللون', profile.vehicleColor ?? 'غير محدد', Icons.palette),
+                  _buildInfoTile('نوع السيارة',
+                      profile.vehicleType ?? 'غير محدد', Icons.directions_car),
+                  _buildInfoTile(
+                      'رقم اللوحة',
+                      profile.vehiclePlate ?? 'غير محدد',
+                      Icons.confirmation_number),
+                  _buildInfoTile('اللون', profile.vehicleColor ?? 'غير محدد',
+                      Icons.palette),
                 ]),
                 const SizedBox(height: 16),
                 _buildInfoSection('الإحصائيات', [
-                  _buildInfoTile('التقييم', '${profile.rating.toStringAsFixed(1)} ⭐', Icons.star, readOnly: true),
-                  _buildInfoTile('عدد الرحلات', '${profile.totalTrips}', Icons.route, readOnly: true),
-                  _buildInfoTile('حالة التحقق', profile.isVerified ? 'تم التحقق ✓' : 'لم يتم التحقق', Icons.verified, readOnly: true),
+                  _buildInfoTile('التقييم',
+                      '${profile.rating.toStringAsFixed(1)} ⭐', Icons.star,
+                      readOnly: true),
+                  _buildInfoTile(
+                      'عدد الرحلات', '${profile.totalTrips}', Icons.route,
+                      readOnly: true),
+                  _buildInfoTile(
+                      'حالة التحقق',
+                      profile.isVerified ? 'تم التحقق ✓' : 'لم يتم التحقق',
+                      Icons.verified,
+                      readOnly: true),
                 ]),
                 const SizedBox(height: 16),
                 _buildSecuritySection(context, ref),
@@ -194,7 +210,8 @@ class DriverProfileScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showLogoutConfirmation(BuildContext context, WidgetRef ref) async {
+  Future<void> _showLogoutConfirmation(
+      BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -245,8 +262,14 @@ class DriverProfileScreen extends ConsumerWidget {
           children: [
             CircleAvatar(
               radius: 40,
-              backgroundImage: profile.photoUrl != null ? NetworkImage(profile.photoUrl!) : null,
-              child: profile.photoUrl == null ? Text(profile.name.isNotEmpty ? profile.name[0].toUpperCase() : 'S') : null,
+              backgroundImage: profile.photoUrl != null
+                  ? NetworkImage(profile.photoUrl!)
+                  : null,
+              child: profile.photoUrl == null
+                  ? Text(profile.name.isNotEmpty
+                      ? profile.name[0].toUpperCase()
+                      : 'S')
+                  : null,
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -255,7 +278,8 @@ class DriverProfileScreen extends ConsumerWidget {
                 children: [
                   Text(
                     profile.name,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -264,7 +288,8 @@ class DriverProfileScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: profile.isVerified ? Colors.green : Colors.orange,
                       borderRadius: BorderRadius.circular(12),
@@ -302,7 +327,8 @@ class DriverProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoTile(String label, String value, IconData icon, {bool readOnly = false}) {
+  Widget _buildInfoTile(String label, String value, IconData icon,
+      {bool readOnly = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(

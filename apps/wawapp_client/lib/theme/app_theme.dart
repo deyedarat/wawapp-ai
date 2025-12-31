@@ -1,5 +1,5 @@
 /// WawApp Theme System
-/// 
+///
 /// Provides complete theme configuration for light and dark modes.
 /// Includes all component themes, typography, and custom extensions.
 library;
@@ -16,14 +16,14 @@ class WawAppTheme {
   // ============================================================================
   // LIGHT THEME
   // ============================================================================
-  
+
   static ThemeData light() {
     const primary = WawAppColors.primary;
     const secondary = WawAppColors.secondary;
     const background = WawAppColors.backgroundLight;
     const surface = WawAppColors.surfaceLight;
     const error = WawAppColors.error;
-    
+
     final colorScheme = ColorScheme.light(
       primary: primary,
       secondary: secondary,
@@ -46,11 +46,11 @@ class WawAppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: background,
-      
+
       // Typography
       textTheme: WawAppTypography.lightTextTheme,
       primaryTextTheme: WawAppTypography.lightTextTheme,
-      
+
       // AppBar Theme
       appBarTheme: AppBarTheme(
         elevation: 0,
@@ -66,7 +66,7 @@ class WawAppTheme {
         iconTheme: const IconThemeData(color: Colors.white, size: 24),
         actionsIconTheme: const IconThemeData(color: Colors.white, size: 24),
       ),
-      
+
       // Card Theme
       cardTheme: CardThemeData(
         elevation: WawAppElevation.medium,
@@ -77,7 +77,7 @@ class WawAppTheme {
         ),
         margin: EdgeInsets.zero,
       ),
-      
+
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -100,7 +100,7 @@ class WawAppTheme {
           ),
         ),
       ),
-      
+
       // Text Button Theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
@@ -115,7 +115,7 @@ class WawAppTheme {
           textStyle: WawAppTypography.lightTextTheme.labelLarge,
         ),
       ),
-      
+
       // Outlined Button Theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
@@ -135,7 +135,7 @@ class WawAppTheme {
           ),
         ),
       ),
-      
+
       // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -173,7 +173,8 @@ class WawAppTheme {
         labelStyle: WawAppTypography.lightTextTheme.bodyMedium?.copyWith(
           color: WawAppColors.textSecondaryLight,
         ),
-        floatingLabelStyle: WawAppTypography.lightTextTheme.bodyMedium?.copyWith(
+        floatingLabelStyle:
+            WawAppTypography.lightTextTheme.bodyMedium?.copyWith(
           color: primary,
         ),
         hintStyle: WawAppTypography.lightTextTheme.bodySmall?.copyWith(
@@ -185,7 +186,7 @@ class WawAppTheme {
         prefixIconColor: WawAppColors.textSecondaryLight,
         suffixIconColor: WawAppColors.textSecondaryLight,
       ),
-      
+
       // Icon Theme
       iconTheme: const IconThemeData(
         color: WawAppColors.textPrimaryLight,
@@ -195,14 +196,14 @@ class WawAppTheme {
         color: primary,
         size: 24,
       ),
-      
+
       // Divider Theme
       dividerTheme: const DividerThemeData(
         color: WawAppColors.dividerLight,
         thickness: 1,
         space: 1,
       ),
-      
+
       // Chip Theme
       chipTheme: ChipThemeData(
         backgroundColor: WawAppColors.inputFillLight,
@@ -220,7 +221,7 @@ class WawAppTheme {
           borderRadius: BorderRadius.circular(WawAppSpacing.radiusLg),
         ),
       ),
-      
+
       // Dialog Theme
       dialogTheme: DialogThemeData(
         backgroundColor: surface,
@@ -232,7 +233,7 @@ class WawAppTheme {
         titleTextStyle: WawAppTypography.lightTextTheme.titleLarge,
         contentTextStyle: WawAppTypography.lightTextTheme.bodyMedium,
       ),
-      
+
       // Bottom Sheet Theme
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: surface,
@@ -245,7 +246,7 @@ class WawAppTheme {
         ),
         clipBehavior: Clip.antiAlias,
       ),
-      
+
       // Snackbar Theme
       snackBarTheme: SnackBarThemeData(
         backgroundColor: WawAppColors.textPrimaryLight,
@@ -258,14 +259,14 @@ class WawAppTheme {
         behavior: SnackBarBehavior.floating,
         elevation: WawAppElevation.high,
       ),
-      
+
       // Progress Indicator Theme
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: primary,
         linearTrackColor: WawAppColors.dividerLight,
         circularTrackColor: WawAppColors.dividerLight,
       ),
-      
+
       // Switch Theme
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
@@ -279,7 +280,7 @@ class WawAppTheme {
           return WawAppColors.dividerLight;
         }),
       ),
-      
+
       // Checkbox Theme
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
@@ -292,7 +293,7 @@ class WawAppTheme {
           borderRadius: BorderRadius.circular(WawAppSpacing.radiusXs),
         ),
       ),
-      
+
       // Radio Theme
       radioTheme: RadioThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
@@ -300,7 +301,7 @@ class WawAppTheme {
           return WawAppColors.textSecondaryLight;
         }),
       ),
-      
+
       // Slider Theme
       sliderTheme: SliderThemeData(
         activeTrackColor: primary,
@@ -308,11 +309,12 @@ class WawAppTheme {
         thumbColor: primary,
         overlayColor: primary.withOpacity(0.2),
         valueIndicatorColor: primary,
-        valueIndicatorTextStyle: WawAppTypography.lightTextTheme.labelSmall?.copyWith(
+        valueIndicatorTextStyle:
+            WawAppTypography.lightTextTheme.labelSmall?.copyWith(
           color: Colors.white,
         ),
       ),
-      
+
       // FloatingActionButton Theme
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primary,
@@ -322,7 +324,7 @@ class WawAppTheme {
           borderRadius: BorderRadius.circular(WawAppSpacing.radiusLg),
         ),
       ),
-      
+
       // Navigation Bar Theme
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surface,
@@ -342,7 +344,7 @@ class WawAppTheme {
           );
         }),
       ),
-      
+
       // Extensions
       extensions: <ThemeExtension<dynamic>>[
         ShipmentTypeColors.light(),
@@ -354,14 +356,14 @@ class WawAppTheme {
   // ============================================================================
   // DARK THEME
   // ============================================================================
-  
+
   static ThemeData dark() {
     const primary = WawAppColors.primary;
     const secondary = WawAppColors.secondary;
     const background = WawAppColors.backgroundDark;
     const surface = WawAppColors.surfaceDark;
     const error = WawAppColors.error;
-    
+
     final colorScheme = ColorScheme.dark(
       primary: primary,
       secondary: secondary,
@@ -384,11 +386,11 @@ class WawAppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: background,
-      
+
       // Typography
       textTheme: WawAppTypography.darkTextTheme,
       primaryTextTheme: WawAppTypography.darkTextTheme,
-      
+
       // AppBar Theme
       appBarTheme: AppBarTheme(
         elevation: 0,
@@ -410,7 +412,7 @@ class WawAppTheme {
           size: 24,
         ),
       ),
-      
+
       // Card Theme
       cardTheme: CardThemeData(
         elevation: WawAppElevation.medium,
@@ -421,7 +423,7 @@ class WawAppTheme {
         ),
         margin: EdgeInsets.zero,
       ),
-      
+
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -444,7 +446,7 @@ class WawAppTheme {
           ),
         ),
       ),
-      
+
       // Text Button Theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
@@ -459,7 +461,7 @@ class WawAppTheme {
           textStyle: WawAppTypography.darkTextTheme.labelLarge,
         ),
       ),
-      
+
       // Outlined Button Theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
@@ -479,7 +481,7 @@ class WawAppTheme {
           ),
         ),
       ),
-      
+
       // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -529,7 +531,7 @@ class WawAppTheme {
         prefixIconColor: WawAppColors.textSecondaryDark,
         suffixIconColor: WawAppColors.textSecondaryDark,
       ),
-      
+
       // Icon Theme
       iconTheme: const IconThemeData(
         color: WawAppColors.textPrimaryDark,
@@ -539,14 +541,14 @@ class WawAppTheme {
         color: primary,
         size: 24,
       ),
-      
+
       // Divider Theme
       dividerTheme: const DividerThemeData(
         color: WawAppColors.dividerDark,
         thickness: 1,
         space: 1,
       ),
-      
+
       // Chip Theme
       chipTheme: ChipThemeData(
         backgroundColor: WawAppColors.inputFillDark,
@@ -564,7 +566,7 @@ class WawAppTheme {
           borderRadius: BorderRadius.circular(WawAppSpacing.radiusLg),
         ),
       ),
-      
+
       // Dialog Theme
       dialogTheme: DialogThemeData(
         backgroundColor: surface,
@@ -576,7 +578,7 @@ class WawAppTheme {
         titleTextStyle: WawAppTypography.darkTextTheme.titleLarge,
         contentTextStyle: WawAppTypography.darkTextTheme.bodyMedium,
       ),
-      
+
       // Bottom Sheet Theme
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: surface,
@@ -589,7 +591,7 @@ class WawAppTheme {
         ),
         clipBehavior: Clip.antiAlias,
       ),
-      
+
       // Snackbar Theme
       snackBarTheme: SnackBarThemeData(
         backgroundColor: WawAppColors.cardDark,
@@ -600,14 +602,14 @@ class WawAppTheme {
         behavior: SnackBarBehavior.floating,
         elevation: WawAppElevation.high,
       ),
-      
+
       // Progress Indicator Theme
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: primary,
         linearTrackColor: WawAppColors.dividerDark,
         circularTrackColor: WawAppColors.dividerDark,
       ),
-      
+
       // Switch Theme
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
@@ -621,7 +623,7 @@ class WawAppTheme {
           return WawAppColors.dividerDark;
         }),
       ),
-      
+
       // Checkbox Theme
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
@@ -634,7 +636,7 @@ class WawAppTheme {
           borderRadius: BorderRadius.circular(WawAppSpacing.radiusXs),
         ),
       ),
-      
+
       // Radio Theme
       radioTheme: RadioThemeData(
         fillColor: WidgetStateProperty.resolveWith((states) {
@@ -642,7 +644,7 @@ class WawAppTheme {
           return WawAppColors.textSecondaryDark;
         }),
       ),
-      
+
       // Slider Theme
       sliderTheme: SliderThemeData(
         activeTrackColor: primary,
@@ -650,11 +652,12 @@ class WawAppTheme {
         thumbColor: primary,
         overlayColor: primary.withOpacity(0.2),
         valueIndicatorColor: primary,
-        valueIndicatorTextStyle: WawAppTypography.darkTextTheme.labelSmall?.copyWith(
+        valueIndicatorTextStyle:
+            WawAppTypography.darkTextTheme.labelSmall?.copyWith(
           color: Colors.white,
         ),
       ),
-      
+
       // FloatingActionButton Theme
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primary,
@@ -664,7 +667,7 @@ class WawAppTheme {
           borderRadius: BorderRadius.circular(WawAppSpacing.radiusLg),
         ),
       ),
-      
+
       // Navigation Bar Theme
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surface,
@@ -684,7 +687,7 @@ class WawAppTheme {
           );
         }),
       ),
-      
+
       // Extensions
       extensions: <ThemeExtension<dynamic>>[
         ShipmentTypeColors.dark(),

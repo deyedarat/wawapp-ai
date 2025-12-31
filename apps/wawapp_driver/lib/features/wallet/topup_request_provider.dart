@@ -97,7 +97,8 @@ class TopupRequestNotifier extends StateNotifier<TopupRequestState> {
 
     try {
       // Call Cloud Function
-      final callable = FirebaseFunctions.instance.httpsCallable('createTopupRequest');
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('createTopupRequest');
       final result = await callable.call<Map<String, dynamic>>({
         'amount': amount,
       });
@@ -107,7 +108,8 @@ class TopupRequestNotifier extends StateNotifier<TopupRequestState> {
       if (data['success'] == true) {
         state = state.copyWith(
           isLoading: false,
-          successMessage: 'تم إرسال طلب الشحن بنجاح. سيتم مراجعته من قبل الإدارة.',
+          successMessage:
+              'تم إرسال طلب الشحن بنجاح. سيتم مراجعته من قبل الإدارة.',
         );
       } else {
         state = state.copyWith(

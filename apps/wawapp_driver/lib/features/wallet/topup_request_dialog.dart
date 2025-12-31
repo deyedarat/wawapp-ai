@@ -114,7 +114,8 @@ class _TopupRequestDialogState extends State<TopupRequestDialog> {
                 labelText: 'المبلغ (MRU)',
                 prefixIcon: const Icon(Icons.attach_money),
                 hintText: 'مثال: 5000',
-                helperText: 'الحد الأدنى: $kMinTopupAmount MRU\nالحد الأقصى: $kMaxTopupAmount MRU',
+                helperText:
+                    'الحد الأدنى: $kMinTopupAmount MRU\nالحد الأقصى: $kMaxTopupAmount MRU',
                 helperMaxLines: 2,
                 errorText: _errorText,
               ),

@@ -18,7 +18,8 @@ class TopupWizardScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             if (currentStep > 0) {
-              ref.read(topupWizardStepProvider.notifier).state = currentStep - 1;
+              ref.read(topupWizardStepProvider.notifier).state =
+                  currentStep - 1;
             } else {
               Navigator.of(context).pop();
             }
@@ -82,7 +83,8 @@ class Step1BankSelectionScreen extends ConsumerWidget {
                   itemCount: bankApps.length,
                   itemBuilder: (context, index) {
                     final bankApp = bankApps[index];
-                    final isSelected = ref.watch(selectedBankAppProvider)?.id == bankApp.id;
+                    final isSelected =
+                        ref.watch(selectedBankAppProvider)?.id == bankApp.id;
 
                     return Card(
                       elevation: isSelected ? 4 : 1,
@@ -98,14 +100,17 @@ class Step1BankSelectionScreen extends ConsumerWidget {
                         title: Text(
                           bankApp.name,
                           style: TextStyle(
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                         trailing: isSelected
                             ? const Icon(Icons.check_circle, color: Colors.blue)
                             : null,
                         onTap: () {
-                          ref.read(selectedBankAppProvider.notifier).state = bankApp;
+                          ref.read(selectedBankAppProvider.notifier).state =
+                              bankApp;
                           ref.read(topupWizardStepProvider.notifier).state = 1;
                         },
                       ),
@@ -118,7 +123,8 @@ class Step1BankSelectionScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const Icon(Icons.error_outline,
+                        size: 64, color: Colors.red),
                     const SizedBox(height: 16),
                     Text('خطأ في تحميل التطبيقات: $error'),
                   ],
@@ -181,7 +187,8 @@ class Step2DestinationCodeScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   OutlinedButton.icon(
                     onPressed: () {
-                      Clipboard.setData(ClipboardData(text: selectedBank.destinationCode));
+                      Clipboard.setData(
+                          ClipboardData(text: selectedBank.destinationCode));
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('تم نسخ الرمز')),
                       );
@@ -353,7 +360,8 @@ class _Step3AmountScreenState extends ConsumerState<Step3AmountScreen> {
                   ? const SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
                     )
                   : const Text('إرسال الطلب'),
             ),
@@ -380,7 +388,8 @@ class _Step3AmountScreenState extends ConsumerState<Step3AmountScreen> {
       }
 
       final amount = int.parse(_amountController.text);
-      final phone = _phoneController.text.isEmpty ? null : _phoneController.text;
+      final phone =
+          _phoneController.text.isEmpty ? null : _phoneController.text;
 
       await service.createTopupRequest(
         userId: user.uid,

@@ -31,7 +31,8 @@ class OrderTrackingView extends ConsumerStatefulWidget {
   ConsumerState<OrderTrackingView> createState() => _OrderTrackingViewState();
 }
 
-class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> with SafeCameraMixin {
+class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
+    with SafeCameraMixin {
   bool _isFollowingDriver = true;
   LatLng? _lastDriverPosition;
   bool _isCancelling = false;
@@ -253,16 +254,16 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> with Safe
 
   void _showRatingPrompt() {
     if (_hasShownRatingPrompt || widget.readOnly) return;
-    
+
     final order = widget.order;
-    if (order == null || 
-        order.orderStatus != OrderStatus.completed || 
+    if (order == null ||
+        order.orderStatus != OrderStatus.completed ||
         order.driverRating != null) {
       return;
     }
 
     _hasShownRatingPrompt = true;
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         showModalBottomSheet(

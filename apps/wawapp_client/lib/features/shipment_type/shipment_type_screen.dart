@@ -28,7 +28,8 @@ class ShipmentTypeScreen extends ConsumerWidget {
         appBar: AppBar(
           title: Text(l10n.choose_shipment_type),
           centerTitle: true,
-          automaticallyImplyLeading: false, // Remove back button since this is the entry screen
+          automaticallyImplyLeading:
+              false, // Remove back button since this is the entry screen
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -45,7 +46,8 @@ class ShipmentTypeScreen extends ConsumerWidget {
                         padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
+                          borderRadius:
+                              BorderRadius.circular(WawAppSpacing.radiusMd),
                         ),
                         child: Icon(
                           Icons.local_shipping,
@@ -78,7 +80,7 @@ class ShipmentTypeScreen extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(height: WawAppSpacing.lg),
-                
+
                 // Grid Title
                 Text(
                   l10n.select_cargo_type,
@@ -87,7 +89,7 @@ class ShipmentTypeScreen extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(height: WawAppSpacing.md),
-                
+
                 // Grid of shipment type cards
                 GridView.builder(
                   shrinkWrap: true,
@@ -105,8 +107,9 @@ class ShipmentTypeScreen extends ConsumerWidget {
                       type: type,
                       onTap: () {
                         // Save the selected type
-                        ref.read(selectedShipmentTypeProvider.notifier).state = type;
-                        
+                        ref.read(selectedShipmentTypeProvider.notifier).state =
+                            type;
+
                         // Navigate to home/map screen
                         context.go('/');
                       },

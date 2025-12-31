@@ -75,10 +75,10 @@ class ShipmentPricingMultipliers {
 }
 
 /// Helper method to apply shipment type multiplier to base price
-/// 
+///
 /// This should be called after calculating the base price from distance/time
 /// but before rounding to the nearest 5.
-/// 
+///
 /// Example usage:
 /// ```dart
 /// final baseBreakdown = Pricing.compute(km);

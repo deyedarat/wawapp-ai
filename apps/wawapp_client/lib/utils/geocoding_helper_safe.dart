@@ -6,8 +6,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GeocodingHelper {
   // API key from environment variables
-  static const String _apiKey = String.fromEnvironment('GOOGLE_MAPS_API_KEY',
-      defaultValue: '');
+  static const String _apiKey =
+      String.fromEnvironment('GOOGLE_MAPS_API_KEY', defaultValue: '');
 
   static Future<String> reverseGeocode(LatLng position) async {
     // FAIL-FAST: Check for missing API key

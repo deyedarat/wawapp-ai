@@ -97,14 +97,15 @@ class ClientProfileRepository {
         .doc(location.id)
         .set(location.toJson());
     debugPrint('[SavedLocations] Saved location added successfully');
-    
+
     // Log analytics event
     AnalyticsService.instance.logSavedLocationAdded(
       locationLabel: location.name,
     );
   }
 
-  Future<void> updateSavedLocation(String userId, SavedLocation location) async {
+  Future<void> updateSavedLocation(
+      String userId, SavedLocation location) async {
     debugPrint('[SavedLocations] Updating saved location for userId: $userId');
     await _firestore
         .collection('users')
@@ -124,7 +125,7 @@ class ClientProfileRepository {
         .doc(locationId)
         .delete();
     debugPrint('[SavedLocations] Saved location deleted successfully');
-    
+
     // Log analytics event
     AnalyticsService.instance.logSavedLocationDeleted(
       locationId: locationId,

@@ -126,6 +126,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       title: 'WawApp Driver',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       locale: const Locale('ar'),
       supportedLocales: const [
         Locale('ar'),

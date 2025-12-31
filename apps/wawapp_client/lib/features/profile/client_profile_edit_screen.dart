@@ -10,10 +10,12 @@ class ClientProfileEditScreen extends ConsumerStatefulWidget {
   const ClientProfileEditScreen({super.key});
 
   @override
-  ConsumerState<ClientProfileEditScreen> createState() => _ClientProfileEditScreenState();
+  ConsumerState<ClientProfileEditScreen> createState() =>
+      _ClientProfileEditScreenState();
 }
 
-class _ClientProfileEditScreenState extends ConsumerState<ClientProfileEditScreen> {
+class _ClientProfileEditScreenState
+    extends ConsumerState<ClientProfileEditScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -81,9 +83,13 @@ class _ClientProfileEditScreenState extends ConsumerState<ClientProfileEditScree
       );
 
       if (currentProfile == null) {
-        await ref.read(clientProfileNotifierProvider.notifier).createProfile(profile);
+        await ref
+            .read(clientProfileNotifierProvider.notifier)
+            .createProfile(profile);
       } else {
-        await ref.read(clientProfileNotifierProvider.notifier).updateProfile(profile);
+        await ref
+            .read(clientProfileNotifierProvider.notifier)
+            .updateProfile(profile);
       }
 
       if (mounted) {
@@ -174,8 +180,12 @@ class _ClientProfileEditScreenState extends ConsumerState<ClientProfileEditScree
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: (_isLoading || updateState.isLoading) ? null : _saveProfile,
-                  child: (_isLoading || updateState.isLoading) ? const CircularProgressIndicator() : const Text('حفظ'),
+                  onPressed: (_isLoading || updateState.isLoading)
+                      ? null
+                      : _saveProfile,
+                  child: (_isLoading || updateState.isLoading)
+                      ? const CircularProgressIndicator()
+                      : const Text('حفظ'),
                 ),
               ),
               if (updateState.error != null) ...[

@@ -15,7 +15,7 @@ class CrashlyticsObserver {
     };
 
     WawLog.setCrashlyticsInstance(FirebaseCrashlytics.instance);
-    
+
     if (kDebugMode) {
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
     }

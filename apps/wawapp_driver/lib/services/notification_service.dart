@@ -92,13 +92,18 @@ class NotificationService {
     final notification = message.notification;
     if (notification != null) {
       final payload = jsonEncode(message.data);
-      final notificationType = message.data['notificationType'] ?? message.data['type'];
-      
+      final notificationType =
+          message.data['notificationType'] ?? message.data['type'];
+
       // Determine channel based on notification type
-      final channelId = notificationType == 'new_order' ? 'new_orders' : 'order_updates';
-      final channelName = notificationType == 'new_order' ? 'طلبات جديدة' : 'تحديثات الطلبات';
-      final importance = notificationType == 'new_order' ? Importance.high : Importance.defaultImportance;
-      
+      final channelId =
+          notificationType == 'new_order' ? 'new_orders' : 'order_updates';
+      final channelName =
+          notificationType == 'new_order' ? 'طلبات جديدة' : 'تحديثات الطلبات';
+      final importance = notificationType == 'new_order'
+          ? Importance.high
+          : Importance.defaultImportance;
+
       _localNotifications.show(
         notification.hashCode,
         notification.title,
@@ -108,7 +113,9 @@ class NotificationService {
             channelId,
             channelName,
             importance: importance,
-            priority: notificationType == 'new_order' ? Priority.high : Priority.defaultPriority,
+            priority: notificationType == 'new_order'
+                ? Priority.high
+                : Priority.defaultPriority,
             sound: const RawResourceAndroidNotificationSound('notification'),
             enableVibration: true,
             playSound: true,

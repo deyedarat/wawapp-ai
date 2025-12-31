@@ -35,7 +35,10 @@ class DriverProfileRepository {
 
   Future<void> createProfile(DriverProfile profile) async {
     debugPrint('[DriverProfile] Creating profile for driverId: ${profile.id}');
-    await _firestore.collection('drivers').doc(profile.id).set(profile.toJson());
+    await _firestore
+        .collection('drivers')
+        .doc(profile.id)
+        .set(profile.toJson());
     debugPrint('[DriverProfile] Profile created successfully');
   }
 

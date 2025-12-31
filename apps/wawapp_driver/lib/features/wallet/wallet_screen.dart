@@ -67,7 +67,8 @@ class WalletScreen extends ConsumerWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(DriverAppSpacing.radiusLg),
+                  borderRadius:
+                      BorderRadius.circular(DriverAppSpacing.radiusLg),
                   boxShadow: [
                     BoxShadow(
                       color: DriverAppColors.primaryLight.withOpacity(0.3),
@@ -135,7 +136,8 @@ class WalletScreen extends ConsumerWidget {
                           Container(
                             padding: EdgeInsets.all(DriverAppSpacing.sm),
                             decoration: BoxDecoration(
-                              color: DriverAppColors.successLight.withOpacity(0.1),
+                              color:
+                                  DriverAppColors.successLight.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -223,11 +225,13 @@ class WalletScreen extends ConsumerWidget {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
                     : const Icon(Icons.add_card),
-                label: Text(topupState.isLoading ? 'جاري الإرسال...' : 'طلب شحن رصيد'),
+                label: Text(
+                    topupState.isLoading ? 'جاري الإرسال...' : 'طلب شحن رصيد'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: DriverAppColors.primaryLight,
                   foregroundColor: Colors.white,
@@ -236,7 +240,8 @@ class WalletScreen extends ConsumerWidget {
                     vertical: DriverAppSpacing.md,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(DriverAppSpacing.radiusMd),
+                    borderRadius:
+                        BorderRadius.circular(DriverAppSpacing.radiusMd),
                   ),
                 ),
               ),

@@ -37,7 +37,8 @@ class NotificationsScreen extends ConsumerWidget {
                 children: [
                   Icon(Icons.notifications_none, size: 64, color: Colors.grey),
                   SizedBox(height: 16),
-                  Text('لا توجد إشعارات', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  Text('لا توجد إشعارات',
+                      style: TextStyle(fontSize: 18, color: Colors.grey)),
                 ],
               ),
             );
@@ -115,12 +116,15 @@ class NotificationTile extends ConsumerWidget {
           : null,
       onTap: () async {
         if (isUnread) {
-          await ref.read(inAppNotificationServiceProvider).markAsRead(notification.id);
+          await ref
+              .read(inAppNotificationServiceProvider)
+              .markAsRead(notification.id);
         }
 
         if (!context.mounted) return;
 
-        if (notification.type == NotificationType.order && notification.data?['orderId'] != null) {
+        if (notification.type == NotificationType.order &&
+            notification.data?['orderId'] != null) {
           context.push('/order/${notification.data!['orderId']}');
         }
       },

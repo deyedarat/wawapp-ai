@@ -65,7 +65,7 @@ class DriverEarningsNotifier extends StateNotifier<DriverEarningsState> {
 
   void _loadEarnings(User? user) {
     _earningsSubscription?.cancel();
-    
+
     if (user == null) {
       state = const DriverEarningsState();
       return;
@@ -86,7 +86,8 @@ class DriverEarningsNotifier extends StateNotifier<DriverEarningsState> {
 
     state = state.copyWith(isLoading: true, error: null);
 
-    _earningsSubscription = _repository.watchCompletedOrdersForDriver(user.uid).listen(
+    _earningsSubscription =
+        _repository.watchCompletedOrdersForDriver(user.uid).listen(
       (orders) {
         final todayTotal = _repository.totalForToday(orders);
         final weekTotal = _repository.totalForCurrentWeek(orders);
@@ -122,8 +123,8 @@ final driverEarningsRepositoryProvider =
   return DriverEarningsRepository();
 });
 
-final driverEarningsProvider =
-    StateNotifierProvider.autoDispose<DriverEarningsNotifier, DriverEarningsState>((ref) {
+final driverEarningsProvider = StateNotifierProvider.autoDispose<
+    DriverEarningsNotifier, DriverEarningsState>((ref) {
   final repository = ref.watch(driverEarningsRepositoryProvider);
   return DriverEarningsNotifier(repository, ref);
 });

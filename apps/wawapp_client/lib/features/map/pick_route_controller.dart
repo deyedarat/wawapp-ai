@@ -80,12 +80,14 @@ class RoutePickerState {
 }
 
 class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
-  RoutePickerNotifier(this.apiKey) : super(const RoutePickerState(mapsEnabled: true));
+  RoutePickerNotifier(this.apiKey)
+      : super(const RoutePickerState(mapsEnabled: true));
 
   final String apiKey;
   static const String _tag = 'RoutePickerNotifier';
 
-  late final GooglePlace? _googlePlace = apiKey.isNotEmpty ? GooglePlace(apiKey) : null;
+  late final GooglePlace? _googlePlace =
+      apiKey.isNotEmpty ? GooglePlace(apiKey) : null;
   final Uuid _uuid = const Uuid();
 
   void toggleSelection() {
@@ -95,12 +97,15 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
   Future<void> setLocationFromTap(MapLatLng location) async {
     // Set loading state
     if (state.selectingPickup) {
-      state = state.copyWith(pickup: location, pickupAddress: 'جار تحديد العنوان...');
+      state = state.copyWith(
+          pickup: location, pickupAddress: 'جار تحديد العنوان...');
     } else {
-      state = state.copyWith(dropoff: location, dropoffAddress: 'جار تحديد العنوان...');
+      state = state.copyWith(
+          dropoff: location, dropoffAddress: 'جار تحديد العنوان...');
     }
 
-    final address = await LocationService.resolveAddressFromLatLng(location.latitude, location.longitude);
+    final address = await LocationService.resolveAddressFromLatLng(
+        location.latitude, location.longitude);
 
     if (state.selectingPickup) {
       state = state.copyWith(pickupAddress: address);
@@ -153,7 +158,8 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
 
   Future<DetailsResult?> getPlaceDetails(String placeId) async {
     if (!state.mapsEnabled || _googlePlace == null) {
-      dev.log('Cannot get place details: Maps disabled (no API key)', name: _tag);
+      dev.log('Cannot get place details: Maps disabled (no API key)',
+          name: _tag);
       return null;
     }
 
@@ -203,7 +209,8 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
     }
   }
 
-  Future<void> setLocationFromSavedLocation(SavedLocation savedLocation, bool isPickup) async {
+  Future<void> setLocationFromSavedLocation(
+      SavedLocation savedLocation, bool isPickup) async {
     final location = MapLatLng(savedLocation.latitude, savedLocation.longitude);
     final address = savedLocation.address;
 
@@ -216,7 +223,8 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
     _calculateDistance();
   }
 
-  void setLocationExplicitly(MapLatLng location, String address, bool isPickup) {
+  void setLocationExplicitly(
+      MapLatLng location, String address, bool isPickup) {
     if (isPickup) {
       state = state.copyWith(pickup: location, pickupAddress: address);
     } else {
@@ -230,6 +238,7 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
   }
 }
 
-final routePickerProvider = StateNotifierProvider<RoutePickerNotifier, RoutePickerState>((ref) {
+final routePickerProvider =
+    StateNotifierProvider<RoutePickerNotifier, RoutePickerState>((ref) {
   return RoutePickerNotifier(ref.watch(mapsApiKeyProvider));
 });

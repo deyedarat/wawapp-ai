@@ -8,18 +8,21 @@ import '../../../services/analytics_service.dart';
 import '../../auth/providers/auth_service_provider.dart';
 import '../data/client_profile_repository.dart';
 
-final clientProfileRepositoryProvider = Provider<ClientProfileRepository>((ref) {
+final clientProfileRepositoryProvider =
+    Provider<ClientProfileRepository>((ref) {
   return ClientProfileRepository(firestore: FirebaseFirestore.instance);
 });
 
-final clientProfileStreamProvider = StreamProvider.autoDispose<ClientProfile?>((ref) {
+final clientProfileStreamProvider =
+    StreamProvider.autoDispose<ClientProfile?>((ref) {
   final authState = ref.watch(authProvider);
 
   // CRITICAL: Use the new isStreamsSafeToRun flag to prevent permission errors
   // This flag is set to false BEFORE any auth transitions (OTP, PIN reset, logout)
   if (!authState.isStreamsSafeToRun || authState.user == null) {
     if (kDebugMode && !authState.isStreamsSafeToRun) {
-      print('[ClientProfile] Streams disabled by auth system - stopping Firestore stream');
+      print(
+          '[ClientProfile] Streams disabled by auth system - stopping Firestore stream');
     }
     return Stream.value(null);
   }
@@ -52,7 +55,8 @@ final clientProfileStreamProvider = StreamProvider.autoDispose<ClientProfile?>((
   });
 });
 
-final savedLocationsStreamProvider = StreamProvider.autoDispose<List<SavedLocation>>((ref) {
+final savedLocationsStreamProvider =
+    StreamProvider.autoDispose<List<SavedLocation>>((ref) {
   final authState = ref.watch(authProvider);
 
   // Use the same stream safety check
@@ -93,7 +97,8 @@ class ClientProfileUpdateState {
 class ClientProfileNotifier extends StateNotifier<ClientProfileUpdateState> {
   final ClientProfileRepository _repository;
 
-  ClientProfileNotifier(this._repository) : super(const ClientProfileUpdateState());
+  ClientProfileNotifier(this._repository)
+      : super(const ClientProfileUpdateState());
 
   Future<void> updateProfile(ClientProfile profile) async {
     state = state.copyWith(isLoading: true, error: null);
@@ -126,7 +131,9 @@ class ClientProfileNotifier extends StateNotifier<ClientProfileUpdateState> {
   }
 }
 
-final clientProfileNotifierProvider = StateNotifierProvider<ClientProfileNotifier, ClientProfileUpdateState>((ref) {
+final clientProfileNotifierProvider =
+    StateNotifierProvider<ClientProfileNotifier, ClientProfileUpdateState>(
+        (ref) {
   final repository = ref.watch(clientProfileRepositoryProvider);
   return ClientProfileNotifier(repository);
 });
@@ -134,7 +141,8 @@ final clientProfileNotifierProvider = StateNotifierProvider<ClientProfileNotifie
 class SavedLocationsNotifier extends StateNotifier<ClientProfileUpdateState> {
   final ClientProfileRepository _repository;
 
-  SavedLocationsNotifier(this._repository) : super(const ClientProfileUpdateState());
+  SavedLocationsNotifier(this._repository)
+      : super(const ClientProfileUpdateState());
 
   Future<void> addLocation(String userId, SavedLocation location) async {
     state = state.copyWith(isLoading: true, error: null);
@@ -167,7 +175,9 @@ class SavedLocationsNotifier extends StateNotifier<ClientProfileUpdateState> {
   }
 }
 
-final savedLocationsNotifierProvider = StateNotifierProvider<SavedLocationsNotifier, ClientProfileUpdateState>((ref) {
+final savedLocationsNotifierProvider =
+    StateNotifierProvider<SavedLocationsNotifier, ClientProfileUpdateState>(
+        (ref) {
   final repository = ref.watch(clientProfileRepositoryProvider);
   return SavedLocationsNotifier(repository);
 });

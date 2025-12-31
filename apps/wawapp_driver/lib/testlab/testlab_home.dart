@@ -55,33 +55,43 @@ class _TestLabActionsList extends StatelessWidget {
 
   IconData _getIcon(String iconName) {
     switch (iconName) {
-      case 'map': return Icons.map;
-      case 'person': return Icons.person;
-      case 'wallet': return Icons.account_balance_wallet;
-      case 'money': return Icons.monetization_on;
-      case 'history': return Icons.history;
-      case 'delivery': return Icons.delivery_dining;
-      default: return Icons.touch_app;
+      case 'map':
+        return Icons.map;
+      case 'person':
+        return Icons.person;
+      case 'wallet':
+        return Icons.account_balance_wallet;
+      case 'money':
+        return Icons.monetization_on;
+      case 'history':
+        return Icons.history;
+      case 'delivery':
+        return Icons.delivery_dining;
+      default:
+        return Icons.touch_app;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: _routes.map((route) => ListTile(
-        leading: Icon(_getIcon(route['icon']!)),
-        title: Text(route['title']!),
-        subtitle: Text('Navigate to ${route['path']}'),
-        onTap: () {
-          try {
-            context.go(route['path']!);
-          } on Exception {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Navigation failed: ${route['path']}')),
-            );
-          }
-        },
-      )).toList(),
+      children: _routes
+          .map((route) => ListTile(
+                leading: Icon(_getIcon(route['icon']!)),
+                title: Text(route['title']!),
+                subtitle: Text('Navigate to ${route['path']}'),
+                onTap: () {
+                  try {
+                    context.go(route['path']!);
+                  } on Exception {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text('Navigation failed: ${route['path']}')),
+                    );
+                  }
+                },
+              ))
+          .toList(),
     );
   }
 }

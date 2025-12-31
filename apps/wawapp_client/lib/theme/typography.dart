@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'colors.dart';
 
 /// WawApp Typography System
-/// 
+///
 /// Uses system fonts optimized for Arabic and French:
 /// - Arabic: System default (typically includes Arabic support)
 /// - French: System default (Latin script)
-/// 
+///
 /// If Google Fonts are added later, use Cairo or Noto Sans Arabic
 class WawAppTypography {
   WawAppTypography._();
@@ -254,7 +254,7 @@ class WawAppTypography {
 /// Typography extension for BuildContext
 extension TypographyExtension on BuildContext {
   TextTheme get textTheme => Theme.of(this).textTheme;
-  
+
   // Quick access to common text styles
   TextStyle? get displayLarge => textTheme.displayLarge;
   TextStyle? get displayMedium => textTheme.displayMedium;

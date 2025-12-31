@@ -16,7 +16,8 @@ import 'phone_pin_login_screen.dart';
 import 'providers/auth_service_provider.dart';
 
 // StreamProvider for driver profile
-final driverProfileProvider = StreamProvider.autoDispose<DocumentSnapshot<Map<String, dynamic>>?>((ref) {
+final driverProfileProvider =
+    StreamProvider.autoDispose<DocumentSnapshot<Map<String, dynamic>>?>((ref) {
   // Return mock profile for Test Lab mode
   if (TestLabFlags.safeEnabled) {
     return Stream.value(TestLabMockData.mockDriverDoc);
@@ -33,9 +34,14 @@ final driverProfileProvider = StreamProvider.autoDispose<DocumentSnapshot<Map<St
   // Defensive: Capture UID in local variable to prevent race condition
   final uid = authState.user!.uid;
 
-  return FirebaseFirestore.instance.collection('drivers').doc(uid).snapshots().handleError((error) {
+  return FirebaseFirestore.instance
+      .collection('drivers')
+      .doc(uid)
+      .snapshots()
+      .handleError((error) {
     // Gracefully handle permission errors that may occur during race conditions
-    debugPrint('[DriverProfileProvider] Stream error (likely during transition): $error');
+    debugPrint(
+        '[DriverProfileProvider] Stream error (likely during transition): $error');
     return null;
   });
 });
@@ -51,7 +57,8 @@ class AuthGate extends ConsumerStatefulWidget {
 class _AuthGateState extends ConsumerState<AuthGate> {
   String? _lastInitializedUserId;
 
-  void _initializeServicesOnce(String userId, BuildContext context, Map<String, dynamic>? data) {
+  void _initializeServicesOnce(
+      String userId, BuildContext context, Map<String, dynamic>? data) {
     if (_lastInitializedUserId == userId) {
       return; // Already initialized for this user
     }
@@ -83,7 +90,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 
     // Show loading while checking auth state OR checking PIN
     if (authState.isLoading || authState.isPinCheckLoading) {
-      debugPrint('[AuthGate] REDIRECT_REASON=AUTH_LOADING → CircularProgressIndicator');
+      debugPrint(
+          '[AuthGate] REDIRECT_REASON=AUTH_LOADING → CircularProgressIndicator');
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -107,7 +115,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 
     return driverProfileAsync.when(
       loading: () {
-        debugPrint('[AuthGate] REDIRECT_REASON=PROFILE_LOADING → CircularProgressIndicator');
+        debugPrint(
+            '[AuthGate] REDIRECT_REASON=PROFILE_LOADING → CircularProgressIndicator');
         return const Scaffold(
           body: Center(child: CircularProgressIndicator()),
         );
@@ -117,7 +126,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 
         // If permission-denied, show create PIN screen instead of logging out
         if (error.toString().contains('permission-denied')) {
-          debugPrint('[AuthGate] REDIRECT_REASON=PERMISSION_DENIED → CreatePinScreen');
+          debugPrint(
+              '[AuthGate] REDIRECT_REASON=PERMISSION_DENIED → CreatePinScreen');
           return const CreatePinScreen();
         }
 
@@ -127,7 +137,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error, size: 64, color: DriverAppColors.errorLight),
+                const Icon(Icons.error,
+                    size: 64, color: DriverAppColors.errorLight),
                 const SizedBox(height: 16),
                 Text(
                   'Unable to access driver profile',
@@ -150,24 +161,28 @@ class _AuthGateState extends ConsumerState<AuthGate> {
         // CRITICAL: Check PIN reset flow FIRST before checking Firestore
         // During PIN reset, user must go to CreatePinScreen even if they have existing PIN
         if (authState.isPinResetFlow) {
-          debugPrint('[AuthGate] REDIRECT_REASON=PIN_RESET_FLOW → CreatePinScreen (isPinResetFlow=true)');
+          debugPrint(
+              '[AuthGate] REDIRECT_REASON=PIN_RESET_FLOW → CreatePinScreen (isPinResetFlow=true)');
           return const CreatePinScreen();
         }
 
         // If driver document doesn't exist, show CreatePinScreen
         // The document will be created when user sets PIN (via PhonePinAuth.setPin)
         if (doc == null || !doc.exists) {
-          debugPrint('[AuthGate] REDIRECT_REASON=NO_DRIVER_DOC → CreatePinScreen');
+          debugPrint(
+              '[AuthGate] REDIRECT_REASON=NO_DRIVER_DOC → CreatePinScreen');
           return const CreatePinScreen();
         }
 
         final data = doc.data();
-        final hasPin = data?['pinHash'] != null && (data!['pinHash'] as String).isNotEmpty;
+        final hasPin =
+            data?['pinHash'] != null && (data!['pinHash'] as String).isNotEmpty;
 
         debugPrint('[AuthGate] driver hasPin: $hasPin');
 
         if (!hasPin) {
-          debugPrint('[AuthGate] REDIRECT_REASON=NO_PIN_HASH → CreatePinScreen');
+          debugPrint(
+              '[AuthGate] REDIRECT_REASON=NO_PIN_HASH → CreatePinScreen');
           return const CreatePinScreen();
         }
 
@@ -185,7 +200,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
           //   - User properties: total_trips, average_rating, is_verified
         }
 
-        debugPrint('[AuthGate] REDIRECT_REASON=AUTHENTICATED_WITH_PIN → DriverHomeScreen');
+        debugPrint(
+            '[AuthGate] REDIRECT_REASON=AUTHENTICATED_WITH_PIN → DriverHomeScreen');
         return const DriverHomeScreen();
       },
     );

@@ -58,7 +58,8 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
       );
 
       // Check if user arrived via notification
-      final notificationSource = FCMService.instance.getNotificationSource(widget.orderId);
+      final notificationSource =
+          FCMService.instance.getNotificationSource(widget.orderId);
       if (notificationSource == 'trip_completed') {
         // Track conversion: notification → rating
         AnalyticsService.instance.logDriverRatedFromNotification(
@@ -119,7 +120,8 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
               final appError = AppError.from(error);
               return ErrorScreen(
                 message: appError.toUserMessage(),
-                onRetry: () => ref.refresh(orderTrackingProvider(widget.orderId)),
+                onRetry: () =>
+                    ref.refresh(orderTrackingProvider(widget.orderId)),
               );
             },
             data: (snapshot) {
@@ -131,7 +133,8 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
                 );
               }
 
-              final order = Order.fromFirestore({...data, 'id': widget.orderId});
+              final order =
+                  Order.fromFirestore({...data, 'id': widget.orderId});
               final completedAt = data['completedAt'] as Timestamp?;
               final dateStr = completedAt != null
                   ? DateFormat('yyyy-MM-dd HH:mm').format(completedAt.toDate())
@@ -149,7 +152,7 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
                       color: context.successColor,
                     ),
                     SizedBox(height: WawAppSpacing.lg),
-                    
+
                     // Success Message
                     Text(
                       l10n.trip_completed_success,
@@ -159,7 +162,7 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: WawAppSpacing.xl),
-                    
+
                     // Trip Details Card
                     WawCard(
                       elevation: WawAppElevation.medium,
@@ -173,14 +176,18 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
                             ),
                           ),
                           SizedBox(height: WawAppSpacing.md),
-                          
-                          _buildDetailRow(context, l10n, Icons.location_on_outlined, l10n.from, order.pickupAddress),
+                          _buildDetailRow(
+                              context,
+                              l10n,
+                              Icons.location_on_outlined,
+                              l10n.from,
+                              order.pickupAddress),
                           SizedBox(height: WawAppSpacing.sm),
-                          _buildDetailRow(context, l10n, Icons.place_outlined, l10n.to, order.dropoffAddress),
+                          _buildDetailRow(context, l10n, Icons.place_outlined,
+                              l10n.to, order.dropoffAddress),
                           SizedBox(height: WawAppSpacing.sm),
                           Divider(color: context.wawAppTheme.dividerColor),
                           SizedBox(height: WawAppSpacing.sm),
-                          
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -189,7 +196,8 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
                                 l10n,
                                 icon: Icons.straighten,
                                 label: l10n.distance,
-                                value: '${order.distanceKm.toStringAsFixed(1)} ${l10n.km}',
+                                value:
+                                    '${order.distanceKm.toStringAsFixed(1)} ${l10n.km}',
                               ),
                               Container(
                                 width: 1,
@@ -201,23 +209,24 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
                                 l10n,
                                 icon: Icons.payments_outlined,
                                 label: l10n.total_cost,
-                                value: '${order.price.round()} ${l10n.currency}',
+                                value:
+                                    '${order.price.round()} ${l10n.currency}',
                               ),
                             ],
                           ),
-                          
                           if (dateStr.isNotEmpty) ...[
                             SizedBox(height: WawAppSpacing.sm),
                             Divider(color: context.wawAppTheme.dividerColor),
                             SizedBox(height: WawAppSpacing.sm),
-                            _buildDetailRow(context, l10n, Icons.access_time, l10n.completed_at, dateStr),
+                            _buildDetailRow(context, l10n, Icons.access_time,
+                                l10n.completed_at, dateStr),
                           ],
                         ],
                       ),
                     ),
-                    
+
                     SizedBox(height: WawAppSpacing.xl),
-                    
+
                     // Rating Section
                     WawCard(
                       elevation: WawAppElevation.low,
@@ -239,7 +248,7 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
                             textAlign: TextAlign.center,
                           ),
                           SizedBox(height: WawAppSpacing.lg),
-                          
+
                           // Star Rating
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -248,7 +257,8 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
                               return IconButton(
                                 onPressed: _isSubmitting
                                     ? null
-                                    : () => setState(() => _selectedRating = rating),
+                                    : () => setState(
+                                        () => _selectedRating = rating),
                                 icon: Icon(
                                   rating <= (_selectedRating ?? 0)
                                       ? Icons.star
@@ -264,9 +274,9 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
                               );
                             }),
                           ),
-                          
+
                           SizedBox(height: WawAppSpacing.lg),
-                          
+
                           // Submit Button
                           WawActionButton(
                             label: l10n.submit_rating,
@@ -279,9 +289,9 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
                         ],
                       ),
                     ),
-                    
+
                     SizedBox(height: WawAppSpacing.md),
-                    
+
                     // Skip Button
                     WawSecondaryButton(
                       label: l10n.skip,
@@ -297,7 +307,8 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
     );
   }
 
-  Widget _buildDetailRow(BuildContext context, AppLocalizations l10n, IconData icon, String label, String value) {
+  Widget _buildDetailRow(BuildContext context, AppLocalizations l10n,
+      IconData icon, String label, String value) {
     final theme = Theme.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,7 +339,8 @@ class _TripCompletedScreenState extends ConsumerState<TripCompletedScreen> {
     );
   }
 
-  Widget _buildInfoColumn(BuildContext context, AppLocalizations l10n, {required IconData icon, required String label, required String value}) {
+  Widget _buildInfoColumn(BuildContext context, AppLocalizations l10n,
+      {required IconData icon, required String label, required String value}) {
     final theme = Theme.of(context);
     return Column(
       children: [
