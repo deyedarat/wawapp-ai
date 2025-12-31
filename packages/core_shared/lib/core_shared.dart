@@ -9,3 +9,4 @@ export 'src/fcm/fcm.dart';
 export 'src/order.dart';
 export 'src/order_status.dart';
 export 'src/saved_location.dart';
+export 'models/notification_model.dart';
