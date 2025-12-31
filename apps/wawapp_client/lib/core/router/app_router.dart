@@ -15,6 +15,7 @@ import '../../features/auth/phone_pin_login_screen.dart';
 import '../../features/auth/providers/auth_service_provider.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/profile/add_saved_location_screen.dart';
+import '../../features/profile/change_pin_screen.dart';
 import '../../features/profile/client_profile_edit_screen.dart';
 import '../../features/profile/client_profile_screen.dart';
 import '../../features/profile/saved_locations_screen.dart';
@@ -113,6 +114,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/profile/edit',
         name: 'profileEdit',
         builder: (context, state) => const ClientProfileEditScreen(),
+      ),
+      GoRoute(
+        path: '/profile/change-pin',
+        name: 'changePin',
+        builder: (context, state) => const ChangePinScreen(),
       ),
       GoRoute(
         path: '/profile/locations',
