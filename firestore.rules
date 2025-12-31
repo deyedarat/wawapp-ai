@@ -272,5 +272,35 @@ service cloud.firestore {
       // Users can delete their own notifications
       allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
+
+    // R2: Top-up requests collection (Driver app)
+    match /topup_requests/{requestId} {
+      // Admins can read all requests
+      allow read: if isAdmin();
+
+      // Drivers can read their own requests
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      // Drivers can create their own requests
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.amount is int
+        && request.resource.data.amount >= 1000
+        && request.resource.data.amount <= 100000;
+
+      // Only admins can approve/reject
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // R2: App configuration for bank apps
+    match /app_config/{configId} {
+      // Public read for bank app configurations
+      allow read: if true;
+
+      // Only admins can modify
+      allow write: if isAdmin();
+    }
   }
 }
