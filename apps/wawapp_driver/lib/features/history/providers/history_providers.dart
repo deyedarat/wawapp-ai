@@ -10,13 +10,12 @@ final driverHistoryRepositoryProvider =
   return DriverHistoryRepository();
 });
 
-final driverHistoryProvider =
-    StreamProvider.autoDispose<List<Order>>((ref) {
+final driverHistoryProvider = StreamProvider.autoDispose<List<Order>>((ref) {
   // Return mock history for Test Lab mode
   if (TestLabFlags.safeEnabled) {
     return Stream.value(TestLabMockData.mockCompletedOrders);
   }
-  
+
   final repository = ref.watch(driverHistoryRepositoryProvider);
   final authState = ref.watch(authProvider);
 

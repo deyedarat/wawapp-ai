@@ -103,8 +103,10 @@ class CrashlyticsTestUtils {
 
       await crashlytics.setCustomKey('test_environment', 'debug');
       await crashlytics.setCustomKey('test_user_type', 'driver');
-      await crashlytics.setCustomKey('test_feature', 'crashlytics_verification');
-      await crashlytics.setCustomKey('test_timestamp', DateTime.now().toIso8601String());
+      await crashlytics.setCustomKey(
+          'test_feature', 'crashlytics_verification');
+      await crashlytics.setCustomKey(
+          'test_timestamp', DateTime.now().toIso8601String());
 
       print('✅ Custom keys set successfully!');
       print('   These will appear with any crash reports.');

@@ -41,14 +41,14 @@ class OrdersRepository {
 
       debugPrint(
           '[OrdersClient] Order created successfully with ID: ${docRef.id}');
-      
+
       // Log analytics event
       AnalyticsService.instance.logOrderCreated(
         orderId: docRef.id,
         priceAmount: price,
         distanceKm: distanceKm,
       );
-      
+
       return docRef.id;
     } catch (e, stackTrace) {
       debugPrint('[OrdersClient] Failed to create order: $e');
@@ -80,14 +80,12 @@ class OrdersRepository {
     }).map((snapshot) {
       debugPrint('[OrdersClient] Received ${snapshot.docs.length} orders');
       return snapshot.docs
-          .map((doc) =>
-              Order.fromFirestore({...doc.data(), 'id': doc.id}))
+          .map((doc) => Order.fromFirestore({...doc.data(), 'id': doc.id}))
           .toList();
     });
   }
 
-  Stream<List<Order>> getUserOrdersByStatus(
-      String userId, OrderStatus status) {
+  Stream<List<Order>> getUserOrdersByStatus(String userId, OrderStatus status) {
     // REQUIRED COMPOSITE INDEX: orders [ownerId ASC, status ASC, createdAt DESC]
     // Deploy via: firebase deploy --only firestore:indexes
     // Or create manually: https://console.firebase.google.com/project/wawapp-952d6/firestore/indexes
@@ -109,8 +107,7 @@ class OrdersRepository {
       debugPrint(
           '[OrdersClient] Received ${snapshot.docs.length} orders with status: ${status.toFirestore()}');
       return snapshot.docs
-          .map((doc) =>
-              Order.fromFirestore({...doc.data(), 'id': doc.id}))
+          .map((doc) => Order.fromFirestore({...doc.data(), 'id': doc.id}))
           .toList();
     });
   }
@@ -122,14 +119,18 @@ class OrdersRepository {
         final orderSnapshot = await transaction.get(orderRef);
 
         if (!orderSnapshot.exists) {
-          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+          throw const AppError(
+              type: AppErrorType.notFound, message: 'Order not found');
         }
 
         final data = orderSnapshot.data()!;
-        final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
+        final currentStatus =
+            OrderStatus.fromFirestore(data['status'] as String);
 
         if (!currentStatus.canClientCancel) {
-          throw const AppError(type: AppErrorType.permissionDenied, message: 'Cannot cancel order in current status');
+          throw const AppError(
+              type: AppErrorType.permissionDenied,
+              message: 'Cannot cancel order in current status');
         }
 
         transaction.update(
@@ -160,7 +161,8 @@ class OrdersRepository {
         final orderSnapshot = await transaction.get(orderRef);
 
         if (!orderSnapshot.exists) {
-          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+          throw const AppError(
+              type: AppErrorType.notFound, message: 'Order not found');
         }
 
         final data = orderSnapshot.data()!;
@@ -168,12 +170,17 @@ class OrdersRepository {
         final currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
         if (ownerId != currentUserId) {
-          throw const AppError(type: AppErrorType.permissionDenied, message: 'Not authorized to rate this order');
+          throw const AppError(
+              type: AppErrorType.permissionDenied,
+              message: 'Not authorized to rate this order');
         }
 
-        final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
+        final currentStatus =
+            OrderStatus.fromFirestore(data['status'] as String);
         if (currentStatus != OrderStatus.completed) {
-          throw const AppError(type: AppErrorType.permissionDenied, message: 'Can only rate completed orders');
+          throw const AppError(
+              type: AppErrorType.permissionDenied,
+              message: 'Can only rate completed orders');
         }
 
         transaction.update(orderRef, {

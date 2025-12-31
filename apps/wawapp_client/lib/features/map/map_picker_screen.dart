@@ -204,7 +204,8 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           RepaintBoundary(
             child: GoogleMap(
               initialCameraPosition: CameraPosition(
-                target: _selectedPosition ?? const LatLng(18.0735, -15.9582), // Nouakchott, Mauritania
+                target: _selectedPosition ??
+                    const LatLng(18.0735, -15.9582), // Nouakchott, Mauritania
                 zoom: 13,
               ),
               onMapCreated: (controller) {
@@ -315,7 +316,9 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       Expanded(
                         flex: 2,
                         child: ElevatedButton(
-                          onPressed: _selectedPosition == null || _isLoading ? null : _onConfirm,
+                          onPressed: _selectedPosition == null || _isLoading
+                              ? null
+                              : _onConfirm,
                           child: const Text('تأكيد الموقع'),
                         ),
                       ),

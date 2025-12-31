@@ -5,42 +5,51 @@ import 'package:package_info_plus/package_info_plus.dart';
 /// Minimal Crashlytics observability helper for WawApp
 class CrashlyticsObserver {
   static bool _initialized = false;
-  
+
   /// Initialize standard keys at app startup
   static Future<void> initialize() async {
     if (_initialized) return;
-    
+
     try {
       final packageInfo = await PackageInfo.fromPlatform();
-      
+
       // Standard app keys
-      FirebaseCrashlytics.instance.setCustomKey('app_version', packageInfo.version);
-      FirebaseCrashlytics.instance.setCustomKey('build_number', packageInfo.buildNumber);
-      FirebaseCrashlytics.instance.setCustomKey('build_type', kDebugMode ? 'debug' : kProfileMode ? 'profile' : 'release');
-      
+      FirebaseCrashlytics.instance
+          .setCustomKey('app_version', packageInfo.version);
+      FirebaseCrashlytics.instance
+          .setCustomKey('build_number', packageInfo.buildNumber);
+      FirebaseCrashlytics.instance.setCustomKey(
+          'build_type',
+          kDebugMode
+              ? 'debug'
+              : kProfileMode
+                  ? 'profile'
+                  : 'release');
+
       _initialized = true;
     } catch (e) {
       debugPrint('[CrashlyticsObserver] Init failed: $e');
     }
   }
-  
+
   /// Set user context (call after auth)
   static void setUserContext(String userId, String role) {
     FirebaseCrashlytics.instance.setUserIdentifier(userId);
     FirebaseCrashlytics.instance.setCustomKey('user_id', userId);
     FirebaseCrashlytics.instance.setCustomKey('role', role);
   }
-  
+
   /// Set current route context
   static void setRoute(String route, String screen) {
     FirebaseCrashlytics.instance.setCustomKey('current_route', route);
     FirebaseCrashlytics.instance.setCustomKey('screen', screen);
   }
-  
+
   /// Log breadcrumb with standard format
-  static void logBreadcrumb(String name, {
+  static void logBreadcrumb(
+    String name, {
     String? screen,
-    String? route, 
+    String? route,
     String? action,
     Map<String, String>? extra,
   }) {
@@ -53,10 +62,10 @@ class CrashlyticsObserver {
         parts.add('${entry.key}:${entry.value}');
       }
     }
-    
+
     FirebaseCrashlytics.instance.log('[BREADCRUMB] ${parts.join(' | ')}');
   }
-  
+
   /// Log navigation attempt with context
   static void logNavigation({
     required String action,
@@ -70,7 +79,7 @@ class CrashlyticsObserver {
     if (to != null) FirebaseCrashlytics.instance.setCustomKey('nav_to', to);
     FirebaseCrashlytics.instance.setCustomKey('can_pop', canPop.toString());
     FirebaseCrashlytics.instance.setCustomKey('mounted', mounted.toString());
-    
+
     logBreadcrumb('NAV_$action', extra: {
       'from': from,
       if (to != null) 'to': to,
@@ -78,7 +87,7 @@ class CrashlyticsObserver {
       'mounted': mounted.toString(),
     });
   }
-  
+
   /// Log map operation with context
   static void logMapOperation({
     required String action,
@@ -87,15 +96,13 @@ class CrashlyticsObserver {
     String? screen,
   }) {
     FirebaseCrashlytics.instance.setCustomKey('map_ready', mapReady.toString());
-    FirebaseCrashlytics.instance.setCustomKey('controller_ready', controllerReady.toString());
+    FirebaseCrashlytics.instance
+        .setCustomKey('controller_ready', controllerReady.toString());
     FirebaseCrashlytics.instance.setCustomKey('camera_action', action);
-    
-    logBreadcrumb('MAP_$action', 
-      screen: screen,
-      extra: {
-        'mapReady': mapReady.toString(),
-        'controllerReady': controllerReady.toString(),
-      }
-    );
+
+    logBreadcrumb('MAP_$action', screen: screen, extra: {
+      'mapReady': mapReady.toString(),
+      'controllerReady': controllerReady.toString(),
+    });
   }
 }

@@ -41,18 +41,18 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     // Navigation is now handled by GoRouter's redirect function
     // No need for manual navigation listeners
     ref.listen(authProvider, (prev, next) {
-      debugPrint(
-        '[OtpScreen] Auth state changed - '
-        'user=${next.user?.uid ?? 'null'} '
-        'hasPin=${next.hasPin} '
-        'isLoading=${next.isLoading} '
-        'otpStage=${next.otpStage}'
-      );
+      debugPrint('[OtpScreen] Auth state changed - '
+          'user=${next.user?.uid ?? 'null'} '
+          'hasPin=${next.hasPin} '
+          'isLoading=${next.isLoading} '
+          'otpStage=${next.otpStage}');
 
       // Log OTP verification success for debugging
       if (next.user != null && prev?.user == null) {
-        FirebaseCrashlytics.instance.log('[OtpScreen] OTP verified successfully');
-        debugPrint('[OtpScreen] ✓ OTP verified - GoRouter will handle navigation');
+        FirebaseCrashlytics.instance
+            .log('[OtpScreen] OTP verified successfully');
+        debugPrint(
+            '[OtpScreen] ✓ OTP verified - GoRouter will handle navigation');
       }
     });
 

@@ -89,9 +89,13 @@ class _RatingBottomSheetState extends ConsumerState<RatingBottomSheet> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Icon(
-                    starIndex <= _selectedRating ? Icons.star : Icons.star_border,
+                    starIndex <= _selectedRating
+                        ? Icons.star
+                        : Icons.star_border,
                     size: 40,
-                    color: starIndex <= _selectedRating ? Colors.amber : Colors.grey,
+                    color: starIndex <= _selectedRating
+                        ? Colors.amber
+                        : Colors.grey,
                   ),
                 ),
               );
@@ -102,14 +106,18 @@ class _RatingBottomSheetState extends ConsumerState<RatingBottomSheet> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: _isSubmitting ? null : () => SafeNavigation.safeDialogPop(context),
+                  onPressed: _isSubmitting
+                      ? null
+                      : () => SafeNavigation.safeDialogPop(context),
                   child: const Text('لاحقاً'),
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: _isSubmitting || _selectedRating == 0 ? null : _submitRating,
+                  onPressed: _isSubmitting || _selectedRating == 0
+                      ? null
+                      : _submitRating,
                   child: _isSubmitting
                       ? const SizedBox(
                           height: 16,

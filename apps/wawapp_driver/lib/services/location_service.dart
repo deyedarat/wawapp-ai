@@ -8,7 +8,8 @@ class LocationService {
 
   Position? _lastPosition;
   StreamSubscription<Position>? _positionStreamSubscription;
-  final StreamController<Position> _positionController = StreamController<Position>.broadcast();
+  final StreamController<Position> _positionController =
+      StreamController<Position>.broadcast();
 
   static const String _logTag = '[LOCATION_SERVICE]';
 
@@ -86,9 +87,11 @@ class LocationService {
 
   /// Get current position with timeout
   /// This is used for the "first fix guarantee" when going online
-  Future<Position> getCurrentPosition({Duration timeout = const Duration(seconds: 20)}) async {
+  Future<Position> getCurrentPosition(
+      {Duration timeout = const Duration(seconds: 20)}) async {
     if (kDebugMode) {
-      debugPrint('$_logTag Getting current position (timeout: ${timeout.inSeconds}s)...');
+      debugPrint(
+          '$_logTag Getting current position (timeout: ${timeout.inSeconds}s)...');
     }
 
     final enabled = await Geolocator.isLocationServiceEnabled();
@@ -117,14 +120,17 @@ class LocationService {
       ).timeout(timeout);
 
       if (kDebugMode) {
-        debugPrint('$_logTag ✅ Got position: lat=${_lastPosition!.latitude}, lng=${_lastPosition!.longitude}, accuracy=${_lastPosition!.accuracy}m');
+        debugPrint(
+            '$_logTag ✅ Got position: lat=${_lastPosition!.latitude}, lng=${_lastPosition!.longitude}, accuracy=${_lastPosition!.accuracy}m');
       }
       return _lastPosition!;
     } on TimeoutException {
       if (kDebugMode) {
-        debugPrint('$_logTag ❌ Timeout getting position after ${timeout.inSeconds}s');
+        debugPrint(
+            '$_logTag ❌ Timeout getting position after ${timeout.inSeconds}s');
       }
-      throw TimeoutException('Could not obtain GPS fix within ${timeout.inSeconds} seconds. Please ensure you have clear sky view.');
+      throw TimeoutException(
+          'Could not obtain GPS fix within ${timeout.inSeconds} seconds. Please ensure you have clear sky view.');
     } on Object catch (e) {
       if (kDebugMode) {
         debugPrint('$_logTag ❌ Error getting position: $e');
@@ -147,7 +153,8 @@ class LocationService {
 
     const locationSettings = LocationSettings(
       accuracy: LocationAccuracy.high,
-      distanceFilter: 50, // Only emit when moved 50+ meters (Memory Optimization Phase 1)
+      distanceFilter:
+          50, // Only emit when moved 50+ meters (Memory Optimization Phase 1)
     );
 
     _positionStreamSubscription = Geolocator.getPositionStream(
@@ -155,7 +162,8 @@ class LocationService {
     ).listen(
       (Position position) {
         if (kDebugMode) {
-          debugPrint('$_logTag Stream update: lat=${position.latitude}, lng=${position.longitude}, accuracy=${position.accuracy}m');
+          debugPrint(
+              '$_logTag Stream update: lat=${position.latitude}, lng=${position.longitude}, accuracy=${position.accuracy}m');
         }
         _lastPosition = position;
         _positionController.add(position);

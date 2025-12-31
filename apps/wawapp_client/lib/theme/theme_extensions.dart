@@ -73,7 +73,7 @@ class ShipmentTypeColors extends ThemeExtension<ShipmentTypeColors> {
     double t,
   ) {
     if (other is! ShipmentTypeColors) return this;
-    
+
     return ShipmentTypeColors(
       foodPerishables: Color.lerp(foodPerishables, other.foodPerishables, t)!,
       furniture: Color.lerp(furniture, other.furniture, t)!,
@@ -90,13 +90,13 @@ class WawAppThemeData extends ThemeExtension<WawAppThemeData> {
   final Color successColor;
   final Color warningColor;
   final Color infoColor;
-  
+
   final Color inputFillColor;
   final Color inputBorderColor;
-  
+
   final Color dividerColor;
   final Color overlayColor;
-  
+
   const WawAppThemeData({
     required this.successColor,
     required this.warningColor,
@@ -160,13 +160,14 @@ class WawAppThemeData extends ThemeExtension<WawAppThemeData> {
     double t,
   ) {
     if (other is! WawAppThemeData) return this;
-    
+
     return WawAppThemeData(
       successColor: Color.lerp(successColor, other.successColor, t)!,
       warningColor: Color.lerp(warningColor, other.warningColor, t)!,
       infoColor: Color.lerp(infoColor, other.infoColor, t)!,
       inputFillColor: Color.lerp(inputFillColor, other.inputFillColor, t)!,
-      inputBorderColor: Color.lerp(inputBorderColor, other.inputBorderColor, t)!,
+      inputBorderColor:
+          Color.lerp(inputBorderColor, other.inputBorderColor, t)!,
       dividerColor: Color.lerp(dividerColor, other.dividerColor, t)!,
       overlayColor: Color.lerp(overlayColor, other.overlayColor, t)!,
     );
@@ -186,7 +187,7 @@ extension ThemeExtensionGetters on BuildContext {
     return Theme.of(this).extension<WawAppThemeData>() ??
         WawAppThemeData.light();
   }
-  
+
   /// Quick access to common custom colors
   Color get successColor => wawAppTheme.successColor;
   Color get warningColor => wawAppTheme.warningColor;

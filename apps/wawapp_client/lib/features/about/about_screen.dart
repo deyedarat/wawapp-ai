@@ -44,7 +44,7 @@ class AboutScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: WawAppSpacing.lg),
-                
+
                 // App Name
                 Text(
                   l10n.appTitle,
@@ -54,7 +54,7 @@ class AboutScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: WawAppSpacing.xs),
-                
+
                 // App Description
                 Text(
                   l10n.app_description,
@@ -64,7 +64,7 @@ class AboutScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: WawAppSpacing.xl),
-                
+
                 // Version Info Card
                 WawCard(
                   elevation: WawAppElevation.medium,
@@ -78,17 +78,22 @@ class AboutScreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: WawAppSpacing.md),
-                      _buildInfoRow(context, l10n.version, buildInfo.version, Icons.info_outline),
-                      _buildInfoRow(context, l10n.branch, buildInfo.branch, Icons.account_tree_outlined),
-                      _buildInfoRow(context, l10n.commit, buildInfo.commit, Icons.commit),
-                      _buildInfoRow(context, l10n.flavor, buildInfo.flavor, Icons.label_outline),
-                      _buildInfoRow(context, l10n.flutter_version, buildInfo.flutter, Icons.flutter_dash),
+                      _buildInfoRow(context, l10n.version, buildInfo.version,
+                          Icons.info_outline),
+                      _buildInfoRow(context, l10n.branch, buildInfo.branch,
+                          Icons.account_tree_outlined),
+                      _buildInfoRow(
+                          context, l10n.commit, buildInfo.commit, Icons.commit),
+                      _buildInfoRow(context, l10n.flavor, buildInfo.flavor,
+                          Icons.label_outline),
+                      _buildInfoRow(context, l10n.flutter_version,
+                          buildInfo.flutter, Icons.flutter_dash),
                     ],
                   ),
                 ),
-                
+
                 SizedBox(height: WawAppSpacing.md),
-                
+
                 // Features Card
                 WawCard(
                   elevation: WawAppElevation.low,
@@ -102,16 +107,20 @@ class AboutScreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: WawAppSpacing.md),
-                      _buildFeatureRow(context, l10n.feature_realtime_tracking, Icons.my_location),
-                      _buildFeatureRow(context, l10n.feature_cargo_types, Icons.category),
-                      _buildFeatureRow(context, l10n.feature_instant_quotes, Icons.calculate),
-                      _buildFeatureRow(context, l10n.feature_multilingual, Icons.language),
+                      _buildFeatureRow(context, l10n.feature_realtime_tracking,
+                          Icons.my_location),
+                      _buildFeatureRow(
+                          context, l10n.feature_cargo_types, Icons.category),
+                      _buildFeatureRow(context, l10n.feature_instant_quotes,
+                          Icons.calculate),
+                      _buildFeatureRow(
+                          context, l10n.feature_multilingual, Icons.language),
                     ],
                   ),
                 ),
-                
+
                 SizedBox(height: WawAppSpacing.xl),
-                
+
                 // Copyright
                 Text(
                   l10n.copyright,
@@ -128,7 +137,8 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, String label, String value, IconData icon) {
+  Widget _buildInfoRow(
+      BuildContext context, String label, String value, IconData icon) {
     final theme = Theme.of(context);
     return Padding(
       padding: EdgeInsetsDirectional.only(bottom: WawAppSpacing.sm),

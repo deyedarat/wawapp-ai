@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:core_shared/core_shared.dart';
 import 'package:flutter/foundation.dart';
 
-
 class DriverHistoryRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 

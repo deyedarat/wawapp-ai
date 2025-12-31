@@ -43,16 +43,16 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
 
     // Navigation is now handled by GoRouter's redirect function
     ref.listen(authProvider, (prev, next) {
-      debugPrint(
-        '[CreatePinScreen] Auth state changed - '
-        'hasPin=${next.hasPin} '
-        'isLoading=${next.isLoading}'
-      );
+      debugPrint('[CreatePinScreen] Auth state changed - '
+          'hasPin=${next.hasPin} '
+          'isLoading=${next.isLoading}');
 
       // Log PIN creation success for debugging
       if (next.hasPin && !prev!.hasPin) {
-        FirebaseCrashlytics.instance.log('[CreatePinScreen] PIN created successfully');
-        debugPrint('[CreatePinScreen] ✓ PIN created - GoRouter will handle navigation');
+        FirebaseCrashlytics.instance
+            .log('[CreatePinScreen] PIN created successfully');
+        debugPrint(
+            '[CreatePinScreen] ✓ PIN created - GoRouter will handle navigation');
       }
     });
 
@@ -84,7 +84,8 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
                 decoration: const InputDecoration(labelText: 'Confirm PIN'),
               ),
               if (authState.error != null)
-                Text(authState.error!, style: const TextStyle(color: Colors.red)),
+                Text(authState.error!,
+                    style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: authState.isLoading ? null : _createPin,

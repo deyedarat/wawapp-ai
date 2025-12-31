@@ -52,25 +52,25 @@ class Pricing {
   }) computeWithShipmentType(double km, ShipmentType? shipmentType) {
     // Get base calculation
     final baseCalc = compute(km);
-    
+
     // Apply shipment type multiplier
     final adjustedPrice = applyShipmentTypeMultiplier(
       baseCalc.total.toDouble(),
       shipmentType,
     );
-    
+
     // Apply minimum fare to adjusted price
-    final withMin = adjustedPrice < PricingConfig.minFare 
-        ? PricingConfig.minFare 
+    final withMin = adjustedPrice < PricingConfig.minFare
+        ? PricingConfig.minFare
         : adjustedPrice;
-    
+
     // Round to nearest 5
     final rounded = roundTo5(withMin);
-    
+
     final multiplier = ShipmentPricingMultipliers.getMultiplier(
       shipmentType ?? ShipmentTypeExtension.defaultType,
     );
-    
+
     return (
       total: baseCalc.total,
       base: baseCalc.base,

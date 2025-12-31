@@ -8,7 +8,8 @@ import 'providers/auth_service_provider.dart';
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
   @override
-  ConsumerState<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
+  ConsumerState<PhonePinLoginScreen> createState() =>
+      _PhonePinLoginScreenState();
 }
 
 class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
@@ -87,7 +88,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     setState(() => _err = null);
 
     // Check if phone exists before sending OTP
-    final phoneExists = await ref.read(authProvider.notifier).checkPhoneExists(phone);
+    final phoneExists =
+        await ref.read(authProvider.notifier).checkPhoneExists(phone);
     if (!phoneExists) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -225,7 +227,9 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             ElevatedButton(
               key: const Key('loginButton'),
               onPressed: authState.isLoading ? null : _handleLogin,
-              child: authState.isLoading ? const CircularProgressIndicator() : const Text('تسجيل الدخول'),
+              child: authState.isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('تسجيل الدخول'),
             ),
             const SizedBox(height: 8),
             TextButton(
@@ -240,7 +244,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             ),
             const SizedBox(height: 4),
             TextButton(
-              onPressed: authState.isLoading ? null : _handleNewDeviceRegistration,
+              onPressed:
+                  authState.isLoading ? null : _handleNewDeviceRegistration,
               child: const Text('جهاز جديد أو تسجيل لأول مرة؟ التحقق عبر SMS'),
             ),
           ],

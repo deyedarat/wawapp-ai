@@ -10,7 +10,8 @@ class TopupService {
 
   /// Get bank apps configuration
   Future<List<BankAppConfig>> getBankApps() async {
-    final doc = await _firestore.collection('app_config').doc('topup_config').get();
+    final doc =
+        await _firestore.collection('app_config').doc('topup_config').get();
 
     if (!doc.exists) {
       return [];
@@ -46,7 +47,9 @@ class TopupService {
       createdAt: DateTime.now(),
     );
 
-    final docRef = await _firestore.collection('topup_requests').add(request.toFirestore());
+    final docRef = await _firestore
+        .collection('topup_requests')
+        .add(request.toFirestore());
     return docRef.id;
   }
 

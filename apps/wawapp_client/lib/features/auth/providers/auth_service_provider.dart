@@ -14,11 +14,13 @@ final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
 
 // AuthNotifier - manages authentication state
 class ClientAuthNotifier extends StateNotifier<AuthState> {
-  ClientAuthNotifier(this._authService, this._firebaseAuth) : super(const AuthState()) {
+  ClientAuthNotifier(this._authService, this._firebaseAuth)
+      : super(const AuthState()) {
     // Listen to Firebase auth state changes
     _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
       if (kDebugMode) {
-        print('[ClientAuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}');
+        print(
+            '[ClientAuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}');
       }
       state = state.copyWith(user: user);
 
@@ -86,9 +88,11 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
   // Send OTP to phone number
   Future<void> sendOtp(String phone) async {
     // Guard: prevent duplicate calls
-    if (state.otpStage == OtpStage.sending || state.otpStage == OtpStage.codeSent) {
+    if (state.otpStage == OtpStage.sending ||
+        state.otpStage == OtpStage.codeSent) {
       if (kDebugMode) {
-        print('[ClientAuthNotifier] sendOtp blocked: already ${state.otpStage}');
+        print(
+            '[ClientAuthNotifier] sendOtp blocked: already ${state.otpStage}');
       }
       return;
     }
@@ -106,7 +110,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       await _authService.ensurePhoneSession(phone);
       final verificationId = _authService.lastVerificationId;
       if (kDebugMode) {
-        print('[ClientAuthNotifier] OTP sent successfully, verificationId=$verificationId');
+        print(
+            '[ClientAuthNotifier] OTP sent successfully, verificationId=$verificationId');
       }
       state = state.copyWith(
         isLoading: false,
@@ -134,7 +139,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       }
       await _authService.confirmOtp(code);
       if (kDebugMode) {
-        print('[ClientAuthNotifier] OTP verified, user should update via authStateChanges');
+        print(
+            '[ClientAuthNotifier] OTP verified, user should update via authStateChanges');
       }
       state = state.copyWith(isLoading: false, otpFlowActive: false);
       // User will be updated via authStateChanges listener
@@ -194,7 +200,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         // PIN verified successfully, user is now signed in with custom token
         // The authStateChanges listener will update the state automatically
         if (kDebugMode) {
-          print('[ClientAuthNotifier] PIN verified, user signed in successfully');
+          print(
+              '[ClientAuthNotifier] PIN verified, user signed in successfully');
         }
         state = state.copyWith(
           isLoading: false,

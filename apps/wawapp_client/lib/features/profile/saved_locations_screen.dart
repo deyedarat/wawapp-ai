@@ -68,7 +68,8 @@ class SavedLocationsScreen extends ConsumerWidget {
                     WawActionButton(
                       label: l10n.retry,
                       icon: Icons.refresh,
-                      onPressed: () => ref.refresh(savedLocationsStreamProvider),
+                      onPressed: () =>
+                          ref.refresh(savedLocationsStreamProvider),
                       isFullWidth: false,
                     ),
                   ],
@@ -100,15 +101,18 @@ class SavedLocationsScreen extends ConsumerWidget {
                       bottom: WawAppSpacing.sm,
                     ),
                     child: WawCard(
-                      onTap: () => context.push('/profile/locations/edit/${location.id}'),
+                      onTap: () => context
+                          .push('/profile/locations/edit/${location.id}'),
                       padding: EdgeInsetsDirectional.all(WawAppSpacing.md),
                       child: Row(
                         children: [
                           // Icon
                           Container(
-                            padding: EdgeInsetsDirectional.all(WawAppSpacing.sm),
+                            padding:
+                                EdgeInsetsDirectional.all(WawAppSpacing.sm),
                             decoration: BoxDecoration(
-                              color: _getTypeColor(location.type).withOpacity(0.1),
+                              color:
+                                  _getTypeColor(location.type).withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -118,7 +122,7 @@ class SavedLocationsScreen extends ConsumerWidget {
                             ),
                           ),
                           SizedBox(width: WawAppSpacing.md),
-                          
+
                           // Content
                           Expanded(
                             child: Column(
@@ -149,7 +153,7 @@ class SavedLocationsScreen extends ConsumerWidget {
                               ],
                             ),
                           ),
-                          
+
                           // Action Menu
                           PopupMenuButton<String>(
                             onSelected: (value) => _handleMenuAction(
@@ -186,7 +190,8 @@ class SavedLocationsScreen extends ConsumerWidget {
                                     SizedBox(width: WawAppSpacing.xs),
                                     Text(
                                       l10n.delete,
-                                      style: TextStyle(color: context.errorColor),
+                                      style:
+                                          TextStyle(color: context.errorColor),
                                     ),
                                   ],
                                 ),

@@ -9,10 +9,12 @@ class DriverProfileEditScreen extends ConsumerStatefulWidget {
   const DriverProfileEditScreen({super.key});
 
   @override
-  ConsumerState<DriverProfileEditScreen> createState() => _DriverProfileEditScreenState();
+  ConsumerState<DriverProfileEditScreen> createState() =>
+      _DriverProfileEditScreenState();
 }
 
-class _DriverProfileEditScreenState extends ConsumerState<DriverProfileEditScreen> {
+class _DriverProfileEditScreenState
+    extends ConsumerState<DriverProfileEditScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _vehicleTypeController = TextEditingController();
@@ -74,11 +76,21 @@ class _DriverProfileEditScreenState extends ConsumerState<DriverProfileEditScree
       name: _nameController.text.trim(),
       phone: authState.user!.phoneNumber ?? '',
       photoUrl: currentProfile?.photoUrl,
-      vehicleType: _vehicleTypeController.text.trim().isEmpty ? null : _vehicleTypeController.text.trim(),
-      vehiclePlate: _vehiclePlateController.text.trim().isEmpty ? null : _vehiclePlateController.text.trim(),
-      vehicleColor: _vehicleColorController.text.trim().isEmpty ? null : _vehicleColorController.text.trim(),
-      city: _cityController.text.trim().isEmpty ? null : _cityController.text.trim(),
-      region: _regionController.text.trim().isEmpty ? null : _regionController.text.trim(),
+      vehicleType: _vehicleTypeController.text.trim().isEmpty
+          ? null
+          : _vehicleTypeController.text.trim(),
+      vehiclePlate: _vehiclePlateController.text.trim().isEmpty
+          ? null
+          : _vehiclePlateController.text.trim(),
+      vehicleColor: _vehicleColorController.text.trim().isEmpty
+          ? null
+          : _vehicleColorController.text.trim(),
+      city: _cityController.text.trim().isEmpty
+          ? null
+          : _cityController.text.trim(),
+      region: _regionController.text.trim().isEmpty
+          ? null
+          : _regionController.text.trim(),
       isVerified: currentProfile?.isVerified ?? false,
       isOnline: currentProfile?.isOnline ?? false,
       rating: currentProfile?.rating ?? 0.0,
@@ -88,9 +100,13 @@ class _DriverProfileEditScreenState extends ConsumerState<DriverProfileEditScree
     );
 
     if (currentProfile == null) {
-      await ref.read(driverProfileNotifierProvider.notifier).createProfile(profile);
+      await ref
+          .read(driverProfileNotifierProvider.notifier)
+          .createProfile(profile);
     } else {
-      await ref.read(driverProfileNotifierProvider.notifier).updateProfile(profile);
+      await ref
+          .read(driverProfileNotifierProvider.notifier)
+          .updateProfile(profile);
     }
   }
 
@@ -155,7 +171,8 @@ class _DriverProfileEditScreenState extends ConsumerState<DriverProfileEditScree
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.warning, color: Colors.orange, size: 28),
+                              const Icon(Icons.warning,
+                                  color: Colors.orange, size: 28),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
@@ -171,7 +188,8 @@ class _DriverProfileEditScreenState extends ConsumerState<DriverProfileEditScree
                                     const SizedBox(height: 4),
                                     Text(
                                       missing.join('، '),
-                                      style: const TextStyle(color: Colors.black87),
+                                      style: const TextStyle(
+                                          color: Colors.black87),
                                     ),
                                   ],
                                 ),

@@ -29,8 +29,8 @@ class DebugMenuScreen extends StatelessWidget {
             ),
             ElevatedButton.icon(
               onPressed: () {
-                WawLog.e('DebugMenu', 'Test non-fatal error', 
-                  Exception('Test non-fatal exception'), StackTrace.current);
+                WawLog.e('DebugMenu', 'Test non-fatal error',
+                    Exception('Test non-fatal exception'), StackTrace.current);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Non-fatal error logged')),
                 );
@@ -54,10 +54,13 @@ class DebugMenuScreen extends StatelessWidget {
             ),
           ]),
           _buildSection('Config', [
-            _buildInfoTile('Performance Overlay', DebugConfig.enablePerformanceOverlay),
-            _buildInfoTile('Provider Observer', DebugConfig.enableProviderObserver),
+            _buildInfoTile(
+                'Performance Overlay', DebugConfig.enablePerformanceOverlay),
+            _buildInfoTile(
+                'Provider Observer', DebugConfig.enableProviderObserver),
             _buildInfoTile('Verbose Logging', DebugConfig.enableVerboseLogging),
-            _buildInfoTile('Crashlytics Non-Fatal', DebugConfig.enableNonFatalCrashlytics),
+            _buildInfoTile(
+                'Crashlytics Non-Fatal', DebugConfig.enableNonFatalCrashlytics),
           ]),
         ],
       ),
@@ -70,7 +73,9 @@ class DebugMenuScreen extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          child: Text(title,
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         ),
         ...children,
         const SizedBox(height: 16),
@@ -81,8 +86,8 @@ class DebugMenuScreen extends StatelessWidget {
   Widget _buildInfoTile(String label, bool value) {
     return ListTile(
       title: Text(label),
-      trailing: Icon(value ? Icons.check_circle : Icons.cancel, 
-        color: value ? Colors.green : Colors.grey),
+      trailing: Icon(value ? Icons.check_circle : Icons.cancel,
+          color: value ? Colors.green : Colors.grey),
     );
   }
 }

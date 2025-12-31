@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:flutter/foundation.dart';
 import 'package:core_shared/core_shared.dart';
 
-
 class DriverEarningsRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -44,7 +43,8 @@ class DriverEarningsRepository {
 
   int totalForToday(List<Order> orders) {
     final todayOrders = getDailyEarnings(orders);
-    final total = todayOrders.fold<int>(0, (acc, order) => acc + order.price.toInt());
+    final total =
+        todayOrders.fold<int>(0, (acc, order) => acc + order.price.toInt());
     debugPrint(
         '[EARNINGS] Today total: $total MRU from ${todayOrders.length} orders');
     return total;
@@ -64,7 +64,8 @@ class DriverEarningsRepository {
 
   int totalForCurrentWeek(List<Order> orders) {
     final weekOrders = getWeeklyEarnings(orders);
-    final total = weekOrders.fold<int>(0, (acc, order) => acc + order.price.toInt());
+    final total =
+        weekOrders.fold<int>(0, (acc, order) => acc + order.price.toInt());
     debugPrint(
         '[EARNINGS] Week total: $total MRU from ${weekOrders.length} orders');
     return total;
@@ -79,7 +80,8 @@ class DriverEarningsRepository {
       return completedAt != null && completedAt.isAfter(monthStart);
     }).toList();
 
-    final total = monthOrders.fold<int>(0, (acc, order) => acc + order.price.toInt());
+    final total =
+        monthOrders.fold<int>(0, (acc, order) => acc + order.price.toInt());
     debugPrint(
         '[EARNINGS] Month total: $total MRU from ${monthOrders.length} orders');
     return total;

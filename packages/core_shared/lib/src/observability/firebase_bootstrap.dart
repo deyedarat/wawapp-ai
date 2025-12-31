@@ -20,7 +20,7 @@ class FirebaseBootstrap {
         await Firebase.initializeApp(options: options);
         WawLog.d('FirebaseBootstrap', 'Firebase initialized');
       }
-      
+
       await CrashlyticsObserver.initialize();
       _initialized = true;
       WawLog.d('FirebaseBootstrap', '✅ Firebase & Crashlytics ready');

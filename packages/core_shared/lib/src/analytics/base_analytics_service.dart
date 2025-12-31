@@ -68,7 +68,8 @@ abstract class BaseAnalyticsService {
           if (errorMessage != null) 'error_message': errorMessage,
         },
       );
-      if (kDebugMode) print('[Analytics] error_occurred: $errorType on $screen');
+      if (kDebugMode)
+        print('[Analytics] error_occurred: $errorType on $screen');
     } on Object catch (e) {
       if (kDebugMode) print('[Analytics] Error logging error_occurred: $e');
     }
@@ -179,8 +180,7 @@ abstract class BaseAnalyticsService {
         },
       );
       if (kDebugMode) {
-        print(
-            '[Analytics] notification_tapped: $notificationType ($appState)');
+        print('[Analytics] notification_tapped: $notificationType ($appState)');
       }
     } on Object catch (e) {
       if (kDebugMode) {
@@ -234,7 +234,8 @@ abstract class BaseAnalyticsService {
       await _analytics.setUserProperty(name: name, value: value);
       if (kDebugMode) print('[Analytics] User property set: $name = $value');
     } on Object catch (e) {
-      if (kDebugMode) print('[Analytics] Error setting user property $name: $e');
+      if (kDebugMode)
+        print('[Analytics] Error setting user property $name: $e');
     }
   }
 }

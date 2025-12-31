@@ -37,7 +37,7 @@ void main() async {
 
       // Initialize Crashlytics
       await _initializeCrashlytics();
-      
+
       // Initialize observability
       await CrashlyticsObserver.initialize();
 

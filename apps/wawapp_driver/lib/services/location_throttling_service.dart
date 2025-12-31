@@ -23,14 +23,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationThrottlingService {
-  static final LocationThrottlingService instance = LocationThrottlingService._internal();
+  static final LocationThrottlingService instance =
+      LocationThrottlingService._internal();
   factory LocationThrottlingService() => instance;
   LocationThrottlingService._internal();
 
   // Throttling configuration
   static const Duration _minUpdateInterval = Duration(seconds: 10);
-  static const double _minDistanceMeters = 25.0; // Minimum distance to trigger update
-  static const double _maxAccuracyMeters = 30.0; // Ignore readings with poor accuracy
+  static const double _minDistanceMeters =
+      25.0; // Minimum distance to trigger update
+  static const double _maxAccuracyMeters =
+      30.0; // Ignore readings with poor accuracy
 
   // State tracking
   DateTime? _lastUpdateTime;
@@ -46,7 +49,7 @@ class LocationThrottlingService {
   }
 
   /// Check if location update should be sent to Firestore
-  /// 
+  ///
   /// Returns true if update should proceed, false if throttled
   bool shouldUpdateLocation(Position newPosition) {
     // Guard: Don't update if driver is offline
@@ -60,7 +63,8 @@ class LocationThrottlingService {
     // Guard: Ignore poor accuracy readings
     if (newPosition.accuracy > _maxAccuracyMeters) {
       if (kDebugMode) {
-        debugPrint('[LocationThrottle] Throttled: poor accuracy (${newPosition.accuracy.toStringAsFixed(1)}m)');
+        debugPrint(
+            '[LocationThrottle] Throttled: poor accuracy (${newPosition.accuracy.toStringAsFixed(1)}m)');
       }
       return false;
     }
@@ -72,7 +76,8 @@ class LocationThrottlingService {
       final timeSinceLastUpdate = now.difference(_lastUpdateTime!);
       if (timeSinceLastUpdate < _minUpdateInterval) {
         if (kDebugMode) {
-          debugPrint('[LocationThrottle] Throttled: too soon (${timeSinceLastUpdate.inSeconds}s < ${_minUpdateInterval.inSeconds}s)');
+          debugPrint(
+              '[LocationThrottle] Throttled: too soon (${timeSinceLastUpdate.inSeconds}s < ${_minUpdateInterval.inSeconds}s)');
         }
         return false;
       }
@@ -89,7 +94,8 @@ class LocationThrottlingService {
 
       if (distance < _minDistanceMeters) {
         if (kDebugMode) {
-          debugPrint('[LocationThrottle] Throttled: insufficient distance (${distance.toStringAsFixed(1)}m < $_minDistanceMeters m)');
+          debugPrint(
+              '[LocationThrottle] Throttled: insufficient distance (${distance.toStringAsFixed(1)}m < $_minDistanceMeters m)');
         }
         return false;
       }
@@ -100,14 +106,15 @@ class LocationThrottlingService {
     _lastPosition = newPosition;
 
     if (kDebugMode) {
-      debugPrint('[LocationThrottle] ✓ Update allowed: accuracy=${newPosition.accuracy.toStringAsFixed(1)}m');
+      debugPrint(
+          '[LocationThrottle] ✓ Update allowed: accuracy=${newPosition.accuracy.toStringAsFixed(1)}m');
     }
 
     return true;
   }
 
   /// Update driver location in Firestore (with throttling)
-  /// 
+  ///
   /// Returns true if update was sent, false if throttled
   Future<bool> updateDriverLocation(Position position) async {
     if (!shouldUpdateLocation(position)) {

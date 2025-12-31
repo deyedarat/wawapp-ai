@@ -72,7 +72,8 @@ class TopupRequestModel {
       'senderPhone': senderPhone,
       'status': status.name,
       'createdAt': Timestamp.fromDate(createdAt),
-      'processedAt': processedAt != null ? Timestamp.fromDate(processedAt!) : null,
+      'processedAt':
+          processedAt != null ? Timestamp.fromDate(processedAt!) : null,
       'processedBy': processedBy,
       'rejectionReason': rejectionReason,
     };

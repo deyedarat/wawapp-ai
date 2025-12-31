@@ -57,8 +57,6 @@ class AnalyticsService extends BaseAnalyticsService {
     await logEvent('driver_went_offline', {});
   }
 
-
-
   /// Set driver-specific user properties
   Future<void> setUserProperties({
     required String userId,

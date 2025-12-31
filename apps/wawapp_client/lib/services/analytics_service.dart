@@ -51,8 +51,6 @@ class AnalyticsService extends BaseAnalyticsService {
     await logEvent('saved_location_deleted', {'location_id': locationId});
   }
 
-
-
   /// Set user properties for segmentation
   Future<void> setUserProperties({
     required String userId,

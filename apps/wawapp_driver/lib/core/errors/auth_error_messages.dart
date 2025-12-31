@@ -14,52 +14,58 @@ class AuthErrorMessages {
   static const String accountNotFound = 'الحساب غير موجود. تأكد من رقم الهاتف';
   static const String invalidOtp = 'رمز التحقق غير صحيح. أعد المحاولة';
   static const String otpExpired = 'انتهت صلاحية رمز التحقق. أرسل رمزاً جديداً';
-  static const String tooManyRequests = 'عدد كبير جداً من المحاولات. جرب لاحقاً';
+  static const String tooManyRequests =
+      'عدد كبير جداً من المحاولات. جرب لاحقاً';
   static const String networkError = 'خطأ في الاتصال. تحقق من اتصال الإنترنت';
   static const String unknownError = 'حدث خطأ غير متوقع. حاول مرة أخرى';
-  static const String pinCreationFailed = 'فشل إنشاء الرقم السري. حاول مرة أخرى';
+  static const String pinCreationFailed =
+      'فشل إنشاء الرقم السري. حاول مرة أخرى';
   static const String sessionExpired = 'انتهت الجلسة. سجّل دخولك مرة أخرى';
 
   // Rate limiting error messages (P0-AUTH-1 fix)
-  static const String rateLimitExceeded = 'تم تجاوز عدد المحاولات المسموحة. حاول لاحقاً';
-  static const String accountLocked1Min = 'الحساب مقفل لمدة دقيقة بسبب المحاولات الخاطئة';
-  static const String accountLocked5Min = 'الحساب مقفل لمدة 5 دقائق بسبب المحاولات الخاطئة';
-  static const String accountLocked1Hour = 'الحساب مقفل لمدة ساعة بسبب المحاولات الكثيرة';
+  static const String rateLimitExceeded =
+      'تم تجاوز عدد المحاولات المسموحة. حاول لاحقاً';
+  static const String accountLocked1Min =
+      'الحساب مقفل لمدة دقيقة بسبب المحاولات الخاطئة';
+  static const String accountLocked5Min =
+      'الحساب مقفل لمدة 5 دقائق بسبب المحاولات الخاطئة';
+  static const String accountLocked1Hour =
+      'الحساب مقفل لمدة ساعة بسبب المحاولات الكثيرة';
 
   /// Get user-friendly error message from Firebase error
   static String getErrorMessage(dynamic error) {
     if (error == null) return unknownError;
-    
+
     final errorString = error.toString().toLowerCase();
-    
+
     // OTP-related errors
     if (errorString.contains('invalid-verification-code') ||
         errorString.contains('invalid-code')) {
       return invalidOtp;
     }
-    
+
     if (errorString.contains('session-expired') ||
         errorString.contains('code-expired')) {
       return otpExpired;
     }
-    
+
     if (errorString.contains('too-many-requests') ||
         errorString.contains('quota-exceeded')) {
       return tooManyRequests;
     }
-    
+
     // Network-related errors
     if (errorString.contains('network') ||
         errorString.contains('timeout') ||
         errorString.contains('connection')) {
       return networkError;
     }
-    
+
     // PIN-related errors
     if (errorString.contains('pin') && errorString.contains('invalid')) {
       return pinIncorrect;
     }
-    
+
     // Account-related errors
     if (errorString.contains('user-not-found') ||
         errorString.contains('account-not-found')) {
@@ -72,9 +78,11 @@ class AuthErrorMessages {
       // Check if error contains duration info
       if (errorString.contains('ساعة') || errorString.contains('hour')) {
         return accountLocked1Hour;
-      } else if (errorString.contains('5 دقائق') || errorString.contains('5 minute')) {
+      } else if (errorString.contains('5 دقائق') ||
+          errorString.contains('5 minute')) {
         return accountLocked5Min;
-      } else if (errorString.contains('دقيقة') || errorString.contains('minute')) {
+      } else if (errorString.contains('دقيقة') ||
+          errorString.contains('minute')) {
         return accountLocked1Min;
       }
       return rateLimitExceeded;

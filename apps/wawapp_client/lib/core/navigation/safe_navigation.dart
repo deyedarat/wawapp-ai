@@ -7,7 +7,7 @@ class SafeNavigation {
   /// Safely pop with fallback to home if stack is empty
   static void safePop(BuildContext context, {String fallbackRoute = '/'}) {
     final currentRoute = GoRouterState.of(context).matchedLocation;
-    
+
     CrashlyticsObserver.logNavigation(
       action: 'pop',
       from: currentRoute,
@@ -15,18 +15,19 @@ class SafeNavigation {
       canPop: context.canPop(),
       mounted: context.mounted,
     );
-    
+
     if (context.canPop()) {
       context.pop();
     } else {
       context.go(fallbackRoute);
     }
   }
-  
+
   /// Safely pop with result, fallback to home if stack is empty
-  static void safePopWithResult<T>(BuildContext context, T result, {String fallbackRoute = '/'}) {
+  static void safePopWithResult<T>(BuildContext context, T result,
+      {String fallbackRoute = '/'}) {
     final currentRoute = GoRouterState.of(context).matchedLocation;
-    
+
     CrashlyticsObserver.logNavigation(
       action: 'pop_with_result',
       from: currentRoute,
@@ -34,14 +35,14 @@ class SafeNavigation {
       canPop: context.canPop(),
       mounted: context.mounted,
     );
-    
+
     if (context.canPop()) {
       context.pop(result);
     } else {
       context.go(fallbackRoute);
     }
   }
-  
+
   /// Safely close dialog/modal with Navigator.pop, with context validation
   static void safeDialogPop<T>(BuildContext context, [T? result]) {
     CrashlyticsObserver.logNavigation(
@@ -50,12 +51,12 @@ class SafeNavigation {
       canPop: Navigator.canPop(context),
       mounted: context.mounted,
     );
-    
+
     if (context.mounted && Navigator.canPop(context)) {
       Navigator.of(context).pop(result);
     }
   }
-  
+
   /// Safe navigation after logout - ensures single source of truth
   static void safeLogoutNavigation(BuildContext context) {
     CrashlyticsObserver.logNavigation(
@@ -77,12 +78,13 @@ extension SafeNavigationExtension on BuildContext {
   void safePop({String fallbackRoute = '/'}) {
     SafeNavigation.safePop(this, fallbackRoute: fallbackRoute);
   }
-  
+
   /// Safely pop with result
   void safePopWithResult<T>(T result, {String fallbackRoute = '/'}) {
-    SafeNavigation.safePopWithResult(this, result, fallbackRoute: fallbackRoute);
+    SafeNavigation.safePopWithResult(this, result,
+        fallbackRoute: fallbackRoute);
   }
-  
+
   /// Safely close dialog
   void safeDialogPop<T>([T? result]) {
     SafeNavigation.safeDialogPop(this, result);

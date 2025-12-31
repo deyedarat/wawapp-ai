@@ -111,7 +111,8 @@ class _OrderHistoryTile extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ListTile(
-        title: Text('طلب #${order.id != null && order.id!.length > 8 ? order.id!.substring(0, 8) : order.id ?? 'N/A'}'),
+        title: Text(
+            'طلب #${order.id != null && order.id!.length > 8 ? order.id!.substring(0, 8) : order.id ?? 'N/A'}'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -137,7 +138,8 @@ class _OrderHistoryTile extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(Icons.star, size: 16, color: Colors.amber),
-                  Text('${order.driverRating}', style: const TextStyle(fontSize: 12)),
+                  Text('${order.driverRating}',
+                      style: const TextStyle(fontSize: 12)),
                 ],
               ),
             ],

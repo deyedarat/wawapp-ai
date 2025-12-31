@@ -40,7 +40,7 @@ class ClientProfile {
       preferredLanguage: json['preferredLanguage'] as String? ?? 'ar',
       totalTrips: json['totalTrips'] as int? ?? 0,
       averageRating: (json['averageRating'] as num?)?.toDouble() ?? 0.0,
-      createdAt: json['createdAt'] != null 
+      createdAt: json['createdAt'] != null
           ? (json['createdAt'] as Timestamp).toDate()
           : DateTime.now(),
       updatedAt: json['updatedAt'] != null

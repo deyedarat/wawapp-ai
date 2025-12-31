@@ -127,7 +127,8 @@ abstract class BaseFCMService {
 
         _messaging.onTokenRefresh.listen((newToken) {
           if (kDebugMode) {
-            debugPrint('[FCM] Token refreshed: ${newToken.substring(0, 20)}...');
+            debugPrint(
+                '[FCM] Token refreshed: ${newToken.substring(0, 20)}...');
           }
           saveTokenToFirestore(newToken);
         });
@@ -213,7 +214,10 @@ abstract class BaseFCMService {
         return;
       }
 
-      await _firestore.collection(getFirestoreCollection()).doc(user.uid).update({
+      await _firestore
+          .collection(getFirestoreCollection())
+          .doc(user.uid)
+          .update({
         'fcmToken': token,
         'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
       });
@@ -238,7 +242,10 @@ abstract class BaseFCMService {
 
       await _messaging.deleteToken();
 
-      await _firestore.collection(getFirestoreCollection()).doc(user.uid).update({
+      await _firestore
+          .collection(getFirestoreCollection())
+          .doc(user.uid)
+          .update({
         'fcmToken': FieldValue.delete(),
       });
 
@@ -272,7 +279,9 @@ abstract class BaseFCMService {
     });
 
     // Handle notification taps when app is TERMINATED
-    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
       if (message != null) {
         if (kDebugMode) {
           debugPrint('[FCM] Notification tapped (terminated): ${message.data}');
@@ -286,7 +295,8 @@ abstract class BaseFCMService {
     // Handle messages when app is in FOREGROUND
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (kDebugMode) {
-        debugPrint('[FCM] Foreground notification: ${message.notification?.title}');
+        debugPrint(
+            '[FCM] Foreground notification: ${message.notification?.title}');
       }
 
       // Show in-app snackbar
@@ -299,7 +309,8 @@ abstract class BaseFCMService {
   /// Show in-app notification when app is in foreground.
   ///
   /// Displays a SnackBar with notification title, body, and action button.
-  void _showForegroundNotification(BuildContext context, RemoteMessage message) {
+  void _showForegroundNotification(
+      BuildContext context, RemoteMessage message) {
     final title = message.notification?.title;
     final body = message.notification?.body;
 

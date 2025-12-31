@@ -3,7 +3,7 @@ import 'colors.dart';
 import 'typography.dart';
 
 /// Reusable UI components with consistent styling
-/// 
+///
 /// This file provides pre-styled widgets that maintain design consistency
 /// throughout the app while supporting RTL/LTR and theming.
 

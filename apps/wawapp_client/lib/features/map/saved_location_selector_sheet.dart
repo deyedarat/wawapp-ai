@@ -56,7 +56,8 @@ class SavedLocationSelectorSheet extends ConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.location_off, size: 48, color: Colors.grey),
+                        const Icon(Icons.location_off,
+                            size: 48, color: Colors.grey),
                         const SizedBox(height: 16),
                         const Text(
                           'لا توجد مواقع محفوظة بعد',

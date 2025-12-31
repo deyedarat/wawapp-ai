@@ -20,7 +20,8 @@ class AppTheme {
       cardColor: DriverAppColors.cardLight,
       dividerColor: DriverAppColors.dividerLight,
       textTheme: const TextTheme(
-        displayLarge: TextStyle(fontSize: 57, fontWeight: FontWeight.bold, letterSpacing: -0.25),
+        displayLarge: TextStyle(
+            fontSize: 57, fontWeight: FontWeight.bold, letterSpacing: -0.25),
         displayMedium: TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
         displaySmall: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
         headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
@@ -95,7 +96,8 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DriverAppSpacing.radiusMd),
-          borderSide: const BorderSide(color: DriverAppColors.primaryLight, width: 2),
+          borderSide:
+              const BorderSide(color: DriverAppColors.primaryLight, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DriverAppSpacing.radiusMd),
@@ -124,7 +126,8 @@ class AppTheme {
       cardColor: DriverAppColors.cardDark,
       dividerColor: DriverAppColors.dividerDark,
       textTheme: const TextTheme(
-        displayLarge: TextStyle(fontSize: 57, fontWeight: FontWeight.bold, letterSpacing: -0.25),
+        displayLarge: TextStyle(
+            fontSize: 57, fontWeight: FontWeight.bold, letterSpacing: -0.25),
         displayMedium: TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
         displaySmall: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
         headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
@@ -199,7 +202,8 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DriverAppSpacing.radiusMd),
-          borderSide: const BorderSide(color: DriverAppColors.primaryDark, width: 2),
+          borderSide:
+              const BorderSide(color: DriverAppColors.primaryDark, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DriverAppSpacing.radiusMd),

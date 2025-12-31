@@ -17,13 +17,11 @@ class AuthGate extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
 
-    debugPrint(
-      '[AuthGate] GUARD_CHECK | '
-      'user=${authState.user?.uid ?? 'null'} | '
-      'hasPin=${authState.hasPin} | '
-      'isLoading=${authState.isLoading} | '
-      'isPinCheckLoading=${authState.isPinCheckLoading}'
-    );
+    debugPrint('[AuthGate] GUARD_CHECK | '
+        'user=${authState.user?.uid ?? 'null'} | '
+        'hasPin=${authState.hasPin} | '
+        'isLoading=${authState.isLoading} | '
+        'isPinCheckLoading=${authState.isPinCheckLoading}');
 
     // ONLY show loading screen during initial auth check
     // (when we don't know if user exists yet)

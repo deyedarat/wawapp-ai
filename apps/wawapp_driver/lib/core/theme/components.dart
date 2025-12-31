@@ -342,7 +342,8 @@ class DriverInfoTile extends StatelessWidget {
             SizedBox(width: DriverAppSpacing.sm),
             Expanded(
               child: Column(
-                crossAxisAlignment: isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   Text(
                     label,

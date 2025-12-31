@@ -23,7 +23,7 @@ class DriverStatusService {
       }, SetOptions(merge: true));
 
       debugPrint('[DriverStatus] Driver $driverId is now ONLINE');
-      
+
       // Log analytics event and update user property
       AnalyticsService.instance.logDriverWentOnline();
       AnalyticsService.instance.setUserProperties(
@@ -56,7 +56,7 @@ class DriverStatusService {
       }, SetOptions(merge: true));
 
       debugPrint('[DriverStatus] Driver $driverId is now OFFLINE');
-      
+
       // Log analytics event and update user property
       AnalyticsService.instance.logDriverWentOffline();
       AnalyticsService.instance.setUserProperties(
@@ -83,7 +83,8 @@ class DriverStatusService {
       return Stream.value(false);
     }
 
-    debugPrint('[DriverStatus] 👀 Watching online status for driver: $driverId');
+    debugPrint(
+        '[DriverStatus] 👀 Watching online status for driver: $driverId');
     debugPrint('[DriverStatus] 📍 Firestore path: drivers/$driverId');
 
     return _firestore
@@ -92,22 +93,27 @@ class DriverStatusService {
         .snapshots()
         .map((snapshot) {
       if (!snapshot.exists) {
-        debugPrint('[DriverStatus] ⚠️ Driver document does not exist: drivers/$driverId');
-        debugPrint('[DriverStatus] 💡 Create document by going ONLINE in the app');
+        debugPrint(
+            '[DriverStatus] ⚠️ Driver document does not exist: drivers/$driverId');
+        debugPrint(
+            '[DriverStatus] 💡 Create document by going ONLINE in the app');
         return false;
       }
 
       final data = snapshot.data();
       if (data == null) {
-        debugPrint('[DriverStatus] ⚠️ Driver document exists but has null data');
+        debugPrint(
+            '[DriverStatus] ⚠️ Driver document exists but has null data');
         return false;
       }
 
       final isOnline = data['isOnline'] as bool? ?? false;
-      debugPrint('[DriverStatus] 📡 Driver status changed: ${isOnline ? "🟢 ONLINE" : "🔴 OFFLINE"}');
+      debugPrint(
+          '[DriverStatus] 📡 Driver status changed: ${isOnline ? "🟢 ONLINE" : "🔴 OFFLINE"}');
 
       if (!isOnline) {
-        debugPrint('[DriverStatus] ℹ️ Driver is OFFLINE - nearby orders will be empty');
+        debugPrint(
+            '[DriverStatus] ℹ️ Driver is OFFLINE - nearby orders will be empty');
       }
 
       return isOnline;
