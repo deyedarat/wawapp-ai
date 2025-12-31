@@ -1,0 +1,101 @@
+name: android-debug
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - driver-auth-stable-work
+      - 'feature/**'
+      - 'feat/**'
+    paths:
+      - 'apps/wawapp_driver/**'
+      - 'packages/**'
+      - '.github/workflows/android-debug.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'apps/wawapp_driver/**'
+      - 'packages/**'
+      - '.github/workflows/android-debug.yml'
+
+jobs:
+  run_driver_smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Debug git ref info
+        run: |
+          echo "github.ref: ${{ github.ref }}"
+          echo "github.ref_name: ${{ github.ref_name }}"
+          echo "github.sha: ${{ github.sha }}"
+          echo "git branch --show-current: $(git branch --show-current)"
+          echo "git rev-parse --short HEAD: $(git rev-parse --short HEAD)"
+          echo "git log -1 --oneline: $(git log -1 --oneline)"
+
+      # Cache dependencies BEFORE any build tasks
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/*.gradle*', '**/gradle.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+          key: flutter-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-
+
+      # Lightweight diagnostics
+      - name: Build environment info
+        run: |
+          java -version
+          cd apps/wawapp_driver/android && chmod +x ./gradlew && ./gradlew --version | grep "Gradle"
+          cd apps/wawapp_driver/android && grep "configuration-cache" gradle.properties || echo "configuration-cache: not found"
+ - name: Set up Flutter
+    uses: subosito/flutter-action@v2
+       with:
+            flutter-version: '3.x'
+                 channel: 'stable'
+      - name: Flutter pub get
+        working-directory: apps/wawapp_driver
+        run: flutter pub get
+
+      - name: Build debug APK with logging
+        working-directory: apps/wawapp_driver
+        run: |
+          flutter build apk --debug --build-shared-library 2>&1 | tee ../../../driver_flutter_build.log
+        continue-on-error: true
+
+      - name: Upload APK
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: driver-debug-apk
+          path: apps/wawapp_driver/build/app/outputs/flutter-apk/app-*.apk
+          if-no-files-found: ignore
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: driver-build-logs
+          path: |
+            driver_flutter_build.log
+            apps/wawapp_driver/build/app/outputs/logs/**
+            /home/runner/.gradle/daemon/*/daemon-*.out.log
+          if-no-files-found: ignore
+
+
+

@@ -1,0 +1,20 @@
+FLUTTER ANALYZE - WAWAPP_CLIENT (After Map Refactor)
+=====================================================
+Date: 2025-01-07
+
+ERROR: Unable to run flutter analyze
+REASON: Git not found in PATH
+
+Changes applied:
+- Refactored pick_route_controller.dart with provider injection
+- Refactored geocoding_helper.dart with instance-based API key
+- Created core/geo/distance.dart for Haversine calculation
+- Created test/features/map/map_providers_test.dart
+
+Manual verification needed:
+1. Ensure git is in PATH
+2. Run: flutter pub get
+3. Run: flutter analyze
+4. Run: flutter test test/features/map/map_providers_test.dart
+
+STATUS: Skipped due to environment limitation

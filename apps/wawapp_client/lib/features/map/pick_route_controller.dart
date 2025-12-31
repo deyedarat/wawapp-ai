@@ -1,12 +1,41 @@
+import 'dart:developer' as dev;
+
+import 'package:core_shared/core_shared.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../core/geo/distance.dart';
 import '../../core/location/location_service.dart';
 
 // Use Google Maps LatLng directly to avoid conflicts
 typedef MapLatLng = LatLng;
+
+/// Provider for Google Maps API key
+/// CRITICAL: Must be set via --dart-define=GOOGLE_MAPS_API_KEY=your_key
+/// or in api_keys.xml for Android builds
+final mapsApiKeyProvider = Provider<String>((ref) {
+  const key = String.fromEnvironment('GOOGLE_MAPS_API_KEY', defaultValue: '');
+
+  // FAIL-FAST: Validate API key in debug mode
+  if (kDebugMode && key.isEmpty) {
+    dev.log(
+      '🚨 CRITICAL: GOOGLE_MAPS_API_KEY is not set!\n'
+      'Maps and geocoding features will NOT work.\n'
+      '\n'
+      'Setup options:\n'
+      '1. Build with: flutter run --dart-define=GOOGLE_MAPS_API_KEY=your_key\n'
+      '2. Create api_keys.xml (see SECRETS_MANAGEMENT.md)\n'
+      '3. Copy .env.example to .env and set GOOGLE_MAPS_API_KEY\n',
+      name: 'MapApi Key',
+      level: 2000, // SEVERE
+    );
+  }
+
+  return key;
+});
 
 class RoutePickerState {
   final MapLatLng? pickup;
@@ -15,6 +44,7 @@ class RoutePickerState {
   final String dropoffAddress;
   final bool selectingPickup;
   final double? distanceKm;
+  final bool mapsEnabled;
 
   const RoutePickerState({
     this.pickup,
@@ -23,6 +53,7 @@ class RoutePickerState {
     this.dropoffAddress = '',
     this.selectingPickup = true,
     this.distanceKm,
+    this.mapsEnabled = true,
   });
 
   RoutePickerState copyWith({
@@ -32,6 +63,7 @@ class RoutePickerState {
     String? dropoffAddress,
     bool? selectingPickup,
     double? distanceKm,
+    bool? mapsEnabled,
   }) {
     return RoutePickerState(
       pickup: pickup ?? this.pickup,
@@ -40,6 +72,7 @@ class RoutePickerState {
       dropoffAddress: dropoffAddress ?? this.dropoffAddress,
       selectingPickup: selectingPickup ?? this.selectingPickup,
       distanceKm: distanceKm ?? this.distanceKm,
+      mapsEnabled: mapsEnabled ?? this.mapsEnabled,
     );
   }
 
@@ -47,11 +80,12 @@ class RoutePickerState {
 }
 
 class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
-  RoutePickerNotifier() : super(const RoutePickerState());
+  RoutePickerNotifier(this.apiKey) : super(const RoutePickerState(mapsEnabled: true));
 
-  static const String _mapsApiKey = String.fromEnvironment('MAPS_API_KEY',
-      defaultValue: 'AIzaSyDimBTrli5SRnF4pfJrgdZnQBC3v05OUEs');
-  late final GooglePlace _googlePlace = GooglePlace(_mapsApiKey);
+  final String apiKey;
+  static const String _tag = 'RoutePickerNotifier';
+
+  late final GooglePlace? _googlePlace = apiKey.isNotEmpty ? GooglePlace(apiKey) : null;
   final Uuid _uuid = const Uuid();
 
   void toggleSelection() {
@@ -61,15 +95,12 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
   Future<void> setLocationFromTap(MapLatLng location) async {
     // Set loading state
     if (state.selectingPickup) {
-      state = state.copyWith(
-          pickup: location, pickupAddress: 'جارٍ تحديد العنوان...');
+      state = state.copyWith(pickup: location, pickupAddress: 'جار تحديد العنوان...');
     } else {
-      state = state.copyWith(
-          dropoff: location, dropoffAddress: 'جارٍ تحديد العنوان...');
+      state = state.copyWith(dropoff: location, dropoffAddress: 'جار تحديد العنوان...');
     }
 
-    final address = await LocationService.resolveAddressFromLatLng(
-        location.latitude, location.longitude);
+    final address = await LocationService.resolveAddressFromLatLng(location.latitude, location.longitude);
 
     if (state.selectingPickup) {
       state = state.copyWith(pickupAddress: address);
@@ -100,9 +131,13 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
 
   Future<List<AutocompletePrediction>> searchPlaces(String query) async {
     if (query.isEmpty) return [];
+    if (!state.mapsEnabled || _googlePlace == null) {
+      dev.log('Cannot search places: Maps disabled (no API key)', name: _tag);
+      return [];
+    }
 
     try {
-      final result = await _googlePlace.autocomplete.get(
+      final result = await _googlePlace!.autocomplete.get(
         query,
         sessionToken: _uuid.v4(),
         language: 'ar',
@@ -111,32 +146,38 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
 
       return result?.predictions ?? [];
     } catch (e) {
+      dev.log('Error searching places: $e', name: _tag);
       return [];
     }
   }
 
   Future<DetailsResult?> getPlaceDetails(String placeId) async {
+    if (!state.mapsEnabled || _googlePlace == null) {
+      dev.log('Cannot get place details: Maps disabled (no API key)', name: _tag);
+      return null;
+    }
+
     try {
-      final result = await _googlePlace.details.get(
+      final result = await _googlePlace!.details.get(
         placeId,
         sessionToken: _uuid.v4(),
         language: 'ar',
       );
       return result?.result;
     } catch (e) {
+      dev.log('Error getting place details: $e', name: _tag);
       return null;
     }
   }
 
   void _calculateDistance() {
     if (state.pickup != null && state.dropoff != null) {
-      final distance = Geolocator.distanceBetween(
-            state.pickup!.latitude,
-            state.pickup!.longitude,
-            state.dropoff!.latitude,
-            state.dropoff!.longitude,
-          ) /
-          1000; // Convert to km
+      final distance = computeDistanceKm(
+        lat1: state.pickup!.latitude,
+        lng1: state.pickup!.longitude,
+        lat2: state.dropoff!.latitude,
+        lng2: state.dropoff!.longitude,
+      );
 
       state = state.copyWith(distanceKm: distance);
     }
@@ -162,12 +203,33 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
     }
   }
 
+  Future<void> setLocationFromSavedLocation(SavedLocation savedLocation, bool isPickup) async {
+    final location = MapLatLng(savedLocation.latitude, savedLocation.longitude);
+    final address = savedLocation.address;
+
+    if (isPickup) {
+      state = state.copyWith(pickup: location, pickupAddress: address);
+    } else {
+      state = state.copyWith(dropoff: location, dropoffAddress: address);
+    }
+
+    _calculateDistance();
+  }
+
+  void setLocationExplicitly(MapLatLng location, String address, bool isPickup) {
+    if (isPickup) {
+      state = state.copyWith(pickup: location, pickupAddress: address);
+    } else {
+      state = state.copyWith(dropoff: location, dropoffAddress: address);
+    }
+    _calculateDistance();
+  }
+
   void reset() {
     state = const RoutePickerState();
   }
 }
 
-final routePickerProvider =
-    StateNotifierProvider<RoutePickerNotifier, RoutePickerState>((ref) {
-  return RoutePickerNotifier();
+final routePickerProvider = StateNotifierProvider<RoutePickerNotifier, RoutePickerState>((ref) {
+  return RoutePickerNotifier(ref.watch(mapsApiKeyProvider));
 });

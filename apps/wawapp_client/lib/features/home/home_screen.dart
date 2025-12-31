@@ -1,16 +1,25 @@
 import 'dart:developer' as dev;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import '../../core/geo/distance.dart';
+import '../../core/location/location_service.dart';
+import '../../core/models/shipment_type.dart';
+import '../../core/pricing/pricing.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/colors.dart';
+import '../../theme/components.dart';
+import '../../theme/theme_extensions.dart';
+import '../map/map_picker_screen.dart';
 import '../map/pick_route_controller.dart';
 import '../map/places_autocomplete_sheet.dart';
-import '../quote/providers/quote_provider.dart';
+import '../map/saved_location_selector_sheet.dart';
 import '../quote/models/latlng.dart' as quote_latlng;
-import '../../core/geo/distance.dart';
-import '../../core/pricing/pricing.dart';
-import '../../core/location/location_service.dart';
+import '../quote/providers/quote_provider.dart';
+import '../shipment_type/shipment_type_provider.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -20,11 +29,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  GoogleMapController? _mapController;
-  static const CameraPosition _nouakchott = CameraPosition(
-    target: LatLng(18.0735, -15.9582),
-    zoom: 14.0,
-  );
   bool _hasLocationPermission = false;
   String? _errorMessage;
   final TextEditingController _pickupController = TextEditingController();
@@ -65,8 +69,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       setState(() {
         _errorMessage = null;
       });
-      dev.log('Location permission denied, showing manual mode',
-          name: 'WAWAPP_HOME');
+      dev.log('Location permission denied, showing manual mode', name: 'WAWAPP_HOME');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -80,25 +83,43 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _getCurrentLocation() async {
     final position = await LocationService.getCurrentPosition();
     if (position != null) {
-      _mapController?.animateCamera(
-        CameraUpdate.newLatLng(
-          LatLng(position.latitude, position.longitude),
-        ),
-      );
+      // Just update permission state if needed, but no camera animation
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content:
-              Text('لم يتمكن من تحديد موقعك الحالي. يرجى التأكد من تفعيل GPS'),
+          content: Text('لم يتمكن من تحديد موقعك الحالي. يرجى التأكد من تفعيل GPS'),
           duration: Duration(seconds: 3),
         ),
       );
     }
   }
 
-  void _onMapTap(LatLng location) async {
-    await ref.read(routePickerProvider.notifier).setLocationFromTap(location);
-    _mapController?.animateCamera(CameraUpdate.newLatLng(location));
+  Future<void> _handleLocationSelection(bool isPickup) async {
+    final routeState = ref.read(routePickerProvider);
+    final initialLoc = isPickup ? routeState.pickup : routeState.dropoff;
+    final initialLabel = isPickup ? routeState.pickupAddress : routeState.dropoffAddress;
+
+    final result = await Navigator.push<SelectedLocation>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MapPickerScreen(
+          title: isPickup ? 'تحديد موقع الاستلام' : 'تحديد موقع التسليم',
+          initialLocation: initialLoc != null
+              ? SelectedLocation(
+                  label: initialLabel,
+                  latitude: initialLoc.latitude,
+                  longitude: initialLoc.longitude,
+                )
+              : null,
+        ),
+      ),
+    );
+
+    if (result != null) {
+      ref
+          .read(routePickerProvider.notifier)
+          .setLocationExplicitly(LatLng(result.latitude, result.longitude), result.label, isPickup);
+    }
   }
 
   void _showPlacesSheet(bool isPickup) {
@@ -117,59 +138,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Set<Marker> _buildMarkers(RoutePickerState state) {
-    final markers = <Marker>{};
-
-    if (state.pickup != null) {
-      markers.add(Marker(
-        markerId: const MarkerId('pickup'),
-        position: state.pickup!,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        infoWindow: InfoWindow(title: 'استلام', snippet: state.pickupAddress),
-      ));
-    }
-
-    if (state.dropoff != null) {
-      markers.add(Marker(
-        markerId: const MarkerId('dropoff'),
-        position: state.dropoff!,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        infoWindow: InfoWindow(title: 'تسليم', snippet: state.dropoffAddress),
-      ));
-    }
-
-    return markers;
+  void _showSavedLocationsSheet(SavedLocationSelectionMode mode) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SavedLocationSelectorSheet(
+        mode: mode,
+        onLocationSelected: () {
+          // Update text controllers when location is selected
+          final state = ref.read(routePickerProvider);
+          _pickupController.text = state.pickupAddress;
+          _dropoffController.text = state.dropoffAddress;
+        },
+      ),
+    );
   }
 
-  void _fitBounds(RoutePickerState state) {
-    if (_mapController == null) return;
+  void _handleCalculatePrice() {
+    final routeState = ref.read(routePickerProvider);
 
-    final pickup = state.pickup;
-    final dropoff = state.dropoff;
-
-    if (pickup != null && dropoff != null) {
-      final bounds = LatLngBounds(
-        southwest: LatLng(
-          pickup.latitude < dropoff.latitude
-              ? pickup.latitude
-              : dropoff.latitude,
-          pickup.longitude < dropoff.longitude
-              ? pickup.longitude
-              : dropoff.longitude,
-        ),
-        northeast: LatLng(
-          pickup.latitude > dropoff.latitude
-              ? pickup.latitude
-              : dropoff.latitude,
-          pickup.longitude > dropoff.longitude
-              ? pickup.longitude
-              : dropoff.longitude,
-        ),
-      );
-      _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 48.0));
-    } else if (pickup != null) {
-      _mapController!.animateCamera(CameraUpdate.newLatLngZoom(pickup, 15.0));
+    if (routeState.pickup == null || routeState.dropoff == null) {
+      return;
     }
+
+    final pickup = routeState.pickup!;
+    final dropoff = routeState.dropoff!;
+
+    final km = computeDistanceKm(
+      lat1: pickup.latitude,
+      lng1: pickup.longitude,
+      lat2: dropoff.latitude,
+      lng2: dropoff.longitude,
+    );
+    final breakdown = Pricing.compute(km);
+    final price = breakdown.rounded;
+
+    dev.log('Distance: ${km}km, Price: ${price}MRU', name: 'WAWAPP_LOC');
+
+    ref.read(quoteProvider.notifier).setPickup(quote_latlng.LatLng(pickup.latitude, pickup.longitude));
+    ref.read(quoteProvider.notifier).setDropoff(quote_latlng.LatLng(dropoff.latitude, dropoff.longitude));
+    ref.read(quoteProvider.notifier).setDistance(km);
+    ref.read(quoteProvider.notifier).setPrice(price.round());
+
+    context.push('/quote');
   }
 
   @override
@@ -177,203 +188,588 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final l10n = AppLocalizations.of(context)!;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
     final routeState = ref.watch(routePickerProvider);
+    final selectedShipmentType = ref.watch(selectedShipmentTypeProvider);
+    final theme = Theme.of(context);
+    final shipmentColors = context.shipmentTypeColors;
 
-    // Update text controllers when state changes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_pickupController.text != routeState.pickupAddress) {
-        _pickupController.text = routeState.pickupAddress;
-      }
-      if (_dropoffController.text != routeState.dropoffAddress) {
-        _dropoffController.text = routeState.dropoffAddress;
-      }
-      // Fit bounds when both locations are set
-      if (routeState.pickup != null && routeState.dropoff != null) {
-        _fitBounds(routeState);
-      }
-    });
+    // Update text controllers when state changes (without triggering rebuilds)
+    if (_pickupController.text != routeState.pickupAddress) {
+      _pickupController.text = routeState.pickupAddress;
+    }
+    if (_dropoffController.text != routeState.dropoffAddress) {
+      _dropoffController.text = routeState.dropoffAddress;
+    }
 
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          title: Text(l10n.appTitle),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.info_outline),
-              onPressed: () => context.push('/about'),
+        backgroundColor: theme.colorScheme.surface,
+        appBar: _buildAppBar(context, l10n),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsetsDirectional.all(WawAppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 1. Header Section
+                _buildHeaderSection(context, l10n),
+
+                const SizedBox(height: WawAppSpacing.lg),
+
+                // 2. Primary Action Card
+                _buildPrimaryActionCard(
+                  context,
+                  l10n,
+                  selectedShipmentType,
+                  routeState,
+                ),
+
+                const SizedBox(height: WawAppSpacing.lg),
+
+                // 3. ShipmentType Quick Access
+                _buildQuickCategorySelector(
+                  context,
+                  l10n,
+                  selectedShipmentType,
+                  shipmentColors,
+                ),
+
+                const SizedBox(height: WawAppSpacing.lg),
+
+                // 4. Current Shipment Status (placeholder)
+                _buildCurrentShipmentCard(context, l10n),
+
+                const SizedBox(height: WawAppSpacing.lg),
+
+                // 5. Past Shipments
+                _buildPastShipmentsCard(context, l10n),
+
+                const SizedBox(height: WawAppSpacing.lg),
+
+                // 6. Info Banner
+                _buildInfoBanner(context, l10n),
+
+                const SizedBox(height: WawAppSpacing.xxl),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+
+    return AppBar(
+      title: Text(l10n.appTitle),
+      centerTitle: true,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.language),
+          onPressed: () {
+            // Placeholder for future language switcher
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.language),
+                duration: const Duration(seconds: 1),
+              ),
+            );
+          },
+          tooltip: l10n.language,
+        ),
+        PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert),
+          onSelected: (value) {
+            switch (value) {
+              case 'profile':
+                context.push('/profile');
+                break;
+              case 'about':
+                context.push('/about');
+                break;
+            }
+          },
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              value: 'profile',
+              child: Row(
+                children: [
+                  const Icon(Icons.person),
+                  const SizedBox(width: WawAppSpacing.xs),
+                  Text(l10n.profile),
+                ],
+              ),
+            ),
+            PopupMenuItem(
+              value: 'about',
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline),
+                  const SizedBox(width: WawAppSpacing.xs),
+                  Text(l10n.about_app),
+                ],
+              ),
             ),
           ],
         ),
-        body: SafeArea(
-          child: SingleChildScrollView(
+      ],
+    );
+  }
+
+  Widget _buildHeaderSection(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(
+              Icons.waving_hand,
+              color: WawAppColors.secondary,
+              size: 24,
+            ),
+            const SizedBox(width: WawAppSpacing.xs),
+            Text(
+              l10n.greeting,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: WawAppSpacing.xxs),
+        Text(
+          l10n.welcome_back,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: WawAppColors.textSecondaryLight,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPrimaryActionCard(
+    BuildContext context,
+    AppLocalizations l10n,
+    ShipmentType selectedType,
+    RoutePickerState routeState,
+  ) {
+    final theme = Theme.of(context);
+    final shipmentColors = context.shipmentTypeColors;
+
+    // Get the color for the selected shipment type
+    Color categoryColor;
+    switch (selectedType) {
+      case ShipmentType.foodAndPerishables:
+        categoryColor = shipmentColors.foodPerishables;
+        break;
+      case ShipmentType.furnitureAndHomeSetup:
+        categoryColor = shipmentColors.furniture;
+        break;
+      case ShipmentType.constructionMaterialsAndHeavyLoad:
+        categoryColor = shipmentColors.construction;
+        break;
+      case ShipmentType.electricalAndHomeAppliances:
+        categoryColor = shipmentColors.appliances;
+        break;
+      case ShipmentType.generalGoodsAndBoxes:
+        categoryColor = shipmentColors.generalGoods;
+        break;
+      case ShipmentType.fragileOrSensitiveCargo:
+        categoryColor = shipmentColors.fragile;
+        break;
+    }
+
+    return WawCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Title and badge
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.start_new_shipment,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: WawAppSpacing.xxs),
+                    Text(
+                      l10n.select_pickup_dropoff,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: WawAppColors.textSecondaryLight,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: WawAppSpacing.sm),
+              // Category badge
+              Container(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: WawAppSpacing.sm,
+                  vertical: WawAppSpacing.xs,
+                ),
+                decoration: BoxDecoration(
+                  color: categoryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(WawAppSpacing.radiusSm),
+                  border: Border.all(
+                    color: categoryColor.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      selectedType.icon,
+                      size: 16,
+                      color: categoryColor,
+                    ),
+                    const SizedBox(width: WawAppSpacing.xxs),
+                    Text(
+                      selectedType.arabicLabel,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: categoryColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: WawAppSpacing.md),
+
+          // Pickup location field
+          TextField(
+            controller: _pickupController,
+            decoration: InputDecoration(
+              labelText: l10n.pickup,
+              prefixIcon: IconButton(
+                icon: const Icon(Icons.my_location),
+                onPressed: () async {
+                  await ref.read(routePickerProvider.notifier).setCurrentLocation();
+                },
+              ),
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.bookmark),
+                    onPressed: () => _showSavedLocationsSheet(SavedLocationSelectionMode.pickup),
+                    tooltip: 'المواقع المحفوظة',
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: routeState.mapsEnabled ? () => _showPlacesSheet(true) : null,
+                  ),
+                ],
+              ),
+            ),
+            readOnly: true,
+            // CHANGED: Navigate to MapPickerScreen
+            onTap: routeState.mapsEnabled ? () => _handleLocationSelection(true) : null,
+          ),
+
+          const SizedBox(height: WawAppSpacing.sm),
+
+          // Dropoff location field
+          TextField(
+            controller: _dropoffController,
+            decoration: InputDecoration(
+              labelText: l10n.dropoff,
+              prefixIcon: const Icon(Icons.location_on),
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.bookmark),
+                    onPressed: () => _showSavedLocationsSheet(SavedLocationSelectionMode.dropoff),
+                    tooltip: 'المواقع المحفوظة',
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.search),
+                    onPressed: routeState.mapsEnabled ? () => _showPlacesSheet(false) : null,
+                  ),
+                ],
+              ),
+            ),
+            readOnly: true,
+            // CHANGED: Navigate to MapPickerScreen
+            onTap: routeState.mapsEnabled ? () => _handleLocationSelection(false) : null,
+          ),
+
+          const SizedBox(height: WawAppSpacing.md),
+
+          // Action button
+          WawActionButton(
+            label: l10n.begin_shipment,
+            icon: Icons.arrow_forward,
+            onPressed: (routeState.pickup != null && routeState.dropoff != null) ? _handleCalculatePrice : null,
+            isFullWidth: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickCategorySelector(
+    BuildContext context,
+    AppLocalizations l10n,
+    ShipmentType selectedType,
+    ShipmentTypeColors shipmentColors,
+  ) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.quick_select_category,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: WawAppSpacing.sm),
+        SizedBox(
+          height: 80,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: ShipmentType.values.map((type) {
+              Color categoryColor;
+              switch (type) {
+                case ShipmentType.foodAndPerishables:
+                  categoryColor = shipmentColors.foodPerishables;
+                  break;
+                case ShipmentType.furnitureAndHomeSetup:
+                  categoryColor = shipmentColors.furniture;
+                  break;
+                case ShipmentType.constructionMaterialsAndHeavyLoad:
+                  categoryColor = shipmentColors.construction;
+                  break;
+                case ShipmentType.electricalAndHomeAppliances:
+                  categoryColor = shipmentColors.appliances;
+                  break;
+                case ShipmentType.generalGoodsAndBoxes:
+                  categoryColor = shipmentColors.generalGoods;
+                  break;
+                case ShipmentType.fragileOrSensitiveCargo:
+                  categoryColor = shipmentColors.fragile;
+                  break;
+              }
+
+              final isSelected = type == selectedType;
+
+              return Padding(
+                padding: const EdgeInsetsDirectional.only(
+                  end: WawAppSpacing.sm,
+                ),
+                child: InkWell(
+                  onTap: () {
+                    context.push('/shipment-type');
+                  },
+                  borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
+                  child: Container(
+                    width: 70,
+                    decoration: BoxDecoration(
+                      color: isSelected ? categoryColor.withOpacity(0.1) : theme.colorScheme.surface,
+                      borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
+                      border: Border.all(
+                        color: isSelected ? categoryColor : WawAppColors.borderLight,
+                        width: isSelected ? 2 : 1,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          type.icon,
+                          size: 28,
+                          color: isSelected ? categoryColor : WawAppColors.textSecondaryLight,
+                        ),
+                        const SizedBox(height: WawAppSpacing.xxs),
+                        if (isSelected)
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: categoryColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCurrentShipmentCard(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+
+    // Placeholder: No active shipment
+    return WawCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.local_shipping_outlined,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: WawAppSpacing.xs),
+              Text(
+                l10n.current_shipment,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: WawAppSpacing.sm),
+          Center(
             child: Padding(
-              padding: EdgeInsets.only(
-                left: 16.0,
-                right: 16.0,
-                top: 16.0,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              padding: const EdgeInsetsDirectional.symmetric(
+                vertical: WawAppSpacing.sm,
               ),
               child: Column(
                 children: [
-                  Stack(
-                    children: [
-                      SizedBox(
-                        height: 300,
-                        child: _errorMessage != null
-                            ? Container(
-                                color: Colors.grey[100],
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      if (_errorMessage ==
-                                          'جاري تحديد موقعك...')
-                                        const CircularProgressIndicator()
-                                      else
-                                        const Icon(Icons.location_off,
-                                            size: 64, color: Colors.grey),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        _errorMessage!,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            : GoogleMap(
-                                onMapCreated: (GoogleMapController controller) {
-                                  dev.log('GoogleMap created successfully',
-                                      name: 'WAWAPP_HOME');
-                                  _mapController = controller;
-                                  WidgetsBinding.instance.addPostFrameCallback(
-                                      (_) => _fitBounds(routeState));
-                                },
-                                initialCameraPosition: _nouakchott,
-                                myLocationEnabled: _hasLocationPermission,
-                                myLocationButtonEnabled: _hasLocationPermission,
-                                onTap: _onMapTap,
-                                markers: _buildMarkers(routeState),
-                                compassEnabled: true,
-                                mapToolbarEnabled: false,
-                                zoomControlsEnabled: true,
-                              ),
-                      ),
-                      if (_errorMessage == null)
-                        Positioned(
-                          top: 16,
-                          right: 16,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: const [
-                                BoxShadow(color: Colors.black26, blurRadius: 4)
-                              ],
-                            ),
-                            child: ChoiceChip(
-                              label: Text(
-                                routeState.selectingPickup
-                                    ? 'اختر موقع الاستلام'
-                                    : 'اختر موقع التسليم',
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                              selected: true,
-                              onSelected: (_) => ref
-                                  .read(routePickerProvider.notifier)
-                                  .toggleSelection(),
-                              selectedColor: routeState.selectingPickup
-                                  ? Colors.green[100]
-                                  : Colors.red[100],
-                            ),
-                          ),
-                        ),
-                    ],
+                  const Icon(
+                    Icons.inbox_outlined,
+                    size: 40,
+                    color: WawAppColors.textSecondaryLight,
                   ),
-                  const SizedBox(height: 24),
-                  TextField(
-                    controller: _pickupController,
-                    decoration: InputDecoration(
-                      labelText: l10n.pickup,
-                      prefixIcon: IconButton(
-                        icon: const Icon(Icons.my_location),
-                        onPressed: () async {
-                          await ref
-                              .read(routePickerProvider.notifier)
-                              .setCurrentLocation();
-                        },
-                      ),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: () => _showPlacesSheet(true),
-                      ),
-                      border: const OutlineInputBorder(),
+                  const SizedBox(height: WawAppSpacing.xs),
+                  Text(
+                    l10n.no_active_shipments,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: WawAppColors.textSecondaryLight,
                     ),
-                    readOnly: true,
-                    onTap: () => _showPlacesSheet(true),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _dropoffController,
-                    decoration: InputDecoration(
-                      labelText: l10n.dropoff,
-                      prefixIcon: const Icon(Icons.location_on),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: () => _showPlacesSheet(false),
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
-                    readOnly: true,
-                    onTap: () => _showPlacesSheet(false),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: (routeState.pickup != null &&
-                              routeState.dropoff != null)
-                          ? () {
-                              final pickup = routeState.pickup!;
-                              final dropoff = routeState.dropoff!;
-
-                              final km = computeDistanceKm(
-                                lat1: pickup.latitude,
-                                lng1: pickup.longitude,
-                                lat2: dropoff.latitude,
-                                lng2: dropoff.longitude,
-                              );
-                              final breakdown = Pricing.compute(km);
-                              final price = breakdown.rounded;
-
-                              dev.log('Distance: ${km}km, Price: ${price}MRU',
-                                  name: 'WAWAPP_LOC');
-
-                              ref.read(quoteProvider.notifier).setPickup(
-                                  quote_latlng.LatLng(
-                                      pickup.latitude, pickup.longitude));
-                              ref.read(quoteProvider.notifier).setDropoff(
-                                  quote_latlng.LatLng(
-                                      dropoff.latitude, dropoff.longitude));
-                              ref.read(quoteProvider.notifier).setDistance(km);
-                              ref
-                                  .read(quoteProvider.notifier)
-                                  .setPrice(price.round());
-
-                              context.push('/quote');
-                            }
-                          : null,
-                      child: const Text('احسب السعر'),
-                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPastShipmentsCard(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+
+    return WawCard(
+      child: InkWell(
+        onTap: () {
+          // Navigate to order history (placeholder)
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.view_history),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.all(WawAppSpacing.xs),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsetsDirectional.all(WawAppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(WawAppSpacing.radiusSm),
+                ),
+                child: Icon(
+                  Icons.history,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: WawAppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.past_shipments,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      l10n.view_history,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: WawAppColors.textSecondaryLight,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: WawAppColors.textSecondaryLight,
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildInfoBanner(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsetsDirectional.all(WawAppSpacing.md),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.primary.withOpacity(0.1),
+            theme.colorScheme.secondary.withOpacity(0.1),
+          ],
+          begin: AlignmentDirectional.topStart,
+          end: AlignmentDirectional.bottomEnd,
+        ),
+        borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
+        border: Border.all(
+          color: theme.colorScheme.primary.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.info_outline,
+            color: theme.colorScheme.primary,
+            size: 24,
+          ),
+          const SizedBox(width: WawAppSpacing.sm),
+          Expanded(
+            child: Text(
+              l10n.safe_reliable_delivery,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: WawAppColors.textPrimaryLight,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

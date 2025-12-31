@@ -1,0 +1,8 @@
+{
+  "projectName": "WawApp",
+  "projectType": "flutter",
+  "testFramework": "flutter_test",
+  "sourceDirectory": "apps/wawapp_client/lib",
+  "testDirectory": "apps/wawapp_client/test",
+  "apiKey": "sk-user-z8Kpn52020A1hlrQ1AKjAe48n9S7Q451GMRqjWzzaYkUkVEgCwXIHQPWPiwe_XRfonIQ4ta7ll478Hx4aQwn_NykEwRkPfqbm9gsPxiV1baMhzgoqBNxU1m2C79JYjzbZF4"
+}

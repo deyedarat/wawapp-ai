@@ -1,0 +1,258 @@
+rules_version = '2';
+// Note: Firebase Admin SDK (used by Cloud Functions) bypasses these rules.
+// Cloud Functions can read/write any data regardless of the rules below.
+// These rules only apply to client SDK requests (Flutter apps).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { return request.auth != null && request.auth.token.isAdmin == true; }
+    function isOwner() { return resource.data.ownerId == request.auth.uid; }
+    function isDriver() { return resource.data.driverId == request.auth.uid; }
+    function isAssignedDriver() { return resource.data.assignedDriverId == request.auth.uid; }
+    function validStatusTransition() {
+      let currentStatus = resource.data.status;
+      let newStatus = request.resource.data.status;
+      // P0-5 FIX: Removed "cancelledByClient" from onRoute transitions (can't cancel after trip started)
+      return (currentStatus == "matching" && newStatus in ["accepted", "cancelled", "cancelledByClient", "cancelledByDriver"]) ||
+             (currentStatus == "accepted" && newStatus in ["onRoute", "cancelled", "cancelledByClient", "cancelledByDriver"]) ||
+             (currentStatus == "onRoute" && newStatus in ["completed", "cancelled", "cancelledByDriver"]);
+    }
+    function isRatingUpdate() {
+      let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      return affectedKeys.hasOnly(['driverRating', 'ratedAt', 'updatedAt'])
+        && request.resource.data.driverRating is int
+        && request.resource.data.driverRating >= 1
+        && request.resource.data.driverRating <= 5
+        && resource.data.status == 'completed';
+    }
+
+    match /orders/{id} {
+      // Admin has full access to all orders
+      allow read, write: if isAdmin();
+      
+      allow create: if isSignedIn()
+        && request.resource.data.status == "matching"
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.price is int
+        && request.resource.data.price > 0  // P0-6 FIX: Prevent free orders
+        && request.resource.data.price <= 100000  // P0-6 FIX: Max price sanity check
+        && request.resource.data.distanceKm is number
+        && request.resource.data.distanceKm >= 0
+        && request.resource.data.distanceKm < 100
+        && request.resource.data.pickup is map
+        && request.resource.data.pickup.lat is number
+        && request.resource.data.pickup.lng is number
+        && request.resource.data.pickup.lat >= -90
+        && request.resource.data.pickup.lat <= 90
+        && request.resource.data.pickup.lng >= -180
+        && request.resource.data.pickup.lng <= 180
+        && request.resource.data.dropoff is map
+        && request.resource.data.dropoff.lat is number
+        && request.resource.data.dropoff.lng is number
+        && request.resource.data.dropoff.lat >= -90
+        && request.resource.data.dropoff.lat <= 90
+        && request.resource.data.dropoff.lng >= -180
+        && request.resource.data.dropoff.lng <= 180
+        && request.resource.data.pickupAddress is string
+        && request.resource.data.pickupAddress.size() > 0
+        && request.resource.data.dropoffAddress is string
+        && request.resource.data.dropoffAddress.size() > 0;
+
+      // P0-2 FIX: Removed public access to matching orders to prevent PII leakage
+      // Drivers must use Cloud Function getNearbyOrders() for server-side matching
+      allow read: if isSignedIn() && (isOwner() || isAssignedDriver());
+      
+      allow update: if isSignedIn()
+        && request.resource.data.price == resource.data.price
+        && request.resource.data.ownerId == resource.data.ownerId
+        // P0-12 FIX: Prevent changing assignedDriverId after it's set (prevent order theft)
+        && (
+          !('assignedDriverId' in resource.data) ||  // First assignment OK
+          request.resource.data.assignedDriverId == resource.data.assignedDriverId  // No change allowed
+        )
+        && ((validStatusTransition() && ((request.resource.data.status == "accepted" && request.resource.data.assignedDriverId == request.auth.uid) ||
+            (request.resource.data.status == "cancelledByClient" && isOwner() && resource.data.status in ["matching", "accepted"]) ||  // P0-5 FIX: Only allow client cancel before onRoute
+            (request.resource.data.status in ["onRoute", "completed", "cancelled", "cancelledByDriver"] && isAssignedDriver()))) ||
+            (isRatingUpdate() && isOwner()));
+    }
+
+    match /driver_locations/{driverId} {
+      // P0-3 FIX: Only owner can read/write to prevent stalking
+      // Clients get driver location via Cloud Function that validates order ownership
+      allow read: if isSignedIn() && request.auth.uid == driverId;
+      allow write: if isSignedIn() && request.auth.uid == driverId;
+    }
+
+    match /users/{uid} {
+      // Read: only owner (get by document ID)
+      allow read: if isSignedIn() && request.auth.uid == uid;
+
+      // SECURITY FIX: Removed unauthenticated list access (prevented phone enumeration)
+      // List queries not needed for normal app flow - users access their own doc by UID
+      // If phone lookup is needed, use Cloud Functions with proper rate limiting
+
+      // Create: only owner
+      allow create: if isSignedIn() && request.auth.uid == uid;
+
+      // Update: only owner AND prevent tampering with sensitive/admin fields
+      // P0-4 FIX: Strict validation to prevent adding OR modifying admin fields
+      allow update: if isSignedIn()
+                    && request.auth.uid == uid
+                    // Prevent partial PIN edits (must update both pinHash and pinSalt together)
+                    && !(request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['pinHash','pinSalt'])
+                         && !request.resource.data.keys().hasAll(['pinHash','pinSalt']))
+                    // P0-4 FIX: Prevent adding OR modifying admin-only fields
+                    && !request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['totalTrips', 'averageRating', 'isVerified', 'isAdmin']);
+
+      // Saved locations subcollection: full CRUD for owner only
+      match /savedLocations/{locationId} {
+        allow read, delete: if isSignedIn() && request.auth.uid == uid;
+        
+        allow create: if isSignedIn() 
+                      && request.auth.uid == uid
+                      && request.resource.data.lat is number
+                      && request.resource.data.lat >= -90
+                      && request.resource.data.lat <= 90
+                      && request.resource.data.lng is number
+                      && request.resource.data.lng >= -180
+                      && request.resource.data.lng <= 180
+                      && request.resource.data.label is string;
+        
+        allow update: if isSignedIn() 
+                      && request.auth.uid == uid
+                      && request.resource.data.lat is number
+                      && request.resource.data.lat >= -90
+                      && request.resource.data.lat <= 90
+                      && request.resource.data.lng is number
+                      && request.resource.data.lng >= -180
+                      && request.resource.data.lng <= 180
+                      && request.resource.data.label is string;
+      }
+    }
+
+    match /drivers/{driverId} {
+      // Admin has full access to all drivers
+      allow read, write: if isAdmin();
+
+      // SECURITY FIX: Removed "|| true" - was allowing ANY authenticated user to read ANY driver
+      // Read: only the driver themselves
+      // Note: Order matching uses driver_locations collection, not /drivers
+      allow read: if isSignedIn() && request.auth.uid == driverId;
+
+      // SECURITY FIX: Removed unauthenticated list access (prevented phone enumeration)
+      // List queries should use driver_locations for active drivers, not /drivers collection
+
+      // Create: only the driver themselves
+      allow create: if isSignedIn() && request.auth.uid == driverId;
+
+      // Update: only the driver themselves
+      // Allow updating any fields EXCEPT admin-only fields
+      // P0-4 FIX: Strict validation to prevent adding OR modifying admin fields
+      allow update: if isSignedIn()
+                    && request.auth.uid == driverId
+                    && !request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['isVerified', 'rating', 'totalTrips', 'ratedOrders', 'isBlocked']);
+    }
+
+    match /clients/{clientId} {
+      // Admin has full access to all clients
+      allow read, write: if isAdmin();
+      
+      // Read: only the client themselves
+      allow read: if isSignedIn() && request.auth.uid == clientId;
+      
+      // Create: only the client themselves
+      allow create: if isSignedIn() && request.auth.uid == clientId;
+
+      // Update: only the client themselves AND prevent tampering with admin-only fields
+      // P0-4 FIX: Strict validation to prevent adding OR modifying admin fields
+      allow update: if isSignedIn() 
+                    && request.auth.uid == clientId
+                    && !request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['isVerified', 'totalTrips', 'averageRating', 'isBlocked']);
+    }
+
+    match /admins/{adminId} {
+      // Only admins can read admin documents
+      allow read: if isAdmin();
+      
+      // No write access through client SDK (admins are managed via Cloud Functions)
+      allow write: if false;
+    }
+
+    // Wallets collection (Phase 5)
+    match /wallets/{walletId} {
+      // Admins can read all wallets
+      allow read: if isAdmin();
+      
+      // P0-10 FIX: Triple-check driver wallet access + explicit platform wallet protection
+      allow read: if isSignedIn() && 
+                     request.auth.uid == walletId &&
+                     resource.data.ownerId == request.auth.uid &&
+                     resource.data.type == 'driver' &&
+                     walletId != 'PLATFORM_WALLET';
+      
+      // Platform wallet: admins only (explicit rule)
+      allow read: if walletId == 'PLATFORM_WALLET' && isAdmin();
+      
+      // Only Cloud Functions can write (no direct client writes)
+      allow write: if false;
+    }
+
+    // Transactions collection (Phase 5)
+    match /transactions/{transactionId} {
+      // Admins can read all transactions
+      allow read: if isAdmin();
+      
+      // Drivers can read their own transactions
+      allow read: if isSignedIn() && 
+                     request.auth.uid == resource.data.walletId;
+      
+      // Only Cloud Functions can write
+      allow write: if false;
+    }
+
+    // Payouts collection (Phase 5)
+    match /payouts/{payoutId} {
+      // Admins can read all payouts
+      allow read: if isAdmin();
+      
+      // Drivers can read their own payouts
+      allow read: if isSignedIn() && 
+                     request.auth.uid == resource.data.driverId;
+      
+      // Only Cloud Functions can write
+      allow write: if false;
+    }
+
+    // Top-up requests collection (Phase D)
+    match /topup_requests/{requestId} {
+      // Admins can read all requests
+      allow read: if isAdmin();
+
+      // Drivers can read their own requests
+      allow read: if isSignedIn() &&
+                     request.auth.uid == resource.data.driverId;
+
+      // Drivers can create their own requests
+      allow create: if isSignedIn() &&
+                       request.auth.uid == request.resource.data.driverId &&
+                       request.resource.data.status == 'pending' &&
+                       request.resource.data.amount is number &&
+                       request.resource.data.amount > 0;
+
+      // Only admins can approve/reject (via Cloud Functions)
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // PIN rate limiting collection (P0-AUTH-1 fix)
+    match /pin_rate_limits/{docId} {
+      // Only Cloud Functions can access (clients cannot read/write)
+      // This prevents users from resetting their own rate limits
+      allow read, write: if false;
+    }
+  }
+}
