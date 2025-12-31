@@ -1,38 +1,43 @@
+import 'package:auth_shared/auth_shared.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:auth_shared/auth_shared.dart';
+
+import '../../core/config/testlab_flags.dart';
+import '../../core/config/testlab_mock_data.dart';
+import '../../core/theme/colors.dart';
+import '../../services/analytics_service.dart';
+import '../../services/fcm_service.dart';
+import '../../testlab/testlab_home.dart';
+import '../home/driver_home_screen.dart';
 import 'create_pin_screen.dart';
 import 'otp_screen.dart';
 import 'phone_pin_login_screen.dart';
 import 'providers/auth_service_provider.dart';
-import '../home/driver_home_screen.dart';
-import '../../services/analytics_service.dart';
-import '../../services/fcm_service.dart';
-import '../../core/theme/colors.dart';
-import '../../core/config/testlab_flags.dart';
-import '../../core/config/testlab_mock_data.dart';
-import '../../testlab/testlab_home.dart';
 
 // StreamProvider for driver profile
-final driverProfileProvider =
-    StreamProvider.autoDispose<DocumentSnapshot<Map<String, dynamic>>?>((ref) {
+final driverProfileProvider = StreamProvider.autoDispose<DocumentSnapshot<Map<String, dynamic>>?>((ref) {
   // Return mock profile for Test Lab mode
   if (TestLabFlags.safeEnabled) {
     return Stream.value(TestLabMockData.mockDriverDoc);
   }
-  
-  final authState = ref.watch(authProvider);
-  final user = authState.user;
 
-  if (user == null) {
+  final authState = ref.watch(authProvider);
+
+  // CRITICAL: Use the new isStreamsSafeToRun flag to prevent permission errors
+  // This flag is set to false BEFORE any auth transitions (OTP, PIN reset, logout)
+  if (!authState.isStreamsSafeToRun || authState.user == null) {
     return Stream.value(null);
   }
 
-  return FirebaseFirestore.instance
-      .collection('drivers')
-      .doc(user.uid)
-      .snapshots();
+  // Defensive: Capture UID in local variable to prevent race condition
+  final uid = authState.user!.uid;
+
+  return FirebaseFirestore.instance.collection('drivers').doc(uid).snapshots().handleError((error) {
+    // Gracefully handle permission errors that may occur during race conditions
+    debugPrint('[DriverProfileProvider] Stream error (likely during transition): $error');
+    return null;
+  });
 });
 
 class AuthGate extends ConsumerStatefulWidget {
@@ -74,24 +79,25 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     final authState = ref.watch(authProvider);
 
     debugPrint(
-        '[AuthGate] NAVIGATION_DECISION | user: ${authState.user?.uid}, isLoading: ${authState.isLoading}, otpStage: ${authState.otpStage}, hasPin: ${authState.hasPin}');
+        '[AuthGate] NAVIGATION_DECISION | user: ${authState.user?.uid}, isLoading: ${authState.isLoading}, isPinCheckLoading: ${authState.isPinCheckLoading}, otpStage: ${authState.otpStage}, hasPin: ${authState.hasPin}');
 
-    // Show loading while checking auth state
-    if (authState.isLoading) {
+    // Show loading while checking auth state OR checking PIN
+    if (authState.isLoading || authState.isPinCheckLoading) {
       debugPrint('[AuthGate] REDIRECT_REASON=AUTH_LOADING → CircularProgressIndicator');
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    // No user - check if we're in OTP flow
-    if (authState.user == null) {
-      // If OTP was sent successfully, show OTP screen
-      if (authState.otpStage == OtpStage.codeSent) {
-        debugPrint('[AuthGate] REDIRECT_REASON=OTP_CODE_SENT → OtpScreen');
-        return const OtpScreen();
-      }
+    // Check if we're in OTP flow (regardless of user state)
+    // This handles both new registration and PIN reset flows
+    if (authState.otpStage == OtpStage.codeSent) {
+      debugPrint('[AuthGate] REDIRECT_REASON=OTP_CODE_SENT → OtpScreen');
+      return const OtpScreen();
+    }
 
+    // No user - show login screen
+    if (authState.user == null) {
       debugPrint('[AuthGate] REDIRECT_REASON=SIGNED_OUT → PhonePinLoginScreen');
       return const PhonePinLoginScreen();
     }
@@ -141,6 +147,13 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       data: (doc) {
         debugPrint('[AuthGate] driver doc exists: ${doc?.exists}');
 
+        // CRITICAL: Check PIN reset flow FIRST before checking Firestore
+        // During PIN reset, user must go to CreatePinScreen even if they have existing PIN
+        if (authState.isPinResetFlow) {
+          debugPrint('[AuthGate] REDIRECT_REASON=PIN_RESET_FLOW → CreatePinScreen (isPinResetFlow=true)');
+          return const CreatePinScreen();
+        }
+
         // If driver document doesn't exist, show CreatePinScreen
         // The document will be created when user sets PIN (via PhonePinAuth.setPin)
         if (doc == null || !doc.exists) {
@@ -149,8 +162,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
         }
 
         final data = doc.data();
-        final hasPin =
-            data?['pinHash'] != null && (data!['pinHash'] as String).isNotEmpty;
+        final hasPin = data?['pinHash'] != null && (data!['pinHash'] as String).isNotEmpty;
 
         debugPrint('[AuthGate] driver hasPin: $hasPin');
 

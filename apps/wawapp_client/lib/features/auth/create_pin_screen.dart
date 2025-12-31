@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'providers/auth_service_provider.dart';
 
@@ -14,7 +13,6 @@ class CreatePinScreen extends ConsumerStatefulWidget {
 class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
   final _pinController = TextEditingController();
   final _confirmController = TextEditingController();
-  bool _navigationInProgress = false;
 
   @override
   void dispose() {
@@ -43,25 +41,18 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
     final authState = ref.watch(authProvider);
     final isEnforced = authState.user != null && !authState.hasPin;
 
+    // Navigation is now handled by GoRouter's redirect function
     ref.listen(authProvider, (prev, next) {
-      if (next.hasPin && !next.isLoading && !_navigationInProgress) {
-        _navigationInProgress = true;
+      debugPrint(
+        '[CreatePinScreen] Auth state changed - '
+        'hasPin=${next.hasPin} '
+        'isLoading=${next.isLoading}'
+      );
 
-        // Crashlytics breadcrumb
-        FirebaseCrashlytics.instance.log('[CreatePinScreen] Navigation triggered: PIN created');
-        FirebaseCrashlytics.instance.setCustomKey('nav_attempt', 'pin_created');
-        FirebaseCrashlytics.instance.setCustomKey('route_from', '/create-pin');
-        FirebaseCrashlytics.instance.setCustomKey('route_to', '/');
-
-        debugPrint('[CreatePinScreen] PIN created -> scheduling navigation to /');
-
-        // Schedule navigation after current frame to prevent re-entrant navigation
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            debugPrint('[CreatePinScreen] Executing deferred navigation to /');
-            context.go('/');
-          }
-        });
+      // Log PIN creation success for debugging
+      if (next.hasPin && !prev!.hasPin) {
+        FirebaseCrashlytics.instance.log('[CreatePinScreen] PIN created successfully');
+        debugPrint('[CreatePinScreen] ✓ PIN created - GoRouter will handle navigation');
       }
     });
 

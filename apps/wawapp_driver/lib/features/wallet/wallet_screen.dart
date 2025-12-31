@@ -1,16 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/components.dart';
+import 'topup_request_provider.dart';
+import 'topup_request_dialog.dart';
 
-class WalletScreen extends StatelessWidget {
+class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
     final theme = Theme.of(context);
+    final topupState = ref.watch(topupRequestProvider);
+
+    // Listen for success/error messages
+    ref.listen<TopupRequestState>(topupRequestProvider, (previous, next) {
+      if (next.successMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.successMessage!),
+            backgroundColor: DriverAppColors.successLight,
+          ),
+        );
+        ref.read(topupRequestProvider.notifier).clearMessages();
+      } else if (next.error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.error!),
+            backgroundColor: DriverAppColors.errorLight,
+          ),
+        );
+        ref.read(topupRequestProvider.notifier).clearMessages();
+      }
+    });
 
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
@@ -178,6 +203,44 @@ class WalletScreen extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: DriverAppSpacing.lg),
+
+              // Top-up Request Button
+              ElevatedButton.icon(
+                onPressed: topupState.isLoading
+                    ? null
+                    : () async {
+                        final amount = await showTopupRequestDialog(context);
+                        if (amount != null && context.mounted) {
+                          await ref
+                              .read(topupRequestProvider.notifier)
+                              .createTopupRequest(amount);
+                        }
+                      },
+                icon: topupState.isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Icon(Icons.add_card),
+                label: Text(topupState.isLoading ? 'جاري الإرسال...' : 'طلب شحن رصيد'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: DriverAppColors.primaryLight,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: DriverAppSpacing.lg,
+                    vertical: DriverAppSpacing.md,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(DriverAppSpacing.radiusMd),
+                  ),
+                ),
+              ),
+
               SizedBox(height: DriverAppSpacing.lg),
               // Recent Transactions
               Text(

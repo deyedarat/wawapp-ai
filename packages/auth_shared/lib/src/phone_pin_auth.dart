@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'package:crypto/crypto.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -39,19 +41,25 @@ class PhonePinAuth {
   String? _lastVerificationId;
   String? get lastVerificationId => _lastVerificationId;
 
-  Future<void> ensurePhoneSession(String phoneE164) async {
+  Future<void> ensurePhoneSession(String phoneE164, {bool forceNewSession = false}) async {
     if (kDebugMode) {
       print(
-        '[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow for phone=$phoneE164',
+        '[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow for phone=$phoneE164, forceNewSession=$forceNewSession',
       );
       // Add Crashlytics breadcrumb for debugging
-      FirebaseCrashlytics.instance.log('OTP_SEND_START: phone=$phoneE164');
+      FirebaseCrashlytics.instance.log('OTP_SEND_START: phone=$phoneE164, forceNewSession=$forceNewSession');
     }
 
     final u = _auth.currentUser;
-    if (u != null) {
+    if (u != null && !forceNewSession) {
       if (kDebugMode) print('[PhonePinAuth] already signed in, uid=${u.uid}');
       return;
+    }
+
+    // If forceNewSession, sign out first to get new OTP
+    if (u != null && forceNewSession) {
+      if (kDebugMode) print('[PhonePinAuth] Signing out to force new OTP session');
+      await _auth.signOut();
     }
 
     final completer = Completer<void>();
@@ -69,9 +77,7 @@ class PhonePinAuth {
         timeout: const Duration(seconds: 60),
         verificationCompleted: (cred) async {
           if (kDebugMode) {
-            print(
-              '[PhonePinAuth] DIAGNOSTIC: verificationCompleted callback - auto sign-in',
-            );
+            print('[PhonePinAuth] DIAGNOSTIC: verificationCompleted callback - auto sign-in');
             FirebaseCrashlytics.instance.log('OTP_VERIFICATION_COMPLETED');
           }
           try {
@@ -112,7 +118,9 @@ class PhonePinAuth {
             print(
               '[PhonePinAuth] DIAGNOSTIC: codeSent callback - verificationId=${verificationId != null ? 'present' : 'null'}, resendToken=${resendToken != null ? 'present' : 'null'}',
             );
-            FirebaseCrashlytics.instance.log('OTP_CODE_SENT: verificationId=${verificationId != null ? 'present' : 'null'}');
+            FirebaseCrashlytics.instance.log(
+              'OTP_CODE_SENT: verificationId=${verificationId != null ? 'present' : 'null'}',
+            );
           }
           _lastVerificationId = verificationId;
 
@@ -126,9 +134,7 @@ class PhonePinAuth {
         },
         codeAutoRetrievalTimeout: (vid) {
           if (kDebugMode) {
-            print(
-              '[PhonePinAuth] DIAGNOSTIC: codeAutoRetrievalTimeout callback - verificationId=$vid',
-            );
+            print('[PhonePinAuth] DIAGNOSTIC: codeAutoRetrievalTimeout callback - verificationId=$vid');
             FirebaseCrashlytics.instance.log('OTP_AUTO_RETRIEVAL_TIMEOUT: verificationId=$vid');
           }
           _lastVerificationId = vid;
@@ -136,9 +142,7 @@ class PhonePinAuth {
       );
 
       if (kDebugMode) {
-        print(
-          '[PhonePinAuth] DIAGNOSTIC: verifyPhoneNumber() call initiated, waiting for callbacks...',
-        );
+        print('[PhonePinAuth] DIAGNOSTIC: verifyPhoneNumber() call initiated, waiting for callbacks...');
       }
 
       await completer.future;
@@ -151,9 +155,7 @@ class PhonePinAuth {
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print(
-          '[PhonePinAuth] DIAGNOSTIC: ensurePhoneSession() EXCEPTION: ${e.runtimeType} - $e',
-        );
+        print('[PhonePinAuth] DIAGNOSTIC: ensurePhoneSession() EXCEPTION: ${e.runtimeType} - $e');
         print('[PhonePinAuth] DIAGNOSTIC: Stacktrace: $stackTrace');
         FirebaseCrashlytics.instance.log('OTP_SEND_EXCEPTION: ${e.runtimeType} - $e');
         // Record the exception for analysis
@@ -161,10 +163,7 @@ class PhonePinAuth {
           e,
           stackTrace,
           fatal: false,
-          information: [
-            'Phone: $phoneE164',
-            'Operation: ensurePhoneSession',
-          ],
+          information: ['Phone: $phoneE164', 'Operation: ensurePhoneSession'],
         );
       }
       rethrow;
@@ -189,10 +188,7 @@ class PhonePinAuth {
     }
 
     try {
-      final cred = PhoneAuthProvider.credential(
-        verificationId: vid,
-        smsCode: smsCode,
-      );
+      final cred = PhoneAuthProvider.credential(verificationId: vid, smsCode: smsCode);
 
       if (kDebugMode) {
         print('[PhonePinAuth] Signing in with credential...');
@@ -223,30 +219,73 @@ class PhonePinAuth {
     }, SetOptions(merge: true));
   }
 
-  Future<bool> verifyPin(String pin) async {
-    final uid = _auth.currentUser!.uid;
-    final docRef = await _userDoc();
-    final snap = await docRef.get();
-    final data = snap.data();
-    if (data == null) return false;
+  Future<bool> verifyPin(String pin, String phoneE164) async {
+    if (kDebugMode) {
+      print('[PhonePinAuth] Verifying PIN for phone: $phoneE164');
+    }
 
-    final storedHash = data['pinHash'] as String?;
-    final storedSalt = data['pinSalt'] as String?;
-    if (storedHash == null) return false;
-
-    if (storedSalt != null) {
-      return _hashWithSalt(pin, storedSalt) == storedHash;
-    } else {
-      final oldHash = sha256.convert(utf8.encode('$uid:$pin')).toString();
-      final ok = oldHash == storedHash;
-      if (ok) {
-        final newSalt = _generateSalt();
-        await docRef.set({
-          'pinSalt': newSalt,
-          'pinHash': _hashWithSalt(pin, newSalt),
-        }, SetOptions(merge: true));
+    // GUARD: Ensure phone is in E.164 format
+    if (!phoneE164.startsWith('+')) {
+      if (kDebugMode) {
+        print('[PhonePinAuth] ERROR: Phone not in E.164 format: $phoneE164');
       }
-      return ok;
+      throw ArgumentError('Phone must be in E.164 format (starting with +)');
+    }
+
+    // Check if user is already signed in
+    final currentUser = _auth.currentUser;
+    if (currentUser != null && currentUser.phoneNumber == phoneE164) {
+      if (kDebugMode) {
+        print('[PhonePinAuth] User already signed in with matching phone');
+      }
+      return true;
+    }
+
+    try {
+      // Call Cloud Function to verify PIN and get custom token
+      final callable = FirebaseFunctions.instance.httpsCallable('createCustomToken');
+
+      // Determine userType from collection name
+      final userType = userCollection == 'drivers' ? 'driver' : 'user';
+
+      final result = await callable.call<Map<String, dynamic>>({
+        'phoneE164': phoneE164,
+        'pin': pin,
+        'userType': userType, // NEW PARAMETER
+      });
+
+      final token = result.data['token'] as String?;
+      final uid = result.data['uid'] as String?;
+
+      if (token == null) {
+        if (kDebugMode) {
+          print('[PhonePinAuth] No token returned from createCustomToken');
+        }
+        return false;
+      }
+
+      if (kDebugMode) {
+        print('[PhonePinAuth] Custom token received, signing in user: $uid');
+      }
+
+      // Sign in with custom token
+      await _auth.signInWithCustomToken(token);
+
+      if (kDebugMode) {
+        print('[PhonePinAuth] Successfully signed in with custom token');
+      }
+
+      return true;
+    } on FirebaseFunctionsException catch (e) {
+      if (kDebugMode) {
+        print('[PhonePinAuth] Cloud Function error: ${e.code} - ${e.message}');
+      }
+      return false;
+    } on Object catch (e) {
+      if (kDebugMode) {
+        print('[PhonePinAuth] Error verifying PIN: $e');
+      }
+      return false;
     }
   }
 
@@ -257,11 +296,7 @@ class PhonePinAuth {
   }
 
   Future<bool> phoneExists(String phoneE164) async {
-    final snap = await _db
-        .collection(userCollection)
-        .where('phone', isEqualTo: phoneE164)
-        .limit(1)
-        .get();
+    final snap = await _db.collection(userCollection).where('phone', isEqualTo: phoneE164).limit(1).get();
     return snap.docs.isNotEmpty;
   }
 

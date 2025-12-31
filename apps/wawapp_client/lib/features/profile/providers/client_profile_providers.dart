@@ -1,9 +1,12 @@
+import 'package:auth_shared/auth_shared.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
-import '../data/client_profile_repository.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../services/analytics_service.dart';
 import '../../auth/providers/auth_service_provider.dart';
+import '../data/client_profile_repository.dart';
 
 final clientProfileRepositoryProvider = Provider<ClientProfileRepository>((ref) {
   return ClientProfileRepository(firestore: FirebaseFirestore.instance);
@@ -11,18 +14,33 @@ final clientProfileRepositoryProvider = Provider<ClientProfileRepository>((ref) 
 
 final clientProfileStreamProvider = StreamProvider.autoDispose<ClientProfile?>((ref) {
   final authState = ref.watch(authProvider);
-  if (authState.user == null) {
+
+  // CRITICAL: Use the new isStreamsSafeToRun flag to prevent permission errors
+  // This flag is set to false BEFORE any auth transitions (OTP, PIN reset, logout)
+  if (!authState.isStreamsSafeToRun || authState.user == null) {
+    if (kDebugMode && !authState.isStreamsSafeToRun) {
+      print('[ClientProfile] Streams disabled by auth system - stopping Firestore stream');
+    }
     return Stream.value(null);
   }
 
+  // Defensive: Capture UID in local variable to prevent race condition
+  final uid = authState.user!.uid;
+
   final repository = ref.watch(clientProfileRepositoryProvider);
-  return repository.watchProfile(authState.user!.uid).map((profile) {
+  return repository.watchProfile(uid).handleError((error) {
+    // Gracefully handle permission errors that may occur during race conditions
+    if (kDebugMode) {
+      print('[ClientProfile] Stream error (likely during transition): $error');
+    }
+    return null;
+  }).map((profile) {
     if (profile != null) {
       // Schedule analytics call after current frame to avoid build-phase side-effects
       // This prevents "setState() called during build" errors
       Future.microtask(() {
         AnalyticsService.instance.setUserProperties(
-          userId: authState.user!.uid,
+          userId: uid,
           totalOrders: profile.totalTrips,
         );
       });
@@ -36,12 +54,20 @@ final clientProfileStreamProvider = StreamProvider.autoDispose<ClientProfile?>((
 
 final savedLocationsStreamProvider = StreamProvider.autoDispose<List<SavedLocation>>((ref) {
   final authState = ref.watch(authProvider);
-  if (authState.user == null) {
+
+  // Use the same stream safety check
+  if (!authState.isStreamsSafeToRun || authState.user == null) {
     return Stream.value([]);
   }
 
+  final uid = authState.user!.uid;
   final repository = ref.watch(clientProfileRepositoryProvider);
-  return repository.watchSavedLocations(authState.user!.uid);
+  return repository.watchSavedLocations(uid).handleError((error) {
+    if (kDebugMode) {
+      print('[SavedLocations] Stream error (likely during transition): $error');
+    }
+    return <SavedLocation>[];
+  });
 });
 
 class ClientProfileUpdateState {
@@ -67,8 +93,7 @@ class ClientProfileUpdateState {
 class ClientProfileNotifier extends StateNotifier<ClientProfileUpdateState> {
   final ClientProfileRepository _repository;
 
-  ClientProfileNotifier(this._repository)
-      : super(const ClientProfileUpdateState());
+  ClientProfileNotifier(this._repository) : super(const ClientProfileUpdateState());
 
   Future<void> updateProfile(ClientProfile profile) async {
     state = state.copyWith(isLoading: true, error: null);
@@ -101,8 +126,7 @@ class ClientProfileNotifier extends StateNotifier<ClientProfileUpdateState> {
   }
 }
 
-final clientProfileNotifierProvider =
-    StateNotifierProvider<ClientProfileNotifier, ClientProfileUpdateState>((ref) {
+final clientProfileNotifierProvider = StateNotifierProvider<ClientProfileNotifier, ClientProfileUpdateState>((ref) {
   final repository = ref.watch(clientProfileRepositoryProvider);
   return ClientProfileNotifier(repository);
 });
@@ -110,8 +134,7 @@ final clientProfileNotifierProvider =
 class SavedLocationsNotifier extends StateNotifier<ClientProfileUpdateState> {
   final ClientProfileRepository _repository;
 
-  SavedLocationsNotifier(this._repository)
-      : super(const ClientProfileUpdateState());
+  SavedLocationsNotifier(this._repository) : super(const ClientProfileUpdateState());
 
   Future<void> addLocation(String userId, SavedLocation location) async {
     state = state.copyWith(isLoading: true, error: null);
@@ -144,8 +167,7 @@ class SavedLocationsNotifier extends StateNotifier<ClientProfileUpdateState> {
   }
 }
 
-final savedLocationsNotifierProvider =
-    StateNotifierProvider<SavedLocationsNotifier, ClientProfileUpdateState>((ref) {
+final savedLocationsNotifierProvider = StateNotifierProvider<SavedLocationsNotifier, ClientProfileUpdateState>((ref) {
   final repository = ref.watch(clientProfileRepositoryProvider);
   return SavedLocationsNotifier(repository);
 });

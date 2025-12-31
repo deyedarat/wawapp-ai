@@ -29,13 +29,29 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> _checkHasPin() async {
     try {
+      // SET LOADING FLAG before async operation
+      state = state.copyWith(isPinCheckLoading: true);
+
+      if (kDebugMode) print('[AuthNotifier] Checking if user has PIN');
+
       final user = _firebaseAuth.currentUser;
       if (user != null) {
         final hasPinHash = await _authService.hasPinHash();
-        state = state.copyWith(hasPin: hasPinHash, phoneE164: user.phoneNumber);
+
+        if (kDebugMode) print('[AuthNotifier] hasPinHash=$hasPinHash');
+
+        state = state.copyWith(
+          hasPin: hasPinHash,
+          phoneE164: user.phoneNumber,
+          isPinCheckLoading: false, // CLEAR FLAG after completion
+        );
+      } else {
+        state = state.copyWith(isPinCheckLoading: false);
       }
     } on Object catch (e) {
       if (kDebugMode) print('[AuthNotifier] Error checking PIN: $e');
+      // CLEAR FLAG on error to prevent infinite loading
+      state = state.copyWith(isPinCheckLoading: false);
     }
   }
 
@@ -63,14 +79,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
       return;
     }
 
+    // CRITICAL: Signal streams to stop BEFORE starting OTP flow
+    // This prevents permission-denied errors during auth transitions
     state = state.copyWith(
+      isStreamsSafeToRun: false,
       isLoading: true,
       error: null,
       otpStage: OtpStage.sending,
     );
     if (kDebugMode) {
-      print('[AuthNotifier] OTP stage set to sending');
+      print('[AuthNotifier] Streams disabled, OTP stage set to sending');
     }
+
+    // Give streams 100ms to cleanly shut down before proceeding
+    await Future.delayed(const Duration(milliseconds: 100));
 
     try {
       if (kDebugMode) {
@@ -103,6 +125,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         error: e.toString(),
         otpFlowActive: false,
+        isStreamsSafeToRun: true, // Re-enable streams on error
       );
 
       if (kDebugMode) {
@@ -131,7 +154,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
         print('[AuthNotifier] confirmOtp successful, updating state');
       }
 
-      state = state.copyWith(isLoading: false, otpFlowActive: false);
+      // Re-enable streams after successful OTP verification
+      state = state.copyWith(
+        isLoading: false,
+        otpFlowActive: false,
+        isStreamsSafeToRun: true,
+      );
     } on Object catch (e, stackTrace) {
       if (kDebugMode) {
         print('[AuthNotifier] verifyOtp FAILED: ${e.runtimeType} - $e');
@@ -149,6 +177,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
 
       state = state.copyWith(isLoading: false, error: errorMessage);
+      // Note: Keep isStreamsSafeToRun=false on error since user is still in OTP flow
     }
   }
 
