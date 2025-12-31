@@ -29,6 +29,7 @@ export { setAdminRole, removeAdminRole } from './admin/setAdminRole';
 
 // Export Auth Functions
 export { manualSetDriverClaims } from './auth/setDriverClaims';
+export { createCustomToken } from './auth/createCustomToken';
 export { getAdminStats } from './admin/getAdminStats';
 export { adminCancelOrder, adminReassignOrder } from './admin/adminOrderActions';
 export { adminBlockDriver, adminUnblockDriver, adminVerifyDriver } from './admin/adminDriverActions';

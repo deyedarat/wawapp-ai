@@ -12,6 +12,9 @@ class AuthState {
   final OtpStage otpStage;
   final String? verificationId;
   final int? resendToken;
+  final bool isPinResetFlow; // Track if we're in PIN reset flow
+  final bool isPinCheckLoading; // Track if we're checking for PIN existence
+  final bool isStreamsSafeToRun; // Track if Firestore streams should be active
 
   const AuthState({
     this.isLoading = false,
@@ -23,6 +26,9 @@ class AuthState {
     this.otpStage = OtpStage.idle,
     this.verificationId,
     this.resendToken,
+    this.isPinResetFlow = false,
+    this.isPinCheckLoading = false,
+    this.isStreamsSafeToRun = true, // Default: streams are safe
   });
 
   AuthState copyWith({
@@ -35,6 +41,9 @@ class AuthState {
     OtpStage? otpStage,
     String? verificationId,
     int? resendToken,
+    bool? isPinResetFlow,
+    bool? isPinCheckLoading,
+    bool? isStreamsSafeToRun,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
@@ -46,6 +55,9 @@ class AuthState {
       otpStage: otpStage ?? this.otpStage,
       verificationId: verificationId ?? this.verificationId,
       resendToken: resendToken ?? this.resendToken,
+      isPinResetFlow: isPinResetFlow ?? this.isPinResetFlow,
+      isPinCheckLoading: isPinCheckLoading ?? this.isPinCheckLoading,
+      isStreamsSafeToRun: isStreamsSafeToRun ?? this.isStreamsSafeToRun,
     );
   }
 }

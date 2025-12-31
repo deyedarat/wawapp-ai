@@ -1,14 +1,14 @@
+import 'package:auth_shared/auth_shared.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:auth_shared/auth_shared.dart';
+
 import 'providers/auth_service_provider.dart';
 
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
   @override
-  ConsumerState<PhonePinLoginScreen> createState() =>
-      _PhonePinLoginScreenState();
+  ConsumerState<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
 }
 
 class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
@@ -23,9 +23,44 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     super.dispose();
   }
 
-  Future<void> _handleOtpFlow() async {
+  Future<void> _handleLogin() async {
+    final pin = _pin.text.trim();
+    if (pin.isEmpty) {
+      setState(() => _err = 'يرجى إدخال الرمز السري');
+      return;
+    }
+
+    // Get and normalize phone
     String phone = _phone.text.trim();
-    
+
+    // Validate and convert to E.164 format for Mauritania
+    try {
+      if (phone.startsWith('+')) {
+        if (!MauritaniaPhoneUtils.isValidMauritaniaE164(phone)) {
+          setState(() => _err = 'رقم هاتف غير صحيح بصيغة +222');
+          return;
+        }
+      } else {
+        if (!MauritaniaPhoneUtils.isValidMauritaniaLocalNumber(phone)) {
+          setState(() => _err = MauritaniaPhoneUtils.getValidationError(phone));
+          return;
+        }
+        phone = MauritaniaPhoneUtils.toMauritaniaE164(phone);
+      }
+    } catch (e) {
+      setState(() => _err = 'رقم هاتف غير صحيح');
+      return;
+    }
+
+    setState(() => _err = null);
+
+    // Pass normalized phone to loginByPin
+    await ref.read(authProvider.notifier).loginByPin(pin, phone);
+  }
+
+  Future<void> _handleForgotPin() async {
+    String phone = _phone.text.trim();
+
     // Validate and convert to E.164 format for Mauritania
     try {
       if (phone.startsWith('+')) {
@@ -51,34 +86,98 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
     setState(() => _err = null);
 
-    if (kDebugMode) {
-      print('[PhonePinLogin] DIAGNOSTIC: Starting OTP flow with phone: $phone at ${DateTime.now()}');
+    // Check if phone exists before sending OTP
+    final phoneExists = await ref.read(authProvider.notifier).checkPhoneExists(phone);
+    if (!phoneExists) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('رقم الهاتف غير مسجل. يرجى التسجيل أولاً'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
     }
 
-    // Mark OTP flow as active in provider (survives rebuild)
-    ref.read(authProvider.notifier).startOtpFlow();
+    if (kDebugMode) {
+      print('[PhonePinLogin] Starting PIN reset flow for phone: $phone');
+    }
 
-    // Send OTP - AuthGate will automatically show OTP screen when otpStage = codeSent
+    // Start PIN reset flow - sends OTP
+    ref.read(authProvider.notifier).startPinResetFlow();
+
     try {
       await ref.read(authProvider.notifier).sendOtp(phone);
       if (kDebugMode) {
-        print('[PhonePinLogin] DIAGNOSTIC: OTP sent, AuthGate will show OTP screen');
+        print('[PhonePinLogin] OTP sent for PIN reset');
       }
     } on Object catch (e) {
       if (kDebugMode) {
-        print('[PhonePinLogin] DIAGNOSTIC: OTP send failed: ${e.runtimeType} - $e');
+        print('[PhonePinLogin] OTP send failed: ${e.runtimeType} - $e');
       }
-      // Show error to user via SnackBar
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('OTP Send Failed: ${e.toString()}'),
+            content: Text('فشل إرسال OTP: ${e.toString()}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 5),
           ),
         );
       }
-      // Error is already set in provider state
+    }
+  }
+
+  Future<void> _handleNewDeviceRegistration() async {
+    String phone = _phone.text.trim();
+
+    // Validate and convert to E.164 format for Mauritania
+    try {
+      if (phone.startsWith('+')) {
+        if (!MauritaniaPhoneUtils.isValidMauritaniaE164(phone)) {
+          setState(() => _err = 'رقم هاتف غير صحيح بصيغة +222');
+          return;
+        }
+      } else {
+        if (!MauritaniaPhoneUtils.isValidMauritaniaLocalNumber(phone)) {
+          setState(() => _err = MauritaniaPhoneUtils.getValidationError(phone));
+          return;
+        }
+        phone = MauritaniaPhoneUtils.toMauritaniaE164(phone);
+        _phone.text = phone;
+      }
+    } on Exception {
+      setState(() => _err = 'رقم هاتف غير صحيح');
+      return;
+    }
+
+    setState(() => _err = null);
+
+    if (kDebugMode) {
+      print('[PhonePinLogin] Starting registration flow for phone: $phone');
+    }
+
+    // Mark OTP flow as active for new registration
+    ref.read(authProvider.notifier).startOtpFlow();
+
+    try {
+      await ref.read(authProvider.notifier).sendOtp(phone);
+      if (kDebugMode) {
+        print('[PhonePinLogin] OTP sent for new registration');
+      }
+    } on Object catch (e) {
+      if (kDebugMode) {
+        print('[PhonePinLogin] OTP send failed: ${e.runtimeType} - $e');
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('فشل إرسال OTP: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
     }
   }
 
@@ -124,23 +223,25 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
               ),
             const SizedBox(height: 8),
             ElevatedButton(
-              key: const Key('continueButton'),
-              onPressed: (authState.isLoading ||
-                      authState.otpStage == OtpStage.sending ||
-                      authState.otpStage == OtpStage.codeSent)
-                  ? null
-                  : _handleOtpFlow,
-              child: authState.isLoading
-                  ? const CircularProgressIndicator()
-                  : const Text('Continue'),
+              key: const Key('loginButton'),
+              onPressed: authState.isLoading ? null : _handleLogin,
+              child: authState.isLoading ? const CircularProgressIndicator() : const Text('تسجيل الدخول'),
             ),
+            const SizedBox(height: 8),
             TextButton(
-              // IMPORTANT:
-              // Always allow the user to tap this link to start SMS verification.
-              // The handler validates the phone number and navigates to /otp.
-              // The provider has guard logic to prevent duplicate OTP sends.
-              onPressed: _handleOtpFlow,
-              child: const Text('New device or forgot PIN? Verify by SMS'),
+              onPressed: authState.isLoading ? null : _handleForgotPin,
+              child: const Text(
+                'نسيت الرمز السري؟',
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            TextButton(
+              onPressed: authState.isLoading ? null : _handleNewDeviceRegistration,
+              child: const Text('جهاز جديد أو تسجيل لأول مرة؟ التحقق عبر SMS'),
             ),
           ],
         ),

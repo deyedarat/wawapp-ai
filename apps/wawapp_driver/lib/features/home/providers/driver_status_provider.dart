@@ -16,6 +16,13 @@ final driverOnlineStatusProvider = StreamProvider.autoDispose<bool>((ref) {
   }
 
   final authState = ref.watch(authProvider);
+
+  // CRITICAL: Don't listen to Firestore during PIN reset flow
+  // This prevents permission errors when user is being signed out
+  if (authState.isPinResetFlow) {
+    return Stream.value(false);
+  }
+
   if (authState.user == null) {
     return Stream.value(false);
   }

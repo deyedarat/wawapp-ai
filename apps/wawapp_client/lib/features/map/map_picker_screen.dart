@@ -11,10 +11,12 @@
  * Last Updated: 2025-12-28
  */
 
-import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import '../../core/location/location_service.dart';
 
 /// Data model for selected location
 class SelectedLocation {
@@ -48,7 +50,7 @@ class SelectedLocation {
 }
 
 /// Map Picker Screen
-/// 
+///
 /// Usage:
 /// ```dart
 /// final result = await Navigator.push<SelectedLocation>(
@@ -132,14 +134,31 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     }
   }
 
-  void _onMapTap(LatLng position) {
+  Future<void> _onMapTap(LatLng position) async {
     setState(() {
       _selectedPosition = position;
-      _selectedLabel = 'الموقع المحدد';
+      _selectedLabel = 'جار تحديد العنوان...';
     });
-    // TODO: Implement reverse geocoding to get address label
-    // For now, use coordinates as label
-    // In production, integrate with Google Places API or Nominatim
+
+    try {
+      final address = await LocationService.resolveAddressFromLatLng(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (mounted) {
+        setState(() {
+          _selectedLabel = address;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _selectedLabel =
+              'الموقع المحدد (${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)})';
+        });
+      }
+    }
   }
 
   void _onConfirm() {
@@ -185,8 +204,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           RepaintBoundary(
             child: GoogleMap(
               initialCameraPosition: CameraPosition(
-                target: _selectedPosition ??
-                    const LatLng(18.0735, -15.9582), // Nouakchott, Mauritania
+                target: _selectedPosition ?? const LatLng(18.0735, -15.9582), // Nouakchott, Mauritania
                 zoom: 13,
               ),
               onMapCreated: (controller) {
@@ -297,9 +315,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       Expanded(
                         flex: 2,
                         child: ElevatedButton(
-                          onPressed: _selectedPosition == null || _isLoading
-                              ? null
-                              : _onConfirm,
+                          onPressed: _selectedPosition == null || _isLoading ? null : _onConfirm,
                           child: const Text('تأكيد الموقع'),
                         ),
                       ),

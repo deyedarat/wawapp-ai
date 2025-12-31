@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'providers/auth_service_provider.dart';
-import 'phone_pin_login_screen.dart';
-import 'create_pin_screen.dart';
 
+import 'providers/auth_service_provider.dart';
+
+/// AuthGate is now a PASSIVE guard that only:
+/// 1. Shows loading screen during auth initialization
+/// 2. Wraps protected content
+///
+/// Navigation logic is handled by GoRouter's redirect function.
+/// This prevents conflicts between AuthGate widget swapping and Router URL changes.
 class AuthGate extends ConsumerWidget {
   final Widget child;
   const AuthGate({super.key, required this.child});
@@ -12,29 +17,38 @@ class AuthGate extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
 
-    // DEBUG: Log AuthGate state
-    debugPrint('[AuthGate] user=${authState.user?.uid ?? 'null'} hasPin=${authState.hasPin} isLoading=${authState.isLoading}');
+    debugPrint(
+      '[AuthGate] GUARD_CHECK | '
+      'user=${authState.user?.uid ?? 'null'} | '
+      'hasPin=${authState.hasPin} | '
+      'isLoading=${authState.isLoading} | '
+      'isPinCheckLoading=${authState.isPinCheckLoading}'
+    );
 
-    // Show loading indicator while initializing
+    // ONLY show loading screen during initial auth check
+    // (when we don't know if user exists yet)
     if (authState.user == null && authState.isLoading) {
-      debugPrint('[AuthGate] -> Loading screen');
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      debugPrint('[AuthGate] ⏳ Initial auth loading - showing spinner');
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
 
-    // If no user, show login screen
-    if (authState.user == null) {
-      debugPrint('[AuthGate] -> PhonePinLoginScreen (no user)');
-      return const PhonePinLoginScreen();
+    // If still checking for PIN existence, show loading
+    if (authState.isPinCheckLoading) {
+      debugPrint('[AuthGate] ⏳ PIN check loading - showing spinner');
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
 
-    // If user exists but no PIN, enforce PIN creation
-    if (authState.user != null && !authState.hasPin) {
-      debugPrint('[AuthGate] -> CreatePinScreen (user exists, no PIN)');
-      return const CreatePinScreen();
-    }
-
-    // User is authenticated, show protected content
-    debugPrint('[AuthGate] -> Protected content (user authenticated with PIN)');
+    // Otherwise, show the protected content
+    // Router will handle redirects if user is not authenticated
+    debugPrint('[AuthGate] ✓ Showing protected content');
     return child;
   }
 }

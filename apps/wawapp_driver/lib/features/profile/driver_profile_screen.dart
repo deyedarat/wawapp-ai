@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -73,6 +74,8 @@ class DriverProfileScreen extends ConsumerWidget {
                   _buildInfoTile('عدد الرحلات', '${profile.totalTrips}', Icons.route, readOnly: true),
                   _buildInfoTile('حالة التحقق', profile.isVerified ? 'تم التحقق ✓' : 'لم يتم التحقق', Icons.verified, readOnly: true),
                 ]),
+                const SizedBox(height: 16),
+                _buildSecuritySection(context, ref),
                 const SizedBox(height: 24),
                 _buildLogoutButton(context, ref),
                 const SizedBox(height: 16),
@@ -82,6 +85,94 @@ class DriverProfileScreen extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  Widget _buildSecuritySection(BuildContext context, WidgetRef ref) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'الأمان',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.lock_reset, color: Colors.blue),
+              title: const Text('تغيير الرمز السري'),
+              subtitle: const Text('تغيير رمز PIN الخاص بك'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () => _handleChangePin(context, ref),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleChangePin(BuildContext context, WidgetRef ref) async {
+    // Start PIN reset flow for logged-in user
+    final authState = ref.read(authProvider);
+    final phoneE164 = authState.phoneE164;
+
+    if (phoneE164 == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('رقم الهاتف غير متوفر. يرجى تسجيل الدخول مرة أخرى'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تغيير الرمز السري'),
+        content: const Text(
+          'سيتم إرسال رمز التحقق OTP إلى رقم هاتفك لتأكيد هويتك قبل تغيير الرمز السري.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('متابعة'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) {
+      return;
+    }
+
+    // Start PIN reset flow - this sets isPinResetFlow=true
+    ref.read(authProvider.notifier).startPinResetFlow();
+
+    // Send OTP - this will sign out the user and trigger AuthGate navigation
+    // AuthGate will automatically navigate to OTP screen once user is signed out
+    try {
+      await ref.read(authProvider.notifier).sendOtp(phoneE164);
+      // No need to navigate - AuthGate handles it automatically
+    } on Object catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('فشل إرسال OTP: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildLogoutButton(BuildContext context, WidgetRef ref) {
@@ -125,11 +216,13 @@ class DriverProfileScreen extends ConsumerWidget {
 
     if (confirmed == true && context.mounted) {
       // Show loading indicator
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
+      unawaited(
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const Center(
+            child: CircularProgressIndicator(),
+          ),
         ),
       );
 

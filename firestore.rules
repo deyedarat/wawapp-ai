@@ -216,21 +216,28 @@ service cloud.firestore {
     match /topup_requests/{requestId} {
       // Admins can read all requests
       allow read: if isAdmin();
-      
+
       // Drivers can read their own requests
-      allow read: if isSignedIn() && 
+      allow read: if isSignedIn() &&
                      request.auth.uid == resource.data.driverId;
-      
+
       // Drivers can create their own requests
-      allow create: if isSignedIn() && 
+      allow create: if isSignedIn() &&
                        request.auth.uid == request.resource.data.driverId &&
                        request.resource.data.status == 'pending' &&
                        request.resource.data.amount is number &&
                        request.resource.data.amount > 0;
-      
+
       // Only admins can approve/reject (via Cloud Functions)
       allow update: if false;
       allow delete: if false;
+    }
+
+    // PIN rate limiting collection (P0-AUTH-1 fix)
+    match /pin_rate_limits/{docId} {
+      // Only Cloud Functions can access (clients cannot read/write)
+      // This prevents users from resetting their own rate limits
+      allow read, write: if false;
     }
   }
 }

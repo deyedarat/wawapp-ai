@@ -1,17 +1,16 @@
+import 'package:auth_shared/auth_shared.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'providers/auth_service_provider.dart';
-import 'package:auth_shared/auth_shared.dart';
+
 import '../../services/analytics_service.dart';
 import '../../services/fcm_service.dart';
+import 'providers/auth_service_provider.dart';
 
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
   @override
-  ConsumerState<PhonePinLoginScreen> createState() =>
-      _PhonePinLoginScreenState();
+  ConsumerState<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
 }
 
 class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
@@ -31,7 +30,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
   Future<void> _checkPhone() async {
     final phone = _phone.text.trim();
-    
+
     // Validate and convert to E.164 format
     String phoneE164;
     try {
@@ -65,9 +64,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
       _checkingPhone = true;
       _phoneError = null;
     });
-    
-    final exists =
-        await ref.read(authProvider.notifier).checkPhoneExists(phoneE164);
+
+    final exists = await ref.read(authProvider.notifier).checkPhoneExists(phoneE164);
     setState(() {
       _checkingPhone = false;
       _isNewUser = !exists;
@@ -93,12 +91,12 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
       }
     }
 
-    await ref.read(authProvider.notifier).loginByPin(_pin.text);
+    await ref.read(authProvider.notifier).loginByPin(_pin.text, phone);
   }
 
   Future<void> _createAccount() async {
     String phone = _phone.text.trim();
-    
+
     // Ensure phone is in E.164 format
     if (!phone.startsWith('+')) {
       try {
@@ -110,15 +108,14 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
         return;
       }
     }
-    
+
     debugPrint('[LoginScreen] _createAccount() called for phone=$phone');
 
     try {
       await ref.read(authProvider.notifier).sendOtp(phone);
       debugPrint('[LoginScreen] sendOtp() returned successfully');
     } catch (e, stackTrace) {
-      debugPrint(
-          '[LoginScreen] sendOtp() threw exception: ${e.runtimeType} - $e');
+      debugPrint('[LoginScreen] sendOtp() threw exception: ${e.runtimeType} - $e');
       debugPrint('[LoginScreen] Stacktrace: $stackTrace');
     }
   }
@@ -127,32 +124,29 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
+    // Navigation is now handled by GoRouter's redirect function
     ref.listen(authProvider, (prev, next) {
-      debugPrint(
-          '[LoginScreen] Auth state changed: otpStage=${next.otpStage}, otpFlowActive=${next.otpFlowActive}, verificationId isNull=${next.verificationId == null}, error=${next.error}');
+      debugPrint('[LoginScreen] Auth state changed: '
+          'otpStage=${next.otpStage}, '
+          'otpFlowActive=${next.otpFlowActive}, '
+          'user=${next.user?.uid ?? 'null'}, '
+          'error=${next.error}');
 
-      if (next.otpStage == OtpStage.codeSent) {
-        debugPrint(
-            '[LoginScreen] OTP code sent, router will redirect based on canOtp.');
+      // Log OTP flow initiation
+      if (next.otpStage == OtpStage.codeSent && prev?.otpStage != OtpStage.codeSent) {
+        debugPrint('[LoginScreen] ✓ OTP sent - GoRouter will redirect to /otp');
       }
 
-      if (next.error != null && next.error!.isNotEmpty) {
-        debugPrint('[LoginScreen] Error detected in auth state: ${next.error}');
-      }
-
-      if (next.user != null && !next.isLoading && !_navigationInProgress) {
+      // Initialize services when user logs in successfully
+      if (next.user != null && prev?.user == null && !_navigationInProgress) {
         _navigationInProgress = true;
 
-        debugPrint(
-            '[LoginScreen] User authenticated, routing to AuthGate - user=${next.user!.uid} hasPin=${next.hasPin}');
+        debugPrint('[LoginScreen] ✓ User authenticated - initializing services');
 
         // Crashlytics breadcrumb
-        FirebaseCrashlytics.instance.log('[LoginScreen] Navigation triggered: PIN login successful');
-        FirebaseCrashlytics.instance.setCustomKey('nav_attempt', 'pin_login_success');
-        FirebaseCrashlytics.instance.setCustomKey('route_from', '/login');
-        FirebaseCrashlytics.instance.setCustomKey('route_to', '/');
+        FirebaseCrashlytics.instance.log('[LoginScreen] PIN login successful');
 
-        // Schedule side-effects after current frame
+        // Schedule side-effects after current frame to avoid build-phase mutations
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             // Set basic user properties immediately after auth
@@ -162,6 +156,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             // Initialize FCM for push notifications
             FCMService.instance.initialize(context);
 
+            debugPrint('[LoginScreen] Services initialized - GoRouter will handle navigation');
+
             // ANALYTICS VALIDATION:
             // To verify this event in Firebase Console:
             // 1. Run: adb shell setprop debug.firebase.analytics.app com.wawapp.client
@@ -170,9 +166,6 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             //    - Event: auth_completed (method: phone_pin)
             //    - User property: user_type = client
             //    - User ID is set
-
-            debugPrint('[LoginScreen] Executing deferred navigation to /');
-            context.go('/');
           }
         });
       }
@@ -201,9 +194,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _checkingPhone ? null : _checkPhone,
-              child: _checkingPhone
-                  ? const CircularProgressIndicator()
-                  : const Text('Check Phone'),
+              child: _checkingPhone ? const CircularProgressIndicator() : const Text('Check Phone'),
             ),
             const SizedBox(height: 16),
             if (_isNewUser) ...[
@@ -227,8 +218,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
                 child: const Text('Login'),
               ),
             ],
-            if (authState.error != null)
-              Text(authState.error!, style: const TextStyle(color: Colors.red)),
+            if (authState.error != null) Text(authState.error!, style: const TextStyle(color: Colors.red)),
           ],
         ),
       ),

@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'providers/auth_service_provider.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
@@ -21,39 +20,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       print('[OtpScreen] Verifying OTP code');
     }
 
+    // Navigation will be handled automatically by GoRouter after OTP verification
     await ref.read(authProvider.notifier).verifyOtp(code);
 
-    if (!mounted) return;
-
-    final authState = ref.read(authProvider);
-
-    if (authState.error != null) {
-      if (kDebugMode) {
-        print('[OtpScreen] Verification error: ${authState.error}');
-      }
-      return;
-    }
-
-    if (authState.user != null) {
-      if (kDebugMode) {
-        print(
-            '[OtpScreen] OTP verified successfully, hasPin=${authState.hasPin}');
-      }
-
-      if (!context.mounted) return;
-
-      if (authState.hasPin) {
-        if (kDebugMode) {
-          print('[OtpScreen] PIN exists, going to home');
-        }
-        if (!context.mounted) return;
-        context.go('/');
-      } else {
-        if (kDebugMode) {
-          print('[OtpScreen] No PIN, navigating to create PIN');
-        }
-        if (!context.mounted) return;
-        context.pushReplacement('/create-pin');
+    if (kDebugMode && mounted) {
+      final authState = ref.read(authProvider);
+      if (authState.user != null) {
+        print('[OtpScreen] ✓ OTP verified - GoRouter will handle navigation');
       }
     }
   }

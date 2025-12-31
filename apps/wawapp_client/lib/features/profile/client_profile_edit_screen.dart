@@ -1,10 +1,10 @@
+import 'package:core_shared/core_shared.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:go_router/go_router.dart';
-import 'package:core_shared/core_shared.dart';
-import 'providers/client_profile_providers.dart';
+
 import '../../core/navigation/safe_navigation.dart';
+import 'providers/client_profile_providers.dart';
 
 class ClientProfileEditScreen extends ConsumerStatefulWidget {
   const ClientProfileEditScreen({super.key});
@@ -153,7 +153,7 @@ class _ClientProfileEditScreenState extends ConsumerState<ClientProfileEditScree
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedLanguage,
+                initialValue: _selectedLanguage,
                 decoration: const InputDecoration(
                   labelText: 'اللغة المفضلة',
                   border: OutlineInputBorder(),
@@ -175,9 +175,7 @@ class _ClientProfileEditScreenState extends ConsumerState<ClientProfileEditScree
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: (_isLoading || updateState.isLoading) ? null : _saveProfile,
-                  child: (_isLoading || updateState.isLoading)
-                      ? const CircularProgressIndicator()
-                      : const Text('حفظ'),
+                  child: (_isLoading || updateState.isLoading) ? const CircularProgressIndicator() : const Text('حفظ'),
                 ),
               ),
               if (updateState.error != null) ...[

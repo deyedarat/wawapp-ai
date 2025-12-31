@@ -19,7 +19,13 @@ class AuthErrorMessages {
   static const String unknownError = 'حدث خطأ غير متوقع. حاول مرة أخرى';
   static const String pinCreationFailed = 'فشل إنشاء الرقم السري. حاول مرة أخرى';
   static const String sessionExpired = 'انتهت الجلسة. سجّل دخولك مرة أخرى';
-  
+
+  // Rate limiting error messages (P0-AUTH-1 fix)
+  static const String rateLimitExceeded = 'تم تجاوز عدد المحاولات المسموحة. حاول لاحقاً';
+  static const String accountLocked1Min = 'الحساب مقفل لمدة دقيقة بسبب المحاولات الخاطئة';
+  static const String accountLocked5Min = 'الحساب مقفل لمدة 5 دقائق بسبب المحاولات الخاطئة';
+  static const String accountLocked1Hour = 'الحساب مقفل لمدة ساعة بسبب المحاولات الكثيرة';
+
   /// Get user-friendly error message from Firebase error
   static String getErrorMessage(dynamic error) {
     if (error == null) return unknownError;
@@ -59,7 +65,21 @@ class AuthErrorMessages {
         errorString.contains('account-not-found')) {
       return accountNotFound;
     }
-    
+
+    // Rate limiting errors (P0-AUTH-1 fix)
+    if (errorString.contains('resource-exhausted') ||
+        errorString.contains('too many attempts')) {
+      // Check if error contains duration info
+      if (errorString.contains('ساعة') || errorString.contains('hour')) {
+        return accountLocked1Hour;
+      } else if (errorString.contains('5 دقائق') || errorString.contains('5 minute')) {
+        return accountLocked5Min;
+      } else if (errorString.contains('دقيقة') || errorString.contains('minute')) {
+        return accountLocked1Min;
+      }
+      return rateLimitExceeded;
+    }
+
     return unknownError;
   }
 }
