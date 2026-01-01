@@ -31,6 +31,7 @@ class NotificationsScreen extends ConsumerWidget {
       ),
       body: notificationsAsync.when(
         data: (notifications) {
+          debugPrint('[Notifications] Loaded ${notifications.length} notifications');
           if (notifications.isEmpty) {
             return const Center(
               child: Column(
@@ -54,17 +55,27 @@ class NotificationsScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              Text('خطأ في تحميل الإشعارات: $error'),
-            ],
-          ),
-        ),
+        loading: () {
+          debugPrint('[Notifications] Loading notifications...');
+          return const Center(child: CircularProgressIndicator());
+        },
+        error: (error, stack) {
+          debugPrint('[Notifications] Error loading notifications: $error');
+          debugPrint('[Notifications] Stack trace: $stack');
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                const SizedBox(height: 16),
+                Text('خطأ في تحميل الإشعارات: $error'),
+                const SizedBox(height: 8),
+                Text('Stack: ${stack.toString().substring(0, 100)}...',
+                    style: const TextStyle(fontSize: 10)),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

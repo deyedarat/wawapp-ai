@@ -4,8 +4,11 @@
  */
 
 export const FINANCE_CONFIG = {
-  // Commission rates
-  PLATFORM_COMMISSION_RATE: 0.20, // 20% platform fee
+  // Commission rates (Bug #1 Fix: Split into two-phase structure)
+  // Total platform commission = TRIP_START_FEE_RATE + COMPLETION_FEE_RATE = 20%
+  PLATFORM_COMMISSION_RATE: 0.20, // 20% total platform fee
+  TRIP_START_FEE_RATE: 0.10, // 10% deducted when trip starts (status → onRoute)
+  COMPLETION_FEE_RATE: 0.10, // 10% deducted at order completion (status → completed)
   DRIVER_COMMISSION_RATE: 0.80, // 80% driver earning
 
   // Currency
@@ -24,6 +27,9 @@ export const FINANCE_CONFIG = {
 
 export type TransactionSource =
   | 'order_settlement'
+  | 'trip_start_fee'
+  | 'completion_fee'
+  | 'driver_payout'
   | 'payout'
   | 'manual_adjustment'
   | 'refund'

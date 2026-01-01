@@ -14,22 +14,32 @@ final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
 
 // AuthNotifier - manages authentication state
 class ClientAuthNotifier extends StateNotifier<AuthState> {
-  ClientAuthNotifier(this._authService, this._firebaseAuth)
-      : super(const AuthState()) {
+  ClientAuthNotifier(this._authService, this._firebaseAuth) : super(const AuthState()) {
     // Listen to Firebase auth state changes
     _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
       if (kDebugMode) {
         print(
-            '[ClientAuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}');
+            '[ClientAuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}, isPinResetFlow=${state.isPinResetFlow}');
       }
-      state = state.copyWith(user: user);
+
+      // CRITICAL: Set isPinCheckLoading to true immediately when user is detected
+      // This prevents AuthGate from briefly showing CreatePinScreen while checking PIN
+      state = state.copyWith(
+        user: user,
+        isPinCheckLoading: user != null,
+      );
 
       // Set user context for Crashlytics
       if (user != null) {
         CrashlyticsObserver.setUserContext(user.uid, 'client');
         _checkHasPin();
       } else {
-        state = state.copyWith(hasPin: false, phoneE164: null);
+        // During PIN reset flow, preserve phoneE164 to avoid losing context
+        if (state.isPinResetFlow) {
+          state = state.copyWith(hasPin: false);
+        } else {
+          state = state.copyWith(hasPin: false, phoneE164: null);
+        }
       }
     });
   }
@@ -48,24 +58,40 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
   Future<void> _checkHasPin() async {
     try {
       if (kDebugMode) {
-        print('[ClientAuthNotifier] Checking if user has PIN');
+        print('[ClientAuthNotifier] Checking if user has PIN, isPinResetFlow=${state.isPinResetFlow}');
       }
+
+      // Ensure the loading flag is set even if call starts from elsewhere
+      state = state.copyWith(isPinCheckLoading: true);
+
       final user = _firebaseAuth.currentUser;
       if (user != null) {
         final hasPinHash = await _authService.hasPinHash();
+
+        // CRITICAL: During PIN reset flow, always report hasPin=false
+        // This ensures router navigates to create-pin instead of home
+        final effectiveHasPin = state.isPinResetFlow ? false : hasPinHash;
+
+        if (kDebugMode && state.isPinResetFlow) {
+          print('[ClientAuthNotifier] PIN reset flow active - forcing hasPin=false (actual hasPinHash=$hasPinHash)');
+        }
+
         if (kDebugMode) {
-          print('[ClientAuthNotifier] hasPinHash=$hasPinHash');
+          print('[ClientAuthNotifier] hasPinHash=$hasPinHash, effectiveHasPin=$effectiveHasPin');
         }
         state = state.copyWith(
-          hasPin: hasPinHash,
+          hasPin: effectiveHasPin,
           phoneE164: user.phoneNumber,
+          isPinCheckLoading: false, // CLEAR FLAG
         );
+      } else {
+        state = state.copyWith(isPinCheckLoading: false);
       }
     } on Object catch (e) {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Error checking PIN: $e');
       }
-      // Silent fail - hasPin will remain false
+      state = state.copyWith(isPinCheckLoading: false);
     }
   }
 
@@ -79,20 +105,26 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
 
   // End OTP flow
   void endOtpFlow() {
-    state = state.copyWith(otpFlowActive: false);
+    state = state.copyWith(otpFlowActive: false, isPinResetFlow: false);
     if (kDebugMode) {
       print('[ClientAuthNotifier] OTP flow ended');
+    }
+  }
+
+  // Start PIN reset flow
+  void startPinResetFlow() {
+    state = state.copyWith(otpFlowActive: true, isPinResetFlow: true);
+    if (kDebugMode) {
+      print('[ClientAuthNotifier] PIN reset flow started');
     }
   }
 
   // Send OTP to phone number
   Future<void> sendOtp(String phone) async {
     // Guard: prevent duplicate calls
-    if (state.otpStage == OtpStage.sending ||
-        state.otpStage == OtpStage.codeSent) {
+    if (state.otpStage == OtpStage.sending || state.otpStage == OtpStage.codeSent) {
       if (kDebugMode) {
-        print(
-            '[ClientAuthNotifier] sendOtp blocked: already ${state.otpStage}');
+        print('[ClientAuthNotifier] sendOtp blocked: already ${state.otpStage}');
       }
       return;
     }
@@ -110,8 +142,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       await _authService.ensurePhoneSession(phone);
       final verificationId = _authService.lastVerificationId;
       if (kDebugMode) {
-        print(
-            '[ClientAuthNotifier] OTP sent successfully, verificationId=$verificationId');
+        print('[ClientAuthNotifier] OTP sent successfully, verificationId=$verificationId');
       }
       state = state.copyWith(
         isLoading: false,
@@ -126,6 +157,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         error: e.toString(),
         otpFlowActive: false, // End flow on error
         otpStage: OtpStage.failed,
+        isPinResetFlow: false, // Clear reset flag on error
       );
     }
   }
@@ -139,10 +171,14 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       }
       await _authService.confirmOtp(code);
       if (kDebugMode) {
-        print(
-            '[ClientAuthNotifier] OTP verified, user should update via authStateChanges');
+        print('[ClientAuthNotifier] OTP verified, user should update via authStateChanges');
       }
-      state = state.copyWith(isLoading: false, otpFlowActive: false);
+      state = state.copyWith(
+        isLoading: false,
+        otpFlowActive: false,
+        otpStage: OtpStage.idle,
+        // Keep isPinResetFlow for now - router will handle navigation
+      );
       // User will be updated via authStateChanges listener
     } on Object catch (e) {
       if (kDebugMode) print('[ClientAuthNotifier] Verify OTP error: $e');
@@ -158,7 +194,14 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       await _authService.setPin(pin);
-      state = state.copyWith(isLoading: false, hasPin: true);
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] PIN created successfully, clearing isPinResetFlow flag');
+      }
+      state = state.copyWith(
+        isLoading: false,
+        hasPin: true,
+        isPinResetFlow: false, // Clear reset flow flag
+      );
     } on Object catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -200,8 +243,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         // PIN verified successfully, user is now signed in with custom token
         // The authStateChanges listener will update the state automatically
         if (kDebugMode) {
-          print(
-              '[ClientAuthNotifier] PIN verified, user signed in successfully');
+          print('[ClientAuthNotifier] PIN verified, user signed in successfully');
         }
         state = state.copyWith(
           isLoading: false,
@@ -278,7 +320,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         print('[ClientAuthNotifier] Logging out user');
       }
       await _authService.signOut();
-      state = const AuthState(); // Reset to initial state
+      state = const AuthState(); // Reset to initial state (clears isPinResetFlow)
       if (kDebugMode) {
         print('[ClientAuthNotifier] Logout complete');
       }
@@ -289,6 +331,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
+        isPinResetFlow: false,
       );
     }
   }

@@ -4,7 +4,18 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'providers/auth_service_provider.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
-  const OtpScreen({super.key});
+  /// Phone number to send OTP to (used for phone change flow)
+  final String? phoneNumber;
+
+  /// Flag to indicate this is a phone change verification (not login)
+  /// Bug #5 FIX: Add support for phone change verification flow
+  final bool isPhoneChange;
+
+  const OtpScreen({
+    super.key,
+    this.phoneNumber,
+    this.isPhoneChange = false,
+  });
 
   @override
   ConsumerState<OtpScreen> createState() => _OtpScreenState();
@@ -30,8 +41,23 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final code = _codeController.text.trim();
     if (code.length != 6) return;
 
-    // Navigation will be handled automatically by GoRouter after OTP verification
-    await ref.read(authProvider.notifier).verifyOtp(code);
+    // Bug #5 FIX: Different behavior for phone change vs login
+    if (widget.isPhoneChange) {
+      // Phone change flow: just verify OTP and return success
+      try {
+        await ref.read(authProvider.notifier).verifyOtp(code);
+        if (mounted) {
+          // Return true to indicate verification success
+          Navigator.of(context).pop(true);
+        }
+      } catch (e) {
+        // Error will be shown via authState.error in the UI
+        debugPrint('[OtpScreen] Phone verification failed: $e');
+      }
+    } else {
+      // Login flow: Navigation will be handled automatically by GoRouter
+      await ref.read(authProvider.notifier).verifyOtp(code);
+    }
   }
 
   @override
@@ -56,13 +82,22 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       }
     });
 
+    // Bug #5 FIX: Display phone from widget param if provided (phone change flow)
+    final displayPhone = widget.phoneNumber ?? authState.phoneE164;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Enter OTP')),
+      appBar: AppBar(
+        title: Text(widget.isPhoneChange ? 'تحقق من الهاتف' : 'أدخل رمز التحقق'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Text('Enter the 6-digit code sent to ${authState.phoneE164}'),
+            Text(
+              widget.isPhoneChange
+                  ? 'أدخل الرمز المكون من 6 أرقام المرسل إلى $displayPhone'
+                  : 'Enter the 6-digit code sent to $displayPhone',
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: _codeController,

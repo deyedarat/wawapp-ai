@@ -18,21 +18,26 @@ final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
 
 // AuthNotifier - manages authentication state
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier(this._authService, this._firebaseAuth)
-      : super(const AuthState()) {
+  AuthNotifier(this._authService, this._firebaseAuth) : super(const AuthState()) {
     // Listen to Firebase auth state changes
     _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
       if (kDebugMode) {
         print(
             '[AuthNotifier] AUTH_STATE_TRANSITION: firebase_auth_changed | user=${user?.uid}, phone=${user?.phoneNumber}');
       }
-      state = state.copyWith(user: user);
+
+      // CRITICAL: Set isPinCheckLoading to true immediately when user is detected
+      // This prevents AuthGate from briefly showing CreatePinScreen while checking PIN
+      state = state.copyWith(
+        user: user,
+        isPinCheckLoading: user != null,
+      );
+
       if (user != null) {
         _checkHasPin();
       } else {
         if (kDebugMode) {
-          print(
-              '[AuthNotifier] AUTH_STATE_TRANSITION: user_signed_out | isPinResetFlow=${state.isPinResetFlow}');
+          print('[AuthNotifier] AUTH_STATE_TRANSITION: user_signed_out | isPinResetFlow=${state.isPinResetFlow}');
         }
         // During PIN reset flow, preserve phoneE164 to avoid losing context
         if (state.isPinResetFlow) {
@@ -58,9 +63,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> _checkHasPin() async {
     try {
       if (kDebugMode) {
-        print(
-            '[AuthNotifier] Checking if user has PIN, isPinResetFlow=${state.isPinResetFlow}');
+        print('[AuthNotifier] Checking if user has PIN, isPinResetFlow=${state.isPinResetFlow}');
       }
+
+      // Ensure the loading flag is set even if call starts from elsewhere
+      state = state.copyWith(isPinCheckLoading: true);
+
       final user = _firebaseAuth.currentUser;
       if (user != null) {
         // Driver app has hasPinHash method
@@ -74,19 +82,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
         final effectiveHasPin = state.isPinResetFlow ? false : hasPinHash;
 
         if (kDebugMode && state.isPinResetFlow) {
-          print(
-              '[AuthNotifier] PIN reset flow active - forcing hasPin=false (actual hasPinHash=$hasPinHash)');
+          print('[AuthNotifier] PIN reset flow active - forcing hasPin=false (actual hasPinHash=$hasPinHash)');
         }
 
         state = state.copyWith(
           hasPin: effectiveHasPin,
           phoneE164: user.phoneNumber,
+          isPinCheckLoading: false, // CLEAR FLAG
         );
+      } else {
+        state = state.copyWith(isPinCheckLoading: false);
       }
     } on Object catch (e) {
       if (kDebugMode) {
         print('[AuthNotifier] Error checking PIN: $e');
       }
+      state = state.copyWith(isPinCheckLoading: false);
       // Silent fail - hasPin will remain false
     }
   }
@@ -130,8 +141,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Send OTP to phone number
   Future<void> sendOtp(String phone) async {
     // Guard: prevent duplicate calls
-    if (state.otpStage == OtpStage.sending ||
-        state.otpStage == OtpStage.codeSent) {
+    if (state.otpStage == OtpStage.sending || state.otpStage == OtpStage.codeSent) {
       if (kDebugMode) {
         print('[AuthNotifier] sendOtp blocked: already ${state.otpStage}');
       }
@@ -146,20 +156,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
 
     if (kDebugMode) {
-      print(
-          '[AuthNotifier] DIAGNOSTIC: sendOtp() starting for phone=$phone at ${DateTime.now()}');
+      print('[AuthNotifier] DIAGNOSTIC: sendOtp() starting for phone=$phone at ${DateTime.now()}');
     }
 
     try {
       // Force new session if we're in PIN reset flow
       final forceNewSession = state.isPinResetFlow;
       if (kDebugMode) {
-        print(
-            '[AuthNotifier] DIAGNOSTIC: forceNewSession=$forceNewSession (isPinResetFlow=${state.isPinResetFlow})');
+        print('[AuthNotifier] DIAGNOSTIC: forceNewSession=$forceNewSession (isPinResetFlow=${state.isPinResetFlow})');
       }
 
-      await _authService.ensurePhoneSession(phone,
-          forceNewSession: forceNewSession);
+      await _authService.ensurePhoneSession(phone, forceNewSession: forceNewSession);
       if (kDebugMode) print('[AuthNotifier] DIAGNOSTIC: OTP sent successfully');
       state = state.copyWith(
         isLoading: false,
@@ -167,9 +174,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         otpStage: OtpStage.codeSent,
       );
     } on Object catch (e) {
-      if (kDebugMode)
-        print(
-            '[AuthNotifier] DIAGNOSTIC: Send OTP error: ${e.runtimeType} - $e');
+      if (kDebugMode) print('[AuthNotifier] DIAGNOSTIC: Send OTP error: ${e.runtimeType} - $e');
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
@@ -189,8 +194,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
       await _authService.confirmOtp(code);
       if (kDebugMode) {
-        print(
-            '[AuthNotifier] OTP verified, user should update via authStateChanges');
+        print('[AuthNotifier] OTP verified, user should update via authStateChanges');
       }
       await AnalyticsService.instance.logLoginSuccess('otp');
       state = state.copyWith(
@@ -219,8 +223,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // CRITICAL: Clear isPinResetFlow flag after successful PIN creation
       // This allows AuthGate to navigate to home screen instead of looping back to CreatePinScreen
       if (kDebugMode) {
-        print(
-            '[AuthNotifier] PIN created successfully, clearing isPinResetFlow flag');
+        print('[AuthNotifier] PIN created successfully, clearing isPinResetFlow flag');
       }
 
       state = state.copyWith(
@@ -265,8 +268,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       if (kDebugMode) {
-        print(
-            '[AuthNotifier] AUTH_STATE_TRANSITION: logout_initiated | user=${_firebaseAuth.currentUser?.uid}');
+        print('[AuthNotifier] AUTH_STATE_TRANSITION: logout_initiated | user=${_firebaseAuth.currentUser?.uid}');
       }
 
       // Cleanup: stop location, set offline, clear state
@@ -286,8 +288,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = const AuthState(); // Reset to initial state
 
       if (kDebugMode) {
-        print(
-            '[AuthNotifier] AUTH_STATE_TRANSITION: logout_complete | user=null, hasPin=false, otpStage=idle');
+        print('[AuthNotifier] AUTH_STATE_TRANSITION: logout_complete | user=null, hasPin=false, otpStage=idle');
       }
     } on Object catch (e) {
       if (kDebugMode) {

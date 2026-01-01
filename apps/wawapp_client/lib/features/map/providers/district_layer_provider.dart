@@ -7,6 +7,8 @@ import '../data/nouakchott_districts.dart';
 
 // Cache markers by zoom level and language
 final Map<String, Set<Marker>> _markerCache = {};
+// Memory Optimization Phase 2: Limit cache to 5 zoom levels
+const int _maxCacheSize = 5;
 
 final currentZoomProvider = StateProvider<double>((ref) => 14.0);
 
@@ -33,7 +35,8 @@ final districtPolygonsProvider = Provider<Set<Polygon>>((ref) {
 final districtMarkersProvider = FutureProvider.family
     .autoDispose<Set<Marker>, String>((ref, languageCode) async {
   final zoom = ref.watch(currentZoomProvider);
-  if (zoom < 11 || zoom > 16) return {};
+  // Memory Optimization Phase 2: Only render markers at zoom >= 10
+  if (zoom < 10 || zoom > 16) return {};
 
   // Cache key combines zoom level and language
   final cacheKey = '${zoom}_$languageCode';
@@ -63,6 +66,9 @@ final districtMarkersProvider = FutureProvider.family
   // Store in cache
   _markerCache[cacheKey] = markers;
 
+  // Memory Optimization Phase 2: Evict old cache entries if needed
+  _evictOldCacheIfNeeded();
+
   // Clear cache when districts update
   ref.listen(districtAreasProvider, (previous, next) {
     _markerCache.clear();
@@ -70,6 +76,14 @@ final districtMarkersProvider = FutureProvider.family
 
   return markers;
 });
+
+// Memory Optimization Phase 2: LRU cache eviction
+void _evictOldCacheIfNeeded() {
+  if (_markerCache.length > _maxCacheSize) {
+    // Remove oldest entry (first key)
+    _markerCache.remove(_markerCache.keys.first);
+  }
+}
 
 Future<BitmapDescriptor> _createTextMarker(String text) async {
   final recorder = ui.PictureRecorder();

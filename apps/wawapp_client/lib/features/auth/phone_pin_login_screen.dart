@@ -123,6 +123,63 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     }
   }
 
+  Future<void> _handleForgotPin() async {
+    String phone = _phone.text.trim();
+
+    // Validate and convert to E.164 format for Mauritania
+    try {
+      if (phone.startsWith('+')) {
+        // Already in E.164, validate it
+        if (!MauritaniaPhoneUtils.isValidMauritaniaE164(phone)) {
+          setState(() => _phoneError = 'رقم هاتف غير صحيح بصيغة +222');
+          return;
+        }
+      } else {
+        // Local format, validate and convert
+        if (!MauritaniaPhoneUtils.isValidMauritaniaLocalNumber(phone)) {
+          setState(() => _phoneError = MauritaniaPhoneUtils.getValidationError(phone));
+          return;
+        }
+        phone = MauritaniaPhoneUtils.toMauritaniaE164(phone);
+        // Update text field with E.164 format
+        _phone.text = phone;
+      }
+    } catch (e) {
+      setState(() => _phoneError = 'رقم هاتف غير صحيح');
+      return;
+    }
+
+    setState(() => _phoneError = null);
+
+    debugPrint('[LoginScreen] Starting PIN reset flow for phone: $phone');
+
+    // Start PIN reset flow - sends OTP
+    ref.read(authProvider.notifier).startPinResetFlow();
+
+    try {
+      await ref.read(authProvider.notifier).sendOtp(phone);
+      debugPrint('[LoginScreen] OTP sent for PIN reset');
+    } on Object catch (e) {
+      debugPrint('[LoginScreen] OTP send failed: ${e.runtimeType} - $e');
+      if (mounted) {
+        String errorMessage = 'فشل إرسال OTP';
+        // If phone doesn't exist, Firebase will create a new user
+        // The Cloud Function will fail if PIN doesn't exist
+        final errorStr = e.toString().toLowerCase();
+        if (errorStr.contains('not found') || errorStr.contains('does not exist')) {
+          errorMessage = 'رقم الهاتف غير مسجل. يرجى التسجيل أولاً';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -224,6 +281,17 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
               ElevatedButton(
                 onPressed: authState.isLoading ? null : _loginWithPin,
                 child: const Text('Login'),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: authState.isLoading ? null : _handleForgotPin,
+                child: const Text(
+                  'نسيت الرمز السري؟',
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
             if (authState.error != null)

@@ -222,8 +222,10 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       ),
                     }
                   : {},
-              myLocationEnabled: true,
+              // Memory Optimization Phase 2: Disable unnecessary map features
+              myLocationEnabled: false, // Disabled - using custom marker
               myLocationButtonEnabled: false, // Custom button below
+              compassEnabled: false, // Memory Optimization Phase 2
               zoomControlsEnabled: false,
               mapToolbarEnabled: false,
             ),

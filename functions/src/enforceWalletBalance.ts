@@ -115,15 +115,30 @@ export const enforceWalletBalance = functions.firestore
       return null;
     }
 
-    // Fix #2: Loop Guard - Check if walletGuard already exists
+    // Bug #3 FIX: Driver-scoped guard check
+    // walletGuard must be for THIS specific driver to skip enforcement
+    // If guard exists but for a DIFFERENT driver, we must re-check the new driver's balance
     const existingWalletGuard = afterData.walletGuard;
     if (existingWalletGuard && existingWalletGuard.reason) {
-      console.log('[WalletBalanceGuard] walletGuard exists, skipping to prevent loops', {
-        order_id: orderId,
-        driver_id: assignedDriverId,
-        existing_reason: existingWalletGuard.reason,
-      });
-      return null;
+      // Check if guard is for THIS driver
+      if (existingWalletGuard.driverId === assignedDriverId) {
+        console.log('[WalletBalanceGuard] walletGuard exists for THIS driver, skipping enforcement', {
+          order_id: orderId,
+          driver_id: assignedDriverId,
+          existing_reason: existingWalletGuard.reason,
+          blocked_at: existingWalletGuard.blockedAt,
+        });
+        return null;
+      } else {
+        // Guard exists but for a DIFFERENT driver - we must check NEW driver's balance
+        console.log('[WalletBalanceGuard] walletGuard exists for DIFFERENT driver, re-checking balance', {
+          order_id: orderId,
+          current_driver_id: assignedDriverId,
+          previous_blocked_driver_id: existingWalletGuard.driverId,
+          previous_reason: existingWalletGuard.reason,
+        });
+        // Fall through to balance check
+      }
     }
 
     console.log('[WalletBalanceGuard] Order accepted, checking driver wallet balance', {

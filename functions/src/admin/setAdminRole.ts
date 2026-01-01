@@ -20,9 +20,11 @@ export const setAdminRole = functions.https.onCall(async (data, context) => {
     );
   }
 
-  // Check if caller is admin
+  // Bug #6 FIX: Standardize admin check - use isAdmin only (not role)
+  // isAdmin is the PRIMARY admin indicator (used in security rules)
+  // role is SECONDARY metadata (for logging and display purposes only)
   const callerClaims = context.auth.token;
-  if (!callerClaims.isAdmin && !callerClaims.role || callerClaims.role !== 'admin') {
+  if (!callerClaims.isAdmin) {
     throw new functions.https.HttpsError(
       'permission-denied',
       'Only admins can assign admin role'
@@ -40,9 +42,11 @@ export const setAdminRole = functions.https.onCall(async (data, context) => {
 
   try {
     // Set custom claims
+    // PRIMARY: isAdmin (used for security rules and authorization checks)
+    // SECONDARY: role (for logging, admin UI display, and audit trails)
     await admin.auth().setCustomUserClaims(uid, {
-      isAdmin: true,
-      role: 'admin',
+      isAdmin: true,              // PRIMARY: Used in firestore.rules (line 8: isAdmin == true)
+      role: 'admin',              // SECONDARY: For display/logging only
       assignedAt: Date.now(),
     });
 

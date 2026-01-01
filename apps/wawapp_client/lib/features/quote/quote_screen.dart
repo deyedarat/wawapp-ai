@@ -357,6 +357,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
 
       if (!mounted) return;
       final order = core.Order(
+        id: orderId,
+        ownerId: user.uid,
         distanceKm: quoteState.distanceKm!,
         price: breakdown.rounded.toDouble(),
         pickupAddress: fromText,

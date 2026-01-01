@@ -13,7 +13,6 @@ import 'order_status_timeline.dart';
 import 'rating_bottom_sheet.dart';
 import '../../map/providers/district_layer_provider.dart';
 import '../../../core/maps/safe_camera_helper.dart';
-import '../../../core/navigation/safe_navigation.dart';
 
 class OrderTrackingView extends ConsumerStatefulWidget {
   final Order? order;
@@ -38,6 +37,29 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
   bool _isCancelling = false;
   bool _hasShownRatingPrompt = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // Memory Optimization Phase 3: Initialize driver location listener once
+    if (widget.order?.driverId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref.listen(
+            driverLocationProvider(widget.order!.driverId!),
+            (previous, next) {
+              next.whenData((location) {
+                if (location != null && mounted) {
+                  _handleDriverMovement(location);
+                  _showRatingPrompt();
+                }
+              });
+            },
+          );
+        }
+      });
+    }
+  }
+
   void _onCameraMove(CameraPosition position) {
     ref.read(currentZoomProvider.notifier).state = position.zoom;
   }
@@ -60,7 +82,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
         ],
         color: Theme.of(context).colorScheme.primary,
         width: 4,
-        patterns: [PatternItem.dash(20), PatternItem.gap(10)],
+        // Memory Optimization Phase 2: Removed dashed pattern (solid line uses less memory)
       ));
     }
 
@@ -157,15 +179,16 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
 
     final currentPos = driverLocation.position;
 
-    // Only animate if driver moved significantly (>50 meters)
-    if (_lastDriverPosition != null) {
-      final distance = _calculateDistance(
-        _lastDriverPosition!.latitude,
-        _lastDriverPosition!.longitude,
-        currentPos.latitude,
-        currentPos.longitude,
-      );
-      if (distance < 50) return;
+      // Memory Optimization Phase 3: Increased threshold from 50m to 100m
+      // Only animate if driver moved significantly (>100 meters)
+      if (_lastDriverPosition != null) {
+        final distance = _calculateDistance(
+          _lastDriverPosition!.latitude,
+          _lastDriverPosition!.longitude,
+          currentPos.latitude,
+          currentPos.longitude,
+        );
+        if (distance < 100) return;
     }
 
     _lastDriverPosition = currentPos;
@@ -200,18 +223,25 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
   }
 
   Future<void> _showCancelDialog(BuildContext context) async {
+    debugPrint('[OrderTracking] Showing cancel dialog');
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('إلغاء الطلب'),
         content: const Text('هل تريد إلغاء الطلب؟'),
         actions: [
           TextButton(
-            onPressed: () => context.safeDialogPop(false),
+            onPressed: () {
+              debugPrint('[OrderTracking] User clicked NO');
+              Navigator.of(dialogContext).pop(false);
+            },
             child: const Text('لا'),
           ),
           TextButton(
-            onPressed: () => context.safeDialogPop(true),
+            onPressed: () {
+              debugPrint('[OrderTracking] User clicked YES');
+              Navigator.of(dialogContext).pop(true);
+            },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('نعم'),
           ),
@@ -219,13 +249,19 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
       ),
     );
 
+    debugPrint('[OrderTracking] Dialog result: $confirmed, mounted: $mounted');
     if (confirmed == true && mounted) {
+      debugPrint('[OrderTracking] Calling _cancelOrder()');
       await _cancelOrder();
     }
   }
 
   Future<void> _cancelOrder() async {
-    if (widget.order == null || widget.order!.id == null) return;
+    debugPrint('[OrderTracking] _cancelOrder() called, order id: ${widget.order?.id}');
+    if (widget.order == null || widget.order!.id == null) {
+      debugPrint('[OrderTracking] Cannot cancel - order is null or id is null');
+      return;
+    }
 
     setState(() => _isCancelling = true);
 
@@ -292,11 +328,9 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
       data: (location) => location,
     );
 
-    // Handle driver movement for auto-follow and rating prompt
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _handleDriverMovement(driverLocation);
-      _showRatingPrompt();
-    });
+    // Memory Optimization Phase 3: Removed PostFrameCallback from build()
+    // Driver location tracking is now handled in initState() via ref.listen
+    // This prevents unnecessary callbacks on every build
 
     return Column(
       children: [

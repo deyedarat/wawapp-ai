@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/navigation/safe_navigation.dart';
+import '../auth/otp_screen.dart';
+import '../auth/providers/auth_service_provider.dart';
 import 'providers/client_profile_providers.dart';
 
 class ClientProfileEditScreen extends ConsumerStatefulWidget {
@@ -55,6 +57,64 @@ class _ClientProfileEditScreenState
     super.dispose();
   }
 
+  /// Bug #5 FIX: Verify phone number change via OTP
+  /// Returns true if verification successful, false if cancelled/failed
+  Future<bool> _verifyPhoneChange(String oldPhone, String newPhone) async {
+    // Show confirmation dialog first
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تغيير رقم الهاتف'),
+        content: Text(
+          'هل تريد تغيير رقم الهاتف من\n$oldPhone\nإلى\n$newPhone؟\n\n'
+          'سيتم إرسال رمز التحقق إلى الرقم الجديد.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('متابعة'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) {
+      // User cancelled
+      return false;
+    }
+
+    // Bug #5 FIX COMPLETE: Send OTP to new phone number via auth provider
+    try {
+      await ref.read(authProvider.notifier).sendOtp(newPhone);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطأ في إرسال رمز التحقق: $e')),
+        );
+      }
+      return false;
+    }
+
+    // Navigate to OTP screen for new phone verification
+    if (!mounted) return false;
+
+    final verified = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OtpScreen(
+          phoneNumber: newPhone,
+          isPhoneChange: true,
+        ),
+      ),
+    );
+
+    return verified == true;
+  }
+
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -69,6 +129,35 @@ class _ClientProfileEditScreenState
       final now = DateTime.now();
       final profileAsync = ref.read(clientProfileStreamProvider);
       final currentProfile = profileAsync.value;
+
+      // Bug #5 FIX: Detect phone number change and require OTP verification
+      final originalPhone = currentProfile?.phone ?? '';
+      final newPhone = _phoneController.text.trim();
+      final phoneChanged = originalPhone.isNotEmpty && originalPhone != newPhone;
+
+      if (phoneChanged) {
+        // Phone number changed - require OTP verification
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+
+        final verified = await _verifyPhoneChange(originalPhone, newPhone);
+
+        if (!verified) {
+          // User cancelled or verification failed
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('تم إلغاء تغيير رقم الهاتف')),
+            );
+          }
+          return;
+        }
+
+        // Verification successful - proceed with update
+        if (mounted) {
+          setState(() => _isLoading = true);
+        }
+      }
 
       final profile = ClientProfile(
         id: user.uid,

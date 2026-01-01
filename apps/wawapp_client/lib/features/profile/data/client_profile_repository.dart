@@ -36,8 +36,15 @@ class ClientProfileRepository {
 
   Future<void> createProfile(ClientProfile profile) async {
     debugPrint('[ClientProfile] Creating profile for userId: ${profile.id}');
-    await _firestore.collection('users').doc(profile.id).set(profile.toJson());
-    debugPrint('[ClientProfile] Profile created successfully');
+
+    // Bug #4 FIX: Use toClientUpdateJson() to exclude protected fields (totalTrips, averageRating)
+    // These fields are managed by Cloud Functions only and will cause permission denied if included
+    await _firestore.collection('users').doc(profile.id).set({
+      ...profile.toClientUpdateJson(),
+      'createdAt': FieldValue.serverTimestamp(), // Only for initial creation
+    });
+
+    debugPrint('[ClientProfile] Profile created successfully (client-safe fields only)');
   }
 
   Future<void> updateProfile(ClientProfile profile) async {

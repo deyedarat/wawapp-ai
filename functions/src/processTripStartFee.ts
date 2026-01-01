@@ -1,29 +1,34 @@
 /**
  * Cloud Function: Trip Start Fee Deduction
- * 
- * Phase C: When an order transitions from accepted → onRoute, enforce exclusivity 
+ *
+ * Phase C: When an order transitions from accepted → onRoute, enforce exclusivity
  * and deduct a 10% trip start fee from the assigned driver's wallet atomically and idempotently.
- * 
+ *
  * Rules:
  * - Started = status becomes 'onRoute'
  * - Fee = 10% of order.price (rounded to nearest integer)
  * - No Refund: if trip cancelled after fee deduction, do not refund
  * - If insufficient balance: block transition and notify driver
- * 
+ *
  * Triggers on: orders/{orderId} onUpdate
- * 
+ *
+ * Bug #2 FIX: Ledger race condition fixed by calculating balanceAfter directly
+ * instead of using FieldValue.increment()
+ *
  * Author: WawApp Development Team (Phase C Implementation)
- * Last Updated: 2025-12-28
+ * Last Updated: 2026-01-01
  */
 
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { FINANCE_CONFIG } from './finance/config';
 
 /**
  * Calculate trip start fee (10% of order price, rounded to nearest integer)
+ * Uses FINANCE_CONFIG.TRIP_START_FEE_RATE for consistency
  */
 function calculateTripStartFee(orderPrice: number): number {
-  return Math.round(orderPrice * 0.1);
+  return Math.round(orderPrice * FINANCE_CONFIG.TRIP_START_FEE_RATE);
 }
 
 /**
@@ -209,30 +214,37 @@ export const processTripStartFee = functions.firestore
           return;
         }
 
+        // Bug #2 FIX: Calculate new balance directly instead of using increment
+        // This ensures balanceBefore/After in ledger are accurate even with concurrent transactions
+        const newBalance = currentBalance - tripStartFee;
+        const totalDebited = (walletDoc.data()?.totalDebited || 0) + tripStartFee;
+
         // Deduct fee from wallet
         transaction.update(walletRef, {
-          balance: admin.firestore.FieldValue.increment(-tripStartFee),
-          totalDebited: admin.firestore.FieldValue.increment(tripStartFee),
+          balance: newBalance,
+          totalDebited: totalDebited,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
 
-        // Create transaction record using existing schema
+        // Create transaction record with accurate balance snapshots
         transaction.set(ledgerRef, {
           id: ledgerDocId,
           walletId: assignedDriverId,
-          type: 'debit',
+          type: 'trip_start_fee', // Bug #2 FIX: Use type instead of debit
           source: 'trip_start_fee',
-          amount: tripStartFee,
+          amount: -tripStartFee, // Negative for debit
           currency: 'MRU',
           orderId: orderId,
           balanceBefore: currentBalance,
-          balanceAfter: currentBalance - tripStartFee,
+          balanceAfter: newBalance,
           note: `Trip start fee for order #${orderId}`,
+          description: `Trip start fee (10%) for order #${orderId}`,
           metadata: {
             orderPrice,
-            feeRate: 0.1,
+            feeRate: FINANCE_CONFIG.TRIP_START_FEE_RATE,
           },
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          timestamp: admin.firestore.FieldValue.serverTimestamp(),
         });
 
         // Add startedAt timestamp to order for exclusivity
