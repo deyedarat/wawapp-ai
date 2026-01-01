@@ -31,4 +31,32 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get accept => 'Accepter';
+
+  @override
+  String get sign_in_with_phone => 'تسجيل الدخول بالهاتف';
+
+  @override
+  String get pin_label => 'الرمز السري (PIN)';
+
+  @override
+  String get set_pin => 'إعداد الرمز السري';
+
+  @override
+  String get confirm_pin => 'تأكيد الرمز السري';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get pin_error_length => 'يجب أن يتكون الرمز من 4 أرقام';
+
+  @override
+  String get pin_error_weak =>
+      'الرمز ضعيف جداً. تجنب الأرقام المتكررة أو المتسلسلة';
+
+  @override
+  String get pin_error_mismatch => 'الرموز غير متطابقة';
+
+  @override
+  String get pin_saved_success => 'تم حفظ الرمز السري بنجاح';
 }

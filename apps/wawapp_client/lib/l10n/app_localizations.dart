@@ -1323,6 +1323,48 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'يرجى الانتظار'**
   String get please_wait;
+
+  /// No description provided for @sign_in.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الدخول'**
+  String get sign_in;
+
+  /// No description provided for @check_phone.
+  ///
+  /// In ar, this message translates to:
+  /// **'التحقق من الهاتف'**
+  String get check_phone;
+
+  /// No description provided for @create_account.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء حساب'**
+  String get create_account;
+
+  /// No description provided for @new_user_create_account.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستخدم جديد - إنشاء حساب'**
+  String get new_user_create_account;
+
+  /// No description provided for @existing_user_enter_pin.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستخدم حالي - أدخل الرمز السري (PIN)'**
+  String get existing_user_enter_pin;
+
+  /// No description provided for @pin_label.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرمز السري (PIN)'**
+  String get pin_label;
+
+  /// No description provided for @login.
+  ///
+  /// In ar, this message translates to:
+  /// **'دخول'**
+  String get login;
 }
 
 class _AppLocalizationsDelegate

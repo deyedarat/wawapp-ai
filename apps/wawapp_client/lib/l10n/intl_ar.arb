@@ -219,5 +219,12 @@
   "network_error": "خطأ في الاتصال",
   "no_internet": "لا يوجد اتصال بالإنترنت",
   "something_went_wrong": "حدث خطأ ما",
-  "please_wait": "يرجى الانتظار"
+  "please_wait": "يرجى الانتظار",
+  "sign_in": "تسجيل الدخول",
+  "check_phone": "التحقق من الهاتف",
+  "create_account": "إنشاء حساب",
+  "new_user_create_account": "مستخدم جديد - إنشاء حساب",
+  "existing_user_enter_pin": "مستخدم حالي - أدخل الرمز السري (PIN)",
+  "pin_label": "الرمز السري (PIN)",
+  "login": "دخول"
 }

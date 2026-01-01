@@ -3,13 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../l10n/app_localizations.dart';
 import 'providers/auth_service_provider.dart';
 
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
   @override
-  ConsumerState<PhonePinLoginScreen> createState() =>
-      _PhonePinLoginScreenState();
+  ConsumerState<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
 }
 
 class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
@@ -88,8 +88,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     setState(() => _err = null);
 
     // Check if phone exists before sending OTP
-    final phoneExists =
-        await ref.read(authProvider.notifier).checkPhoneExists(phone);
+    final phoneExists = await ref.read(authProvider.notifier).checkPhoneExists(phone);
     if (!phoneExists) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -189,8 +188,9 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
     final errorMessage = _err ?? authState.error;
 
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign in with Phone')),
+      appBar: AppBar(title: Text(l10n.sign_in_with_phone)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -213,7 +213,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
               maxLength: 4,
               keyboardType: TextInputType.number,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'PIN (4 digits)'),
+              decoration: InputDecoration(labelText: l10n.pin_label),
             ),
             if (errorMessage != null)
               Padding(
@@ -227,9 +227,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             ElevatedButton(
               key: const Key('loginButton'),
               onPressed: authState.isLoading ? null : _handleLogin,
-              child: authState.isLoading
-                  ? const CircularProgressIndicator()
-                  : const Text('تسجيل الدخول'),
+              child: authState.isLoading ? const CircularProgressIndicator() : const Text('تسجيل الدخول'),
             ),
             const SizedBox(height: 8),
             TextButton(
@@ -244,8 +242,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             ),
             const SizedBox(height: 4),
             TextButton(
-              onPressed:
-                  authState.isLoading ? null : _handleNewDeviceRegistration,
+              onPressed: authState.isLoading ? null : _handleNewDeviceRegistration,
               child: const Text('جهاز جديد أو تسجيل لأول مرة؟ التحقق عبر SMS'),
             ),
           ],

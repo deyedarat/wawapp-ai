@@ -6,5 +6,14 @@
   "wallet": "المحفظة",
   "total_earnings": "إجمالي الأرباح",
   "today_earnings": "أرباح اليوم",
-  "accept": "قبول"
+  "accept": "قبول",
+  "sign_in_with_phone": "تسجيل الدخول بالهاتف",
+  "pin_label": "الرمز السري (PIN)",
+  "set_pin": "إعداد الرمز السري",
+  "confirm_pin": "تأكيد الرمز السري",
+  "save": "حفظ",
+  "pin_error_length": "يجب أن يتكون الرمز من 4 أرقام",
+  "pin_error_weak": "الرمز ضعيف جداً. تجنب الأرقام المتكررة أو المتسلسلة",
+  "pin_error_mismatch": "الرموز غير متطابقة",
+  "pin_saved_success": "تم حفظ الرمز السري بنجاح"
 }

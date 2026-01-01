@@ -634,4 +634,25 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get please_wait => 'Veuillez patienter';
+
+  @override
+  String get sign_in => 'تسجيل الدخول';
+
+  @override
+  String get check_phone => 'التحقق من الهاتف';
+
+  @override
+  String get create_account => 'إنشاء حساب';
+
+  @override
+  String get new_user_create_account => 'مستخدم جديد - إنشاء حساب';
+
+  @override
+  String get existing_user_enter_pin => 'مستخدم حالي - أدخل الرمز السري (PIN)';
+
+  @override
+  String get pin_label => 'الرمز السري (PIN)';
+
+  @override
+  String get login => 'دخول';
 }

@@ -33,6 +33,20 @@ class PhonePinAuth {
   final _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
 
+  // Enable reCAPTCHA fallback for debug builds
+  Future<void> _initializeAuth() async {
+    if (kDebugMode) {
+      // Force reCAPTCHA flow for debug builds to avoid Play Integrity issues
+      await _auth.setSettings(
+        appVerificationDisabledForTesting: false,
+        forceRecaptchaFlow: true,
+      );
+      if (kDebugMode) {
+        print('[PhonePinAuth] Initialized with forceRecaptchaFlow=true for debug build');
+      }
+    }
+  }
+
   Future<DocumentReference<Map<String, dynamic>>> _userDoc() async {
     final uid = _auth.currentUser!.uid;
     return _db.collection(userCollection).doc(uid);
@@ -42,6 +56,9 @@ class PhonePinAuth {
   String? get lastVerificationId => _lastVerificationId;
 
   Future<void> ensurePhoneSession(String phoneE164, {bool forceNewSession = false}) async {
+    // Initialize auth settings for debug builds (enable reCAPTCHA)
+    await _initializeAuth();
+
     if (kDebugMode) {
       print(
         '[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow for phone=$phoneE164, forceNewSession=$forceNewSession',
