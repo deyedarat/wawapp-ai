@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core_shared/core_shared.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../auth/providers/auth_service_provider.dart';
 import 'providers/notifications_provider.dart';
 
 class NotificationsScreen extends ConsumerWidget {
@@ -19,9 +20,9 @@ class NotificationsScreen extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               final service = ref.read(inAppNotificationServiceProvider);
-              final user = ref.read(authProvider).value;
-              if (user != null) {
-                await service.markAllAsRead(user.uid);
+              final authState = ref.read(authProvider);
+              if (authState.user != null) {
+                await service.markAllAsRead(authState.user!.uid);
               }
             },
             child: const Text('تحديد الكل كمقروء'),
@@ -177,14 +178,4 @@ class NotificationTile extends ConsumerWidget {
       return DateFormat('dd/MM/yyyy').format(date);
     }
   }
-}
-
-// Temporary auth provider - needs to be replaced with actual auth provider
-final authProvider = StreamProvider<User?>((ref) {
-  return Stream.value(null);
-});
-
-class User {
-  final String uid;
-  User(this.uid);
 }

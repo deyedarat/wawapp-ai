@@ -17,6 +17,7 @@ import '../map/map_picker_screen.dart';
 import '../map/pick_route_controller.dart';
 import '../map/places_autocomplete_sheet.dart';
 import '../map/saved_location_selector_sheet.dart';
+import '../notifications/providers/notifications_provider.dart';
 import '../quote/models/latlng.dart' as quote_latlng;
 import '../quote/providers/quote_provider.dart';
 import '../shipment_type/shipment_type_provider.dart';
@@ -267,11 +268,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   PreferredSizeWidget _buildAppBar(
       BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
+    final unreadCount = ref.watch(unreadCountProvider);
 
     return AppBar(
       title: Text(l10n.appTitle),
       centerTitle: true,
       actions: [
+        // Notifications icon with badge
+        Stack(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.notifications_outlined),
+              onPressed: () => context.push('/notifications'),
+              tooltip: 'الإشعارات',
+            ),
+            if (unreadCount.asData?.value != null &&
+                unreadCount.asData!.value > 0)
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  child: Text(
+                    '${unreadCount.asData!.value > 9 ? '9+' : unreadCount.asData!.value}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        ),
         IconButton(
           icon: const Icon(Icons.language),
           onPressed: () {
