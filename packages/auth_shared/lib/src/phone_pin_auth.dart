@@ -296,8 +296,32 @@ class PhonePinAuth {
   }
 
   Future<bool> phoneExists(String phoneE164) async {
-    final snap = await _db.collection(userCollection).where('phone', isEqualTo: phoneE164).limit(1).get();
-    return snap.docs.isNotEmpty;
+    try {
+      // Use Cloud Function instead of direct query to avoid Firestore permission issues
+      // Cloud Functions bypass security rules and can safely check phone existence
+      final callable = FirebaseFunctions.instance.httpsCallable('checkPhoneExists');
+
+      // Determine userType from collection name
+      final userType = userCollection == 'drivers' ? 'driver' : 'user';
+
+      final result = await callable.call<Map<String, dynamic>>({
+        'phoneE164': phoneE164,
+        'userType': userType,
+      });
+
+      return result.data['exists'] as bool? ?? false;
+    } on FirebaseFunctionsException catch (e) {
+      if (kDebugMode) {
+        print('[PhonePinAuth] Cloud Function error checking phone: ${e.code} - ${e.message}');
+      }
+      // On error, return false to prevent blocking user flow
+      return false;
+    } on Object catch (e) {
+      if (kDebugMode) {
+        print('[PhonePinAuth] Error checking phone existence: $e');
+      }
+      return false;
+    }
   }
 
   Future<void> signOut() => _auth.signOut();

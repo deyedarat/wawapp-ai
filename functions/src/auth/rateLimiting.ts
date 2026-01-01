@@ -90,12 +90,23 @@ export async function checkRateLimit(phoneE164: string): Promise<RateLimitResult
     return { allowed: true, remainingAttempts };
 
   } catch (error) {
-    // Fail open - don't block legitimate users due to Firestore errors
-    console.error('[RateLimit] Error checking rate limit, allowing request', {
+    // Bug #7 FIX: SECURITY - Fail-closed for authentication
+    // If we cannot verify rate limit, we must deny to prevent brute force attacks
+    console.error('[RateLimit] CRITICAL: Error checking rate limit, DENYING request for security', {
       phone: phoneE164,
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString(),
     });
-    return { allowed: true, remainingAttempts: 10 };
+
+    // Alert operations team (integrate with monitoring system)
+    // TODO: Send to Sentry/CloudWatch/monitoring system
+
+    return {
+      allowed: false,
+      message: 'خطأ في النظام. حاول مرة أخرى بعد قليل', // System error. Try again later.
+      lockedUntilSeconds: 60, // Temporary 1-minute backoff
+    };
   }
 }
 

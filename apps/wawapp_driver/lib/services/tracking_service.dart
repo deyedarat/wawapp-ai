@@ -19,7 +19,7 @@ class TrackingService {
 
   StreamSubscription? _orderSubscription;
   StreamSubscription? _onlineStatusSubscription;
-  Timer? _updateTimer;
+  // Removed _updateTimer - redundant timer was removed in Memory Optimization Phase 1
   Position? _lastPosition;
   bool _isTracking = false;
   int _updateIntervalSeconds = 10; // Default 10 seconds
@@ -84,7 +84,7 @@ class TrackingService {
   }
 
   Future<void> _startLocationUpdates(String driverId) async {
-    _updateTimer?.cancel();
+    // Removed _updateTimer?.cancel() - redundant timer was removed in Memory Optimization Phase 1
     _positionUpdatesCount = 0;
     _firstFixTimestamp = null;
 
@@ -272,8 +272,7 @@ class TrackingService {
     if (kDebugMode) {
       debugPrint('$_logTag Stopping location updates');
     }
-    _updateTimer?.cancel();
-    _updateTimer = null;
+    // Removed _updateTimer cleanup - redundant timer was removed in Memory Optimization Phase 1
     _lastPosition = null;
     _positionUpdatesCount = 0;
     _firstFixTimestamp = null;

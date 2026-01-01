@@ -1,0 +1,309 @@
+Analyzing wawapp_client...                                      
+
+   info - Don't invoke 'print' in production code - integration_test\auth_and_order_test.dart:23:7 - avoid_print
+   info - Don't invoke 'print' in production code - integration_test\auth_and_order_test.dart:39:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:17:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:22:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:36:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:37:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:39:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:47:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:52:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:66:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:67:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:69:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:78:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:82:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:83:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:84:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:95:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:100:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:109:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:110:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:112:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:120:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:124:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:125:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:126:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:127:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:130:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:135:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:140:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:144:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:145:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:146:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:147:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:148:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:149:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:150:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:151:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:152:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:153:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:154:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:155:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:156:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:157:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:162:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:163:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:164:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:165:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:166:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:167:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:168:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:169:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:170:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:171:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:172:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:173:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:174:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:175:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:176:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:177:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:178:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:179:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:180:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:181:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:182:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:183:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:184:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:185:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:186:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:187:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:188:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:189:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:190:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:191:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:192:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:193:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:194:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:195:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:196:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:197:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:198:5 - avoid_print
+  error - Undefined name 'WawLog' - lib\debug\debug_menu_screen.dart:24:17 - undefined_identifier
+  error - Undefined name 'CrashlyticsObserver' - lib\debug\debug_menu_screen.dart:25:17 - undefined_identifier
+  error - Undefined name 'WawLog' - lib\debug\debug_menu_screen.dart:32:17 - undefined_identifier
+  error - Undefined name 'WawLog' - lib\debug\debug_menu_screen.dart:45:17 - undefined_identifier
+  error - Undefined name 'WawLog' - lib\debug\debug_menu_screen.dart:46:17 - undefined_identifier
+  error - Undefined name 'WawLog' - lib\debug\debug_menu_screen.dart:47:17 - undefined_identifier
+  error - Undefined name 'DebugConfig' - lib\debug\debug_menu_screen.dart:57:51 - undefined_identifier
+  error - Undefined name 'DebugConfig' - lib\debug\debug_menu_screen.dart:58:49 - undefined_identifier
+  error - Undefined name 'DebugConfig' - lib\debug\debug_menu_screen.dart:59:47 - undefined_identifier
+  error - Undefined name 'DebugConfig' - lib\debug\debug_menu_screen.dart:60:53 - undefined_identifier
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:29:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:35:28 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\about\about_screen.dart:37:54 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:46:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:56:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:66:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:80:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:90:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:104:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:113:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:134:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:138:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:149:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:167:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:171:22 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\about\about_screen.dart:173:43 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:182:11 - prefer_const_constructors
+   info - An uninitialized field should have an explicit type annotation - lib\features\auth\providers\auth_service_provider.dart:37:14 - prefer_typing_uninitialized_variables
+warning - The value of the field '_hasLocationPermission' isn't used - lib\features\home\home_screen.dart:32:8 - unused_field
+warning - The value of the field '_errorMessage' isn't used - lib\features\home\home_screen.dart:33:11 - unused_field
+warning - The value of the local variable 'theme' isn't used - lib\features\home\home_screen.dart:262:11 - unused_local_variable
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\home_screen.dart:421:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\home_screen.dart:424:42 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\home_screen.dart:584:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\home_screen.dart:696:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\home_screen.dart:744:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\home_screen.dart:745:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\home_screen.dart:752:44 - deprecated_member_use
+   info - Dangling library doc comment - lib\features\map\map_picker_screen.dart:1:1 - dangling_library_doc_comments
+   info - Use the end-of-line form ('///') for doc comments - lib\features\map\map_picker_screen.dart:1:1 - slash_for_doc_comments
+   info - Use 'const' with the constructor to improve performance - lib\features\map\saved_location_selector_sheet.dart:44:21 - prefer_const_constructors
+warning - Unused import: 'package:go_router/go_router.dart' - lib\features\profile\add_saved_location_screen.dart:3:8 - unused_import
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\profile\add_saved_location_screen.dart:155:17 - deprecated_member_use
+warning - Unused import: 'package:go_router/go_router.dart' - lib\features\profile\client_profile_edit_screen.dart:4:8 - unused_import
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\profile\client_profile_edit_screen.dart:156:17 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:42:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:51:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:57:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:65:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:106:16 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\profile\client_profile_screen.dart:118:62 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:130:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:140:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:150:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:175:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:187:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:201:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:207:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:221:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:234:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:238:11 - prefer_const_constructors
+warning - The left operand can't be null, so the right operand is never executed - lib\features\profile\client_profile_screen.dart:248:34 - dead_null_aware_expression
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:252:18 - prefer_const_constructors
+warning - The left operand can't be null, so the right operand is never executed - lib\features\profile\client_profile_screen.dart:263:36 - dead_null_aware_expression
+warning - The left operand can't be null, so the right operand is never executed - lib\features\profile\client_profile_screen.dart:264:51 - dead_null_aware_expression
+warning - The left operand can't be null, so the right operand is never executed - lib\features\profile\client_profile_screen.dart:268:40 - dead_null_aware_expression
+warning - The left operand can't be null, so the right operand is never executed - lib\features\profile\client_profile_screen.dart:273:40 - dead_null_aware_expression
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:305:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:313:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:327:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:331:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:342:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:372:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:376:24 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\profile\client_profile_screen.dart:378:50 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:387:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\client_profile_screen.dart:398:19 - prefer_const_constructors
+warning - Unused import: 'package:auth_shared/auth_shared.dart' - lib\features\profile\providers\client_profile_providers.dart:1:8 - unused_import
+   info - Don't invoke 'print' in production code - lib\features\profile\providers\client_profile_providers.dart:22:7 - avoid_print
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:44:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:53:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:59:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:67:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:94:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:99:30 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:104:32 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:109:38 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\profile\saved_locations_screen.dart:111:67 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:120:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:133:33 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:140:33 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:172:37 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\profile\saved_locations_screen.dart:186:37 - prefer_const_constructors
+warning - Unused import: 'package:firebase_auth/firebase_auth.dart' - lib\features\quote\quote_screen.dart:5:8 - unused_import
+   info - Import of a library in the 'lib/src' directory of another package - lib\features\quote\quote_screen.dart:8:8 - implementation_imports
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:81:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:91:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:101:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:133:29 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:143:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:154:29 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:156:29 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:169:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:201:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:223:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:226:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:234:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:236:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:275:9 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\quote\quote_screen.dart:279:54 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\quote\quote_screen.dart:282:9 - prefer_const_constructors
+warning - Unused import: '../../theme/theme_extensions.dart' - lib\features\shipment_type\shipment_type_screen.dart:11:8 - unused_import
+   info - Use 'const' for final variables initialized to a constant value - lib\features\shipment_type\shipment_type_screen.dart:23:5 - prefer_const_declarations
+   info - Use 'const' with the constructor to improve performance - lib\features\shipment_type\shipment_type_screen.dart:35:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\shipment_type\shipment_type_screen.dart:45:34 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\shipment_type\shipment_type_screen.dart:47:60 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\shipment_type\shipment_type_screen.dart:56:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\shipment_type\shipment_type_screen.dart:67:29 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\shipment_type\shipment_type_screen.dart:80:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\shipment_type\shipment_type_screen.dart:89:17 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\shipment_type\shipment_type_screen.dart:148:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\shipment_type\shipment_type_screen.dart:155:28 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\shipment_type\shipment_type_screen.dart:156:28 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\shipment_type\shipment_type_screen.dart:161:35 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\shipment_type\shipment_type_screen.dart:168:22 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\shipment_type\shipment_type_screen.dart:174:28 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\shipment_type\shipment_type_screen.dart:176:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\shipment_type\shipment_type_screen.dart:180:43 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\shipment_type\shipment_type_screen.dart:192:17 - prefer_const_constructors
+warning - Unused import: 'package:google_maps_flutter/google_maps_flutter.dart' - lib\features\track\public_track_screen.dart:4:8 - unused_import
+   info - Use 'const' with the constructor to improve performance - lib\features\track\public_track_screen.dart:24:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:141:26 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:151:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:161:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:175:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:178:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:180:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:182:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:210:29 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:212:29 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:219:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:233:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:241:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:261:42 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:268:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:283:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:306:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:317:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:336:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\track\trip_completed_screen.dart:344:9 - prefer_const_constructors
+warning - Unused import: 'package:firebase_auth/firebase_auth.dart' - lib\main.dart:8:8 - unused_import
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:27:25 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:87:49 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:89:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:96:24 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:108:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:124:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:131:24 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:143:25 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:170:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:210:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:211:32 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:212:43 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:213:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:237:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:241:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:242:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:243:18 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:277:28 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:309:31 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:331:33 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:365:25 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:431:49 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:433:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:440:24 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:452:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:468:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:475:24 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:487:25 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:514:44 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:554:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:555:32 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:556:43 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:557:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:581:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:585:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:586:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\app_theme.dart:587:18 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:619:28 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:651:31 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\app_theme.dart:673:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\colors.dart:79:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\colors.dart:80:51 - deprecated_member_use
+warning - Unused import: 'colors.dart' - lib\theme\components.dart:2:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\components.dart:341:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\components.dart:393:22 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\theme\components.dart:395:41 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:27:37 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:29:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:37:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:45:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:54:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:61:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:68:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:77:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:84:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:91:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:100:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:108:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:116:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:127:36 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:129:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:137:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:145:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:154:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:161:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:168:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:177:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:184:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:191:16 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:200:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:208:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:216:17 - prefer_const_constructors
+  error - 'FakePhonePinAuth.ensurePhoneSession' ('Future<void> Function(String, {void Function(String, int?)? onCodeSent, void Function(String)? onVerificationFailed})') isn't a valid override of 'PhonePinAuth.ensurePhoneSession' ('Future<void> Function(String, {bool forceNewSession})') - test\auth\helpers\fake_phone_pin_auth.dart:61:16 - invalid_override
+  error - 'FakePhonePinAuth.verifyPin' ('Future<bool> Function(String)') isn't a valid override of 'PhonePinAuth.verifyPin' ('Future<bool> Function(String, String)') - test\auth\helpers\fake_phone_pin_auth.dart:117:16 - invalid_override
+warning - The method doesn't override an inherited method - test\auth\helpers\mock_firebase_auth.dart:215:8 - override_on_non_overriding_member
+

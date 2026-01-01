@@ -50,6 +50,18 @@ class ClientProfile {
   }
 
   /// Convert to JSON map for Firestore
+  ///
+  /// ⚠️  WARNING: This includes ALL fields including protected ones (totalTrips, averageRating).
+  /// DO NOT use this for profile updates from client apps.
+  /// Use toClientUpdateJson() instead for client-initiated updates.
+  ///
+  /// This method is safe for:
+  /// - Reading from Firestore (fromJson counterpart)
+  /// - Server-side Cloud Functions (bypasses security rules)
+  ///
+  /// This method is UNSAFE for:
+  /// - Client profile updates (use toClientUpdateJson())
+  /// - Client profile creation (use toClientUpdateJson() + createdAt)
   Map<String, dynamic> toJson() {
     return {
       'name': name,
