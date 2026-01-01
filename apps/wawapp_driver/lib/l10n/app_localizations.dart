@@ -145,6 +145,60 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'قبول'**
   String get accept;
+
+  /// No description provided for @sign_in_with_phone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الدخول بالهاتف'**
+  String get sign_in_with_phone;
+
+  /// No description provided for @pin_label.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرمز السري (PIN)'**
+  String get pin_label;
+
+  /// No description provided for @set_pin.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعداد الرمز السري'**
+  String get set_pin;
+
+  /// No description provided for @confirm_pin.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد الرمز السري'**
+  String get confirm_pin;
+
+  /// No description provided for @save.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ'**
+  String get save;
+
+  /// No description provided for @pin_error_length.
+  ///
+  /// In ar, this message translates to:
+  /// **'يجب أن يتكون الرمز من 4 أرقام'**
+  String get pin_error_length;
+
+  /// No description provided for @pin_error_weak.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرمز ضعيف جداً. تجنب الأرقام المتكررة أو المتسلسلة'**
+  String get pin_error_weak;
+
+  /// No description provided for @pin_error_mismatch.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرموز غير متطابقة'**
+  String get pin_error_mismatch;
+
+  /// No description provided for @pin_saved_success.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حفظ الرمز السري بنجاح'**
+  String get pin_saved_success;
 }
 
 class _AppLocalizationsDelegate

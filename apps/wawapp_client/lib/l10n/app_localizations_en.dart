@@ -623,4 +623,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get please_wait => 'يرجى الانتظار';
+
+  @override
+  String get sign_in => 'Sign In';
+
+  @override
+  String get check_phone => 'Check Phone';
+
+  @override
+  String get create_account => 'Create Account';
+
+  @override
+  String get new_user_create_account => 'New User - Create Account';
+
+  @override
+  String get existing_user_enter_pin => 'Existing User - Enter PIN';
+
+  @override
+  String get pin_label => 'PIN';
+
+  @override
+  String get login => 'Login';
 }
