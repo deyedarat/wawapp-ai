@@ -17,6 +17,7 @@ import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'services/analytics_service.dart';
 import 'core/observability/crashlytics_observer.dart';
+import 'features/config/config_gate.dart';
 
 void main() async {
   // Run app initialization in error zone to catch all errors
@@ -128,23 +129,25 @@ class _MyAppState extends ConsumerState<MyApp> {
     final router = ref.watch(appRouterProvider);
     NotificationService().updateContext(context);
 
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      locale: const Locale('ar'),
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      title: 'WawApp Client',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      routerConfig: router,
-      builder: (context, child) =>
-          BuildInfoBanner(child: child ?? const SizedBox()),
+    return ConfigGate(
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        locale: const Locale('ar'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        title: 'WawApp Client',
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system,
+        routerConfig: router,
+        builder: (context, child) =>
+            BuildInfoBanner(child: child ?? const SizedBox()),
+      ),
     );
   }
 }
