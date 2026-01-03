@@ -1,23 +1,24 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'l10n/app_localizations.dart';
-import 'core/theme/app_theme.dart';
-import 'core/router/app_router.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'core/build_info/build_info.dart';
 import 'core/build_info/build_info_banner.dart';
 import 'core/location/location_bootstrap.dart';
-import 'firebase_options.dart';
-import 'services/notification_service.dart';
-import 'services/analytics_service.dart';
 import 'core/observability/crashlytics_observer.dart';
+import 'core/router/app_router.dart';
+import 'core/theme/app_theme.dart';
 import 'features/config/config_gate.dart';
+import 'firebase_options.dart';
+import 'l10n/app_localizations.dart';
+import 'services/analytics_service.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   // Run app initialization in error zone to catch all errors
@@ -129,25 +130,26 @@ class _MyAppState extends ConsumerState<MyApp> {
     final router = ref.watch(appRouterProvider);
     NotificationService().updateContext(context);
 
-    return ConfigGate(
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        locale: const Locale('ar'),
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        title: 'WawApp Client',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
-        routerConfig: router,
-        builder: (context, child) =>
-            BuildInfoBanner(child: child ?? const SizedBox()),
-      ),
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      locale: const Locale('ar'),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      title: 'WawApp Client',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      routerConfig: router,
+      builder: (context, child) {
+        return ConfigGate(
+          child: BuildInfoBanner(child: child ?? const SizedBox()),
+        );
+      },
     );
   }
 }
