@@ -2,6 +2,7 @@ library core_shared;
 
 export 'src/analytics/analytics.dart';
 export 'src/app_error.dart';
+export 'src/auth/auth_bootstrap.dart';
 export 'src/client_profile.dart';
 export 'src/date_normalizer.dart';
 export 'src/driver_profile.dart';

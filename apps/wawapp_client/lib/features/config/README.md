@@ -43,8 +43,9 @@ lib/
   - Caching with 5-minute timeout
   - Error handling
   - Timeout protection (10 seconds)
-- **Base URL**: `http://77.42.76.36`
-- **Endpoint**: `/api/public/config`
+  - Environment variable support for config URL override
+- **Production URL**: `https://config.wawappmr.com/api/public/config`
+- **Override**: Use `--dart-define=WAWAPP_CONFIG_URL=https://your-url.com` for dev/staging
 
 ### 3. ConfigProvider (`services/config_provider.dart`)
 - **Purpose**: Riverpod providers for state management
