@@ -1,0 +1,19 @@
+* What went wrong:
+Execution failed for task ':app:mergeDebugResources'.
+> [string/google_maps_api_key] C:\Users\hp\Music\wawapp-ai\apps\wawapp_client\android\app\src\main\res\values\api_keys.xml	[string/google_maps_api_key] C:\Users\hp\Music\wawapp-ai\apps\wawapp_client\android\app\src\main\res\values\strings.xml: Error: Duplicate resources
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.12/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1m 13s
+285 actionable tasks: 204 executed, 76 from cache, 5 up-to-date
+Watched directory hierarchies: [C:\src\flutter\packages\flutter_tools\gradle, C:\Users\hp\Music\wawapp-ai\apps\wawapp_client\android]

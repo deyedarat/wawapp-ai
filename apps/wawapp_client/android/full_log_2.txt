@@ -1,0 +1,744 @@
+Configuration on demand is an incubating feature.
+> Task :gradle:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle:compileKotlin UP-TO-DATE
+> Task :gradle:compileJava NO-SOURCE
+> Task :gradle:compileGroovy NO-SOURCE
+> Task :gradle:pluginDescriptors UP-TO-DATE
+> Task :gradle:processResources UP-TO-DATE
+> Task :gradle:classes UP-TO-DATE
+> Task :gradle:jar UP-TO-DATE
+
+> Configure project :app
+WARNING: The option 'android.enableD8.desugaring' is deprecated.
+The current default is 'true'.
+It was removed in version 7.0 of the Android Gradle plugin.
+D8 desugaring is used by default, when applicable.
+WARNING: We recommend using a newer Android Gradle plugin to use compileSdk = 36
+
+This Android Gradle plugin (8.6.0) was tested up to compileSdk = 35.
+
+You are strongly encouraged to update your project to use a newer
+Android Gradle plugin that has been tested with compileSdk = 36.
+
+If you are already using the latest version of the Android Gradle plugin,
+you may need to wait until a newer version with support for compileSdk = 36 is available.
+
+For more information refer to the compatibility table:
+https://d.android.com/r/tools/api-level-support
+
+To suppress this warning, add/update
+    android.suppressUnsupportedCompileSdk=36
+to this project's gradle.properties.
+
+> Task :firebase_crashlytics:preBuild UP-TO-DATE
+> Task :firebase_crashlytics:preDebugBuild UP-TO-DATE
+> Task :firebase_auth:preBuild UP-TO-DATE
+> Task :firebase_auth:preDebugBuild UP-TO-DATE
+> Task :cloud_functions:preBuild UP-TO-DATE
+> Task :firebase_core:preBuild UP-TO-DATE
+> Task :firebase_analytics:preBuild UP-TO-DATE
+> Task :firebase_dynamic_links:preBuild UP-TO-DATE
+> Task :cloud_firestore:preBuild UP-TO-DATE
+> Task :firebase_core:preDebugBuild UP-TO-DATE
+> Task :firebase_dynamic_links:preDebugBuild UP-TO-DATE
+> Task :cloud_firestore:preDebugBuild UP-TO-DATE
+> Task :firebase_analytics:preDebugBuild UP-TO-DATE
+> Task :cloud_functions:preDebugBuild UP-TO-DATE
+> Task :app:DebugMinSdkCheck
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :cloud_firestore:writeDebugAarMetadata
+> Task :firebase_core:writeDebugAarMetadata
+> Task :firebase_messaging:preBuild UP-TO-DATE
+> Task :cloud_functions:writeDebugAarMetadata
+> Task :firebase_analytics:writeDebugAarMetadata
+> Task :firebase_messaging:preDebugBuild UP-TO-DATE
+> Task :firebase_crashlytics:writeDebugAarMetadata
+> Task :flutter_native_splash:preBuild UP-TO-DATE
+> Task :flutter_native_splash:preDebugBuild UP-TO-DATE
+> Task :flutter_plugin_android_lifecycle:preBuild UP-TO-DATE
+> Task :flutter_plugin_android_lifecycle:preDebugBuild UP-TO-DATE
+> Task :geocoding_android:preBuild UP-TO-DATE
+> Task :geocoding_android:preDebugBuild UP-TO-DATE
+> Task :flutter_local_notifications:preBuild UP-TO-DATE
+> Task :flutter_local_notifications:preDebugBuild UP-TO-DATE
+> Task :flutter_plugin_android_lifecycle:writeDebugAarMetadata
+> Task :geolocator_android:preBuild UP-TO-DATE
+> Task :geolocator_android:preDebugBuild UP-TO-DATE
+> Task :firebase_auth:writeDebugAarMetadata
+> Task :google_maps_flutter_android:preBuild UP-TO-DATE
+> Task :google_maps_flutter_android:preDebugBuild UP-TO-DATE
+> Task :firebase_dynamic_links:writeDebugAarMetadata
+> Task :google_maps_flutter_android:writeDebugAarMetadata
+> Task :integration_test:preBuild UP-TO-DATE
+> Task :integration_test:preDebugBuild UP-TO-DATE
+> Task :firebase_messaging:writeDebugAarMetadata
+> Task :package_info_plus:preBuild UP-TO-DATE
+> Task :package_info_plus:preDebugBuild UP-TO-DATE
+> Task :permission_handler_android:preBuild UP-TO-DATE
+> Task :permission_handler_android:preDebugBuild UP-TO-DATE
+> Task :integration_test:writeDebugAarMetadata
+> Task :url_launcher_android:preBuild UP-TO-DATE
+> Task :flutter_local_notifications:writeDebugAarMetadata
+> Task :url_launcher_android:preDebugBuild UP-TO-DATE
+> Task :geolocator_android:writeDebugAarMetadata
+> Task :flutter_native_splash:writeDebugAarMetadata
+> Task :package_info_plus:writeDebugAarMetadata
+> Task :url_launcher_android:writeDebugAarMetadata
+> Task :geocoding_android:writeDebugAarMetadata
+> Task :permission_handler_android:writeDebugAarMetadata
+> Task :firebase_analytics:mergeDebugShaders
+> Task :firebase_core:mergeDebugShaders
+> Task :firebase_core:compileDebugShaders NO-SOURCE
+> Task :firebase_analytics:compileDebugShaders NO-SOURCE
+> Task :firebase_core:generateDebugAssets UP-TO-DATE
+> Task :firebase_analytics:generateDebugAssets UP-TO-DATE
+> Task :firebase_dynamic_links:mergeDebugShaders
+> Task :cloud_firestore:mergeDebugShaders
+> Task :cloud_functions:mergeDebugShaders
+> Task :firebase_crashlytics:mergeDebugShaders
+> Task :firebase_auth:mergeDebugShaders
+> Task :cloud_firestore:compileDebugShaders NO-SOURCE
+> Task :cloud_firestore:generateDebugAssets UP-TO-DATE
+> Task :firebase_core:packageDebugAssets
+> Task :firebase_auth:compileDebugShaders NO-SOURCE
+> Task :firebase_crashlytics:compileDebugShaders NO-SOURCE
+> Task :cloud_functions:compileDebugShaders NO-SOURCE
+> Task :firebase_dynamic_links:compileDebugShaders NO-SOURCE
+> Task :cloud_functions:generateDebugAssets UP-TO-DATE
+> Task :firebase_dynamic_links:generateDebugAssets UP-TO-DATE
+> Task :firebase_auth:generateDebugAssets UP-TO-DATE
+> Task :firebase_crashlytics:generateDebugAssets UP-TO-DATE
+> Task :firebase_analytics:packageDebugAssets
+> Task :firebase_auth:packageDebugAssets
+> Task :flutter_local_notifications:mergeDebugShaders
+> Task :flutter_local_notifications:compileDebugShaders NO-SOURCE
+> Task :flutter_local_notifications:generateDebugAssets UP-TO-DATE
+> Task :cloud_functions:packageDebugAssets
+> Task :flutter_local_notifications:packageDebugAssets
+> Task :firebase_dynamic_links:packageDebugAssets
+> Task :flutter_native_splash:mergeDebugShaders
+> Task :flutter_native_splash:compileDebugShaders NO-SOURCE
+> Task :flutter_native_splash:generateDebugAssets UP-TO-DATE
+> Task :firebase_messaging:mergeDebugShaders
+> Task :cloud_firestore:packageDebugAssets
+> Task :firebase_messaging:compileDebugShaders NO-SOURCE
+> Task :firebase_messaging:generateDebugAssets UP-TO-DATE
+> Task :flutter_native_splash:packageDebugAssets
+> Task :geocoding_android:mergeDebugShaders
+> Task :geocoding_android:compileDebugShaders NO-SOURCE
+> Task :geocoding_android:generateDebugAssets UP-TO-DATE
+> Task :geolocator_android:mergeDebugShaders
+> Task :integration_test:mergeDebugShaders
+> Task :integration_test:compileDebugShaders NO-SOURCE
+> Task :firebase_messaging:packageDebugAssets
+> Task :integration_test:generateDebugAssets UP-TO-DATE
+> Task :geolocator_android:compileDebugShaders NO-SOURCE
+> Task :geolocator_android:generateDebugAssets UP-TO-DATE
+> Task :firebase_crashlytics:packageDebugAssets
+> Task :flutter_plugin_android_lifecycle:mergeDebugShaders
+> Task :flutter_plugin_android_lifecycle:compileDebugShaders NO-SOURCE
+> Task :google_maps_flutter_android:mergeDebugShaders
+> Task :geocoding_android:packageDebugAssets
+> Task :google_maps_flutter_android:compileDebugShaders NO-SOURCE
+> Task :google_maps_flutter_android:generateDebugAssets UP-TO-DATE
+> Task :flutter_plugin_android_lifecycle:generateDebugAssets UP-TO-DATE
+> Task :integration_test:packageDebugAssets
+> Task :url_launcher_android:mergeDebugShaders
+> Task :url_launcher_android:compileDebugShaders NO-SOURCE
+> Task :url_launcher_android:generateDebugAssets UP-TO-DATE
+> Task :cloud_firestore:generateDebugResValues FROM-CACHE
+> Task :package_info_plus:mergeDebugShaders
+> Task :cloud_firestore:generateDebugResources FROM-CACHE
+> Task :package_info_plus:compileDebugShaders NO-SOURCE
+> Task :package_info_plus:generateDebugAssets UP-TO-DATE
+> Task :url_launcher_android:packageDebugAssets
+> Task :permission_handler_android:mergeDebugShaders
+> Task :permission_handler_android:compileDebugShaders NO-SOURCE
+> Task :permission_handler_android:generateDebugAssets UP-TO-DATE
+> Task :cloud_functions:generateDebugResValues FROM-CACHE
+> Task :cloud_functions:generateDebugResources FROM-CACHE
+> Task :permission_handler_android:packageDebugAssets
+> Task :geolocator_android:packageDebugAssets
+> Task :firebase_analytics:generateDebugResValues FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:packageDebugAssets
+> Task :cloud_firestore:packageDebugResources FROM-CACHE
+> Task :firebase_analytics:generateDebugResources FROM-CACHE
+> Task :firebase_core:generateDebugResValues FROM-CACHE
+> Task :google_maps_flutter_android:packageDebugAssets
+> Task :package_info_plus:packageDebugAssets
+> Task :cloud_functions:packageDebugResources FROM-CACHE
+> Task :firebase_core:generateDebugResources FROM-CACHE
+> Task :flutter_local_notifications:generateDebugResValues FROM-CACHE
+> Task :firebase_dynamic_links:generateDebugResValues FROM-CACHE
+> Task :firebase_auth:generateDebugResValues FROM-CACHE
+> Task :flutter_local_notifications:generateDebugResources FROM-CACHE
+> Task :firebase_messaging:generateDebugResValues FROM-CACHE
+> Task :firebase_auth:generateDebugResources FROM-CACHE
+> Task :firebase_crashlytics:generateDebugResValues FROM-CACHE
+> Task :firebase_dynamic_links:generateDebugResources FROM-CACHE
+> Task :firebase_core:packageDebugResources FROM-CACHE
+> Task :flutter_native_splash:generateDebugResValues FROM-CACHE
+> Task :flutter_local_notifications:packageDebugResources FROM-CACHE
+> Task :flutter_native_splash:generateDebugResources FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:generateDebugResValues FROM-CACHE
+> Task :firebase_messaging:generateDebugResources FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:generateDebugResources FROM-CACHE
+> Task :firebase_crashlytics:generateDebugResources FROM-CACHE
+> Task :firebase_analytics:packageDebugResources FROM-CACHE
+> Task :flutter_native_splash:packageDebugResources FROM-CACHE
+> Task :geocoding_android:generateDebugResValues FROM-CACHE
+> Task :geolocator_android:generateDebugResValues FROM-CACHE
+> Task :firebase_dynamic_links:packageDebugResources FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:packageDebugResources FROM-CACHE
+> Task :firebase_auth:packageDebugResources FROM-CACHE
+> Task :geocoding_android:generateDebugResources FROM-CACHE
+> Task :geolocator_android:generateDebugResources FROM-CACHE
+> Task :integration_test:generateDebugResValues FROM-CACHE
+> Task :google_maps_flutter_android:generateDebugResValues FROM-CACHE
+> Task :package_info_plus:generateDebugResValues FROM-CACHE
+> Task :firebase_messaging:packageDebugResources FROM-CACHE
+> Task :integration_test:generateDebugResources FROM-CACHE
+> Task :geolocator_android:packageDebugResources FROM-CACHE
+> Task :google_maps_flutter_android:generateDebugResources FROM-CACHE
+> Task :permission_handler_android:generateDebugResValues FROM-CACHE
+> Task :package_info_plus:generateDebugResources FROM-CACHE
+> Task :url_launcher_android:generateDebugResValues FROM-CACHE
+> Task :firebase_crashlytics:packageDebugResources FROM-CACHE
+> Task :url_launcher_android:generateDebugResources FROM-CACHE
+> Task :integration_test:packageDebugResources FROM-CACHE
+> Task :permission_handler_android:generateDebugResources FROM-CACHE
+> Task :cloud_functions:extractDeepLinksDebug FROM-CACHE
+> Task :url_launcher_android:packageDebugResources FROM-CACHE
+> Task :cloud_functions:processDebugManifest FROM-CACHE
+> Task :cloud_firestore:extractDeepLinksDebug FROM-CACHE
+> Task :firebase_analytics:extractDeepLinksDebug FROM-CACHE
+> Task :firebase_auth:extractDeepLinksDebug FROM-CACHE
+> Task :geocoding_android:packageDebugResources FROM-CACHE
+> Task :firebase_auth:processDebugManifest FROM-CACHE
+> Task :package_info_plus:packageDebugResources FROM-CACHE
+> Task :firebase_analytics:processDebugManifest FROM-CACHE
+> Task :google_maps_flutter_android:packageDebugResources FROM-CACHE
+> Task :firebase_messaging:extractDeepLinksDebug FROM-CACHE
+> Task :firebase_crashlytics:extractDeepLinksDebug FROM-CACHE
+> Task :flutter_local_notifications:extractDeepLinksDebug FROM-CACHE
+> Task :firebase_dynamic_links:extractDeepLinksDebug FROM-CACHE
+> Task :firebase_core:extractDeepLinksDebug FROM-CACHE
+> Task :permission_handler_android:packageDebugResources FROM-CACHE
+> Task :cloud_firestore:processDebugManifest FROM-CACHE
+> Task :firebase_messaging:processDebugManifest FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:extractDeepLinksDebug FROM-CACHE
+> Task :firebase_crashlytics:processDebugManifest FROM-CACHE
+> Task :geocoding_android:extractDeepLinksDebug FROM-CACHE
+> Task :geolocator_android:extractDeepLinksDebug FROM-CACHE
+> Task :flutter_native_splash:extractDeepLinksDebug FROM-CACHE
+> Task :geolocator_android:processDebugManifest FROM-CACHE
+> Task :firebase_dynamic_links:processDebugManifest FROM-CACHE
+> Task :geocoding_android:processDebugManifest FROM-CACHE
+> Task :google_maps_flutter_android:extractDeepLinksDebug FROM-CACHE
+> Task :firebase_core:processDebugManifest FROM-CACHE
+> Task :package_info_plus:extractDeepLinksDebug FROM-CACHE
+> Task :integration_test:extractDeepLinksDebug FROM-CACHE
+> Task :flutter_local_notifications:processDebugManifest FROM-CACHE
+> Task :permission_handler_android:extractDeepLinksDebug FROM-CACHE
+> Task :url_launcher_android:extractDeepLinksDebug FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:processDebugManifest FROM-CACHE
+> Task :package_info_plus:processDebugManifest FROM-CACHE
+> Task :google_maps_flutter_android:processDebugManifest FROM-CACHE
+> Task :cloud_functions:compileDebugLibraryResources FROM-CACHE
+> Task :firebase_analytics:compileDebugLibraryResources FROM-CACHE
+> Task :cloud_firestore:compileDebugLibraryResources FROM-CACHE
+> Task :firebase_analytics:parseDebugLocalResources FROM-CACHE
+> Task :cloud_functions:parseDebugLocalResources FROM-CACHE
+> Task :cloud_functions:generateDebugRFile FROM-CACHE
+> Task :firebase_auth:compileDebugLibraryResources FROM-CACHE
+> Task :firebase_analytics:generateDebugRFile FROM-CACHE
+> Task :firebase_core:compileDebugLibraryResources FROM-CACHE
+> Task :flutter_native_splash:processDebugManifest FROM-CACHE
+> Task :firebase_crashlytics:compileDebugLibraryResources FROM-CACHE
+> Task :firebase_core:parseDebugLocalResources FROM-CACHE
+> Task :firebase_auth:parseDebugLocalResources FROM-CACHE
+> Task :integration_test:processDebugManifest FROM-CACHE
+> Task :permission_handler_android:processDebugManifest FROM-CACHE
+> Task :firebase_messaging:compileDebugLibraryResources FROM-CACHE
+> Task :url_launcher_android:processDebugManifest FROM-CACHE
+> Task :firebase_core:generateDebugRFile FROM-CACHE
+> Task :firebase_auth:generateDebugRFile FROM-CACHE
+> Task :flutter_native_splash:compileDebugLibraryResources FROM-CACHE
+> Task :flutter_local_notifications:compileDebugLibraryResources FROM-CACHE
+> Task :cloud_firestore:parseDebugLocalResources FROM-CACHE
+> Task :firebase_dynamic_links:compileDebugLibraryResources FROM-CACHE
+> Task :flutter_local_notifications:parseDebugLocalResources FROM-CACHE
+> Task :flutter_native_splash:parseDebugLocalResources FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:compileDebugLibraryResources FROM-CACHE
+> Task :flutter_native_splash:generateDebugRFile FROM-CACHE
+> Task :flutter_local_notifications:generateDebugRFile FROM-CACHE
+> Task :geocoding_android:compileDebugLibraryResources FROM-CACHE
+> Task :geolocator_android:compileDebugLibraryResources FROM-CACHE
+> Task :firebase_crashlytics:parseDebugLocalResources FROM-CACHE
+> Task :cloud_firestore:generateDebugRFile FROM-CACHE
+> Task :geocoding_android:parseDebugLocalResources FROM-CACHE
+> Task :geolocator_android:parseDebugLocalResources FROM-CACHE
+> Task :google_maps_flutter_android:compileDebugLibraryResources FROM-CACHE
+> Task :firebase_messaging:parseDebugLocalResources FROM-CACHE
+> Task :geolocator_android:generateDebugRFile FROM-CACHE
+> Task :geocoding_android:generateDebugRFile FROM-CACHE
+> Task :package_info_plus:compileDebugLibraryResources FROM-CACHE
+> Task :integration_test:compileDebugLibraryResources FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:parseDebugLocalResources FROM-CACHE
+> Task :package_info_plus:parseDebugLocalResources FROM-CACHE
+> Task :integration_test:parseDebugLocalResources FROM-CACHE
+> Task :firebase_dynamic_links:parseDebugLocalResources FROM-CACHE
+> Task :integration_test:generateDebugRFile FROM-CACHE
+> Task :firebase_crashlytics:generateDebugRFile FROM-CACHE
+> Task :permission_handler_android:compileDebugLibraryResources FROM-CACHE
+> Task :package_info_plus:generateDebugRFile FROM-CACHE
+> Task :google_maps_flutter_android:parseDebugLocalResources FROM-CACHE
+> Task :permission_handler_android:parseDebugLocalResources FROM-CACHE
+> Task :url_launcher_android:compileDebugLibraryResources FROM-CACHE
+> Task :firebase_messaging:generateDebugRFile FROM-CACHE
+> Task :firebase_dynamic_links:generateDebugRFile FROM-CACHE
+> Task :cloud_firestore:generateDebugBuildConfig FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:generateDebugRFile FROM-CACHE
+> Task :firebase_analytics:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :cloud_functions:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :permission_handler_android:generateDebugRFile FROM-CACHE
+> Task :cloud_firestore:javaPreCompileDebug FROM-CACHE
+> Task :firebase_auth:generateDebugBuildConfig FROM-CACHE
+> Task :url_launcher_android:parseDebugLocalResources FROM-CACHE
+> Task :google_maps_flutter_android:generateDebugRFile FROM-CACHE
+> Task :firebase_crashlytics:generateDebugBuildConfig FROM-CACHE
+> Task :firebase_auth:javaPreCompileDebug FROM-CACHE
+> Task :firebase_crashlytics:javaPreCompileDebug FROM-CACHE
+> Task :flutter_local_notifications:javaPreCompileDebug FROM-CACHE
+> Task :firebase_dynamic_links:generateDebugBuildConfig FROM-CACHE
+> Task :firebase_core:generateDebugBuildConfig FROM-CACHE
+> Task :firebase_dynamic_links:javaPreCompileDebug FROM-CACHE
+> Task :firebase_analytics:generateDebugBuildConfig FROM-CACHE
+> Task :cloud_functions:generateDebugBuildConfig FROM-CACHE
+> Task :flutter_native_splash:javaPreCompileDebug FROM-CACHE
+> Task :url_launcher_android:generateDebugRFile FROM-CACHE
+> Task :firebase_core:javaPreCompileDebug FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:javaPreCompileDebug FROM-CACHE
+> Task :firebase_messaging:generateDebugBuildConfig FROM-CACHE
+> Task :firebase_analytics:javaPreCompileDebug FROM-CACHE
+> Task :cloud_functions:javaPreCompileDebug FROM-CACHE
+> Task :geocoding_android:javaPreCompileDebug FROM-CACHE
+> Task :firebase_messaging:javaPreCompileDebug FROM-CACHE
+> Task :geolocator_android:javaPreCompileDebug FROM-CACHE
+> Task :google_maps_flutter_android:javaPreCompileDebug FROM-CACHE
+> Task :integration_test:javaPreCompileDebug FROM-CACHE
+> Task :geocoding_android:compileDebugJavaWithJavac FROM-CACHE
+> Task :geolocator_android:compileDebugJavaWithJavac FROM-CACHE
+> Task :flutter_local_notifications:compileDebugJavaWithJavac FROM-CACHE
+> Task :geocoding_android:bundleLibCompileToJarDebug
+> Task :package_info_plus:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :geolocator_android:bundleLibCompileToJarDebug
+> Task :flutter_local_notifications:bundleLibCompileToJarDebug
+> Task :url_launcher_android:generateDebugBuildConfig FROM-CACHE
+> Task :url_launcher_android:javaPreCompileDebug FROM-CACHE
+> Task :permission_handler_android:javaPreCompileDebug FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:compileDebugJavaWithJavac FROM-CACHE
+> Task :integration_test:compileDebugJavaWithJavac FROM-CACHE
+> Task :flutter_native_splash:compileDebugJavaWithJavac FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:bundleLibCompileToJarDebug
+> Task :firebase_core:compileDebugJavaWithJavac FROM-CACHE
+> Task :permission_handler_android:compileDebugJavaWithJavac FROM-CACHE
+> Task :flutter_native_splash:bundleLibCompileToJarDebug
+> Task :integration_test:bundleLibCompileToJarDebug
+> Task :firebase_core:bundleLibCompileToJarDebug
+> Task :permission_handler_android:bundleLibCompileToJarDebug
+> Task :firebase_core:bundleLibRuntimeToJarDebug
+> Task :url_launcher_android:compileDebugJavaWithJavac FROM-CACHE
+> Task :flutter_local_notifications:bundleLibRuntimeToJarDebug
+> Task :package_info_plus:compileDebugKotlin FROM-CACHE
+> Task :firebase_dynamic_links:compileDebugJavaWithJavac FROM-CACHE
+> Task :firebase_crashlytics:compileDebugJavaWithJavac FROM-CACHE
+> Task :firebase_dynamic_links:bundleLibCompileToJarDebug
+> Task :firebase_crashlytics:bundleLibCompileToJarDebug
+> Task :package_info_plus:javaPreCompileDebug FROM-CACHE
+> Task :package_info_plus:compileDebugJavaWithJavac NO-SOURCE
+> Task :package_info_plus:bundleLibCompileToJarDebug
+> Task :url_launcher_android:bundleLibCompileToJarDebug
+> Task :firebase_crashlytics:bundleLibRuntimeToJarDebug
+> Task :firebase_analytics:compileDebugKotlin FROM-CACHE
+> Task :cloud_functions:compileDebugKotlin FROM-CACHE
+> Task :firebase_auth:compileDebugJavaWithJavac FROM-CACHE
+> Task :firebase_analytics:compileDebugJavaWithJavac FROM-CACHE
+> Task :firebase_analytics:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :firebase_analytics:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :firebase_dynamic_links:bundleLibRuntimeToJarDebug
+> Task :firebase_auth:bundleLibCompileToJarDebug
+> Task :cloud_functions:compileDebugJavaWithJavac FROM-CACHE
+> Task :firebase_auth:bundleLibRuntimeToJarDebug
+> Task :cloud_firestore:compileDebugJavaWithJavac FROM-CACHE
+> Task :google_maps_flutter_android:compileDebugJavaWithJavac FROM-CACHE
+> Task :cloud_functions:bundleLibCompileToJarDebug
+> Task :cloud_functions:bundleLibRuntimeToJarDebug
+> Task :flutter_native_splash:bundleLibRuntimeToJarDebug
+> Task :cloud_firestore:bundleLibCompileToJarDebug
+> Task :geocoding_android:bundleLibRuntimeToJarDebug
+> Task :flutter_plugin_android_lifecycle:bundleLibRuntimeToJarDebug
+> Task :cloud_firestore:bundleLibRuntimeToJarDebug
+> Task :firebase_messaging:compileDebugJavaWithJavac FROM-CACHE
+> Task :google_maps_flutter_android:bundleLibCompileToJarDebug
+> Task :integration_test:bundleLibRuntimeToJarDebug
+> Task :geolocator_android:bundleLibRuntimeToJarDebug
+> Task :firebase_messaging:bundleLibCompileToJarDebug
+> Task :firebase_messaging:bundleLibRuntimeToJarDebug
+> Task :package_info_plus:bundleLibRuntimeToJarDebug
+> Task :google_maps_flutter_android:bundleLibRuntimeToJarDebug
+> Task :url_launcher_android:bundleLibRuntimeToJarDebug
+> Task :permission_handler_android:bundleLibRuntimeToJarDebug
+> Task :cloud_firestore:processDebugJavaRes NO-SOURCE
+> Task :cloud_functions:processDebugJavaRes
+> Task :firebase_analytics:processDebugJavaRes UP-TO-DATE
+> Task :firebase_auth:processDebugJavaRes NO-SOURCE
+> Task :firebase_core:processDebugJavaRes NO-SOURCE
+> Task :firebase_crashlytics:processDebugJavaRes NO-SOURCE
+> Task :firebase_dynamic_links:processDebugJavaRes NO-SOURCE
+> Task :firebase_messaging:processDebugJavaRes NO-SOURCE
+> Task :flutter_local_notifications:processDebugJavaRes NO-SOURCE
+> Task :flutter_native_splash:processDebugJavaRes NO-SOURCE
+> Task :flutter_plugin_android_lifecycle:processDebugJavaRes NO-SOURCE
+> Task :geocoding_android:processDebugJavaRes NO-SOURCE
+> Task :geolocator_android:processDebugJavaRes NO-SOURCE
+> Task :google_maps_flutter_android:processDebugJavaRes NO-SOURCE
+> Task :integration_test:processDebugJavaRes NO-SOURCE
+> Task :package_info_plus:processDebugJavaRes
+> Task :permission_handler_android:processDebugJavaRes NO-SOURCE
+> Task :url_launcher_android:processDebugJavaRes NO-SOURCE
+> Task :cloud_firestore:bundleLibRuntimeToDirDebug
+> Task :firebase_analytics:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :cloud_functions:bundleLibRuntimeToDirDebug
+> Task :firebase_dynamic_links:bundleLibRuntimeToDirDebug
+> Task :firebase_crashlytics:bundleLibRuntimeToDirDebug
+> Task :firebase_auth:bundleLibRuntimeToDirDebug
+> Task :firebase_messaging:bundleLibRuntimeToDirDebug
+> Task :firebase_core:bundleLibRuntimeToDirDebug
+> Task :flutter_local_notifications:bundleLibRuntimeToDirDebug
+> Task :flutter_native_splash:bundleLibRuntimeToDirDebug
+> Task :flutter_plugin_android_lifecycle:bundleLibRuntimeToDirDebug
+> Task :geocoding_android:bundleLibRuntimeToDirDebug
+> Task :integration_test:bundleLibRuntimeToDirDebug
+> Task :package_info_plus:bundleLibRuntimeToDirDebug
+> Task :geolocator_android:bundleLibRuntimeToDirDebug
+> Task :google_maps_flutter_android:bundleLibRuntimeToDirDebug
+> Task :permission_handler_android:bundleLibRuntimeToDirDebug
+> Task :url_launcher_android:bundleLibRuntimeToDirDebug
+> Task :cloud_firestore:mergeDebugJniLibFolders
+> Task :cloud_firestore:mergeDebugNativeLibs NO-SOURCE
+> Task :cloud_firestore:copyDebugJniLibsProjectOnly
+> Task :cloud_functions:mergeDebugJniLibFolders
+> Task :cloud_functions:mergeDebugNativeLibs NO-SOURCE
+> Task :cloud_functions:copyDebugJniLibsProjectOnly
+> Task :firebase_analytics:mergeDebugJniLibFolders
+> Task :firebase_analytics:mergeDebugNativeLibs NO-SOURCE
+> Task :firebase_analytics:copyDebugJniLibsProjectOnly
+> Task :firebase_auth:mergeDebugJniLibFolders
+> Task :firebase_core:mergeDebugJniLibFolders
+> Task :firebase_auth:mergeDebugNativeLibs NO-SOURCE
+> Task :firebase_core:mergeDebugNativeLibs NO-SOURCE
+> Task :firebase_core:copyDebugJniLibsProjectOnly
+> Task :firebase_auth:copyDebugJniLibsProjectOnly
+> Task :firebase_crashlytics:mergeDebugJniLibFolders
+> Task :firebase_crashlytics:mergeDebugNativeLibs NO-SOURCE
+> Task :firebase_crashlytics:copyDebugJniLibsProjectOnly
+> Task :firebase_messaging:mergeDebugJniLibFolders
+> Task :firebase_messaging:mergeDebugNativeLibs NO-SOURCE
+> Task :firebase_dynamic_links:mergeDebugJniLibFolders
+> Task :firebase_messaging:copyDebugJniLibsProjectOnly
+> Task :firebase_dynamic_links:mergeDebugNativeLibs NO-SOURCE
+> Task :flutter_local_notifications:mergeDebugJniLibFolders
+> Task :flutter_local_notifications:mergeDebugNativeLibs NO-SOURCE
+> Task :firebase_dynamic_links:copyDebugJniLibsProjectOnly
+> Task :flutter_native_splash:mergeDebugJniLibFolders
+> Task :flutter_local_notifications:copyDebugJniLibsProjectOnly
+> Task :flutter_native_splash:mergeDebugNativeLibs NO-SOURCE
+> Task :flutter_native_splash:copyDebugJniLibsProjectOnly
+> Task :flutter_plugin_android_lifecycle:mergeDebugJniLibFolders
+> Task :geocoding_android:mergeDebugJniLibFolders
+> Task :flutter_plugin_android_lifecycle:mergeDebugNativeLibs NO-SOURCE
+> Task :geocoding_android:mergeDebugNativeLibs NO-SOURCE
+> Task :flutter_plugin_android_lifecycle:copyDebugJniLibsProjectOnly
+> Task :geocoding_android:copyDebugJniLibsProjectOnly
+> Task :google_maps_flutter_android:mergeDebugJniLibFolders
+> Task :google_maps_flutter_android:mergeDebugNativeLibs NO-SOURCE
+> Task :google_maps_flutter_android:copyDebugJniLibsProjectOnly
+> Task :geolocator_android:mergeDebugJniLibFolders
+> Task :geolocator_android:mergeDebugNativeLibs NO-SOURCE
+> Task :integration_test:mergeDebugJniLibFolders
+> Task :geolocator_android:copyDebugJniLibsProjectOnly
+> Task :integration_test:mergeDebugNativeLibs NO-SOURCE
+> Task :integration_test:copyDebugJniLibsProjectOnly
+> Task :permission_handler_android:mergeDebugJniLibFolders
+> Task :permission_handler_android:mergeDebugNativeLibs NO-SOURCE
+> Task :permission_handler_android:copyDebugJniLibsProjectOnly
+> Task :package_info_plus:mergeDebugJniLibFolders
+> Task :package_info_plus:mergeDebugNativeLibs NO-SOURCE
+> Task :url_launcher_android:mergeDebugJniLibFolders
+> Task :url_launcher_android:mergeDebugNativeLibs NO-SOURCE
+> Task :package_info_plus:copyDebugJniLibsProjectOnly
+> Task :cloud_firestore:stripDebugDebugSymbols NO-SOURCE
+> Task :url_launcher_android:copyDebugJniLibsProjectOnly
+> Task :cloud_functions:stripDebugDebugSymbols NO-SOURCE
+> Task :cloud_firestore:copyDebugJniLibsProjectAndLocalJars
+> Task :cloud_functions:copyDebugJniLibsProjectAndLocalJars
+> Task :cloud_functions:extractDebugAnnotations FROM-CACHE
+> Task :cloud_firestore:extractDebugAnnotations FROM-CACHE
+> Task :cloud_functions:extractDeepLinksForAarDebug FROM-CACHE
+> Task :cloud_firestore:extractDeepLinksForAarDebug FROM-CACHE
+> Task :cloud_firestore:mergeDebugGeneratedProguardFiles
+> Task :cloud_functions:mergeDebugGeneratedProguardFiles
+> Task :cloud_firestore:mergeDebugConsumerProguardFiles
+> Task :cloud_functions:mergeDebugConsumerProguardFiles
+> Task :cloud_firestore:prepareDebugArtProfile
+> Task :cloud_functions:prepareDebugArtProfile
+> Task :cloud_functions:prepareLintJarForPublish
+> Task :cloud_firestore:prepareLintJarForPublish
+> Task :firebase_analytics:stripDebugDebugSymbols NO-SOURCE
+> Task :cloud_firestore:mergeDebugJavaResource
+> Task :cloud_functions:mergeDebugJavaResource
+> Task :firebase_analytics:copyDebugJniLibsProjectAndLocalJars
+> Task :cloud_functions:syncDebugLibJars FROM-CACHE
+> Task :cloud_firestore:syncDebugLibJars FROM-CACHE
+> Task :cloud_functions:bundleDebugAar
+> Task :cloud_functions:assembleDebug
+> Task :firebase_auth:stripDebugDebugSymbols NO-SOURCE
+> Task :firebase_analytics:extractDebugAnnotations UP-TO-DATE
+> Task :firebase_auth:copyDebugJniLibsProjectAndLocalJars
+> Task :firebase_analytics:extractDeepLinksForAarDebug FROM-CACHE
+> Task :firebase_analytics:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :firebase_analytics:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :firebase_analytics:prepareDebugArtProfile
+> Task :firebase_analytics:prepareLintJarForPublish
+> Task :firebase_analytics:mergeDebugJavaResource UP-TO-DATE
+> Task :firebase_analytics:syncDebugLibJars UP-TO-DATE
+> Task :cloud_firestore:bundleDebugAar
+> Task :cloud_firestore:assembleDebug
+> Task :firebase_auth:extractDebugAnnotations FROM-CACHE
+> Task :firebase_core:stripDebugDebugSymbols NO-SOURCE
+> Task :firebase_analytics:bundleDebugAar UP-TO-DATE
+> Task :firebase_analytics:assembleDebug UP-TO-DATE
+> Task :firebase_crashlytics:stripDebugDebugSymbols NO-SOURCE
+> Task :firebase_auth:extractDeepLinksForAarDebug FROM-CACHE
+> Task :firebase_core:copyDebugJniLibsProjectAndLocalJars
+> Task :firebase_crashlytics:copyDebugJniLibsProjectAndLocalJars
+> Task :firebase_auth:mergeDebugGeneratedProguardFiles
+> Task :firebase_auth:mergeDebugConsumerProguardFiles
+> Task :firebase_auth:prepareDebugArtProfile
+> Task :firebase_core:extractDebugAnnotations FROM-CACHE
+> Task :firebase_auth:prepareLintJarForPublish
+> Task :firebase_core:extractDeepLinksForAarDebug FROM-CACHE
+> Task :firebase_crashlytics:extractDebugAnnotations FROM-CACHE
+> Task :firebase_core:mergeDebugGeneratedProguardFiles
+> Task :firebase_crashlytics:extractDeepLinksForAarDebug FROM-CACHE
+> Task :firebase_core:mergeDebugConsumerProguardFiles
+> Task :firebase_core:prepareDebugArtProfile
+> Task :firebase_crashlytics:mergeDebugGeneratedProguardFiles
+> Task :firebase_core:prepareLintJarForPublish
+> Task :firebase_auth:mergeDebugJavaResource
+> Task :firebase_crashlytics:mergeDebugConsumerProguardFiles
+> Task :firebase_crashlytics:prepareDebugArtProfile
+> Task :firebase_core:mergeDebugJavaResource
+> Task :firebase_crashlytics:prepareLintJarForPublish
+> Task :firebase_core:syncDebugLibJars FROM-CACHE
+> Task :firebase_auth:syncDebugLibJars FROM-CACHE
+> Task :firebase_core:bundleDebugAar
+> Task :firebase_core:assembleDebug
+> Task :firebase_dynamic_links:stripDebugDebugSymbols NO-SOURCE
+> Task :firebase_crashlytics:mergeDebugJavaResource
+> Task :firebase_dynamic_links:copyDebugJniLibsProjectAndLocalJars
+> Task :firebase_crashlytics:syncDebugLibJars FROM-CACHE
+> Task :firebase_dynamic_links:extractDebugAnnotations FROM-CACHE
+> Task :firebase_dynamic_links:extractDeepLinksForAarDebug FROM-CACHE
+> Task :firebase_messaging:stripDebugDebugSymbols NO-SOURCE
+> Task :firebase_dynamic_links:mergeDebugGeneratedProguardFiles
+> Task :firebase_dynamic_links:mergeDebugConsumerProguardFiles
+> Task :firebase_messaging:copyDebugJniLibsProjectAndLocalJars
+> Task :firebase_dynamic_links:prepareDebugArtProfile
+> Task :firebase_crashlytics:bundleDebugAar
+> Task :firebase_crashlytics:assembleDebug
+> Task :firebase_dynamic_links:prepareLintJarForPublish
+> Task :flutter_local_notifications:stripDebugDebugSymbols NO-SOURCE
+> Task :flutter_local_notifications:copyDebugJniLibsProjectAndLocalJars
+> Task :firebase_messaging:extractDebugAnnotations FROM-CACHE
+> Task :firebase_auth:bundleDebugAar
+> Task :firebase_auth:assembleDebug
+> Task :firebase_messaging:extractDeepLinksForAarDebug FROM-CACHE
+> Task :flutter_native_splash:stripDebugDebugSymbols NO-SOURCE
+> Task :flutter_native_splash:copyDebugJniLibsProjectAndLocalJars
+> Task :flutter_local_notifications:extractDebugAnnotations FROM-CACHE
+> Task :firebase_messaging:mergeDebugGeneratedProguardFiles
+> Task :firebase_messaging:mergeDebugConsumerProguardFiles
+> Task :flutter_local_notifications:extractDeepLinksForAarDebug FROM-CACHE
+> Task :firebase_dynamic_links:mergeDebugJavaResource
+> Task :firebase_messaging:prepareDebugArtProfile
+> Task :flutter_native_splash:extractDebugAnnotations FROM-CACHE
+> Task :firebase_messaging:prepareLintJarForPublish
+> Task :flutter_native_splash:extractDeepLinksForAarDebug FROM-CACHE
+> Task :flutter_local_notifications:mergeDebugGeneratedProguardFiles
+> Task :flutter_native_splash:mergeDebugGeneratedProguardFiles
+> Task :flutter_local_notifications:mergeDebugConsumerProguardFiles
+> Task :firebase_dynamic_links:syncDebugLibJars FROM-CACHE
+> Task :flutter_native_splash:mergeDebugConsumerProguardFiles
+> Task :flutter_local_notifications:prepareDebugArtProfile
+> Task :flutter_local_notifications:prepareLintJarForPublish
+> Task :flutter_native_splash:prepareDebugArtProfile
+> Task :firebase_dynamic_links:bundleDebugAar
+> Task :firebase_dynamic_links:assembleDebug
+> Task :flutter_plugin_android_lifecycle:stripDebugDebugSymbols NO-SOURCE
+> Task :flutter_native_splash:prepareLintJarForPublish
+> Task :firebase_messaging:mergeDebugJavaResource
+> Task :flutter_plugin_android_lifecycle:copyDebugJniLibsProjectAndLocalJars
+> Task :flutter_local_notifications:mergeDebugJavaResource
+> Task :flutter_native_splash:mergeDebugJavaResource
+> Task :flutter_plugin_android_lifecycle:extractDebugAnnotations FROM-CACHE
+> Task :firebase_messaging:syncDebugLibJars FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:extractDeepLinksForAarDebug FROM-CACHE
+> Task :flutter_native_splash:syncDebugLibJars FROM-CACHE
+> Task :flutter_local_notifications:syncDebugLibJars FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:mergeDebugGeneratedProguardFiles
+> Task :firebase_messaging:bundleDebugAar
+> Task :firebase_messaging:assembleDebug
+> Task :geocoding_android:stripDebugDebugSymbols NO-SOURCE
+> Task :flutter_native_splash:bundleDebugAar
+> Task :flutter_native_splash:assembleDebug
+> Task :geolocator_android:stripDebugDebugSymbols NO-SOURCE
+> Task :geocoding_android:copyDebugJniLibsProjectAndLocalJars
+> Task :geolocator_android:copyDebugJniLibsProjectAndLocalJars
+> Task :geocoding_android:extractDebugAnnotations FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:mergeDebugConsumerProguardFiles
+> Task :geolocator_android:extractDebugAnnotations FROM-CACHE
+> Task :geocoding_android:extractDeepLinksForAarDebug FROM-CACHE
+> Task :geolocator_android:extractDeepLinksForAarDebug FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:prepareDebugArtProfile
+> Task :geocoding_android:mergeDebugGeneratedProguardFiles
+> Task :geolocator_android:mergeDebugGeneratedProguardFiles
+> Task :geocoding_android:mergeDebugConsumerProguardFiles
+> Task :flutter_plugin_android_lifecycle:prepareLintJarForPublish
+> Task :geolocator_android:mergeDebugConsumerProguardFiles
+> Task :geocoding_android:prepareDebugArtProfile
+> Task :flutter_local_notifications:bundleDebugAar
+> Task :flutter_local_notifications:assembleDebug
+> Task :google_maps_flutter_android:stripDebugDebugSymbols NO-SOURCE
+> Task :geolocator_android:prepareDebugArtProfile
+> Task :geocoding_android:prepareLintJarForPublish
+> Task :geolocator_android:prepareLintJarForPublish
+> Task :google_maps_flutter_android:copyDebugJniLibsProjectAndLocalJars
+> Task :flutter_plugin_android_lifecycle:mergeDebugJavaResource
+> Task :geocoding_android:mergeDebugJavaResource
+> Task :geolocator_android:mergeDebugJavaResource
+> Task :geocoding_android:syncDebugLibJars FROM-CACHE
+> Task :geolocator_android:syncDebugLibJars FROM-CACHE
+> Task :flutter_plugin_android_lifecycle:syncDebugLibJars FROM-CACHE
+> Task :google_maps_flutter_android:extractDebugAnnotations FROM-CACHE
+> Task :google_maps_flutter_android:extractDeepLinksForAarDebug FROM-CACHE
+> Task :geocoding_android:bundleDebugAar
+> Task :geocoding_android:assembleDebug
+> Task :integration_test:stripDebugDebugSymbols NO-SOURCE
+> Task :integration_test:copyDebugJniLibsProjectAndLocalJars
+> Task :geolocator_android:bundleDebugAar
+> Task :google_maps_flutter_android:mergeDebugGeneratedProguardFiles
+> Task :geolocator_android:assembleDebug
+> Task :package_info_plus:stripDebugDebugSymbols NO-SOURCE
+> Task :package_info_plus:copyDebugJniLibsProjectAndLocalJars
+> Task :google_maps_flutter_android:mergeDebugConsumerProguardFiles
+> Task :flutter_plugin_android_lifecycle:bundleDebugAar
+> Task :flutter_plugin_android_lifecycle:assembleDebug
+> Task :permission_handler_android:stripDebugDebugSymbols NO-SOURCE
+> Task :integration_test:extractDebugAnnotations FROM-CACHE
+> Task :google_maps_flutter_android:prepareDebugArtProfile
+> Task :integration_test:extractDeepLinksForAarDebug FROM-CACHE
+> Task :permission_handler_android:copyDebugJniLibsProjectAndLocalJars
+> Task :integration_test:mergeDebugGeneratedProguardFiles
+> Task :package_info_plus:extractDebugAnnotations FROM-CACHE
+> Task :integration_test:mergeDebugConsumerProguardFiles
+> Task :package_info_plus:extractDeepLinksForAarDebug FROM-CACHE
+> Task :google_maps_flutter_android:prepareLintJarForPublish
+> Task :package_info_plus:mergeDebugGeneratedProguardFiles
+> Task :integration_test:prepareDebugArtProfile
+> Task :integration_test:prepareLintJarForPublish
+> Task :package_info_plus:mergeDebugConsumerProguardFiles
+> Task :package_info_plus:prepareDebugArtProfile
+> Task :package_info_plus:prepareLintJarForPublish
+> Task :integration_test:mergeDebugJavaResource
+> Task :google_maps_flutter_android:mergeDebugJavaResource
+> Task :permission_handler_android:extractDebugAnnotations FROM-CACHE
+> Task :integration_test:syncDebugLibJars FROM-CACHE
+> Task :integration_test:bundleDebugAar
+> Task :integration_test:assembleDebug
+> Task :url_launcher_android:stripDebugDebugSymbols NO-SOURCE
+> Task :permission_handler_android:extractDeepLinksForAarDebug FROM-CACHE
+> Task :url_launcher_android:copyDebugJniLibsProjectAndLocalJars
+> Task :url_launcher_android:extractDebugAnnotations FROM-CACHE
+> Task :permission_handler_android:mergeDebugGeneratedProguardFiles
+> Task :url_launcher_android:extractDeepLinksForAarDebug FROM-CACHE
+> Task :url_launcher_android:mergeDebugGeneratedProguardFiles
+> Task :url_launcher_android:mergeDebugConsumerProguardFiles
+> Task :permission_handler_android:mergeDebugConsumerProguardFiles
+> Task :url_launcher_android:prepareDebugArtProfile
+> Task :url_launcher_android:prepareLintJarForPublish
+> Task :package_info_plus:mergeDebugJavaResource
+> Task :permission_handler_android:prepareDebugArtProfile
+> Task :package_info_plus:syncDebugLibJars FROM-CACHE
+> Task :permission_handler_android:prepareLintJarForPublish
+> Task :google_maps_flutter_android:syncDebugLibJars FROM-CACHE
+> Task :package_info_plus:bundleDebugAar
+> Task :package_info_plus:assembleDebug
+> Task :url_launcher_android:mergeDebugJavaResource
+> Task :permission_handler_android:mergeDebugJavaResource
+> Task :url_launcher_android:syncDebugLibJars FROM-CACHE
+> Task :url_launcher_android:bundleDebugAar
+> Task :url_launcher_android:assembleDebug
+> Task :permission_handler_android:syncDebugLibJars FROM-CACHE
+> Task :permission_handler_android:bundleDebugAar
+> Task :permission_handler_android:assembleDebug
+> Task :google_maps_flutter_android:bundleDebugAar
+> Task :google_maps_flutter_android:assembleDebug
+> Task :app:compileFlutterBuildDebug
+> Task :app:packJniLibsflutterBuildDebug UP-TO-DATE
+> Task :app:cleanMergeDebugAssets
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:checkDebugAarMetadata FAILED
+> Task :app:mergeDebugAssets
+
+[Incubating] Problems report is available at: file:///C:/Users/hp/Music/wawapp-ai/apps/wawapp_client/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:checkDebugAarMetadata'.
+> A failure occurred while executing com.android.build.gradle.internal.tasks.CheckAarMetadataWorkAction
+   > 3 issues were found when checking AAR metadata:
+     
+       1.  Dependency 'androidx.browser:browser:1.9.0' requires Android Gradle plugin 8.9.1 or higher.
+     
+           This build currently uses Android Gradle plugin 8.6.0.
+     
+       2.  Dependency 'androidx.core:core-ktx:1.17.0' requires Android Gradle plugin 8.9.1 or higher.
+     
+           This build currently uses Android Gradle plugin 8.6.0.
+     
+       3.  Dependency 'androidx.core:core:1.17.0' requires Android Gradle plugin 8.9.1 or higher.
+     
+           This build currently uses Android Gradle plugin 8.6.0.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.12/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1m
+529 actionable tasks: 271 executed, 243 from cache, 15 up-to-date

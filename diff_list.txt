@@ -1,0 +1,10 @@
+apps/wawapp_client/lib/core/models/app_config.dart
+apps/wawapp_client/lib/core/utils/version_utils.dart
+apps/wawapp_client/lib/features/config/README.md
+apps/wawapp_client/lib/features/config/config_gate.dart
+apps/wawapp_client/lib/features/config/maintenance_screen.dart
+apps/wawapp_client/lib/features/config/update_required_screen.dart
+apps/wawapp_client/lib/main.dart
+apps/wawapp_client/lib/services/config_provider.dart
+apps/wawapp_client/lib/services/config_service.dart
+apps/wawapp_client/pubspec.yaml
