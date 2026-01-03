@@ -6,8 +6,14 @@ import '../core/models/app_config.dart';
 /// Service for fetching app configuration from backend
 /// Handles maintenance mode, force updates, and version requirements
 class ConfigService {
-  static const String baseUrl = 'http://77.42.76.36';
-  static const String configEndpoint = '/api/public/config';
+  /// Production config URL (HTTPS domain)
+  /// Can be overridden via --dart-define=WAWAPP_CONFIG_URL=https://your-domain.com
+  static const String _defaultConfigUrl = 'https://config.wawappmr.com/api/public/config';
+  
+  /// Get config URL from environment or use default
+  static String get configUrl => 
+      const String.fromEnvironment('WAWAPP_CONFIG_URL', defaultValue: _defaultConfigUrl);
+  
   static const Duration timeout = Duration(seconds: 10);
 
   /// Singleton instance
@@ -36,10 +42,10 @@ class ConfigService {
 
     try {
       if (kDebugMode) {
-        debugPrint('🌐 Fetching config from $baseUrl$configEndpoint');
+        debugPrint('🌐 Fetching config from $configUrl');
       }
 
-      final uri = Uri.parse('$baseUrl$configEndpoint');
+      final uri = Uri.parse(configUrl);
       final response = await http.get(uri).timeout(timeout);
 
       if (response.statusCode == 200) {
