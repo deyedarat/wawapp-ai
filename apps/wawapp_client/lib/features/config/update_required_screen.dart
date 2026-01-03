@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -22,9 +23,9 @@ class UpdateRequiredScreen extends StatelessWidget {
     Uri? storeUrl;
 
     if (Platform.isAndroid) {
-      // Replace with your actual package name
+      // Temporary update path via GitHub Releases
       storeUrl = Uri.parse(
-        'https://play.google.com/store/apps/details?id=com.wawapp.client',
+        'https://github.com/deyedarat/wawapp-ai/releases/latest',
       );
     } else if (Platform.isIOS) {
       // Replace with your actual App Store ID
@@ -94,8 +95,7 @@ class UpdateRequiredScreen extends StatelessWidget {
 
                 // Message
                 Text(
-                  message ??
-                      'يرجى تحديث التطبيق للحصول على أحدث الميزات والتحسينات',
+                  message ?? 'يرجى تحديث التطبيق للحصول على أحدث الميزات والتحسينات',
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
