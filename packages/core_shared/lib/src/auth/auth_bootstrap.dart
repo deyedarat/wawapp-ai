@@ -45,7 +45,8 @@ class AuthBootstrap {
       debugPrint('[AuthBootstrap] Initializing services for $userType');
 
       // Set user type in analytics
-      await analyticsService.setUserType(userType: userType);
+      await analyticsService.setUserType();
+
       debugPrint('[AuthBootstrap] ✓ User type set: $userType');
 
       // Set user properties if provided
@@ -87,7 +88,7 @@ class AuthBootstrap {
       debugPrint('[AuthBootstrap] Initializing services with auth for $userId');
 
       // Set user type
-      await analyticsService.setUserType(userType: userType);
+      await analyticsService.setUserType();
 
       // Set user properties (driver-specific properties should be included)
       // Driver app: totalTrips, averageRating, isVerified

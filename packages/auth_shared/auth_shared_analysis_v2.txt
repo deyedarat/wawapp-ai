@@ -1,0 +1,6 @@
+Analyzing auth_shared...                                        
+
+warning - The operand can't be 'null', so the condition is always 'true' - lib\src\phone_pin_auth.dart:136:95 - unnecessary_null_comparison
+warning - The operand can't be 'null', so the condition is always 'true' - lib\src\phone_pin_auth.dart:139:63 - unnecessary_null_comparison
+
+2 issues found. (ran in 1.2s)

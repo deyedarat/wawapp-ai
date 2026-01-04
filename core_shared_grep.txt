@@ -1,0 +1,3 @@
+packages/core_shared/lib/src/auth/auth_bootstrap.dart:19:///     userType: 'client', // or 'driver'
+packages/core_shared/lib/src/auth/auth_bootstrap.dart:48:      await analyticsService.setUserType(userType: userType);
+packages/core_shared/lib/src/auth/auth_bootstrap.dart:90:      await analyticsService.setUserType(userType: userType);

@@ -1,9 +1,8 @@
 import 'package:auth_shared/auth_shared.dart';
+import 'package:core_shared/core_shared.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../core/observability/crashlytics_observer.dart';
 
 // Provider for PhonePinAuth service singleton
 final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
