@@ -21,23 +21,22 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
             '[ClientAuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}, isPinResetFlow=${state.isPinResetFlow}');
       }
 
-      // CRITICAL: Set isPinCheckLoading to true immediately when user is detected
-      // This prevents AuthGate from briefly showing CreatePinScreen while checking PIN
+      // When user changes, reset PinStatus to loading
       state = state.copyWith(
         user: user,
-        isPinCheckLoading: user != null,
+        pinStatus: user != null ? PinStatus.loading : PinStatus.unknown,
       );
 
       // Set user context for Crashlytics
       if (user != null) {
         CrashlyticsObserver.setUserContext(user.uid, 'client');
-        _checkHasPin();
+        checkHasPin();
       } else {
-        // During PIN reset flow, preserve phoneE164 to avoid losing context
+        // On logout, preserve phoneE164 if PIN reset is active
         if (state.isPinResetFlow) {
-          state = state.copyWith(hasPin: false);
+          state = state.copyWith(pinStatus: PinStatus.noPin);
         } else {
-          state = state.copyWith(hasPin: false, phoneE164: null);
+          state = state.copyWith(pinStatus: PinStatus.unknown, phoneE164: null);
         }
       }
     });
@@ -54,43 +53,40 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
   }
 
   // Check if current user has a PIN set
-  Future<void> _checkHasPin() async {
+  Future<void> checkHasPin() async {
     try {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Checking if user has PIN, isPinResetFlow=${state.isPinResetFlow}');
       }
 
-      // Ensure the loading flag is set even if call starts from elsewhere
-      state = state.copyWith(isPinCheckLoading: true);
+      state = state.copyWith(pinStatus: PinStatus.loading);
 
       final user = _firebaseAuth.currentUser;
       if (user != null) {
         final hasPinHash = await _authService.hasPinHash();
 
-        // CRITICAL: During PIN reset flow, always report hasPin=false
-        // This ensures router navigates to create-pin instead of home
-        final effectiveHasPin = state.isPinResetFlow ? false : hasPinHash;
+        // During PIN reset flow, force noPin to ensure router navigates to create-pin
+        final effectiveStatus = state.isPinResetFlow ? PinStatus.noPin : (hasPinHash ? PinStatus.hasPin : PinStatus.noPin);
 
         if (kDebugMode && state.isPinResetFlow) {
-          print('[ClientAuthNotifier] PIN reset flow active - forcing hasPin=false (actual hasPinHash=$hasPinHash)');
+          print('[ClientAuthNotifier] PIN reset flow active - forcing noPin (actual hasPinHash=$hasPinHash)');
         }
 
         if (kDebugMode) {
-          print('[ClientAuthNotifier] hasPinHash=$hasPinHash, effectiveHasPin=$effectiveHasPin');
+          print('[ClientAuthNotifier] hasPinHash=$hasPinHash, effectiveStatus=$effectiveStatus');
         }
         state = state.copyWith(
-          hasPin: effectiveHasPin,
+          pinStatus: effectiveStatus,
           phoneE164: user.phoneNumber,
-          isPinCheckLoading: false, // CLEAR FLAG
         );
       } else {
-        state = state.copyWith(isPinCheckLoading: false);
+        state = state.copyWith(pinStatus: PinStatus.unknown);
       }
     } on Object catch (e) {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Error checking PIN: $e');
       }
-      state = state.copyWith(isPinCheckLoading: false);
+      state = state.copyWith(pinStatus: PinStatus.error);
     }
   }
 
@@ -198,7 +194,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       }
       state = state.copyWith(
         isLoading: false,
-        hasPin: true,
+        pinStatus: PinStatus.hasPin,
         isPinResetFlow: false, // Clear reset flow flag
       );
     } on Object catch (e) {
@@ -246,7 +242,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         }
         state = state.copyWith(
           isLoading: false,
-          hasPin: true,
+          pinStatus: PinStatus.hasPin,
           phoneE164: phoneE164,
         );
       } else {
@@ -302,7 +298,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         print('[ClientAuthNotifier] Setting new PIN');
       }
       await _authService.setPin(pin);
-      state = state.copyWith(hasPin: true);
+      state = state.copyWith(pinStatus: PinStatus.hasPin);
     } on Object catch (e) {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Error setting PIN: $e');
