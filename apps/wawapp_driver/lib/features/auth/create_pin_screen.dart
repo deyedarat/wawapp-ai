@@ -81,6 +81,7 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
     final errorMessage = _err ?? authState.error;
 
     return Scaffold(
+      key: const Key('create_pin_screen'),
       appBar: AppBar(title: Text(l10n.set_pin)),
       body: Padding(
         padding: const EdgeInsets.all(16),

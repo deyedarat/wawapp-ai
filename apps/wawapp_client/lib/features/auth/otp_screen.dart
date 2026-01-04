@@ -1,6 +1,7 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+
 import 'providers/auth_service_provider.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
@@ -75,10 +76,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
       // Log OTP verification success for debugging
       if (next.user != null && prev?.user == null) {
-        FirebaseCrashlytics.instance
-            .log('[OtpScreen] OTP verified successfully');
-        debugPrint(
-            '[OtpScreen] ✓ OTP verified - GoRouter will handle navigation');
+        FirebaseCrashlytics.instance.log('[OtpScreen] OTP verified successfully');
+        debugPrint('[OtpScreen] ✓ OTP verified - GoRouter will handle navigation');
       }
     });
 
@@ -86,6 +85,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final displayPhone = widget.phoneNumber ?? authState.phoneE164;
 
     return Scaffold(
+      key: const Key('otp_screen'),
       appBar: AppBar(
         title: Text(widget.isPhoneChange ? 'تحقق من الهاتف' : 'أدخل رمز التحقق'),
       ),
@@ -105,14 +105,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               maxLength: 6,
               decoration: const InputDecoration(labelText: 'OTP Code'),
             ),
-            if (authState.error != null)
-              Text(authState.error!, style: const TextStyle(color: Colors.red)),
+            if (authState.error != null) Text(authState.error!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: authState.isLoading ? null : _verify,
-              child: authState.isLoading
-                  ? const CircularProgressIndicator()
-                  : const Text('Verify'),
+              child: authState.isLoading ? const CircularProgressIndicator() : const Text('Verify'),
             ),
           ],
         ),

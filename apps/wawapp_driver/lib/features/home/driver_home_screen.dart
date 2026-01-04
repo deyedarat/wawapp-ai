@@ -1,19 +1,21 @@
-import 'package:flutter/material.dart';
+import 'dart:developer' as dev;
+
+import 'package:core_shared/core_shared.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:core_shared/core_shared.dart';
+
+import '../../core/theme/colors.dart';
+import '../../core/theme/components.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/analytics_service.dart';
 import '../../services/driver_status_service.dart';
-import '../../services/tracking_service.dart';
 import '../../services/location_service.dart';
+import '../../services/tracking_service.dart';
 import '../auth/providers/auth_service_provider.dart';
 import '../profile/providers/driver_profile_providers.dart';
 import 'providers/driver_status_provider.dart';
-import '../../core/theme/colors.dart';
-import '../../core/theme/components.dart';
-import 'dart:developer' as dev;
 
 class DriverHomeScreen extends ConsumerStatefulWidget {
   const DriverHomeScreen({super.key});
@@ -69,12 +71,10 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
           dev.log('[DriverHome] Verifying location prerequisites...');
         }
 
-        final locationError =
-            await LocationService.instance.verifyLocationPrerequisites();
+        final locationError = await LocationService.instance.verifyLocationPrerequisites();
         if (locationError != null) {
           if (kDebugMode) {
-            dev.log(
-                '[DriverHome] Location prerequisites failed: $locationError');
+            dev.log('[DriverHome] Location prerequisites failed: $locationError');
           }
 
           if (mounted) {
@@ -137,8 +137,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-                value ? 'أنت الآن متصل ومتاح للطلبات' : 'أنت الآن غير متصل'),
+            content: Text(value ? 'أنت الآن متصل ومتاح للطلبات' : 'أنت الآن غير متصل'),
             backgroundColor: value ? Colors.green : Colors.grey,
           ),
         );
@@ -236,6 +235,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
+        key: const Key('home_screen'),
         appBar: AppBar(
           title: Text(l10n.title),
           centerTitle: true,
@@ -288,24 +288,15 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: isOnline
-                      ? [
-                          DriverAppColors.onlineGreen,
-                          DriverAppColors.onlineGreen.withOpacity(0.8)
-                        ]
-                      : [
-                          DriverAppColors.offlineGrey,
-                          DriverAppColors.offlineGrey.withOpacity(0.8)
-                        ],
+                      ? [DriverAppColors.onlineGreen, DriverAppColors.onlineGreen.withOpacity(0.8)]
+                      : [DriverAppColors.offlineGrey, DriverAppColors.offlineGrey.withOpacity(0.8)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(DriverAppSpacing.radiusLg),
                 boxShadow: [
                   BoxShadow(
-                    color: (isOnline
-                            ? DriverAppColors.onlineGreen
-                            : DriverAppColors.offlineGrey)
-                        .withOpacity(0.3),
+                    color: (isOnline ? DriverAppColors.onlineGreen : DriverAppColors.offlineGrey).withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -321,23 +312,17 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                       children: [
                         Text(
                           isOnline ? l10n.online : l10n.offline,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineMedium
-                              ?.copyWith(
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
                         ),
                         SizedBox(height: DriverAppSpacing.xxs),
                         Text(
-                          isOnline
-                              ? 'جاهز لاستقبال الطلبات'
-                              : 'اذهب إلى الإنترنت لاستقبال الطلبات',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.white.withOpacity(0.9),
-                                  ),
+                          isOnline ? 'جاهز لاستقبال الطلبات' : 'اذهب إلى الإنترنت لاستقبال الطلبات',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.white.withOpacity(0.9),
+                              ),
                         ),
                       ],
                     ),
@@ -377,8 +362,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 Container(
                                   padding: EdgeInsets.all(DriverAppSpacing.sm),
                                   decoration: BoxDecoration(
-                                    color: DriverAppColors.primaryLight
-                                        .withOpacity(0.1),
+                                    color: DriverAppColors.primaryLight.withOpacity(0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -406,8 +390,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 Container(
                                   padding: EdgeInsets.all(DriverAppSpacing.sm),
                                   decoration: BoxDecoration(
-                                    color: DriverAppColors.secondaryLight
-                                        .withOpacity(0.1),
+                                    color: DriverAppColors.secondaryLight.withOpacity(0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -439,8 +422,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 Container(
                                   padding: EdgeInsets.all(DriverAppSpacing.sm),
                                   decoration: BoxDecoration(
-                                    color: DriverAppColors.infoLight
-                                        .withOpacity(0.1),
+                                    color: DriverAppColors.infoLight.withOpacity(0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -468,8 +450,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 Container(
                                   padding: EdgeInsets.all(DriverAppSpacing.sm),
                                   decoration: BoxDecoration(
-                                    color: DriverAppColors.successLight
-                                        .withOpacity(0.1),
+                                    color: DriverAppColors.successLight.withOpacity(0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -510,21 +491,14 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 children: [
                                   Text(
                                     'عدد الرحلات',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: DriverAppColors
-                                              .textSecondaryLight,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: DriverAppColors.textSecondaryLight,
                                         ),
                                   ),
                                   SizedBox(height: DriverAppSpacing.xxs),
                                   Text(
                                     '0',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium
-                                        ?.copyWith(
+                                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                           fontWeight: FontWeight.bold,
                                           color: DriverAppColors.primaryLight,
                                         ),
@@ -534,8 +508,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                               Container(
                                 padding: EdgeInsets.all(DriverAppSpacing.sm),
                                 decoration: BoxDecoration(
-                                  color: DriverAppColors.primaryLight
-                                      .withOpacity(0.1),
+                                  color: DriverAppColors.primaryLight.withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -555,21 +528,14 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                                 children: [
                                   Text(
                                     'الأرباح',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: DriverAppColors
-                                              .textSecondaryLight,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: DriverAppColors.textSecondaryLight,
                                         ),
                                   ),
                                   SizedBox(height: DriverAppSpacing.xxs),
                                   Text(
                                     '0 MRU',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium
-                                        ?.copyWith(
+                                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                           fontWeight: FontWeight.bold,
                                           color: DriverAppColors.successLight,
                                         ),
@@ -579,8 +545,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                               Container(
                                 padding: EdgeInsets.all(DriverAppSpacing.sm),
                                 decoration: BoxDecoration(
-                                  color: DriverAppColors.successLight
-                                      .withOpacity(0.1),
+                                  color: DriverAppColors.successLight.withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(

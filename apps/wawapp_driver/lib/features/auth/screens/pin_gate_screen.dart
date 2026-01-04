@@ -42,6 +42,7 @@ class PinGateScreen extends ConsumerWidget {
     final isError = st.pinStatus == PinStatus.error;
 
     return Scaffold(
+      key: const Key('pin_gate_screen'),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
