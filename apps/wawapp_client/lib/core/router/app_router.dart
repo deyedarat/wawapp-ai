@@ -14,6 +14,7 @@ import '../../features/auth/otp_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
 import '../../features/auth/providers/auth_service_provider.dart';
 import '../../features/auth/screens/pin_gate_screen.dart';
+import '../logging/auth_logger.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
 import '../../features/profile/add_saved_location_screen.dart';
@@ -162,13 +163,14 @@ String? _redirect(GoRouterState s, AuthState st) {
   final pinStatus = st.pinStatus;
   final canOtp = st.otpFlowActive || st.otpStage == OtpStage.sending || st.otpStage == OtpStage.codeSent;
   final isLoading = st.isLoading;
+  final userId = st.user?.uid;
 
   // Set route context for Crashlytics
   CrashlyticsObserver.setRoute(s.matchedLocation, s.name ?? 'unknown');
 
   debugPrint('[Router] NAVIGATION_CHECK | '
       'location=${s.matchedLocation} | '
-      'user=${st.user?.uid ?? 'null'} | '
+      'user=$userId | '
       'pinStatus=$pinStatus | '
       'canOtp=$canOtp | '
       'otpStage=${st.otpStage} | '
@@ -191,6 +193,7 @@ String? _redirect(GoRouterState s, AuthState st) {
   if (canOtp) {
     if (s.matchedLocation != '/otp') {
       debugPrint('[Router] → Redirecting to /otp (OTP flow active)');
+      AuthLogger.logRouterRedirect(s.matchedLocation, '/otp', 'OTP flow active', userId);
       return '/otp';
     }
     debugPrint('[Router] ✓ Already on /otp');
@@ -201,6 +204,7 @@ String? _redirect(GoRouterState s, AuthState st) {
   if (!loggedIn) {
     if (s.matchedLocation != '/login') {
       debugPrint('[Router] → Redirecting to /login (not authenticated)');
+      AuthLogger.logRouterRedirect(s.matchedLocation, '/login', 'Not authenticated', null);
       return '/login';
     }
     debugPrint('[Router] ✓ Already on /login');
@@ -212,6 +216,7 @@ String? _redirect(GoRouterState s, AuthState st) {
   if (pinStatus == PinStatus.unknown || pinStatus == PinStatus.loading || pinStatus == PinStatus.error) {
     if (s.matchedLocation != '/pin-gate') {
       debugPrint('[Router] → Redirecting to /pin-gate (pinStatus=$pinStatus)');
+      AuthLogger.logRouterRedirect(s.matchedLocation, '/pin-gate', 'PinStatus=$pinStatus', userId);
       return '/pin-gate';
     }
     debugPrint('[Router] ✓ Already on /pin-gate');
@@ -222,6 +227,7 @@ String? _redirect(GoRouterState s, AuthState st) {
   if (loggedIn && pinStatus == PinStatus.noPin) {
     if (s.matchedLocation != '/create-pin') {
       debugPrint('[Router] → Redirecting to /create-pin (user has no PIN)');
+      AuthLogger.logRouterRedirect(s.matchedLocation, '/create-pin', 'No PIN set', userId);
       return '/create-pin';
     }
     debugPrint('[Router] ✓ Already on /create-pin');
@@ -234,6 +240,7 @@ String? _redirect(GoRouterState s, AuthState st) {
     if (s.matchedLocation == '/login' || s.matchedLocation == '/otp' || 
         s.matchedLocation == '/create-pin' || s.matchedLocation == '/pin-gate') {
       debugPrint('[Router] → Redirecting to / (authenticated with PIN, leaving auth screen)');
+      AuthLogger.logRouterRedirect(s.matchedLocation, '/', 'Authenticated with PIN', userId);
       return '/';
     }
     debugPrint('[Router] ✓ Authenticated - allowing access to ${s.matchedLocation}');

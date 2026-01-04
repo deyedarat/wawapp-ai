@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/logging/auth_logger.dart';
 import 'providers/auth_service_provider.dart';
 
 /// AuthGate is now a PASSIVE guard that only:
@@ -17,10 +18,10 @@ class AuthGate extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
 
-    debugPrint('[AuthGate] GUARD_CHECK | '
-        'user=${authState.user?.uid ?? 'null'} | '
-        'pinStatus=${authState.pinStatus} | '
-        'isLoading=${authState.isLoading}');
+    AuthLogger.logAuthGate(
+      'Guard check: pinStatus=${authState.pinStatus}, isLoading=${authState.isLoading}',
+      authState.user?.uid,
+    );
 
     // ONLY show loading screen during initial auth check
     // (when we don't know if user exists yet)

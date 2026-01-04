@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/logging/auth_logger.dart';
+
 // Provider for PhonePinAuth service singleton
 final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
   return PhonePinAuth(userCollection: 'users');
@@ -54,6 +56,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
 
   // Check if current user has a PIN set
   Future<void> checkHasPin() async {
+    final oldStatus = state.pinStatus;
     try {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Checking if user has PIN, isPinResetFlow=${state.isPinResetFlow}');
@@ -79,14 +82,19 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
           pinStatus: effectiveStatus,
           phoneE164: user.phoneNumber,
         );
+        
+        // Log PIN status change
+        AuthLogger.logPinStatusChange(oldStatus.toString(), effectiveStatus.toString(), user.uid);
       } else {
         state = state.copyWith(pinStatus: PinStatus.unknown);
+        AuthLogger.logPinStatusChange(oldStatus.toString(), PinStatus.unknown.toString(), null);
       }
     } on Object catch (e) {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Error checking PIN: $e');
       }
       state = state.copyWith(pinStatus: PinStatus.error);
+      AuthLogger.logPinStatusChange(oldStatus.toString(), PinStatus.error.toString(), _firebaseAuth.currentUser?.uid);
     }
   }
 
