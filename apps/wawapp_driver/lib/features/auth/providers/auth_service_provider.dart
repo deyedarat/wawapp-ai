@@ -38,12 +38,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       } else {
         if (kDebugMode) {
           print('[AuthNotifier] AUTH_STATE_TRANSITION: user_signed_out | isPinResetFlow=${state.isPinResetFlow}');
+          print('[PIN] PinStatus reset to unknown (user signed out)');
         }
         // During PIN reset flow, preserve phoneE164 to avoid losing context
         if (state.isPinResetFlow) {
-          state = state.copyWith(hasPin: false, pinStatus: PinStatus.unknown);
+          state = state.copyWith(pinStatus: PinStatus.unknown);
         } else {
-          state = state.copyWith(hasPin: false, phoneE164: null, pinStatus: PinStatus.unknown);
+          state = state.copyWith(phoneE164: null, pinStatus: PinStatus.unknown);
         }
       }
     });
@@ -95,7 +96,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final status = effectiveHasPin ? PinStatus.hasPin : PinStatus.noPin;
 
       state = state.copyWith(
-        hasPin: effectiveHasPin,
         pinStatus: status,
         phoneE164: user.phoneNumber,
         isPinCheckLoading: false,
@@ -103,6 +103,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       if (kDebugMode) {
         print('[AuthNotifier] _checkHasPin result: $status');
+        print('[PIN] PinStatus changed to $status');
       }
     } on Object catch (e) {
       if (kDebugMode) {
@@ -238,9 +239,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       state = state.copyWith(
         isLoading: false,
-        hasPin: true,
+        pinStatus: PinStatus.hasPin,
         isPinResetFlow: false, // Clear reset flow flag
       );
+
+      if (kDebugMode) {
+        print('[PIN] PinStatus changed to hasPin (PIN created)');
+      }
     } on Object catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -258,7 +263,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final isValid = await _authService.verifyPin(pin, phoneE164);
       if (isValid) {
         await AnalyticsService.instance.logLoginSuccess('pin');
-        state = state.copyWith(isLoading: false, hasPin: true);
+        state = state.copyWith(isLoading: false, pinStatus: PinStatus.hasPin);
+        if (kDebugMode) {
+          print('[PIN] PinStatus changed to hasPin (PIN verified)');
+        }
       } else {
         state = state.copyWith(
           isLoading: false,
@@ -298,7 +306,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = const AuthState(); // Reset to initial state
 
       if (kDebugMode) {
-        print('[AuthNotifier] AUTH_STATE_TRANSITION: logout_complete | user=null, hasPin=false, otpStage=idle');
+        print('[AuthNotifier] AUTH_STATE_TRANSITION: logout_complete | user=null, pinStatus=unknown, otpStage=idle');
+        print('[PIN] PinStatus reset to unknown (logout)');
       }
     } on Object catch (e) {
       if (kDebugMode) {
@@ -336,7 +345,7 @@ class _MockAuthNotifier extends AuthNotifier {
     // Override the state with mock data
     state = AuthState(
       user: TestLabMockData.mockUser,
-      hasPin: true,
+      pinStatus: PinStatus.hasPin,
       phoneE164: TestLabMockData.mockDriverPhone,
       isLoading: false,
       otpFlowActive: false,

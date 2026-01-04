@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auth_shared/auth_shared.dart';
 import 'package:core_shared/core_shared.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -117,30 +118,41 @@ String? _redirect(GoRouterState s, AuthState st) {
   final loggedIn = st.user != null;
   final canOtp = st.otpFlowActive || st.otpStage == OtpStage.sending || st.otpStage == OtpStage.codeSent;
 
-  debugPrint('[Router] NAVIGATION_CHECK_V2 | '
-      'location=${s.matchedLocation} | '
-      'user=${st.user?.uid ?? 'null'} | '
-      'pinStatus=${st.pinStatus} | '
-      'canOtp=$canOtp');
+  if (kDebugMode) {
+    debugPrint('[ROUTER] Navigation check | '
+        'location=${s.matchedLocation} | '
+        'user=${st.user?.uid ?? 'null'} | '
+        'pinStatus=${st.pinStatus} | '
+        'canOtp=$canOtp | '
+        'isPinResetFlow=${st.isPinResetFlow}');
+  }
 
   // 1. OTP FLOW: User is in OTP verification process
-  // Priority: Highest
+  // Priority: Highest (must override all other checks)
   if (canOtp) {
     if (s.matchedLocation != '/otp') {
-      debugPrint('[Router] → Redirecting to /otp (OTP flow active)');
+      if (kDebugMode) {
+        debugPrint('[ROUTER] → Redirect to /otp (OTP flow active, otpStage=${st.otpStage})');
+      }
       return '/otp';
     }
-    debugPrint('[Router] ✓ Already on /otp');
+    if (kDebugMode) {
+      debugPrint('[ROUTER] ✓ Already on /otp (staying)');
+    }
     return null;
   }
 
   // 2. NOT AUTHENTICATED: No user
   if (!loggedIn) {
     if (s.matchedLocation != '/login') {
-      debugPrint('[Router] → Redirecting to /login (not authenticated)');
+      if (kDebugMode) {
+        debugPrint('[ROUTER] → Redirect to /login (not authenticated)');
+      }
       return '/login';
     }
-    debugPrint('[Router] ✓ Already on /login');
+    if (kDebugMode) {
+      debugPrint('[ROUTER] ✓ Already on /login');
+    }
     return null;
   }
 
@@ -148,20 +160,29 @@ String? _redirect(GoRouterState s, AuthState st) {
   // Redirect to PinGateScreen to wait for check or retry
   if (st.pinStatus == PinStatus.unknown || st.pinStatus == PinStatus.loading || st.pinStatus == PinStatus.error) {
     if (s.matchedLocation != '/pin-gate') {
-      debugPrint('[Router] → Redirecting to /pin-gate (pin status: ${st.pinStatus})');
+      if (kDebugMode) {
+        debugPrint('[ROUTER] → Redirect to /pin-gate (pinStatus=${st.pinStatus})');
+      }
       return '/pin-gate';
     }
-    // Already on gate, just wait
+    // Already on gate, stay here until status resolves
+    if (kDebugMode) {
+      debugPrint('[ROUTER] ✓ Already on /pin-gate (waiting for pinStatus=${st.pinStatus})');
+    }
     return null;
   }
 
   // 4. AUTHENTICATED AND NO PIN
   if (st.pinStatus == PinStatus.noPin) {
     if (s.matchedLocation != '/create-pin') {
-      debugPrint('[Router] → Redirecting to /create-pin (user has no PIN)');
+      if (kDebugMode) {
+        debugPrint('[ROUTER] → Redirect to /create-pin (user has no PIN)');
+      }
       return '/create-pin';
     }
-    debugPrint('[Router] ✓ Already on /create-pin');
+    if (kDebugMode) {
+      debugPrint('[ROUTER] ✓ Already on /create-pin');
+    }
     return null;
   }
 
@@ -172,14 +193,21 @@ String? _redirect(GoRouterState s, AuthState st) {
         s.matchedLocation == '/otp' ||
         s.matchedLocation == '/create-pin' ||
         s.matchedLocation == '/pin-gate') {
-      debugPrint('[Router] → Redirecting to / (authenticated with PIN, leaving auth screen)');
+      if (kDebugMode) {
+        debugPrint('[ROUTER] → Redirect to / (authenticated with PIN, leaving ${s.matchedLocation})');
+      }
       return '/';
     }
-    debugPrint('[Router] ✓ Authenticated - allowing access to ${s.matchedLocation}');
+    if (kDebugMode) {
+      debugPrint('[ROUTER] ✓ Authenticated - allowing access to ${s.matchedLocation}');
+    }
     return null;
   }
 
-  debugPrint('[Router] ⚠️ Unexpected state - no redirect');
+  // Fallback: unexpected state
+  if (kDebugMode) {
+    debugPrint('[ROUTER] ⚠️ Unexpected state - no redirect | pinStatus=${st.pinStatus}');
+  }
   return null;
 }
 

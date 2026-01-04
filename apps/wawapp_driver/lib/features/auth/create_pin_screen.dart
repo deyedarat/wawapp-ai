@@ -65,9 +65,9 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
 
     // Listen for PIN creation status
     ref.listen<AuthState>(authProvider, (previous, next) {
-      if (next.hasPin && !next.isLoading) {
+      if (next.pinStatus == PinStatus.hasPin && !next.isLoading) {
         if (kDebugMode) {
-          print('[CreatePinScreen] PIN saved');
+          print('[CreatePinScreen] PIN saved (pinStatus=hasPin)');
         }
       }
       if (next.error != null && previous?.error != next.error) {
