@@ -26,14 +26,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
             '[AuthNotifier] AUTH_STATE_TRANSITION: firebase_auth_changed | user=${user?.uid}, phone=${user?.phoneNumber}');
       }
 
-      // CRITICAL: Set isPinCheckLoading to true immediately when user is detected
-      // This prevents AuthGate from briefly showing CreatePinScreen while checking PIN
-      state = state.copyWith(
-        user: user,
-        isPinCheckLoading: user != null,
-      );
-
       if (user != null) {
+        // New user or re-auth: reset pinStatus to unknown if it's different
+        // But if user is same, we might want to keep state.
+        // For safety, let's follow the prompt pattern:
+        state = state.copyWith(
+            user: user,
+            // If strictly following new logic:
+            pinStatus: PinStatus.unknown);
         _checkHasPin();
       } else {
         if (kDebugMode) {
@@ -41,9 +41,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         }
         // During PIN reset flow, preserve phoneE164 to avoid losing context
         if (state.isPinResetFlow) {
-          state = state.copyWith(hasPin: false);
+          state = state.copyWith(hasPin: false, pinStatus: PinStatus.unknown);
         } else {
-          state = state.copyWith(hasPin: false, phoneE164: null);
+          state = state.copyWith(hasPin: false, phoneE164: null, pinStatus: PinStatus.unknown);
         }
       }
     });
@@ -59,46 +59,56 @@ class AuthNotifier extends StateNotifier<AuthState> {
     super.dispose();
   }
 
+  // Public method to trigger check manually (e.g. from PinGateScreen)
+  void checkHasPin() => _checkHasPin();
+
   // Check if current user has a PIN set
   Future<void> _checkHasPin() async {
+    final user = state.user; // Use state.user or _firebaseAuth.currentUser
+    if (user == null) return;
+
+    // Prevent duplicate checks if we already have a definitive result or are loading
+    // Exception: If error, we allow retry (implicit in avoiding this return)
+    if (state.pinStatus == PinStatus.loading ||
+        state.pinStatus == PinStatus.hasPin ||
+        state.pinStatus == PinStatus.noPin) {
+      return;
+    }
+
     try {
       if (kDebugMode) {
         print('[AuthNotifier] Checking if user has PIN, isPinResetFlow=${state.isPinResetFlow}');
       }
 
-      // Ensure the loading flag is set even if call starts from elsewhere
-      state = state.copyWith(isPinCheckLoading: true);
+      state = state.copyWith(isPinCheckLoading: true, pinStatus: PinStatus.loading);
 
-      final user = _firebaseAuth.currentUser;
-      if (user != null) {
-        // Driver app has hasPinHash method
-        final hasPinHash = await _authService.hasPinHash();
-        if (kDebugMode) {
-          print('[AuthNotifier] hasPinHash=$hasPinHash');
-        }
+      // Driver app has hasPinHash method
+      final hasPinHash = await _authService.hasPinHash();
 
-        // CRITICAL: During PIN reset flow, always report hasPin=false
-        // This ensures OtpScreen navigates to create-pin instead of home
-        final effectiveHasPin = state.isPinResetFlow ? false : hasPinHash;
+      // CRITICAL: During PIN reset flow, always report hasPin=false/noPin
+      final effectiveHasPin = state.isPinResetFlow ? false : hasPinHash;
 
-        if (kDebugMode && state.isPinResetFlow) {
-          print('[AuthNotifier] PIN reset flow active - forcing hasPin=false (actual hasPinHash=$hasPinHash)');
-        }
+      if (kDebugMode && state.isPinResetFlow) {
+        print('[AuthNotifier] PIN reset flow active - forcing hasPin=false (actual hasPinHash=$hasPinHash)');
+      }
 
-        state = state.copyWith(
-          hasPin: effectiveHasPin,
-          phoneE164: user.phoneNumber,
-          isPinCheckLoading: false, // CLEAR FLAG
-        );
-      } else {
-        state = state.copyWith(isPinCheckLoading: false);
+      final status = effectiveHasPin ? PinStatus.hasPin : PinStatus.noPin;
+
+      state = state.copyWith(
+        hasPin: effectiveHasPin,
+        pinStatus: status,
+        phoneE164: user.phoneNumber,
+        isPinCheckLoading: false,
+      );
+
+      if (kDebugMode) {
+        print('[AuthNotifier] _checkHasPin result: $status');
       }
     } on Object catch (e) {
       if (kDebugMode) {
         print('[AuthNotifier] Error checking PIN: $e');
       }
-      state = state.copyWith(isPinCheckLoading: false);
-      // Silent fail - hasPin will remain false
+      state = state.copyWith(isPinCheckLoading: false, pinStatus: PinStatus.error);
     }
   }
 

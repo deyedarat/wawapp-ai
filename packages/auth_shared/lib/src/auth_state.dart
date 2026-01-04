@@ -2,6 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 enum OtpStage { idle, sending, codeSent, verifying, verified, failed }
 
+enum PinStatus {
+  unknown,
+  loading,
+  hasPin,
+  noPin,
+  error,
+}
+
 class AuthState {
   final bool isLoading;
   final User? user;
@@ -12,9 +20,10 @@ class AuthState {
   final OtpStage otpStage;
   final String? verificationId;
   final int? resendToken;
-  final bool isPinResetFlow; // Track if we're in PIN reset flow
-  final bool isPinCheckLoading; // Track if we're checking for PIN existence
-  final bool isStreamsSafeToRun; // Track if Firestore streams should be active
+  final bool isPinResetFlow;
+  final bool isPinCheckLoading;
+  final bool isStreamsSafeToRun;
+  final PinStatus pinStatus; // New field
 
   const AuthState({
     this.isLoading = false,
@@ -28,7 +37,8 @@ class AuthState {
     this.resendToken,
     this.isPinResetFlow = false,
     this.isPinCheckLoading = false,
-    this.isStreamsSafeToRun = true, // Default: streams are safe
+    this.isStreamsSafeToRun = true,
+    this.pinStatus = PinStatus.unknown, // Default
   });
 
   AuthState copyWith({
@@ -44,13 +54,14 @@ class AuthState {
     bool? isPinResetFlow,
     bool? isPinCheckLoading,
     bool? isStreamsSafeToRun,
+    PinStatus? pinStatus,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
       user: user ?? this.user,
       phoneE164: phoneE164 ?? this.phoneE164,
       hasPin: hasPin ?? this.hasPin,
-      error: error,
+      error: error, // Error is typically nullable/resettable
       otpFlowActive: otpFlowActive ?? this.otpFlowActive,
       otpStage: otpStage ?? this.otpStage,
       verificationId: verificationId ?? this.verificationId,
@@ -58,6 +69,7 @@ class AuthState {
       isPinResetFlow: isPinResetFlow ?? this.isPinResetFlow,
       isPinCheckLoading: isPinCheckLoading ?? this.isPinCheckLoading,
       isStreamsSafeToRun: isStreamsSafeToRun ?? this.isStreamsSafeToRun,
+      pinStatus: pinStatus ?? this.pinStatus,
     );
   }
 }
