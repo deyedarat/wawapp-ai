@@ -19,9 +19,8 @@ class AuthGate extends ConsumerWidget {
 
     debugPrint('[AuthGate] GUARD_CHECK | '
         'user=${authState.user?.uid ?? 'null'} | '
-        'hasPin=${authState.hasPin} | '
-        'isLoading=${authState.isLoading} | '
-        'isPinCheckLoading=${authState.isPinCheckLoading}');
+        'pinStatus=${authState.pinStatus} | '
+        'isLoading=${authState.isLoading}');
 
     // ONLY show loading screen during initial auth check
     // (when we don't know if user exists yet)
@@ -34,18 +33,8 @@ class AuthGate extends ConsumerWidget {
       );
     }
 
-    // If still checking for PIN existence, show loading
-    if (authState.isPinCheckLoading) {
-      debugPrint('[AuthGate] ⏳ PIN check loading - showing spinner');
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
     // Otherwise, show the protected content
-    // Router will handle redirects if user is not authenticated
+    // Router will handle redirects based on PinStatus
     debugPrint('[AuthGate] ✓ Showing protected content');
     return child;
   }

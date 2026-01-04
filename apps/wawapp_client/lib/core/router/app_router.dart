@@ -13,6 +13,7 @@ import '../../features/auth/create_pin_screen.dart';
 import '../../features/auth/otp_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
 import '../../features/auth/providers/auth_service_provider.dart';
+import '../../features/auth/screens/pin_gate_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
 import '../../features/profile/add_saved_location_screen.dart';
@@ -64,6 +65,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/create-pin',
         name: 'createPin',
         builder: (context, state) => const CreatePinScreen(),
+      ),
+      GoRoute(
+        path: '/pin-gate',
+        name: 'pinGate',
+        builder: (context, state) => const PinGateScreen(),
       ),
       GoRoute(
         path: '/quote',
@@ -153,9 +159,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
 String? _redirect(GoRouterState s, AuthState st) {
   final loggedIn = st.user != null;
-  final hasPin = st.hasPin;
+  final pinStatus = st.pinStatus;
   final canOtp = st.otpFlowActive || st.otpStage == OtpStage.sending || st.otpStage == OtpStage.codeSent;
-  final isLoading = st.isLoading || st.isPinCheckLoading;
+  final isLoading = st.isLoading;
 
   // Set route context for Crashlytics
   CrashlyticsObserver.setRoute(s.matchedLocation, s.name ?? 'unknown');
@@ -163,7 +169,7 @@ String? _redirect(GoRouterState s, AuthState st) {
   debugPrint('[Router] NAVIGATION_CHECK | '
       'location=${s.matchedLocation} | '
       'user=${st.user?.uid ?? 'null'} | '
-      'hasPin=$hasPin | '
+      'pinStatus=$pinStatus | '
       'canOtp=$canOtp | '
       'otpStage=${st.otpStage} | '
       'isLoading=$isLoading');
@@ -174,13 +180,14 @@ String? _redirect(GoRouterState s, AuthState st) {
     return null;
   }
 
-  // 2. WAIT: Still loading auth state (prevent premature redirects)
+  // 2. WAIT: Still loading initial auth state (prevent premature redirects)
   if (isLoading && s.matchedLocation != '/login' && s.matchedLocation != '/otp') {
     debugPrint('[Router] ⏳ Auth loading - staying on current route');
     return null;
   }
 
-  // 3. OTP FLOW: User is in OTP verification process
+  // 3. PRIORITY 1 - OTP FLOW: User is in OTP verification process
+  // OTP always takes precedence over other flows
   if (canOtp) {
     if (s.matchedLocation != '/otp') {
       debugPrint('[Router] → Redirecting to /otp (OTP flow active)');
@@ -190,7 +197,7 @@ String? _redirect(GoRouterState s, AuthState st) {
     return null;
   }
 
-  // 4. NOT AUTHENTICATED: No user
+  // 4. PRIORITY 2 - NOT AUTHENTICATED: No user
   if (!loggedIn) {
     if (s.matchedLocation != '/login') {
       debugPrint('[Router] → Redirecting to /login (not authenticated)');
@@ -200,8 +207,19 @@ String? _redirect(GoRouterState s, AuthState st) {
     return null;
   }
 
-  // 5. AUTHENTICATED BUT NO PIN: User needs to create PIN
-  if (loggedIn && !hasPin) {
+  // 5. PRIORITY 3 - PIN STATUS GATE: Resolve unknown/loading/error states
+  // Redirect to /pin-gate UNLESS we're already there or in a known state
+  if (pinStatus == PinStatus.unknown || pinStatus == PinStatus.loading || pinStatus == PinStatus.error) {
+    if (s.matchedLocation != '/pin-gate') {
+      debugPrint('[Router] → Redirecting to /pin-gate (pinStatus=$pinStatus)');
+      return '/pin-gate';
+    }
+    debugPrint('[Router] ✓ Already on /pin-gate');
+    return null;
+  }
+
+  // 6. PRIORITY 4 - AUTHENTICATED BUT NO PIN: User needs to create PIN
+  if (loggedIn && pinStatus == PinStatus.noPin) {
     if (s.matchedLocation != '/create-pin') {
       debugPrint('[Router] → Redirecting to /create-pin (user has no PIN)');
       return '/create-pin';
@@ -210,10 +228,11 @@ String? _redirect(GoRouterState s, AuthState st) {
     return null;
   }
 
-  // 6. FULLY AUTHENTICATED: User has account + PIN
-  if (loggedIn && hasPin) {
+  // 7. PRIORITY 5 - FULLY AUTHENTICATED: User has account + PIN
+  if (loggedIn && pinStatus == PinStatus.hasPin) {
     // Redirect away from auth screens to home
-    if (s.matchedLocation == '/login' || s.matchedLocation == '/otp' || s.matchedLocation == '/create-pin') {
+    if (s.matchedLocation == '/login' || s.matchedLocation == '/otp' || 
+        s.matchedLocation == '/create-pin' || s.matchedLocation == '/pin-gate') {
       debugPrint('[Router] → Redirecting to / (authenticated with PIN, leaving auth screen)');
       return '/';
     }
