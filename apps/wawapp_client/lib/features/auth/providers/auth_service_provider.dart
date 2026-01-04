@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/cache/pin_status_cache.dart';
 import '../../../core/logging/auth_logger.dart';
 
 // Provider for PhonePinAuth service singleton
@@ -57,14 +58,27 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
   // Check if current user has a PIN set
   Future<void> checkHasPin() async {
     final oldStatus = state.pinStatus;
+    final user = _firebaseAuth.currentUser;
+    
     try {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Checking if user has PIN, isPinResetFlow=${state.isPinResetFlow}');
       }
 
+      // Try to preload from cache for faster startup
+      if (user != null && oldStatus == PinStatus.unknown) {
+        final cached = await PinStatusCache.get(user.uid);
+        if (cached != null) {
+          if (kDebugMode) {
+            print('[ClientAuthNotifier] Using cached PIN status: $cached');
+          }
+          state = state.copyWith(pinStatus: cached);
+          AuthLogger.logPinStatusChange(oldStatus.toString(), cached.toString(), user.uid);
+        }
+      }
+
       state = state.copyWith(pinStatus: PinStatus.loading);
 
-      final user = _firebaseAuth.currentUser;
       if (user != null) {
         final hasPinHash = await _authService.hasPinHash();
 
@@ -78,10 +92,14 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         if (kDebugMode) {
           print('[ClientAuthNotifier] hasPinHash=$hasPinHash, effectiveStatus=$effectiveStatus');
         }
+        
         state = state.copyWith(
           pinStatus: effectiveStatus,
           phoneE164: user.phoneNumber,
         );
+        
+        // Cache the result for next time
+        await PinStatusCache.set(user.uid, effectiveStatus);
         
         // Log PIN status change
         AuthLogger.logPinStatusChange(oldStatus.toString(), effectiveStatus.toString(), user.uid);
@@ -93,8 +111,22 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Error checking PIN: $e');
       }
+      
+      // On error, try to use cached value as fallback
+      if (user != null) {
+        final cached = await PinStatusCache.get(user.uid);
+        if (cached != null) {
+          if (kDebugMode) {
+            print('[ClientAuthNotifier] Network error, using cached PIN status: $cached');
+          }
+          state = state.copyWith(pinStatus: cached);
+          AuthLogger.logPinStatusChange(oldStatus.toString(), cached.toString(), user.uid);
+          return;
+        }
+      }
+      
       state = state.copyWith(pinStatus: PinStatus.error);
-      AuthLogger.logPinStatusChange(oldStatus.toString(), PinStatus.error.toString(), _firebaseAuth.currentUser?.uid);
+      AuthLogger.logPinStatusChange(oldStatus.toString(), PinStatus.error.toString(), user?.uid);
     }
   }
 
@@ -200,11 +232,18 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) {
         print('[ClientAuthNotifier] PIN created successfully, clearing isPinResetFlow flag');
       }
+      
+      final user = _firebaseAuth.currentUser;
       state = state.copyWith(
         isLoading: false,
         pinStatus: PinStatus.hasPin,
         isPinResetFlow: false, // Clear reset flow flag
       );
+      
+      // Cache the new PIN status
+      if (user != null) {
+        await PinStatusCache.set(user.uid, PinStatus.hasPin);
+      }
     } on Object catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -322,6 +361,10 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Logging out user');
       }
+      
+      // Clear PIN status cache
+      await PinStatusCache.clearAll();
+      
       await _authService.signOut();
       state = const AuthState(); // Reset to initial state (clears isPinResetFlow)
       if (kDebugMode) {
