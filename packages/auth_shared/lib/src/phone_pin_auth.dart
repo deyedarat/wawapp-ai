@@ -133,10 +133,10 @@ class PhonePinAuth {
         codeSent: (verificationId, resendToken) {
           if (kDebugMode) {
             print(
-              '[PhonePinAuth] DIAGNOSTIC: codeSent callback - verificationId=${verificationId != null ? 'present' : 'null'}, resendToken=${resendToken != null ? 'present' : 'null'}',
+              '[PhonePinAuth] DIAGNOSTIC: codeSent callback - verificationId=${'present'}, resendToken=${resendToken != null ? 'present' : 'null'}',
             );
             FirebaseCrashlytics.instance.log(
-              'OTP_CODE_SENT: verificationId=${verificationId != null ? 'present' : 'null'}',
+              'OTP_CODE_SENT: verificationId=${'present'}',
             );
           }
           _lastVerificationId = verificationId;
@@ -265,10 +265,10 @@ class PhonePinAuth {
       // Determine userType from collection name
       final userType = userCollection == 'drivers' ? 'driver' : 'user';
 
-      final result = await callable.call<Map<String, dynamic>>({
+      final result = await callable.call({
         'phoneE164': phoneE164,
         'pin': pin,
-        'userType': userType, // NEW PARAMETER
+        'userType': userType,
       });
 
       final token = result.data['token'] as String?;
@@ -321,7 +321,7 @@ class PhonePinAuth {
       // Determine userType from collection name
       final userType = userCollection == 'drivers' ? 'driver' : 'user';
 
-      final result = await callable.call<Map<String, dynamic>>({
+      final result = await callable.call({
         'phoneE164': phoneE164,
         'userType': userType,
       });

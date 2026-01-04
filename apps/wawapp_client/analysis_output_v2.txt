@@ -2,6 +2,13 @@ Analyzing wawapp_client...
 
    info - Don't invoke 'print' in production code - integration_test\auth_and_order_test.dart:23:7 - avoid_print
    info - Don't invoke 'print' in production code - integration_test\auth_and_order_test.dart:39:9 - avoid_print
+  error - Target of URI doesn't exist: '../observability/crashlytics_observer.dart' - lib\core\maps\safe_camera_helper.dart:5:8 - uri_does_not_exist
+  error - Undefined name 'CrashlyticsObserver' - lib\core\maps\safe_camera_helper.dart:22:5 - undefined_identifier
+  error - Target of URI doesn't exist: '../observability/crashlytics_observer.dart' - lib\core\navigation\safe_navigation.dart:3:8 - uri_does_not_exist
+  error - Undefined name 'CrashlyticsObserver' - lib\core\navigation\safe_navigation.dart:11:5 - undefined_identifier
+  error - Undefined name 'CrashlyticsObserver' - lib\core\navigation\safe_navigation.dart:31:5 - undefined_identifier
+  error - Undefined name 'CrashlyticsObserver' - lib\core\navigation\safe_navigation.dart:48:5 - undefined_identifier
+  error - Undefined name 'CrashlyticsObserver' - lib\core\navigation\safe_navigation.dart:62:5 - undefined_identifier
    info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:17:7 - avoid_print
    info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:22:7 - avoid_print
    info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:36:7 - avoid_print
@@ -80,16 +87,6 @@ Analyzing wawapp_client...
    info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:198:5 - avoid_print
    info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:199:5 - avoid_print
    info - Don't invoke 'print' in production code - lib\debug\crashlytics_test.dart:200:5 - avoid_print
-  error - Undefined name 'WawLog' - lib\debug\debug_menu_screen.dart:24:17 - undefined_identifier
-  error - Undefined name 'CrashlyticsObserver' - lib\debug\debug_menu_screen.dart:25:17 - undefined_identifier
-  error - Undefined name 'WawLog' - lib\debug\debug_menu_screen.dart:32:17 - undefined_identifier
-  error - Undefined name 'WawLog' - lib\debug\debug_menu_screen.dart:45:17 - undefined_identifier
-  error - Undefined name 'WawLog' - lib\debug\debug_menu_screen.dart:46:17 - undefined_identifier
-  error - Undefined name 'WawLog' - lib\debug\debug_menu_screen.dart:47:17 - undefined_identifier
-  error - Undefined name 'DebugConfig' - lib\debug\debug_menu_screen.dart:58:40 - undefined_identifier
-  error - Undefined name 'DebugConfig' - lib\debug\debug_menu_screen.dart:60:38 - undefined_identifier
-  error - Undefined name 'DebugConfig' - lib\debug\debug_menu_screen.dart:61:47 - undefined_identifier
-  error - Undefined name 'DebugConfig' - lib\debug\debug_menu_screen.dart:63:42 - undefined_identifier
    info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:29:22 - prefer_const_constructors
    info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:35:28 - prefer_const_constructors
    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\about\about_screen.dart:37:54 - deprecated_member_use
@@ -107,8 +104,8 @@ Analyzing wawapp_client...
    info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:181:22 - prefer_const_constructors
    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\about\about_screen.dart:183:43 - deprecated_member_use
    info - Use 'const' with the constructor to improve performance - lib\features\about\about_screen.dart:192:11 - prefer_const_constructors
-   info - An uninitialized field should have an explicit type annotation - lib\features\auth\providers\auth_service_provider.dart:49:14 - prefer_typing_uninitialized_variables
-   info - Don't invoke 'print' in production code - lib\features\auth\providers\auth_service_provider.dart:76:11 - avoid_print
+   info - An uninitialized field should have an explicit type annotation - lib\features\auth\providers\auth_service_provider.dart:48:14 - prefer_typing_uninitialized_variables
+   info - Don't invoke 'print' in production code - lib\features\auth\providers\auth_service_provider.dart:75:11 - avoid_print
    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\config\maintenance_screen.dart:89:41 - deprecated_member_use
    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\config\maintenance_screen.dart:92:43 - deprecated_member_use
    info - Use 'const' with the constructor to improve performance - lib\features\config\maintenance_screen.dart:95:26 - prefer_const_constructors
@@ -318,8 +315,6 @@ warning - Unused import: 'colors.dart' - lib\theme\components.dart:2:8 - unused_
    info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:200:17 - prefer_const_constructors
    info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:208:18 - prefer_const_constructors
    info - Use 'const' with the constructor to improve performance - lib\theme\typography.dart:216:17 - prefer_const_constructors
-  error - 'FakePhonePinAuth.ensurePhoneSession' ('Future<void> Function(String, {void Function(String, int?)? onCodeSent, void Function(String)? onVerificationFailed})') isn't a valid override of 'PhonePinAuth.ensurePhoneSession' ('Future<void> Function(String, {bool forceNewSession})') - test\auth\helpers\fake_phone_pin_auth.dart:61:16 - invalid_override
-  error - 'FakePhonePinAuth.verifyPin' ('Future<bool> Function(String)') isn't a valid override of 'PhonePinAuth.verifyPin' ('Future<bool> Function(String, String)') - test\auth\helpers\fake_phone_pin_auth.dart:117:16 - invalid_override
 warning - The method doesn't override an inherited method - test\auth\helpers\mock_firebase_auth.dart:215:8 - override_on_non_overriding_member
 
-321 issues found. (ran in 2.3s)
+316 issues found. (ran in 2.4s)

@@ -1,8 +1,9 @@
 import 'dart:async';
+
+import 'package:core_shared/core_shared.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import '../observability/crashlytics_observer.dart';
 
 /// Safe wrapper for Google Maps camera operations to prevent channel-error crashes
 class SafeCameraHelper {
