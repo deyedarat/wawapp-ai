@@ -14,7 +14,6 @@ import '../../features/auth/otp_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
 import '../../features/auth/providers/auth_service_provider.dart';
 import '../../features/auth/screens/pin_gate_screen.dart';
-import '../logging/auth_logger.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
 import '../../features/profile/add_saved_location_screen.dart';
@@ -28,6 +27,7 @@ import '../../features/track/driver_found_screen.dart';
 import '../../features/track/public_track_screen.dart';
 import '../../features/track/track_screen.dart';
 import '../../features/track/trip_completed_screen.dart';
+import '../logging/auth_logger.dart';
 import 'navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -176,20 +176,8 @@ String? _redirect(GoRouterState s, AuthState st) {
       'otpStage=${st.otpStage} | '
       'isLoading=$isLoading');
 
-  // 1. ALLOW: Public tracking routes (no auth required)
-  if (s.matchedLocation.startsWith('/track/')) {
-    debugPrint('[Router] ✓ Public route - no redirect');
-    return null;
-  }
-
-  // 2. WAIT: Still loading initial auth state (prevent premature redirects)
-  if (isLoading && s.matchedLocation != '/login' && s.matchedLocation != '/otp') {
-    debugPrint('[Router] ⏳ Auth loading - staying on current route');
-    return null;
-  }
-
-  // 3. PRIORITY 1 - OTP FLOW: User is in OTP verification process
-  // OTP always takes precedence over other flows
+  // 1. ABSOLUTE PRIORITY - OTP FLOW: User is in OTP verification process
+  // OTP always takes precedence over ALL other flows (including public/loading)
   if (canOtp) {
     if (s.matchedLocation != '/otp') {
       debugPrint('[Router] → Redirecting to /otp (OTP flow active)');
@@ -197,6 +185,18 @@ String? _redirect(GoRouterState s, AuthState st) {
       return '/otp';
     }
     debugPrint('[Router] ✓ Already on /otp');
+    return null;
+  }
+
+  // 2. ALLOW: Public tracking routes (no auth required)
+  if (s.matchedLocation.startsWith('/track/')) {
+    debugPrint('[Router] ✓ Public route - no redirect');
+    return null;
+  }
+
+  // 3. WAIT: Still loading initial auth state (prevent premature redirects)
+  if (isLoading && s.matchedLocation != '/login' && s.matchedLocation != '/otp') {
+    debugPrint('[Router] ⏳ Auth loading - staying on current route');
     return null;
   }
 
@@ -237,8 +237,10 @@ String? _redirect(GoRouterState s, AuthState st) {
   // 7. PRIORITY 5 - FULLY AUTHENTICATED: User has account + PIN
   if (loggedIn && pinStatus == PinStatus.hasPin) {
     // Redirect away from auth screens to home
-    if (s.matchedLocation == '/login' || s.matchedLocation == '/otp' || 
-        s.matchedLocation == '/create-pin' || s.matchedLocation == '/pin-gate') {
+    if (s.matchedLocation == '/login' ||
+        s.matchedLocation == '/otp' ||
+        s.matchedLocation == '/create-pin' ||
+        s.matchedLocation == '/pin-gate') {
       debugPrint('[Router] → Redirecting to / (authenticated with PIN, leaving auth screen)');
       AuthLogger.logRouterRedirect(s.matchedLocation, '/', 'Authenticated with PIN', userId);
       return '/';
