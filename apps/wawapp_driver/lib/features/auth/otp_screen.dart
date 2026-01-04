@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'providers/auth_service_provider.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
@@ -36,6 +37,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
+      key: const Key('otp_screen'),
       appBar: AppBar(title: const Text('Enter SMS Code')),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -50,17 +52,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             if (authState.error != null)
               Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: Text(authState.error!,
-                      style: const TextStyle(color: Colors.red))),
+                  child: Text(authState.error!, style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
                 key: const Key('verifyButton'),
                 onPressed: authState.isLoading ? null : _verify,
                 child: authState.isLoading
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                     : const Text('Verify')),
           ],
         ),

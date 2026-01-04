@@ -231,6 +231,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      key: const Key('login_screen'),
       appBar: AppBar(title: Text(l10n.sign_in)),
       body: Padding(
         padding: const EdgeInsets.all(16),
