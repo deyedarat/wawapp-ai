@@ -86,7 +86,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     final authState = ref.watch(authProvider);
 
     debugPrint(
-        '[AuthGate] NAVIGATION_DECISION | user: ${authState.user?.uid}, isLoading: ${authState.isLoading}, isPinCheckLoading: ${authState.isPinCheckLoading}, otpStage: ${authState.otpStage}, hasPin: ${authState.hasPin}');
+        '[AuthGate] NAVIGATION_DECISION | user: ${authState.user?.uid}, isLoading: ${authState.isLoading}, isPinCheckLoading: ${authState.isPinCheckLoading}, otpStage: ${authState.otpStage}, pinStatus: ${authState.pinStatus}');
 
     // Show loading while checking auth state OR checking PIN
     if (authState.isLoading || authState.isPinCheckLoading) {
