@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_ar.dart';
+import 'app_localizations_en.dart';
 import 'app_localizations_fr.dart';
 
 // ignore_for_file: type=lint
@@ -95,6 +96,7 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
+    Locale('en'),
     Locale('fr')
   ];
 
@@ -199,6 +201,300 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم حفظ الرمز السري بنجاح'**
   String get pin_saved_success;
+
+  /// No description provided for @profile.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملف الشخصي'**
+  String get profile;
+
+  /// No description provided for @edit.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل'**
+  String get edit;
+
+  /// No description provided for @no_profile_yet.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يتم إعداد الملف الشخصي بعد'**
+  String get no_profile_yet;
+
+  /// No description provided for @create_profile.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء الملف الشخصي'**
+  String get create_profile;
+
+  /// No description provided for @personal_info.
+  ///
+  /// In ar, this message translates to:
+  /// **'المعلومات الشخصية'**
+  String get personal_info;
+
+  /// No description provided for @name.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم'**
+  String get name;
+
+  /// No description provided for @phone.
+  ///
+  /// In ar, this message translates to:
+  /// **'الهاتف'**
+  String get phone;
+
+  /// No description provided for @city.
+  ///
+  /// In ar, this message translates to:
+  /// **'المدينة'**
+  String get city;
+
+  /// No description provided for @not_specified.
+  ///
+  /// In ar, this message translates to:
+  /// **'غير محدد'**
+  String get not_specified;
+
+  /// No description provided for @region.
+  ///
+  /// In ar, this message translates to:
+  /// **'المنطقة'**
+  String get region;
+
+  /// No description provided for @vehicle_info.
+  ///
+  /// In ar, this message translates to:
+  /// **'معلومات السيارة'**
+  String get vehicle_info;
+
+  /// No description provided for @vehicle_type.
+  ///
+  /// In ar, this message translates to:
+  /// **'نوع السيارة'**
+  String get vehicle_type;
+
+  /// No description provided for @plate_number.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم اللوحة'**
+  String get plate_number;
+
+  /// No description provided for @color.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللون'**
+  String get color;
+
+  /// No description provided for @statistics.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإحصائيات'**
+  String get statistics;
+
+  /// No description provided for @rating.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقييم'**
+  String get rating;
+
+  /// No description provided for @total_trips.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد الرحلات'**
+  String get total_trips;
+
+  /// No description provided for @verification_status.
+  ///
+  /// In ar, this message translates to:
+  /// **'حالة التحقق'**
+  String get verification_status;
+
+  /// No description provided for @verified.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم التحقق'**
+  String get verified;
+
+  /// No description provided for @not_verified.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يتم التحقق'**
+  String get not_verified;
+
+  /// No description provided for @security.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأمان'**
+  String get security;
+
+  /// No description provided for @change_pin.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير الرمز السري'**
+  String get change_pin;
+
+  /// No description provided for @change_pin_subtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير رمز PIN الخاص بك'**
+  String get change_pin_subtitle;
+
+  /// No description provided for @change_pin_title.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير الرمز السري'**
+  String get change_pin_title;
+
+  /// No description provided for @change_pin_message.
+  ///
+  /// In ar, this message translates to:
+  /// **'سيتم إرسال رمز التحقق OTP إلى رقم هاتفك لتأكيد هويتك قبل تغيير الرمز السري.'**
+  String get change_pin_message;
+
+  /// No description provided for @cancel.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء'**
+  String get cancel;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In ar, this message translates to:
+  /// **'متابعة'**
+  String get continueButton;
+
+  /// No description provided for @phone_not_available.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم الهاتف غير متوفر. يرجى تسجيل الدخول مرة أخرى'**
+  String get phone_not_available;
+
+  /// No description provided for @otp_send_failed.
+  ///
+  /// In ar, this message translates to:
+  /// **'فشل إرسال OTP'**
+  String get otp_send_failed;
+
+  /// No description provided for @logout.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الخروج'**
+  String get logout;
+
+  /// No description provided for @logout_title.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الخروج'**
+  String get logout_title;
+
+  /// No description provided for @logout_confirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل أنت متأكد من تسجيل الخروج؟'**
+  String get logout_confirm;
+
+  /// No description provided for @terms_of_service.
+  ///
+  /// In ar, this message translates to:
+  /// **'شروط الخدمة'**
+  String get terms_of_service;
+
+  /// No description provided for @privacy_policy.
+  ///
+  /// In ar, this message translates to:
+  /// **'سياسة الخصوصية'**
+  String get privacy_policy;
+
+  /// No description provided for @by_continuing_you_agree.
+  ///
+  /// In ar, this message translates to:
+  /// **'بالمتابعة، أنت توافق على'**
+  String get by_continuing_you_agree;
+
+  /// No description provided for @and.
+  ///
+  /// In ar, this message translates to:
+  /// **'و'**
+  String get and;
+
+  /// No description provided for @delete_account.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الحساب'**
+  String get delete_account;
+
+  /// No description provided for @delete_account_title.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الحساب'**
+  String get delete_account_title;
+
+  /// No description provided for @delete_account_warning.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا الإجراء لا يمكن التراجع عنه. سيتم حذف جميع بياناتك بشكل دائم.'**
+  String get delete_account_warning;
+
+  /// No description provided for @delete_account_confirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل أنت متأكد من حذف حسابك؟'**
+  String get delete_account_confirm;
+
+  /// No description provided for @account_deleted.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف الحساب بنجاح'**
+  String get account_deleted;
+
+  /// No description provided for @error_delete_account.
+  ///
+  /// In ar, this message translates to:
+  /// **'فشل حذف الحساب. يرجى المحاولة مرة أخرى'**
+  String get error_delete_account;
+
+  /// No description provided for @deleting_account.
+  ///
+  /// In ar, this message translates to:
+  /// **'جاري حذف الحساب...'**
+  String get deleting_account;
+
+  /// No description provided for @type_delete_to_confirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب \'حذف\' للتأكيد'**
+  String get type_delete_to_confirm;
+
+  /// No description provided for @check_phone.
+  ///
+  /// In ar, this message translates to:
+  /// **'التحقق من الهاتف'**
+  String get check_phone;
+
+  /// No description provided for @create_account.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنشاء حساب'**
+  String get create_account;
+
+  /// No description provided for @new_user_create_account.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستخدم جديد - إنشاء حساب'**
+  String get new_user_create_account;
+
+  /// No description provided for @existing_user_enter_pin.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستخدم حالي - أدخل الرمز السري (PIN)'**
+  String get existing_user_enter_pin;
+
+  /// No description provided for @login.
+  ///
+  /// In ar, this message translates to:
+  /// **'دخول'**
+  String get login;
 }
 
 class _AppLocalizationsDelegate
@@ -212,7 +508,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['ar', 'fr'].contains(locale.languageCode);
+      <String>['ar', 'en', 'fr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -223,6 +519,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'ar':
       return AppLocalizationsAr();
+    case 'en':
+      return AppLocalizationsEn();
     case 'fr':
       return AppLocalizationsFr();
   }

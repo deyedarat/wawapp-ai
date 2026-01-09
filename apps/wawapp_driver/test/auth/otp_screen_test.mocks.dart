@@ -87,10 +87,15 @@ class MockPhonePinAuth extends _i1.Mock implements _i4.PhonePinAuth {
       ) as String);
 
   @override
-  _i6.Future<void> ensurePhoneSession(String? phoneE164) => (super.noSuchMethod(
+  _i6.Future<void> ensurePhoneSession(
+    String? phoneE164, {
+    bool? forceNewSession = false,
+  }) =>
+      (super.noSuchMethod(
         Invocation.method(
           #ensurePhoneSession,
           [phoneE164],
+          {#forceNewSession: forceNewSession},
         ),
         returnValue: _i6.Future<void>.value(),
         returnValueForMissingStub: _i6.Future<void>.value(),
@@ -117,10 +122,17 @@ class MockPhonePinAuth extends _i1.Mock implements _i4.PhonePinAuth {
       ) as _i6.Future<void>);
 
   @override
-  _i6.Future<bool> verifyPin(String? pin) => (super.noSuchMethod(
+  _i6.Future<bool> verifyPin(
+    String? pin,
+    String? phoneE164,
+  ) =>
+      (super.noSuchMethod(
         Invocation.method(
           #verifyPin,
-          [pin],
+          [
+            pin,
+            phoneE164,
+          ],
         ),
         returnValue: _i6.Future<bool>.value(false),
       ) as _i6.Future<bool>);

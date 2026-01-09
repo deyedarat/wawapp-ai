@@ -24,7 +24,8 @@ class FakePhonePinAuth implements PhonePinAuth {
   final String userCollection = 'drivers';
 
   @override
-  Future<void> ensurePhoneSession(String phoneE164, {bool forceNewSession = false}) async {
+  Future<void> ensurePhoneSession(String phoneE164,
+      {bool forceNewSession = false}) async {
     _otpSent = true;
   }
 
@@ -70,6 +71,42 @@ class FakeAuthNotifier extends AuthNotifier {
 
   void setTestState(AuthState newState) {
     state = newState;
+  }
+
+  @override
+  Future<void> checkHasPin() async {
+    // No-op for testing to prevent side-effects from PinGateScreen
+    debugPrint('[TEST] checkHasPin() ignored in fake');
+  }
+}
+
+Future<void> settle(WidgetTester tester, {int ms = 300}) async {
+  await tester.pump(const Duration(milliseconds: 50));
+  // Wait for a fixed duration instead of settling, to support infinite animations
+  await tester.pump(Duration(milliseconds: ms));
+}
+
+Future<void> pushState(WidgetTester tester, FakeAuthNotifier fake, AuthState s,
+    {String? label}) async {
+  debugPrint(
+      '[TEST] setTestState: ${label ?? ''} pinStatus=${s.pinStatus} otp=${s.otpFlowActive} stage=${s.otpStage} user=${s.user?.uid}');
+  fake.setTestState(s);
+  // Give router + listeners time to process
+  await tester.pump(const Duration(milliseconds: 16));
+}
+
+extension PumpUntilFound on WidgetTester {
+  Future<void> pumpUntilFound(
+    Finder finder, {
+    Duration timeout = const Duration(seconds: 10),
+    Duration step = const Duration(milliseconds: 100),
+  }) async {
+    final end = DateTime.now().add(timeout);
+    while (DateTime.now().isBefore(end)) {
+      await pump(step);
+      if (any(finder)) return;
+    }
+    throw TestFailure('pumpUntilFound timeout after $timeout for: $finder');
   }
 }
 
@@ -125,13 +162,15 @@ void main() {
     late FakePhonePinAuth fakePhonePinAuth;
 
     setUpAll(() async {
-      // Initialize Firebase (needed for services in real code)
-      try {
-        await Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        );
-      } catch (e) {
-        debugPrint('Firebase init error (ignored): $e');
+      // Initialize Firebase safely (guard against duplicate initialization)
+      if (Firebase.apps.isEmpty) {
+        try {
+          await Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform,
+          );
+        } catch (e) {
+          debugPrint('Firebase init error: $e');
+        }
       }
     });
 
@@ -152,61 +191,89 @@ void main() {
           child: const MyApp(),
         ),
       );
-      await tester.pumpAndSettle();
+      // Increased timeout for robustness against animations/redirect loops
+      await settle(tester, ms: 500);
 
       print('STEP 1: Checking Login Screen');
-      expect(find.byKey(const Key('login_screen')), findsOneWidget);
+      await tester.pumpUntilFound(find.byKey(const ValueKey('screen_login')));
+      expect(find.byKey(const ValueKey('screen_login')), findsOneWidget);
 
-      // 2. Simulate Login (User authenticated but PinStatus unknown/loading)
-      final user = MockUser(uid: 'driver_test_123', phoneNumber: '+22222123456');
+      await settle(tester);
 
-      // We set state manually to test Router reaction
-      fakeAuthNotifier.setTestState(AuthState(
-        isLoading: false,
-        user: user,
-        pinStatus: PinStatus.unknown, // Should trigger PinGate
-      ));
-      await tester.pumpAndSettle();
+      // 2. Simulate Login
+      final user =
+          MockUser(uid: 'driver_test_123', phoneNumber: '+22222123456');
+
+      await pushState(
+          tester,
+          fakeAuthNotifier,
+          AuthState(
+            isLoading: false,
+            user: user,
+            pinStatus: PinStatus.unknown,
+          ),
+          label: 'STEP 2 -> Login');
 
       print('STEP 2: Checking Pin Gate Screen');
-      expect(find.byKey(const Key('pin_gate_screen')), findsOneWidget);
+      await tester
+          .pumpUntilFound(find.byKey(const ValueKey('screen_pin_gate')));
+      expect(find.byKey(const ValueKey('screen_pin_gate')), findsOneWidget);
 
-      // 3. Simulate PinStatus.noPin (Should go to Create Pin)
-      fakeAuthNotifier.setTestState(AuthState(
-        isLoading: false,
-        user: user,
-        pinStatus: PinStatus.noPin,
-        phoneE164: '+22222123456',
-      ));
-      await tester.pumpAndSettle();
+      await settle(tester);
+
+      // 3. Simulate PinStatus.noPin
+      await pushState(
+          tester,
+          fakeAuthNotifier,
+          AuthState(
+            isLoading: false,
+            user: user,
+            pinStatus: PinStatus.noPin,
+            phoneE164: '+22222123456',
+          ),
+          label: 'STEP 3 -> NoPin');
 
       print('STEP 3: Checking Create Pin Screen');
-      expect(find.byKey(const Key('create_pin_screen')), findsOneWidget);
+      await tester
+          .pumpUntilFound(find.byKey(const ValueKey('screen_create_pin')));
+      expect(find.byKey(const ValueKey('screen_create_pin')), findsOneWidget);
 
-      // 4. Simulate OTP Flow (Priority)
-      fakeAuthNotifier.setTestState(AuthState(
-        isLoading: false,
-        user: user,
-        pinStatus: PinStatus.noPin,
-        otpFlowActive: true,
-        otpStage: OtpStage.codeSent,
-        phoneE164: '+22222123456',
-      ));
-      await tester.pumpAndSettle();
+      await settle(tester);
+
+      // 4. Simulate OTP Flow
+      await pushState(
+          tester,
+          fakeAuthNotifier,
+          AuthState(
+            isLoading: false,
+            user: user,
+            pinStatus: PinStatus.noPin,
+            otpFlowActive: true,
+            otpStage: OtpStage.codeSent,
+            phoneE164: '+22222123456',
+          ),
+          label: 'STEP 4 -> OTP');
 
       print('STEP 4: Checking OTP Screen');
-      expect(find.byKey(const Key('otp_screen')), findsOneWidget);
+      await tester.pumpUntilFound(find.byKey(const ValueKey('screen_otp')));
+      expect(find.byKey(const ValueKey('screen_otp')), findsOneWidget);
 
-      // 5. Simulate HasPin (Should go to Home)
-      fakeAuthNotifier.setTestState(AuthState(
-        isLoading: false,
-        user: user,
-        pinStatus: PinStatus.hasPin,
-      ));
-      await tester.pumpAndSettle();
+      await settle(tester);
+
+      // 5. Simulate HasPin
+      await pushState(
+          tester,
+          fakeAuthNotifier,
+          AuthState(
+            isLoading: false,
+            user: user,
+            pinStatus: PinStatus.hasPin,
+          ),
+          label: 'STEP 5 -> Home');
 
       print('STEP 5: Checking Home Screen');
-      expect(find.byKey(const Key('home_screen')), findsOneWidget);
+      await tester.pumpUntilFound(find.byKey(const ValueKey('screen_home')));
+      expect(find.byKey(const ValueKey('screen_home')), findsOneWidget);
     });
   });
 }

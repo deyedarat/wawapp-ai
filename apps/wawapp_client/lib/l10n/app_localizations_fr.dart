@@ -636,23 +636,68 @@ class AppLocalizationsFr extends AppLocalizations {
   String get please_wait => 'Veuillez patienter';
 
   @override
-  String get sign_in => 'تسجيل الدخول';
+  String get sign_in => 'Se connecter';
 
   @override
-  String get check_phone => 'التحقق من الهاتف';
+  String get check_phone => 'Vérifier le téléphone';
 
   @override
-  String get create_account => 'إنشاء حساب';
+  String get create_account => 'Créer un compte';
 
   @override
-  String get new_user_create_account => 'مستخدم جديد - إنشاء حساب';
+  String get new_user_create_account => 'Nouvel utilisateur - Créer un compte';
 
   @override
-  String get existing_user_enter_pin => 'مستخدم حالي - أدخل الرمز السري (PIN)';
+  String get existing_user_enter_pin => 'Utilisateur existant - Entrer le PIN';
 
   @override
-  String get pin_label => 'الرمز السري (PIN)';
+  String get pin_label => 'Code PIN';
 
   @override
-  String get login => 'دخول';
+  String get login => 'Connexion';
+
+  @override
+  String get terms_of_service => 'Conditions d\'utilisation';
+
+  @override
+  String get by_continuing_you_agree => 'En continuant, vous acceptez nos';
+
+  @override
+  String get and => 'et';
+
+  @override
+  String get delete_account => 'Supprimer le compte';
+
+  @override
+  String get delete_account_title => 'Supprimer le compte';
+
+  @override
+  String get delete_account_warning =>
+      'Cette action est irréversible. Toutes vos données seront supprimées définitivement.';
+
+  @override
+  String get delete_account_confirm =>
+      'Êtes-vous sûr de vouloir supprimer votre compte?';
+
+  @override
+  String get account_deleted => 'Compte supprimé avec succès';
+
+  @override
+  String get error_delete_account =>
+      'Échec de la suppression du compte. Veuillez réessayer';
+
+  @override
+  String get deleting_account => 'Suppression du compte...';
+
+  @override
+  String get type_delete_to_confirm => 'Tapez \'supprimer\' pour confirmer';
+
+  @override
+  String get change_pin => 'Changer le code PIN';
+
+  @override
+  String get change_pin_subtitle => 'Modifier votre code d\'accès rapide';
+
+  @override
+  String get security => 'Sécurité';
 }

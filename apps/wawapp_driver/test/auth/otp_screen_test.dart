@@ -6,7 +6,8 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:auth_shared/auth_shared.dart';
 import 'package:wawapp_driver/features/auth/otp_screen.dart';
-import 'package:wawapp_driver/features/auth/providers/auth_service_provider.dart' as driver_auth;
+import 'package:wawapp_driver/features/auth/providers/auth_service_provider.dart'
+    as driver_auth;
 
 @GenerateMocks([PhonePinAuth, FirebaseAuth])
 import 'otp_screen_test.mocks.dart';
@@ -16,23 +17,26 @@ void main() {
     late ProviderContainer container;
     late MockPhonePinAuth mockPhonePinAuth;
     late MockFirebaseAuth mockFirebaseAuth;
-    
+
     setUp(() {
       mockPhonePinAuth = MockPhonePinAuth();
       mockFirebaseAuth = MockFirebaseAuth();
-      
+
       when(mockFirebaseAuth.currentUser).thenReturn(null);
-      when(mockFirebaseAuth.authStateChanges()).thenAnswer((_) => Stream.value(null));
+      when(mockFirebaseAuth.authStateChanges())
+          .thenAnswer((_) => Stream.value(null));
       when(mockPhonePinAuth.hasPinHash()).thenAnswer((_) async => false);
-      
+
       container = ProviderContainer(
         overrides: [
-          driver_auth.phonePinAuthServiceProvider.overrideWithValue(mockPhonePinAuth),
-          driver_auth.authProvider.overrideWith((ref) => driver_auth.AuthNotifier(mockPhonePinAuth, mockFirebaseAuth)),
+          driver_auth.phonePinAuthServiceProvider
+              .overrideWithValue(mockPhonePinAuth),
+          driver_auth.authProvider.overrideWith((ref) =>
+              driver_auth.AuthNotifier(mockPhonePinAuth, mockFirebaseAuth)),
         ],
       );
     });
-    
+
     tearDown(() {
       container.dispose();
     });

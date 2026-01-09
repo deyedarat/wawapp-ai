@@ -1,7 +1,7 @@
 name: wawapp_client
 description: WawApp Client Application
 publish_to: 'none'
-version: 1.0.1+1
+version: 1.0.0+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -37,6 +37,7 @@ dependencies:
   yaml: ^3.1.2
   package_info_plus: ^8.1.2
   url_launcher: ^6.2.5
+  shared_preferences: ^2.5.4
 
 dev_dependencies:
   intl_utils: ^2.8.6

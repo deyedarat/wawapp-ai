@@ -1,0 +1,29 @@
+Could not format because the source could not be parsed:
+
+line 362, column 14 of lib\l10n\app_localizations.dart: 'continue' can't be used as an identifier because it's a keyword.
+    ╷
+362 │   String get continue;
+    │              ^^^^^^^^
+    ╵
+Could not format because the source could not be parsed:
+
+line 141, column 14 of lib\l10n\app_localizations_ar.dart: 'continue' can't be used as an identifier because it's a keyword.
+    ╷
+141 │   String get continue => 'متابعة';
+    │              ^^^^^^^^
+    ╵
+Could not format because the source could not be parsed:
+
+line 141, column 14 of lib\l10n\app_localizations_en.dart: 'continue' can't be used as an identifier because it's a keyword.
+    ╷
+141 │   String get continue => 'Continue';
+    │              ^^^^^^^^
+    ╵
+Could not format because the source could not be parsed:
+
+line 141, column 14 of lib\l10n\app_localizations_fr.dart: 'continue' can't be used as an identifier because it's a keyword.
+    ╷
+141 │   String get continue => 'Continuer';
+    │              ^^^^^^^^
+    ╵
+Formatted 63 files (0 changed) in 4.32 seconds.

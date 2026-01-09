@@ -60,6 +60,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final hasPermission = await LocationService.checkPermissions();
     dev.log('Location permission result: $hasPermission', name: 'WAWAPP_HOME');
 
+    if (!mounted) return;
+
     if (hasPermission) {
       setState(() {
         _hasLocationPermission = true;
@@ -204,7 +206,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
-        key: const Key('home_screen'),
+        key: const ValueKey('screen_home'),
         backgroundColor: theme.colorScheme.surface,
         appBar: _buildAppBar(context, l10n),
         body: SafeArea(

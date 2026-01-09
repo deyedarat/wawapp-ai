@@ -81,7 +81,7 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
     final errorMessage = _err ?? authState.error;
 
     return Scaffold(
-      key: const Key('create_pin_screen'),
+      key: const ValueKey('screen_create_pin'),
       appBar: AppBar(title: Text(l10n.set_pin)),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -104,10 +104,13 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
             if (errorMessage != null)
               Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: Text(errorMessage, style: const TextStyle(color: Colors.red))),
+                  child: Text(errorMessage,
+                      style: const TextStyle(color: Colors.red))),
             const SizedBox(height: 8),
             ElevatedButton(
-                key: const Key('savePinButton'), onPressed: authState.isLoading ? null : _save, child: Text(l10n.save)),
+                key: const Key('savePinButton'),
+                onPressed: authState.isLoading ? null : _save,
+                child: Text(l10n.save)),
           ],
         ),
       ),

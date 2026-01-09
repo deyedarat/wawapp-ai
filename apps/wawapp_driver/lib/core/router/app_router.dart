@@ -32,7 +32,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     navigatorKey: appNavigatorKey,
     initialLocation: '/',
     redirect: (context, state) => _redirect(state, authState),
-    refreshListenable: _GoRouterRefreshStream(ref.read(authProvider.notifier).stream),
+    refreshListenable:
+        _GoRouterRefreshStream(ref.read(authProvider.notifier).stream),
     observers: [
       FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
     ],
@@ -116,7 +117,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
 String? _redirect(GoRouterState s, AuthState st) {
   final loggedIn = st.user != null;
-  final canOtp = st.otpFlowActive || st.otpStage == OtpStage.sending || st.otpStage == OtpStage.codeSent;
+  final canOtp = st.otpFlowActive ||
+      st.otpStage == OtpStage.sending ||
+      st.otpStage == OtpStage.codeSent;
 
   if (kDebugMode) {
     debugPrint('[ROUTER] Navigation check | '
@@ -132,7 +135,8 @@ String? _redirect(GoRouterState s, AuthState st) {
   if (canOtp) {
     if (s.matchedLocation != '/otp') {
       if (kDebugMode) {
-        debugPrint('[ROUTER] → Redirect to /otp (OTP flow active, otpStage=${st.otpStage})');
+        debugPrint(
+            '[ROUTER] → Redirect to /otp (OTP flow active, otpStage=${st.otpStage})');
       }
       return '/otp';
     }
@@ -158,16 +162,20 @@ String? _redirect(GoRouterState s, AuthState st) {
 
   // 3. AUTHENTICATED BUT PIN STATUS UNKNOWN/LOADING/ERROR
   // Redirect to PinGateScreen to wait for check or retry
-  if (st.pinStatus == PinStatus.unknown || st.pinStatus == PinStatus.loading || st.pinStatus == PinStatus.error) {
+  if (st.pinStatus == PinStatus.unknown ||
+      st.pinStatus == PinStatus.loading ||
+      st.pinStatus == PinStatus.error) {
     if (s.matchedLocation != '/pin-gate') {
       if (kDebugMode) {
-        debugPrint('[ROUTER] → Redirect to /pin-gate (pinStatus=${st.pinStatus})');
+        debugPrint(
+            '[ROUTER] → Redirect to /pin-gate (pinStatus=${st.pinStatus})');
       }
       return '/pin-gate';
     }
     // Already on gate, stay here until status resolves
     if (kDebugMode) {
-      debugPrint('[ROUTER] ✓ Already on /pin-gate (waiting for pinStatus=${st.pinStatus})');
+      debugPrint(
+          '[ROUTER] ✓ Already on /pin-gate (waiting for pinStatus=${st.pinStatus})');
     }
     return null;
   }
@@ -194,19 +202,22 @@ String? _redirect(GoRouterState s, AuthState st) {
         s.matchedLocation == '/create-pin' ||
         s.matchedLocation == '/pin-gate') {
       if (kDebugMode) {
-        debugPrint('[ROUTER] → Redirect to / (authenticated with PIN, leaving ${s.matchedLocation})');
+        debugPrint(
+            '[ROUTER] → Redirect to / (authenticated with PIN, leaving ${s.matchedLocation})');
       }
       return '/';
     }
     if (kDebugMode) {
-      debugPrint('[ROUTER] ✓ Authenticated - allowing access to ${s.matchedLocation}');
+      debugPrint(
+          '[ROUTER] ✓ Authenticated - allowing access to ${s.matchedLocation}');
     }
     return null;
   }
 
   // Fallback: unexpected state
   if (kDebugMode) {
-    debugPrint('[ROUTER] ⚠️ Unexpected state - no redirect | pinStatus=${st.pinStatus}');
+    debugPrint(
+        '[ROUTER] ⚠️ Unexpected state - no redirect | pinStatus=${st.pinStatus}');
   }
   return null;
 }

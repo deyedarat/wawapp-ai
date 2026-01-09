@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- WawApp Driver - Dark brand color for splash screen -->
+    <color name="splash_background">#000609</color>
+    <color name="splash_background_color">#000609</color>
+</resources>

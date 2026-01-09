@@ -1,18 +1,19 @@
 import 'dart:math' as math;
+
+import 'package:core_shared/core_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:core_shared/core_shared.dart';
-import '../../../l10n/app_localizations.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../providers/order_tracking_provider.dart';
+import '../../../core/maps/safe_camera_helper.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../map/providers/district_layer_provider.dart';
 import '../data/orders_repository.dart';
+import '../providers/order_tracking_provider.dart';
 import 'order_status_timeline.dart';
 import 'rating_bottom_sheet.dart';
-import '../../map/providers/district_layer_provider.dart';
-import '../../../core/maps/safe_camera_helper.dart';
 
 class OrderTrackingView extends ConsumerStatefulWidget {
   final Order? order;
@@ -30,8 +31,7 @@ class OrderTrackingView extends ConsumerStatefulWidget {
   ConsumerState<OrderTrackingView> createState() => _OrderTrackingViewState();
 }
 
-class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
-    with SafeCameraMixin {
+class _OrderTrackingViewState extends ConsumerState<OrderTrackingView> with SafeCameraMixin {
   bool _isFollowingDriver = true;
   LatLng? _lastDriverPosition;
   bool _isCancelling = false;
@@ -45,7 +45,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           ref.listen(
-            driverLocationProvider(widget.order!.driverId!),
+            driverLocationProvider(widget.order!.id!),
             (previous, next) {
               next.whenData((location) {
                 if (location != null && mounted) {
@@ -77,8 +77,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
         polylineId: const PolylineId('route'),
         points: [
           LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
-          LatLng(
-              widget.order!.dropoff.latitude, widget.order!.dropoff.longitude),
+          LatLng(widget.order!.dropoff.latitude, widget.order!.dropoff.longitude),
         ],
         color: Theme.of(context).colorScheme.primary,
         width: 4,
@@ -104,22 +103,18 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
     if (widget.order?.pickup != null) {
       markers.add(Marker(
         markerId: const MarkerId('pickup'),
-        position: LatLng(
-            widget.order!.pickup.latitude, widget.order!.pickup.longitude),
+        position: LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        infoWindow:
-            InfoWindow(title: 'استلام', snippet: widget.order!.pickupAddress),
+        infoWindow: InfoWindow(title: 'استلام', snippet: widget.order!.pickupAddress),
       ));
     }
 
     if (widget.order?.dropoff != null) {
       markers.add(Marker(
         markerId: const MarkerId('dropoff'),
-        position: LatLng(
-            widget.order!.dropoff.latitude, widget.order!.dropoff.longitude),
+        position: LatLng(widget.order!.dropoff.latitude, widget.order!.dropoff.longitude),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        infoWindow:
-            InfoWindow(title: 'تسليم', snippet: widget.order!.dropoffAddress),
+        infoWindow: InfoWindow(title: 'تسليم', snippet: widget.order!.dropoffAddress),
       ));
     }
 
@@ -143,20 +138,12 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
     if (pickup != null && dropoff != null) {
       final bounds = LatLngBounds(
         southwest: LatLng(
-          pickup.latitude < dropoff.latitude
-              ? pickup.latitude
-              : dropoff.latitude,
-          pickup.longitude < dropoff.longitude
-              ? pickup.longitude
-              : dropoff.longitude,
+          pickup.latitude < dropoff.latitude ? pickup.latitude : dropoff.latitude,
+          pickup.longitude < dropoff.longitude ? pickup.longitude : dropoff.longitude,
         ),
         northeast: LatLng(
-          pickup.latitude > dropoff.latitude
-              ? pickup.latitude
-              : dropoff.latitude,
-          pickup.longitude > dropoff.longitude
-              ? pickup.longitude
-              : dropoff.longitude,
+          pickup.latitude > dropoff.latitude ? pickup.latitude : dropoff.latitude,
+          pickup.longitude > dropoff.longitude ? pickup.longitude : dropoff.longitude,
         ),
       );
       safeAnimateCamera(
@@ -165,8 +152,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
       );
     } else if (pickup != null) {
       safeAnimateCamera(
-        CameraUpdate.newLatLngZoom(
-            LatLng(pickup.latitude, pickup.longitude), 15.0),
+        CameraUpdate.newLatLngZoom(LatLng(pickup.latitude, pickup.longitude), 15.0),
         action: 'fit_pickup',
       );
     }
@@ -179,16 +165,16 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
 
     final currentPos = driverLocation.position;
 
-      // Memory Optimization Phase 3: Increased threshold from 50m to 100m
-      // Only animate if driver moved significantly (>100 meters)
-      if (_lastDriverPosition != null) {
-        final distance = _calculateDistance(
-          _lastDriverPosition!.latitude,
-          _lastDriverPosition!.longitude,
-          currentPos.latitude,
-          currentPos.longitude,
-        );
-        if (distance < 100) return;
+    // Memory Optimization Phase 3: Increased threshold from 50m to 100m
+    // Only animate if driver moved significantly (>100 meters)
+    if (_lastDriverPosition != null) {
+      final distance = _calculateDistance(
+        _lastDriverPosition!.latitude,
+        _lastDriverPosition!.longitude,
+        currentPos.latitude,
+        currentPos.longitude,
+      );
+      if (distance < 100) return;
     }
 
     _lastDriverPosition = currentPos;
@@ -209,16 +195,12 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
     );
   }
 
-  double _calculateDistance(
-      double lat1, double lon1, double lat2, double lon2) {
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     const double earthRadius = 6371000; // meters
     final double dLat = (lat2 - lat1) * (math.pi / 180);
     final double dLon = (lon2 - lon1) * (math.pi / 180);
     final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(lat1 * math.pi / 180) *
-            math.cos(lat2 * math.pi / 180) *
-            math.sin(dLon / 2) *
-            math.sin(dLon / 2);
+        math.cos(lat1 * math.pi / 180) * math.cos(lat2 * math.pi / 180) * math.sin(dLon / 2) * math.sin(dLon / 2);
     return earthRadius * 2 * math.asin(math.sqrt(a));
   }
 
@@ -292,9 +274,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
     if (_hasShownRatingPrompt || widget.readOnly) return;
 
     final order = widget.order;
-    if (order == null ||
-        order.orderStatus != OrderStatus.completed ||
-        order.driverRating != null) {
+    if (order == null || order.orderStatus != OrderStatus.completed || order.driverRating != null) {
       return;
     }
 
@@ -320,9 +300,8 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
     final l10n = AppLocalizations.of(context)!;
 
     // Watch driver location if order has a driver
-    final driverLocationAsync = widget.order?.driverId != null
-        ? ref.watch(driverLocationProvider(widget.order!.driverId!))
-        : null;
+    final driverLocationAsync =
+        widget.order?.driverId != null ? ref.watch(driverLocationProvider(widget.order!.id!)) : null;
 
     final driverLocation = driverLocationAsync?.whenOrNull(
       data: (location) => location,
@@ -342,8 +321,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
                 builder: (context, ref, child) {
                   final polygons = ref.watch(districtPolygonsProvider);
                   final locale = Localizations.localeOf(context);
-                  final markersAsync =
-                      ref.watch(districtMarkersProvider(locale.languageCode));
+                  final markersAsync = ref.watch(districtMarkersProvider(locale.languageCode));
 
                   return markersAsync.when(
                     data: (districtMarkers) => GoogleMap(
@@ -357,17 +335,13 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
                       onCameraMove: _onCameraMove,
                       initialCameraPosition: widget.order?.pickup != null
                           ? CameraPosition(
-                              target: LatLng(widget.order!.pickup.latitude,
-                                  widget.order!.pickup.longitude),
+                              target: LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
                               zoom: 14.0,
                             )
                           : _nouakchott,
                       myLocationEnabled: !widget.readOnly,
                       myLocationButtonEnabled: !widget.readOnly,
-                      markers: {
-                        ..._buildMarkers(driverLocation),
-                        ...districtMarkers
-                      },
+                      markers: {..._buildMarkers(driverLocation), ...districtMarkers},
                       polylines: _buildPolylines(),
                       polygons: polygons,
                       compassEnabled: true,
@@ -384,8 +358,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
                       onCameraMove: _onCameraMove,
                       initialCameraPosition: widget.order?.pickup != null
                           ? CameraPosition(
-                              target: LatLng(widget.order!.pickup.latitude,
-                                  widget.order!.pickup.longitude),
+                              target: LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
                               zoom: 14.0,
                             )
                           : _nouakchott,
@@ -408,8 +381,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
                       onCameraMove: _onCameraMove,
                       initialCameraPosition: widget.order?.pickup != null
                           ? CameraPosition(
-                              target: LatLng(widget.order!.pickup.latitude,
-                                  widget.order!.pickup.longitude),
+                              target: LatLng(widget.order!.pickup.latitude, widget.order!.pickup.longitude),
                               zoom: 14.0,
                             )
                           : _nouakchott,
@@ -450,13 +422,11 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
                   Text('الحالة: ${widget.order!.orderStatus.toArabicLabel()}',
                       style: Theme.of(context).textTheme.titleMedium),
                 ] else
-                  Text('الحالة: في الطريق',
-                      style: Theme.of(context).textTheme.headlineMedium),
+                  Text('الحالة: في الطريق', style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 8),
                 const Text('السائق: ---'),
                 const Text('المركبة: ---'),
-                Text(
-                    'السعر: ${widget.order?.price.round() ?? '---'} ${l10n.currency}'),
+                Text('السعر: ${widget.order?.price.round() ?? '---'} ${l10n.currency}'),
                 if (widget.order != null) ...[
                   Text('المسافة: ${widget.order!.distanceKm} كم'),
                   Text('من: ${widget.order!.pickupAddress}'),
@@ -466,8 +436,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
                     ElevatedButton(
                       onPressed: () async {
                         final String orderId = widget.order!.id ?? 'unknown';
-                        await Clipboard.setData(ClipboardData(
-                            text: 'https://wawapp.page.link/track/$orderId'));
+                        await Clipboard.setData(ClipboardData(text: 'https://wawapp.page.link/track/$orderId'));
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('تم نسخ رابط التتبع')),
@@ -479,9 +448,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
                     if (widget.order!.orderStatus.canClientCancel) ...[
                       const SizedBox(height: 8),
                       OutlinedButton(
-                        onPressed: _isCancelling
-                            ? null
-                            : () => _showCancelDialog(context),
+                        onPressed: _isCancelling ? null : () => _showCancelDialog(context),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.red,
                           side: const BorderSide(color: Colors.red),
@@ -490,8 +457,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
                             ? const SizedBox(
                                 height: 16,
                                 width: 16,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(strokeWidth: 2),
                               )
                             : const Text('إلغاء الطلب'),
                       ),

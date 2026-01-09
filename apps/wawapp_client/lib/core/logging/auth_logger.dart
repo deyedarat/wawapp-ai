@@ -18,13 +18,13 @@ class AuthLogger {
     if (!_shouldLog()) return;
 
     final msg = '$_prefix [PIN] Status: $oldStatus → $newStatus | uid=${userId ?? 'null'}';
-    
+
     if (kDebugMode) {
       debugPrint(msg);
     }
-    
+
     // Add Crashlytics breadcrumb (safe - no-op if not initialized)
-    CrashlyticsObserver.logEvent('pin_status_change', {
+    CrashlyticsObserver.logBreadcrumb('pin_status_change', extra: {
       'old_status': oldStatus,
       'new_status': newStatus,
       'user_id': userId ?? 'null',
@@ -36,13 +36,13 @@ class AuthLogger {
     if (!_shouldLog()) return;
 
     final msg = '$_prefix [ROUTER] $from → $to | Reason: $reason | uid=${userId ?? 'null'}';
-    
+
     if (kDebugMode) {
       debugPrint(msg);
     }
 
     // Add Crashlytics breadcrumb (safe - no-op if not initialized)
-    CrashlyticsObserver.logEvent('router_redirect', {
+    CrashlyticsObserver.logBreadcrumb('router_redirect', extra: {
       'from': from,
       'to': to,
       'reason': reason,
@@ -55,7 +55,7 @@ class AuthLogger {
     if (!_shouldLog()) return;
 
     final msg = '$_prefix [GATE] $message | uid=${userId ?? 'null'}';
-    
+
     if (kDebugMode) {
       debugPrint(msg);
     }
