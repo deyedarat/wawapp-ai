@@ -2,6 +2,7 @@ import 'package:auth_shared/auth_shared.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/app_localizations.dart';
 import 'providers/auth_service_provider.dart';
@@ -9,7 +10,8 @@ import 'providers/auth_service_provider.dart';
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
   @override
-  ConsumerState<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
+  ConsumerState<PhonePinLoginScreen> createState() =>
+      _PhonePinLoginScreenState();
 }
 
 class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
@@ -88,7 +90,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     setState(() => _err = null);
 
     // Check if phone exists before sending OTP
-    final phoneExists = await ref.read(authProvider.notifier).checkPhoneExists(phone);
+    final phoneExists =
+        await ref.read(authProvider.notifier).checkPhoneExists(phone);
     if (!phoneExists) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -190,7 +193,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      key: const Key('login_screen'),
+      key: const ValueKey('screen_login'),
       appBar: AppBar(title: Text(l10n.sign_in_with_phone)),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -228,7 +231,9 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             ElevatedButton(
               key: const Key('loginButton'),
               onPressed: authState.isLoading ? null : _handleLogin,
-              child: authState.isLoading ? const CircularProgressIndicator() : const Text('تسجيل الدخول'),
+              child: authState.isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('تسجيل الدخول'),
             ),
             const SizedBox(height: 8),
             TextButton(
@@ -243,12 +248,69 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             ),
             const SizedBox(height: 4),
             TextButton(
-              onPressed: authState.isLoading ? null : _handleNewDeviceRegistration,
+              onPressed:
+                  authState.isLoading ? null : _handleNewDeviceRegistration,
               child: const Text('جهاز جديد أو تسجيل لأول مرة؟ التحقق عبر SMS'),
             ),
+            const SizedBox(height: 24),
+            _buildLegalConsentFooter(context, l10n),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildLegalConsentFooter(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(
+            l10n.by_continuing_you_agree,
+            style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: () => _launchUrl('https://wawappmr.com/terms'),
+            child: Text(
+              l10n.terms_of_service,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.primary,
+                decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            l10n.and,
+            style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: () => _launchUrl('https://wawappmr.com/privacy'),
+            child: Text(
+              l10n.privacy_policy,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.primary,
+                decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _launchUrl(String urlString) async {
+    final uri = Uri.parse(urlString);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 }

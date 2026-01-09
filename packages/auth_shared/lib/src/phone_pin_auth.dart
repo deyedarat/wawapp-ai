@@ -60,11 +60,13 @@ class PhonePinAuth {
     await _initializeAuth();
 
     if (kDebugMode) {
+      final maskedPhone =
+          phoneE164.length > 5 ? '${phoneE164.substring(0, 3)}...${phoneE164.substring(phoneE164.length - 2)}' : '***';
       print(
-        '[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow for phone=$phoneE164, forceNewSession=$forceNewSession',
+        '[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow for phone=$maskedPhone, forceNewSession=$forceNewSession',
       );
       // Add Crashlytics breadcrumb for debugging
-      FirebaseCrashlytics.instance.log('OTP_SEND_START: phone=$phoneE164, forceNewSession=$forceNewSession');
+      FirebaseCrashlytics.instance.log('OTP_SEND_START: phone=$maskedPhone, forceNewSession=$forceNewSession');
     }
 
     final u = _auth.currentUser;
@@ -121,7 +123,7 @@ class PhonePinAuth {
               StackTrace.current,
               fatal: false,
               information: [
-                'Phone: $phoneE164',
+                'Phone: ${phoneE164.length > 5 ? '${phoneE164.substring(0, 3)}...${phoneE164.substring(phoneE164.length - 2)}' : '***'}',
                 'Error Code: ${e.code}',
                 'Error Message: ${e.message}',
                 'Full Error: ${e.toString()}',
@@ -172,15 +174,18 @@ class PhonePinAuth {
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {
+        final maskedPhone = phoneE164.length > 5
+            ? '${phoneE164.substring(0, 3)}...${phoneE164.substring(phoneE164.length - 2)}'
+            : '***';
         print('[PhonePinAuth] DIAGNOSTIC: ensurePhoneSession() EXCEPTION: ${e.runtimeType} - $e');
         print('[PhonePinAuth] DIAGNOSTIC: Stacktrace: $stackTrace');
         FirebaseCrashlytics.instance.log('OTP_SEND_EXCEPTION: ${e.runtimeType} - $e');
-        // Record the exception for analysis
+        // Record the exception for analysis with REDACTED info
         FirebaseCrashlytics.instance.recordError(
           e,
           stackTrace,
           fatal: false,
-          information: ['Phone: $phoneE164', 'Operation: ensurePhoneSession'],
+          information: ['Phone: $maskedPhone', 'Operation: ensurePhoneSession'],
         );
       }
       rethrow;
@@ -238,7 +243,9 @@ class PhonePinAuth {
 
   Future<bool> verifyPin(String pin, String phoneE164) async {
     if (kDebugMode) {
-      print('[PhonePinAuth] Verifying PIN for phone: $phoneE164');
+      final maskedPhone =
+          phoneE164.length > 5 ? '${phoneE164.substring(0, 3)}...${phoneE164.substring(phoneE164.length - 2)}' : '***';
+      print('[PhonePinAuth] Verifying PIN for phone: $maskedPhone');
     }
 
     // GUARD: Ensure phone is in E.164 format

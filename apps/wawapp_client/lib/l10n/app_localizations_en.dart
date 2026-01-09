@@ -523,7 +523,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get legal => 'قانوني';
 
   @override
-  String get privacy_policy => 'سياسة الخصوصية';
+  String get privacy_policy => 'Privacy Policy';
 
   @override
   String get about => 'حول';
@@ -644,4 +644,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get login => 'Login';
+
+  @override
+  String get terms_of_service => 'Terms of Service';
+
+  @override
+  String get by_continuing_you_agree => 'By continuing, you agree to our';
+
+  @override
+  String get and => 'and';
+
+  @override
+  String get delete_account => 'Delete Account';
+
+  @override
+  String get delete_account_title => 'Delete Account';
+
+  @override
+  String get delete_account_warning =>
+      'This action is irreversible. All your data will be permanently deleted.';
+
+  @override
+  String get delete_account_confirm =>
+      'Are you sure you want to delete your account?';
+
+  @override
+  String get account_deleted => 'Account deleted successfully';
+
+  @override
+  String get error_delete_account =>
+      'Failed to delete account. Please try again';
+
+  @override
+  String get deleting_account => 'Deleting account...';
+
+  @override
+  String get type_delete_to_confirm => 'Type \'delete\' to confirm';
+
+  @override
+  String get change_pin => 'Change PIN';
+
+  @override
+  String get change_pin_subtitle => 'Modify your quick access code';
+
+  @override
+  String get security => 'Security';
 }

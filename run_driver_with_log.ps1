@@ -10,4 +10,4 @@ New-Item -ItemType Directory -Force -Path $logsDir | Out-Null
 
 $logFile = Join-Path $logsDir "latest_driver.log"
 
-flutter run -v 2>&1 | Tee-Object -FilePath $logFile
+flutter run -d R8YW40AW58L -v 2>&1 | Tee-Object -FilePath $logFile

@@ -85,7 +85,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final displayPhone = widget.phoneNumber ?? authState.phoneE164;
 
     return Scaffold(
-      key: const Key('otp_screen'),
+      key: const ValueKey('screen_otp'),
       appBar: AppBar(
         title: Text(widget.isPhoneChange ? 'تحقق من الهاتف' : 'أدخل رمز التحقق'),
       ),

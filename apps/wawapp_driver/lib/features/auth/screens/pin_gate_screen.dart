@@ -14,7 +14,8 @@ class PinGateScreen extends ConsumerWidget {
     final notifier = ref.read(authProvider.notifier);
 
     if (kDebugMode) {
-      debugPrint('[PIN_GATE] Building screen | user=${st.user?.uid ?? 'null'} | pinStatus=${st.pinStatus}');
+      debugPrint(
+          '[PIN_GATE] Building screen | user=${st.user?.uid ?? 'null'} | pinStatus=${st.pinStatus}');
     }
 
     // If not logged in, this screen shouldn't be valid, but we handle it gracefully/safely
@@ -42,7 +43,7 @@ class PinGateScreen extends ConsumerWidget {
     final isError = st.pinStatus == PinStatus.error;
 
     return Scaffold(
-      key: const Key('pin_gate_screen'),
+      key: const ValueKey('screen_pin_gate'),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -52,7 +53,9 @@ class PinGateScreen extends ConsumerWidget {
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
               Text(
-                isError ? 'تعذر التحقق من الـ PIN. حاول مرة أخرى.' : 'جارٍ التحقق من إعداد الـ PIN…',
+                isError
+                    ? 'تعذر التحقق من الـ PIN. حاول مرة أخرى.'
+                    : 'جارٍ التحقق من إعداد الـ PIN…',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),

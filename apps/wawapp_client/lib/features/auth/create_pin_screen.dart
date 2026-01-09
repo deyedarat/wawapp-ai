@@ -58,7 +58,7 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
     return PopScope(
       canPop: !isEnforced,
       child: Scaffold(
-        key: const Key('create_pin_screen'),
+        key: const ValueKey('screen_create_pin'),
         appBar: AppBar(
           title: const Text('Create PIN'),
           automaticallyImplyLeading: !isEnforced,

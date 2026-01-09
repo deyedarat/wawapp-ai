@@ -9,10 +9,11 @@ void main() {
     test('provider is declared with autoDispose', () {
       // This test verifies that the provider uses .autoDispose
       // by checking that it's an AutoDisposeStateNotifierProvider
-      
+
       // The provider should be an autoDispose provider
-      expect(driverEarningsProvider.runtimeType.toString(), contains('AutoDispose'));
-      
+      expect(driverEarningsProvider.runtimeType.toString(),
+          contains('AutoDispose'));
+
       // This confirms the provider was declared with .autoDispose
     });
 
@@ -22,22 +23,23 @@ void main() {
         overrides: [
           // Override the repository to avoid Firebase calls
           driverEarningsRepositoryProvider.overrideWith((ref) {
-            throw UnimplementedError('Repository should not be called in this test');
+            throw UnimplementedError(
+                'Repository should not be called in this test');
           }),
         ],
       );
 
       // The provider should exist in the container
       expect(container.exists(driverEarningsProvider), isFalse);
-      
+
       // After adding a listener, it should exist
       final subscription = container.listen(
         driverEarningsProvider,
         (previous, next) {},
       );
-      
+
       expect(container.exists(driverEarningsProvider), isTrue);
-      
+
       // Clean up
       subscription.close();
       container.dispose();
@@ -47,24 +49,25 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           driverEarningsRepositoryProvider.overrideWith((ref) {
-            throw UnimplementedError('Repository should not be called in this test');
+            throw UnimplementedError(
+                'Repository should not be called in this test');
           }),
         ],
       );
-      
+
       // Add listener to activate provider
       // Add listener to activate provider
       container.listen(
         driverEarningsProvider,
         (previous, next) {},
       );
-      
+
       // Provider should exist
       expect(container.exists(driverEarningsProvider), isTrue);
-      
+
       // Dispose container
       container.dispose();
-      
+
       // After disposal, the container should be in disposed state
       // The test passes if disposal completes without throwing
       expect(true, isTrue); // Container was successfully disposed

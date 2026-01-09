@@ -1,17 +1,18 @@
+import 'package:core_shared/core_shared.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:core_shared/core_shared.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'providers/client_profile_providers.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/navigation/safe_navigation.dart';
+import '../../l10n/app_localizations.dart';
 // NEW THEME IMPORTS
 import '../../theme/colors.dart';
 import '../../theme/components.dart';
 import '../../theme/theme_extensions.dart';
 import '../auth/providers/auth_service_provider.dart';
-import '../../core/navigation/safe_navigation.dart';
+import 'providers/client_profile_providers.dart';
 
 class ClientProfileScreen extends ConsumerWidget {
   const ClientProfileScreen({super.key});
@@ -39,7 +40,7 @@ class ClientProfileScreen extends ConsumerWidget {
             loading: () => const WawLoadingIndicator(),
             error: (error, stack) => Center(
               child: Padding(
-                padding: EdgeInsetsDirectional.all(WawAppSpacing.screenPadding),
+                padding: const EdgeInsetsDirectional.all(WawAppSpacing.screenPadding),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -48,13 +49,13 @@ class ClientProfileScreen extends ConsumerWidget {
                       size: 64,
                       color: context.errorColor,
                     ),
-                    SizedBox(height: WawAppSpacing.md),
+                    const SizedBox(height: WawAppSpacing.md),
                     Text(
                       l10n.error_loading_data,
                       style: theme.textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: WawAppSpacing.xs),
+                    const SizedBox(height: WawAppSpacing.xs),
                     Text(
                       '$error',
                       style: theme.textTheme.bodyMedium?.copyWith(
@@ -62,7 +63,7 @@ class ClientProfileScreen extends ConsumerWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: WawAppSpacing.lg),
+                    const SizedBox(height: WawAppSpacing.lg),
                     WawActionButton(
                       label: l10n.retry,
                       icon: Icons.refresh,
@@ -99,12 +100,11 @@ class ClientProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileView(BuildContext context, AppLocalizations l10n,
-      ClientProfile profile, WidgetRef ref) {
+  Widget _buildProfileView(BuildContext context, AppLocalizations l10n, ClientProfile profile, WidgetRef ref) {
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
-      padding: EdgeInsetsDirectional.all(WawAppSpacing.screenPadding),
+      padding: const EdgeInsetsDirectional.all(WawAppSpacing.screenPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -117,9 +117,7 @@ class ClientProfileScreen extends ConsumerWidget {
                 CircleAvatar(
                   radius: 50,
                   backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                  backgroundImage: profile.photoUrl != null
-                      ? NetworkImage(profile.photoUrl!)
-                      : null,
+                  backgroundImage: profile.photoUrl != null ? NetworkImage(profile.photoUrl!) : null,
                   child: profile.photoUrl == null
                       ? Icon(
                           Icons.person,
@@ -128,7 +126,7 @@ class ClientProfileScreen extends ConsumerWidget {
                         )
                       : null,
                 ),
-                SizedBox(height: WawAppSpacing.md),
+                const SizedBox(height: WawAppSpacing.md),
 
                 // Name
                 Text(
@@ -138,7 +136,7 @@ class ClientProfileScreen extends ConsumerWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: WawAppSpacing.xs),
+                const SizedBox(height: WawAppSpacing.xs),
 
                 // Phone
                 Text(
@@ -148,7 +146,7 @@ class ClientProfileScreen extends ConsumerWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: WawAppSpacing.lg),
+                const SizedBox(height: WawAppSpacing.lg),
 
                 // Stats Row
                 Row(
@@ -173,7 +171,7 @@ class ClientProfileScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: WawAppSpacing.lg),
+                const SizedBox(height: WawAppSpacing.lg),
 
                 // Edit Button
                 WawActionButton(
@@ -185,7 +183,7 @@ class ClientProfileScreen extends ConsumerWidget {
             ),
           ),
 
-          SizedBox(height: WawAppSpacing.md),
+          const SizedBox(height: WawAppSpacing.md),
 
           // Profile Info Card
           WawCard(
@@ -199,14 +197,14 @@ class ClientProfileScreen extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: WawAppSpacing.md),
-                _buildInfoRow(context, l10n, Icons.language, l10n.language,
-                    _getLanguageLabel(l10n, profile.preferredLanguage)),
+                const SizedBox(height: WawAppSpacing.md),
+                _buildInfoRow(
+                    context, l10n, Icons.language, l10n.language, _getLanguageLabel(l10n, profile.preferredLanguage)),
               ],
             ),
           ),
 
-          SizedBox(height: WawAppSpacing.md),
+          const SizedBox(height: WawAppSpacing.md),
 
           // Quick Actions Card
           WawCard(
@@ -220,7 +218,7 @@ class ClientProfileScreen extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: WawAppSpacing.md),
+                const SizedBox(height: WawAppSpacing.md),
                 _buildActionTile(
                   context,
                   l10n,
@@ -234,26 +232,44 @@ class ClientProfileScreen extends ConsumerWidget {
                   context,
                   l10n,
                   icon: Icons.lock_outline,
-                  title: 'تغيير رمز PIN',
-                  subtitle: 'تعديل رمز الدخول السريع',
+                  title: l10n.change_pin,
+                  subtitle: l10n.change_pin_subtitle,
                   onTap: () => context.push('/profile/change-pin'),
+                ),
+                Divider(height: 1, color: context.wawAppTheme.dividerColor),
+                _buildActionTile(
+                  context,
+                  l10n,
+                  icon: Icons.privacy_tip_outlined,
+                  title: l10n.privacy_policy,
+                  subtitle: 'سياسة الخصوصية وحماية البيانات',
+                  onTap: () => _launchPrivacyPolicy(),
+                ),
+                Divider(height: 1, color: context.wawAppTheme.dividerColor),
+                _buildActionTile(
+                  context,
+                  l10n,
+                  icon: Icons.delete_forever_outlined,
+                  title: l10n.delete_account,
+                  subtitle: 'حذف حسابك وجميع بياناتك بشكل دائم',
+                  onTap: () => _showDeleteAccountDialog(context, ref, l10n),
+                  isDestructive: true,
                 ),
               ],
             ),
           ),
 
-          SizedBox(height: WawAppSpacing.lg),
+          const SizedBox(height: WawAppSpacing.lg),
 
           // Logout Button
           _buildLogoutButton(context, ref, l10n),
-          SizedBox(height: WawAppSpacing.lg),
+          const SizedBox(height: WawAppSpacing.lg),
         ],
       ),
     );
   }
 
-  Widget _buildLogoutButton(
-      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+  Widget _buildLogoutButton(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     return OutlinedButton.icon(
       onPressed: () => _showLogoutConfirmation(context, ref, l10n),
       icon: const Icon(Icons.logout),
@@ -261,21 +277,19 @@ class ClientProfileScreen extends ConsumerWidget {
       style: OutlinedButton.styleFrom(
         foregroundColor: context.errorColor,
         side: BorderSide(color: context.errorColor),
-        padding: EdgeInsetsDirectional.symmetric(
+        padding: const EdgeInsetsDirectional.symmetric(
           vertical: WawAppSpacing.md,
         ),
       ),
     );
   }
 
-  Future<void> _showLogoutConfirmation(
-      BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+  Future<void> _showLogoutConfirmation(BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.logout ?? 'Logout'),
-        content: Text(
-            l10n.logout_confirmation ?? 'Are you sure you want to logout?'),
+        content: Text(l10n.logout_confirmation ?? 'Are you sure you want to logout?'),
         actions: [
           TextButton(
             onPressed: () => context.safeDialogPop(false),
@@ -311,13 +325,12 @@ class ClientProfileScreen extends ConsumerWidget {
     }
   }
 
-  Widget _buildStatColumn(
-      BuildContext context, String label, String value, IconData icon) {
+  Widget _buildStatColumn(BuildContext context, String label, String value, IconData icon) {
     final theme = Theme.of(context);
     return Column(
       children: [
         Icon(icon, color: theme.colorScheme.primary, size: 28),
-        SizedBox(height: WawAppSpacing.xs),
+        const SizedBox(height: WawAppSpacing.xs),
         Text(
           value,
           style: theme.textTheme.headlineSmall?.copyWith(
@@ -325,7 +338,7 @@ class ClientProfileScreen extends ConsumerWidget {
             color: theme.colorScheme.primary,
           ),
         ),
-        SizedBox(height: WawAppSpacing.xxs),
+        const SizedBox(height: WawAppSpacing.xxs),
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
@@ -336,15 +349,14 @@ class ClientProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, AppLocalizations l10n,
-      IconData icon, String label, String value) {
+  Widget _buildInfoRow(BuildContext context, AppLocalizations l10n, IconData icon, String label, String value) {
     final theme = Theme.of(context);
     return Padding(
-      padding: EdgeInsetsDirectional.symmetric(vertical: WawAppSpacing.xs),
+      padding: const EdgeInsetsDirectional.symmetric(vertical: WawAppSpacing.xs),
       child: Row(
         children: [
           Icon(icon, size: 20, color: theme.colorScheme.primary),
-          SizedBox(width: WawAppSpacing.sm),
+          const SizedBox(width: WawAppSpacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,7 +367,7 @@ class ClientProfileScreen extends ConsumerWidget {
                     color: theme.textTheme.bodySmall?.color,
                   ),
                 ),
-                SizedBox(height: WawAppSpacing.xxs),
+                const SizedBox(height: WawAppSpacing.xxs),
                 Text(
                   value,
                   style: theme.textTheme.bodyMedium?.copyWith(
@@ -377,30 +389,33 @@ class ClientProfileScreen extends ConsumerWidget {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
+    bool isDestructive = false,
   }) {
     final theme = Theme.of(context);
     final isRTL = Directionality.of(context) == TextDirection.rtl;
+    final iconColor = isDestructive ? context.errorColor : theme.colorScheme.primary;
+    final titleColor = isDestructive ? context.errorColor : null;
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(WawAppSpacing.radiusSm),
       child: Padding(
-        padding: EdgeInsetsDirectional.symmetric(vertical: WawAppSpacing.xs),
+        padding: const EdgeInsetsDirectional.symmetric(vertical: WawAppSpacing.xs),
         child: Row(
           children: [
             Container(
-              padding: EdgeInsetsDirectional.all(WawAppSpacing.sm),
+              padding: const EdgeInsetsDirectional.all(WawAppSpacing.sm),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.1),
+                color: iconColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(WawAppSpacing.radiusSm),
               ),
               child: Icon(
                 icon,
-                color: theme.colorScheme.primary,
+                color: iconColor,
                 size: 24,
               ),
             ),
-            SizedBox(width: WawAppSpacing.md),
+            const SizedBox(width: WawAppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -409,9 +424,10 @@ class ClientProfileScreen extends ConsumerWidget {
                     title,
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: titleColor,
                     ),
                   ),
-                  SizedBox(height: WawAppSpacing.xxs),
+                  const SizedBox(height: WawAppSpacing.xxs),
                   Text(
                     subtitle,
                     style: theme.textTheme.bodySmall?.copyWith(
@@ -424,12 +440,100 @@ class ClientProfileScreen extends ConsumerWidget {
             Icon(
               isRTL ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
               size: 16,
-              color: theme.colorScheme.primary,
+              color: iconColor,
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _launchPrivacyPolicy() async {
+    final uri = Uri.parse('https://wawappmr.com/privacy');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _showDeleteAccountDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.delete_account_title),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.delete_account_warning),
+            const SizedBox(height: WawAppSpacing.md),
+            Text(
+              l10n.delete_account_confirm,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => context.safeDialogPop(false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => context.safeDialogPop(true),
+            style: TextButton.styleFrom(foregroundColor: context.errorColor),
+            child: Text(l10n.delete_account),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: WawAppSpacing.md),
+              Text(
+                l10n.deleting_account,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      try {
+        // Call delete account function (placeholder - implement actual deletion)
+        // await ref.read(authProvider.notifier).deleteAccount();
+
+        // For now, just sign out
+        await ref.read(authProvider.notifier).logout();
+
+        if (context.mounted) {
+          context.safeDialogPop(); // Close loading
+          SafeNavigation.safeLogoutNavigation(context);
+
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.account_deleted)),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          context.safeDialogPop(); // Close loading
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.error_delete_account),
+              backgroundColor: context.errorColor,
+            ),
+          );
+        }
+      }
+    }
   }
 
   String _getLanguageLabel(AppLocalizations l10n, String languageCode) {

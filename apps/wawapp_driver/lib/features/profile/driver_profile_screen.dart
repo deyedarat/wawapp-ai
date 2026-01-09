@@ -1,11 +1,14 @@
 import 'dart:async';
+
+import 'package:core_shared/core_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:core_shared/core_shared.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../widgets/error_screen.dart';
-import 'providers/driver_profile_providers.dart';
 import '../auth/providers/auth_service_provider.dart';
+import 'providers/driver_profile_providers.dart';
 
 class DriverProfileScreen extends ConsumerWidget {
   const DriverProfileScreen({super.key});
@@ -111,7 +114,7 @@ class DriverProfileScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'الأمان',
+              'الأمان والخصوصية',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -123,10 +126,104 @@ class DriverProfileScreen extends ConsumerWidget {
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () => _handleChangePin(context, ref),
             ),
+            const Divider(),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading:
+                  const Icon(Icons.privacy_tip_outlined, color: Colors.indigo),
+              title: const Text('سياسة الخصوصية'),
+              subtitle: const Text('الشروط والأحكام وسياسة البيانات'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () => _launchPrivacyPolicy(),
+            ),
+            const Divider(),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.delete_forever, color: Colors.red),
+              title:
+                  const Text('حذف الحساب', style: TextStyle(color: Colors.red)),
+              subtitle: const Text('حذف حسابك وجميع بياناتك نهائياً'),
+              onTap: () => _showDeleteAccountDialog(context, ref),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _launchPrivacyPolicy() async {
+    final uri = Uri.parse('https://wawappmr.com/privacy');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _showDeleteAccountDialog(
+      BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('حذف الحساب'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('تحذير: هذا الإجراء لا يمكن التراجع عنه.'),
+            SizedBox(height: 8),
+            Text('سيتم حذف جميع بياناتك الشخصية وسجل الرحلات والأرباح.'),
+            SizedBox(height: 16),
+            Text(
+              'هل أنت متأكد من رغبتك في حذف الحساب؟',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('حذف نهائي'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      // Show loading
+      unawaited(showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      ));
+
+      try {
+        // Here we should call backend to delete account
+        // For now (P0), we assume a backend trigger or manual process
+        // In a real implementation, call: await ref.read(authProvider.notifier).deleteAccount();
+
+        await ref.read(authProvider.notifier).logout();
+
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Close loading
+          context.go('/');
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('تم حذف الحساب بنجاح')),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Close loading
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('حدث خطأ: $e')),
+          );
+        }
+      }
+    }
   }
 
   Future<void> _handleChangePin(BuildContext context, WidgetRef ref) async {

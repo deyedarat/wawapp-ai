@@ -8,5 +8,20 @@
   "new_user_create_account": "New User - Create Account",
   "existing_user_enter_pin": "Existing User - Enter PIN",
   "pin_label": "PIN",
-  "login": "Login"
+  "login": "Login",
+  "terms_of_service": "Terms of Service",
+  "privacy_policy": "Privacy Policy",
+  "by_continuing_you_agree": "By continuing, you agree to our",
+  "and": "and",
+  "delete_account": "Delete Account",
+  "delete_account_title": "Delete Account",
+  "delete_account_warning": "This action is irreversible. All your data will be permanently deleted.",
+  "delete_account_confirm": "Are you sure you want to delete your account?",
+  "account_deleted": "Account deleted successfully",
+  "error_delete_account": "Failed to delete account. Please try again",
+  "deleting_account": "Deleting account...",
+  "type_delete_to_confirm": "Type 'delete' to confirm",
+  "change_pin": "Change PIN",
+  "change_pin_subtitle": "Modify your quick access code",
+  "security": "Security"
 }

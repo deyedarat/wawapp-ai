@@ -1,0 +1,158 @@
+Analyzing wawapp_driver...                                      
+
+   info - Don't invoke 'print' in production code - integration_test\logout_flow_test.dart:32:9 - avoid_print
+   info - Don't invoke 'print' in production code - integration_test\logout_flow_test.dart:84:9 - avoid_print
+   info - Don't invoke 'print' in production code - integration_test\logout_flow_test.dart:98:9 - avoid_print
+   info - Statement should be on a separate line - integration_test\smoke_auth_flow_test.dart:38:20 - always_put_control_body_on_new_line
+   info - Statement should be on a separate line - integration_test\smoke_auth_flow_test.dart:105:24 - always_put_control_body_on_new_line
+   info - Catch clause should use 'on' to specify the type of exception being caught - integration_test\smoke_auth_flow_test.dart:169:11 - avoid_catches_without_on_clauses
+   info - Don't invoke 'print' in production code - integration_test\smoke_auth_flow_test.dart:195:7 - avoid_print
+   info - Don't invoke 'print' in production code - integration_test\smoke_auth_flow_test.dart:214:7 - avoid_print
+   info - Don't invoke 'print' in production code - integration_test\smoke_auth_flow_test.dart:232:7 - avoid_print
+   info - Don't invoke 'print' in production code - integration_test\smoke_auth_flow_test.dart:252:7 - avoid_print
+   info - Don't invoke 'print' in production code - integration_test\smoke_auth_flow_test.dart:269:7 - avoid_print
+warning - The class 'DocumentSnapshot' shouldn't be extended, mixed in, or implemented because it's sealed - lib\core\config\testlab_mock_data.dart:234:1 - subtype_of_sealed_class
+   info - Statement should be on a separate line - lib\core\errors\auth_error_messages.dart:37:24 - always_put_control_body_on_new_line
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:9:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:43:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:61:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:75:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:106:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:115:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:149:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:154:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:167:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:181:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:189:17 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\app_theme.dart:212:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:38:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:62:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:66:25 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:104:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:119:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:123:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:163:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:210:16 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\core\theme\components.dart:215:27 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\core\theme\components.dart:217:46 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:224:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:263:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:272:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:302:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:337:18 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:342:13 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\core\theme\components.dart:351:58 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\core\theme\components.dart:354:19 - prefer_const_constructors
+   info - Statement should be on a separate line - lib\features\auth\otp_screen.dart:18:23 - always_put_control_body_on_new_line
+   info - Don't invoke 'print' in production code - lib\features\auth\otp_screen.dart:30:9 - avoid_print
+   info - Catch clause should use 'on' to specify the type of exception being caught - lib\features\auth\phone_pin_login_screen.dart:52:7 - avoid_catches_without_on_clauses
+   info - Catch clause should use 'on' to specify the type of exception being caught - lib\features\auth\phone_pin_login_screen.dart:84:7 - avoid_catches_without_on_clauses
+   info - An uninitialized field should have an explicit type annotation - lib\features\auth\providers\auth_service_provider.dart:55:14 - prefer_typing_uninitialized_variables
+   info - Method invocation or property access on a 'dynamic' target - lib\features\auth\providers\auth_service_provider.dart:59:5 - avoid_dynamic_calls
+   info - Statement should be on a separate line - lib\features\auth\providers\auth_service_provider.dart:69:23 - always_put_control_body_on_new_line
+   info - Don't invoke 'print' in production code - lib\features\auth\providers\auth_service_provider.dart:93:9 - avoid_print
+   info - Statement should be on a separate line - lib\features\auth\providers\auth_service_provider.dart:181:23 - always_put_control_body_on_new_line
+   info - Statement should be on a separate line - lib\features\auth\providers\auth_service_provider.dart:188:23 - always_put_control_body_on_new_line
+   info - Statement should be on a separate line - lib\features\auth\providers\auth_service_provider.dart:219:23 - always_put_control_body_on_new_line
+   info - Method invocation or property access on a 'dynamic' target - lib\features\earnings\providers\driver_earnings_provider.dart:59:21 - avoid_dynamic_calls
+   info - Catch clause should use 'on' to specify the type of exception being caught - lib\features\history\data\driver_history_repository.dart:27:17 - avoid_catches_without_on_clauses
+   info - Unnecessary use of string interpolation - lib\features\history\driver_history_screen.dart:121:18 - unnecessary_string_interpolations
+   info - Statement should be on a separate line - lib\features\home\driver_home_screen.dart:50:28 - always_put_control_body_on_new_line
+   info - Statement should be on a separate line - lib\features\home\driver_home_screen.dart:183:19 - always_put_control_body_on_new_line
+   info - Statement should be on a separate line - lib\features\home\driver_home_screen.dart:185:19 - always_put_control_body_on_new_line
+   info - Missing an 'await' for the 'Future' computed by this expression - lib\features\home\driver_home_screen.dart:324:27 - unawaited_futures
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:365:83 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:366:83 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:373:99 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:398:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:407:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:409:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:439:73 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:467:75 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:499:70 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:527:73 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:585:71 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\home\driver_home_screen.dart:622:71 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:117:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:120:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:127:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:200:20 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:211:24 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:221:38 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nearby\nearby_screen.dart:224:64 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:233:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:260:34 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nearby\nearby_screen.dart:265:63 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:280:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:283:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:288:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:299:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:302:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:307:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\nearby\nearby_screen.dart:318:19 - prefer_const_constructors
+   info - Statement should be on a separate line - lib\features\profile\driver_profile_edit_screen.dart:58:45 - always_put_control_body_on_new_line
+   info - Catch clause should use 'on' to specify the type of exception being caught - lib\features\profile\driver_profile_screen.dart:200:9 - avoid_catches_without_on_clauses
+warning - Unused import: 'package:auth_shared/auth_shared.dart' - lib\features\profile\providers\driver_profile_providers.dart:1:8 - unused_import
+   info - Don't invoke 'print' in production code - lib\features\profile\providers\driver_profile_providers.dart:31:7 - avoid_print
+   info - Statement should be on a separate line - lib\features\topup\topup_wizard_screen.dart:403:21 - always_put_control_body_on_new_line
+   info - Catch clause should use 'on' to specify the type of exception being caught - lib\features\topup\topup_wizard_screen.dart:420:7 - avoid_catches_without_on_clauses
+   info - Statement should be on a separate line - lib\features\topup\topup_wizard_screen.dart:421:21 - always_put_control_body_on_new_line
+   info - Dangling library doc comment - lib\features\wallet\topup_request_dialog.dart:1:1 - dangling_library_doc_comments
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\wallet\topup_request_dialog.dart:82:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\wallet\topup_request_dialog.dart:135:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\wallet\topup_request_dialog.dart:138:52 - deprecated_member_use
+   info - Dangling library doc comment - lib\features\wallet\topup_request_provider.dart:1:1 - dangling_library_doc_comments
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:55:20 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\wallet\wallet_screen.dart:74:59 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:81:28 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\wallet\wallet_screen.dart:91:51 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:95:38 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\wallet\wallet_screen.dart:97:51 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:108:23 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:117:23 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\wallet\wallet_screen.dart:121:47 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:128:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:137:38 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\wallet\wallet_screen.dart:140:64 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:149:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:157:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:169:19 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:175:38 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\wallet\wallet_screen.dart:177:64 - deprecated_member_use
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:186:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:194:27 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:208:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:249:15 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\wallet\wallet_screen.dart:257:15 - prefer_const_constructors
+   info - Missing an 'await' for the 'Future' computed by this expression - lib\main.dart:19:3 - unawaited_futures
+   info - Catch clause should use 'on' to specify the type of exception being caught - lib\main.dart:83:5 - avoid_catches_without_on_clauses
+   info - Statement should be on a separate line - lib\services\analytics_service.dart:99:23 - always_put_control_body_on_new_line
+   info - Statement should be on a separate line - lib\services\analytics_service.dart:101:23 - always_put_control_body_on_new_line
+   info - Missing an 'await' for the 'Future' computed by this expression - lib\services\driver_status_service.dart:28:33 - unawaited_futures
+   info - Missing an 'await' for the 'Future' computed by this expression - lib\services\driver_status_service.dart:29:33 - unawaited_futures
+   info - Missing an 'await' for the 'Future' computed by this expression - lib\services\driver_status_service.dart:61:33 - unawaited_futures
+   info - Missing an 'await' for the 'Future' computed by this expression - lib\services\driver_status_service.dart:62:33 - unawaited_futures
+   info - Statement should be on a separate line - lib\services\driver_status_service.dart:128:27 - always_put_control_body_on_new_line
+   info - Statement should be on a separate line - lib\services\driver_status_service.dart:133:24 - always_put_control_body_on_new_line
+   info - Statement should be on a separate line - lib\services\driver_status_service.dart:136:25 - always_put_control_body_on_new_line
+   info - Statement should be on a separate line - lib\services\fcm_service.dart:49:29 - always_put_control_body_on_new_line
+   info - Statement should be on a separate line - lib\services\fcm_service.dart:85:27 - always_put_control_body_on_new_line
+   info - Dangling library doc comment - lib\services\location_throttling_service.dart:1:1 - dangling_library_doc_comments
+   info - Use the end-of-line form ('///') for doc comments - lib\services\location_throttling_service.dart:1:1 - slash_for_doc_comments
+   info - Catch clause should use 'on' to specify the type of exception being caught - lib\services\location_throttling_service.dart:150:7 - avoid_catches_without_on_clauses
+   info - Statement should be on a separate line - lib\services\notification_helper.dart:6:39 - always_put_control_body_on_new_line
+   info - Statement should be on a separate line - lib\services\notification_helper.dart:7:27 - always_put_control_body_on_new_line
+   info - Method invocation or property access on a 'dynamic' target - lib\services\orders_service.dart:134:33 - avoid_dynamic_calls
+   info - Method invocation or property access on a 'dynamic' target - lib\services\orders_service.dart:135:33 - avoid_dynamic_calls
+   info - Missing an 'await' for the 'Future' computed by this expression - lib\services\orders_service.dart:255:33 - unawaited_futures
+   info - Statement should be on a separate line - lib\services\orders_service.dart:257:26 - always_put_control_body_on_new_line
+   info - Missing an 'await' for the 'Future' computed by this expression - lib\services\orders_service.dart:288:35 - unawaited_futures
+   info - Statement should be on a separate line - lib\services\orders_service.dart:291:26 - always_put_control_body_on_new_line
+   info - Missing an 'await' for the 'Future' computed by this expression - lib\services\orders_service.dart:339:33 - unawaited_futures
+   info - Statement should be on a separate line - lib\services\orders_service.dart:341:26 - always_put_control_body_on_new_line
+   info - 'parent' is deprecated and shouldn't be used. Will be removed in 3.0.0. See https://github.com/rrousselGit/riverpod/issues/3261#issuecomment-1973514033 - test\auth\otp_screen_test.dart:43:11 - deprecated_member_use
+   info - 'parent' is deprecated and shouldn't be used. Will be removed in 3.0.0. See https://github.com/rrousselGit/riverpod/issues/3261#issuecomment-1973514033 - test\auth\otp_screen_test.dart:58:11 - deprecated_member_use
+   info - 'parent' is deprecated and shouldn't be used. Will be removed in 3.0.0. See https://github.com/rrousselGit/riverpod/issues/3261#issuecomment-1973514033 - test\auth\otp_screen_test.dart:81:11 - deprecated_member_use
+  error - 'MockPhonePinAuth.ensurePhoneSession' ('Future<void> Function(String?)') isn't a valid override of 'PhonePinAuth.ensurePhoneSession' ('Future<void> Function(String, {bool forceNewSession})') - test\auth\otp_screen_test.mocks.dart:90:20 - invalid_override
+  error - 'MockPhonePinAuth.verifyPin' ('Future<bool> Function(String?)') isn't a valid override of 'PhonePinAuth.verifyPin' ('Future<bool> Function(String, String)') - test\auth\otp_screen_test.mocks.dart:120:20 - invalid_override
+

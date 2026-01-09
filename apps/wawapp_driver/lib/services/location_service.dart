@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -151,11 +152,36 @@ class LocationService {
 
     _positionStreamSubscription?.cancel();
 
-    const locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter:
-          50, // Only emit when moved 50+ meters (Memory Optimization Phase 1)
-    );
+    LocationSettings locationSettings;
+
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      locationSettings = AndroidSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 50,
+        forceLocationManager: true,
+        intervalDuration: const Duration(seconds: 10),
+        // P1 FIX: Foreground notification for reliable background tracking
+        foregroundNotificationConfig: const ForegroundNotificationConfig(
+          notificationTitle: 'WawApp Driver',
+          notificationText: 'يتم تتبع موقعك لاستقبال الطلبات',
+          notificationIcon: AndroidResource(name: 'ic_launcher'),
+          enableWakeLock: true,
+        ),
+      );
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      locationSettings = AppleSettings(
+        accuracy: LocationAccuracy.high,
+        activityType: ActivityType.automotiveNavigation,
+        distanceFilter: 50,
+        pauseLocationUpdatesAutomatically: false,
+        showBackgroundLocationIndicator: true,
+      );
+    } else {
+      locationSettings = const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 50,
+      );
+    }
 
     _positionStreamSubscription = Geolocator.getPositionStream(
       locationSettings: locationSettings,

@@ -1,53 +1,66 @@
-# Auth Routing Smoke Tests
+# Smoke Testing Guide
 
-This document describes how to run the integration smoke tests for checking Authentication Routing flows in Client and Driver apps.
+This document outlines the strategy and execution of smoke tests for the WAWAPP ecosystem (Client & Driver).
 
-These tests use **fake authentication providers** (`FakeClientAuthNotifier`, `FakeAuthNotifier`) and **mocked Firebase Auth** to verify that the app navigates correctly between screens (Login, OTP, CreatePin, PinGate, Home) based on state changes, without hitting real Firebase services.
+## 🚀 Running the Tests
 
-## Prerequisites
+We provide a unified PowerShell script to run all smoke tests on a connected device.
 
-1.  Connect a physical device or start an emulator.
-2.  Ensure `flutter devices` shows your device.
-
-## Running Tests
-
-### Option 1: Using provided scripts (Root Directory)
-
-**Windows (PowerShell):**
 ```powershell
-./run_smoke_tests.ps1
+.\run_smoke_tests.ps1
 ```
 
-**Linux/Mac (Bash):**
-```bash
-./run_smoke_tests.sh
+**What this script does:**
+1.  **Auto-detects** your connected Android/iOS device.
+2.  **Runs** the Client Auth Smoke Test (`apps/wawapp_client/integration_test/smoke_auth_flow_test.dart`).
+3.  **Runs** the Driver Auth Smoke Test (`apps/wawapp_driver/integration_test/smoke_auth_flow_test.dart`).
+4.  **Generates Logs** in the `logs/` directory for historical tracking.
+
+## 🧪 Test Philosophy & Rules
+
+### 1. No `pumpAndSettle` in Auth Flows
+**Policy:** Do **NOT** use `tester.pumpAndSettle()` when waiting for screen transitions in integration tests.
+
+**Reason:** Screens like `PinGateScreen` or `LoginScreen` often contain infinite animations (loaders, spinners). `pumpAndSettle` waits for *all* animations to complete, causing the test to **hang indefinitely** until the watchdog kills it.
+
+**Solution:** Use the `pumpUntilFound` extension or explicit polling:
+```dart
+// ✅ DO THIS
+await tester.pumpUntilFound(find.byKey(const ValueKey('screen_home')));
+
+// ❌ NOT THIS
+await tester.pumpAndSettle(); 
+expect(find.byKey(...), findsOneWidget);
 ```
 
-### Option 2: Running Manually
+### 2. Explicit State Management
+Tests drive the `FakeAuthNotifier` explicitly. Do not rely on "side-effects" of screens (like `initState` checks) to drive navigation.
+- We simulate state changes using `pushState` / `setTestState`.
+- We override methods like `checkHasPin()` in fakes to be no-ops.
 
-**Client App:**
-```bash
-cd apps/wawapp_client
-flutter test integration_test/smoke_auth_flow_test.dart
-```
+### 3. Screen Identification
+All critical screens MUST have a `ValueKey` on their root `Scaffold` for stable querying:
+- `ValueKey('screen_login')`
+- `ValueKey('screen_otp')`
+- `ValueKey('screen_pin_gate')`
+- `ValueKey('screen_create_pin')`
+- `ValueKey('screen_home')`
 
-**Driver App:**
-```bash
-cd apps/wawapp_driver
-flutter test integration_test/smoke_auth_flow_test.dart
-```
+## 🛠 Adding a New Step
 
-## What is Tested?
+1.  **Add Key:** Add `ValueKey('screen_new_name')` to the new screen's Scaffold.
+2.  **Update Test:** In `smoke_auth_flow_test.dart`:
+    ```dart
+    await settle(tester);
+    
+    await pushState(tester, fakeNotifier, AuthState(...), label: 'STEP X -> NewScreen');
+    
+    step('X: Checking New Screen');
+    await tester.pumpUntilFound(find.byKey(const ValueKey('screen_new_name')));
+    expect(find.byKey(const ValueKey('screen_new_name')), findsOneWidget);
+    ```
 
-The tests simulate the following transitions:
-1.  **Initial State**: Checks if `Key('login_screen')` is present.
-2.  **Login (PinStatus.unknown)**: Sets user but unknown PIN status -> Expects `Key('pin_gate_screen')`.
-3.  **No PIN**: Sets `PinStatus.noPin` -> Expects `Key('create_pin_screen')`.
-4.  **OTP Flow**: Sets `otpFlowActive=true` -> Expects `Key('otp_screen')`.
-5.  **Authenticated (Has PIN)**: Sets `PinStatus.hasPin` -> Expects `Key('home_screen')`.
-
-## Troubleshooting
-
--   **"No device found"**: Make sure a device is connected. Pass `-d <device_id>` if needed.
--   **"Target file not found"**: Ensure you are in the correct app directory or using the absolute path.
--   **Lint Errors**: If you see lint warnings about `noSuchMethod` or `_delegate`, ensure `MockFirebaseAuth` extends `Fake` (from `flutter_test`).
+## 📂 Logs
+Artifacts are saved to `logs/` with the format:
+- `smoke_client_YYYYMMDD_HHMM.txt`
+- `smoke_driver_YYYYMMDD_HHMM.txt`

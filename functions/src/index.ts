@@ -11,38 +11,40 @@ import * as admin from 'firebase-admin';
 admin.initializeApp();
 
 // Export Cloud Functions
-export { expireStaleOrders } from './expireStaleOrders';
 export { aggregateDriverRating } from './aggregateDriverRating';
-export { notifyOrderEvents } from './notifyOrderEvents';
-export { notifyNewOrder } from './notifyNewOrder'; // FIX #1: Notify drivers on order creation
-export { notifyUnassignedOrders } from './notifyUnassignedOrders'; // Phase A: Repeated notifications for unassigned orders
-export { trackOrderAcceptance } from './trackOrderAcceptance'; // Phase B: Track order acceptance timestamp
-export { processTripStartFee } from './processTripStartFee'; // Phase C: Trip start fee deduction
-export { enforceOrderExclusivity } from './enforceOrderExclusivity'; // Phase C: Order exclusivity guards
-export { createTopupRequest } from './createTopupRequest'; // Phase D: Driver top-up requests
 export { approveTopupRequest, rejectTopupRequest } from './approveTopupRequest'; // Phase D: Admin top-up approval
-export { enforceWalletBalance } from './enforceWalletBalance'; // Phase D: Wallet balance enforcement
 export { cleanStaleDriverLocations } from './cleanStaleDriverLocations';
+export { createTopupRequest } from './createTopupRequest'; // Phase D: Driver top-up requests
+export { enforceOrderExclusivity } from './enforceOrderExclusivity'; // Phase C: Order exclusivity guards
+export { enforceWalletBalance } from './enforceWalletBalance'; // Phase D: Wallet balance enforcement
+export { expireStaleOrders } from './expireStaleOrders';
+export { notifyNewOrder } from './notifyNewOrder'; // FIX #1: Notify drivers on order creation
+export { notifyOrderEvents } from './notifyOrderEvents';
+export { notifyUnassignedOrders } from './notifyUnassignedOrders'; // Phase A: Repeated notifications for unassigned orders
+export { processTripStartFee } from './processTripStartFee'; // Phase C: Trip start fee deduction
+export { trackOrderAcceptance } from './trackOrderAcceptance'; // Phase B: Track order acceptance timestamp
+export { updateOrderLocation } from './updateOrderLocation'; // P0-FATAL FIX: Secure driver tracking
 
 // Export Admin Functions
-export { setAdminRole, removeAdminRole } from './admin/setAdminRole';
+export { removeAdminRole, setAdminRole } from './admin/setAdminRole';
 
 // Export Auth Functions
-export { manualSetDriverClaims } from './auth/setDriverClaims';
-export { createCustomToken } from './auth/createCustomToken';
-export { checkPhoneExists } from './auth/checkPhoneExists';
-export { getAdminStats } from './admin/getAdminStats';
-export { adminCancelOrder, adminReassignOrder } from './admin/adminOrderActions';
+export { adminBlockClient, adminSetClientVerification, adminUnblockClient } from './admin/adminClientActions';
 export { adminBlockDriver, adminUnblockDriver, adminVerifyDriver } from './admin/adminDriverActions';
-export { adminSetClientVerification, adminBlockClient, adminUnblockClient } from './admin/adminClientActions';
+export { adminCancelOrder, adminReassignOrder } from './admin/adminOrderActions';
+export { getAdminStats } from './admin/getAdminStats';
+export { checkPhoneExists } from './auth/checkPhoneExists';
+export { createCustomToken } from './auth/createCustomToken';
+export { manualSetDriverClaims } from './auth/setDriverClaims';
 // export { adminFixMissingDriverData } from './admin/fixMissingDriverData';
 // export { adminCreateTestClient } from './admin/createTestClient';
 
 // Export Reports Functions
-export { getReportsOverview } from './reports/getReportsOverview';
-export { getFinancialReport } from './reports/getFinancialReport';
 export { getDriverPerformanceReport } from './reports/getDriverPerformanceReport';
+export { getFinancialReport } from './reports/getFinancialReport';
+export { getReportsOverview } from './reports/getReportsOverview';
 
 // Export Finance Functions (Wallet & Payout System)
-export { onOrderCompleted } from './finance/orderSettlement';
 export { adminCreatePayoutRequest, adminUpdatePayoutStatus } from './finance/adminPayouts';
+export { onOrderCompleted } from './finance/orderSettlement';
+

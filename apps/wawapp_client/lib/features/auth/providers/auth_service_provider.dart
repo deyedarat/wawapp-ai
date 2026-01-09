@@ -48,6 +48,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
   final PhonePinAuth _authService;
   final FirebaseAuth _firebaseAuth;
   late final _authStateSubscription;
+  DateTime? _lastOtpSentTime;
 
   @override
   void dispose() {
@@ -59,7 +60,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
   Future<void> checkHasPin() async {
     final oldStatus = state.pinStatus;
     final user = _firebaseAuth.currentUser;
-    
+
     try {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Checking if user has PIN, isPinResetFlow=${state.isPinResetFlow}');
@@ -83,7 +84,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         final hasPinHash = await _authService.hasPinHash();
 
         // During PIN reset flow, force noPin to ensure router navigates to create-pin
-        final effectiveStatus = state.isPinResetFlow ? PinStatus.noPin : (hasPinHash ? PinStatus.hasPin : PinStatus.noPin);
+        final effectiveStatus =
+            state.isPinResetFlow ? PinStatus.noPin : (hasPinHash ? PinStatus.hasPin : PinStatus.noPin);
 
         if (kDebugMode && state.isPinResetFlow) {
           print('[ClientAuthNotifier] PIN reset flow active - forcing noPin (actual hasPinHash=$hasPinHash)');
@@ -92,15 +94,15 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         if (kDebugMode) {
           print('[ClientAuthNotifier] hasPinHash=$hasPinHash, effectiveStatus=$effectiveStatus');
         }
-        
+
         state = state.copyWith(
           pinStatus: effectiveStatus,
           phoneE164: user.phoneNumber,
         );
-        
+
         // Cache the result for next time
         await PinStatusCache.set(user.uid, effectiveStatus);
-        
+
         // Log PIN status change
         AuthLogger.logPinStatusChange(oldStatus.toString(), effectiveStatus.toString(), user.uid);
       } else {
@@ -111,7 +113,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Error checking PIN: $e');
       }
-      
+
       // On error, try to use cached value as fallback
       if (user != null) {
         final cached = await PinStatusCache.get(user.uid);
@@ -124,7 +126,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
           return;
         }
       }
-      
+
       state = state.copyWith(pinStatus: PinStatus.error);
       AuthLogger.logPinStatusChange(oldStatus.toString(), PinStatus.error.toString(), user?.uid);
     }
@@ -156,6 +158,22 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
 
   // Send OTP to phone number
   Future<void> sendOtp(String phone) async {
+    // RATE LIMIT CHECK: Client-side cooldown (60 seconds)
+    if (_lastOtpSentTime != null) {
+      final difference = DateTime.now().difference(_lastOtpSentTime!);
+      if (difference < const Duration(seconds: 60)) {
+        final remaining = 60 - difference.inSeconds;
+        state = state.copyWith(
+          error: 'يرجى الانتظار $remaining ثانية قبل إعادة المحاولة',
+          isLoading: false,
+        );
+        if (kDebugMode) {
+          print('[ClientAuthNotifier] sendOtp rate limited. Remaining: ${remaining}s');
+        }
+        return;
+      }
+    }
+
     // Guard: prevent duplicate calls
     if (state.otpStage == OtpStage.sending || state.otpStage == OtpStage.codeSent) {
       if (kDebugMode) {
@@ -172,13 +190,19 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
     );
     try {
       if (kDebugMode) {
-        print('[ClientAuthNotifier] Sending OTP to $phone');
+        final maskedPhone =
+            phone.length > 5 ? '${phone.substring(0, 3)}...${phone.substring(phone.length - 2)}' : '***';
+        print('[ClientAuthNotifier] Sending OTP to $maskedPhone');
       }
       await _authService.ensurePhoneSession(phone);
       final verificationId = _authService.lastVerificationId;
       if (kDebugMode) {
         print('[ClientAuthNotifier] OTP sent successfully, verificationId=$verificationId');
       }
+
+      // Update last sent time on success
+      _lastOtpSentTime = DateTime.now();
+
       state = state.copyWith(
         isLoading: false,
         phoneE164: phone,
@@ -232,14 +256,14 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) {
         print('[ClientAuthNotifier] PIN created successfully, clearing isPinResetFlow flag');
       }
-      
+
       final user = _firebaseAuth.currentUser;
       state = state.copyWith(
         isLoading: false,
         pinStatus: PinStatus.hasPin,
         isPinResetFlow: false, // Clear reset flow flag
       );
-      
+
       // Cache the new PIN status
       if (user != null) {
         await PinStatusCache.set(user.uid, PinStatus.hasPin);
@@ -361,10 +385,10 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) {
         print('[ClientAuthNotifier] Logging out user');
       }
-      
+
       // Clear PIN status cache
       await PinStatusCache.clearAll();
-      
+
       await _authService.signOut();
       state = const AuthState(); // Reset to initial state (clears isPinResetFlow)
       if (kDebugMode) {

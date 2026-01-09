@@ -644,4 +644,47 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get login => 'دخول';
+
+  @override
+  String get terms_of_service => 'شروط الخدمة';
+
+  @override
+  String get by_continuing_you_agree => 'بالمتابعة، أنت توافق على';
+
+  @override
+  String get and => 'و';
+
+  @override
+  String get delete_account => 'حذف الحساب';
+
+  @override
+  String get delete_account_title => 'حذف الحساب';
+
+  @override
+  String get delete_account_warning =>
+      'هذا الإجراء لا يمكن التراجع عنه. سيتم حذف جميع بياناتك بشكل دائم.';
+
+  @override
+  String get delete_account_confirm => 'هل أنت متأكد من حذف حسابك؟';
+
+  @override
+  String get account_deleted => 'تم حذف الحساب بنجاح';
+
+  @override
+  String get error_delete_account => 'فشل حذف الحساب. يرجى المحاولة مرة أخرى';
+
+  @override
+  String get deleting_account => 'جاري حذف الحساب...';
+
+  @override
+  String get type_delete_to_confirm => 'اكتب \'حذف\' للتأكيد';
+
+  @override
+  String get change_pin => 'تغيير رمز PIN';
+
+  @override
+  String get change_pin_subtitle => 'تعديل رمز الدخول السريع';
+
+  @override
+  String get security => 'الأمان';
 }

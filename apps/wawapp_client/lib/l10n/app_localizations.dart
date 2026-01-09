@@ -1365,6 +1365,90 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'دخول'**
   String get login;
+
+  /// No description provided for @terms_of_service.
+  ///
+  /// In ar, this message translates to:
+  /// **'شروط الخدمة'**
+  String get terms_of_service;
+
+  /// No description provided for @by_continuing_you_agree.
+  ///
+  /// In ar, this message translates to:
+  /// **'بالمتابعة، أنت توافق على'**
+  String get by_continuing_you_agree;
+
+  /// No description provided for @and.
+  ///
+  /// In ar, this message translates to:
+  /// **'و'**
+  String get and;
+
+  /// No description provided for @delete_account.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الحساب'**
+  String get delete_account;
+
+  /// No description provided for @delete_account_title.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الحساب'**
+  String get delete_account_title;
+
+  /// No description provided for @delete_account_warning.
+  ///
+  /// In ar, this message translates to:
+  /// **'هذا الإجراء لا يمكن التراجع عنه. سيتم حذف جميع بياناتك بشكل دائم.'**
+  String get delete_account_warning;
+
+  /// No description provided for @delete_account_confirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل أنت متأكد من حذف حسابك؟'**
+  String get delete_account_confirm;
+
+  /// No description provided for @account_deleted.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف الحساب بنجاح'**
+  String get account_deleted;
+
+  /// No description provided for @error_delete_account.
+  ///
+  /// In ar, this message translates to:
+  /// **'فشل حذف الحساب. يرجى المحاولة مرة أخرى'**
+  String get error_delete_account;
+
+  /// No description provided for @deleting_account.
+  ///
+  /// In ar, this message translates to:
+  /// **'جاري حذف الحساب...'**
+  String get deleting_account;
+
+  /// No description provided for @type_delete_to_confirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتب \'حذف\' للتأكيد'**
+  String get type_delete_to_confirm;
+
+  /// No description provided for @change_pin.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير رمز PIN'**
+  String get change_pin;
+
+  /// No description provided for @change_pin_subtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل رمز الدخول السريع'**
+  String get change_pin_subtitle;
+
+  /// No description provided for @security.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأمان'**
+  String get security;
 }
 
 class _AppLocalizationsDelegate
