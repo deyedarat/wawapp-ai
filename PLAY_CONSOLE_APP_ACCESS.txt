@@ -1,0 +1,59 @@
+====================================
+WawApp Client - App Access Info
+For Google Play Console Submission
+====================================
+
+TEST ACCOUNT CREDENTIALS
+-------------------------
+
+Phone Number: +22241410000
+OTP Code: 123456
+PIN: 2026
+
+
+LOGIN STEPS
+-----------
+
+1. Enter phone number: +22241410000
+2. Tap "Request OTP"
+3. Enter OTP: 123456
+4. Tap "Verify"
+5. Enter PIN: 2026
+6. Tap "Login"
+
+
+IMPORTANT NOTES
+---------------
+
+- This is a Firebase Phone Auth test number
+- No real SMS will be sent
+- The OTP (123456) is hardcoded for this test number
+- Account is permanent and will not be deleted
+- Full app functionality available after login
+
+
+WHAT TO TEST
+------------
+
+✓ Browse home screen and cargo categories
+✓ Select pickup/drop-off locations
+✓ Get delivery price quotes
+✓ View order history
+✓ Access profile settings
+✓ Test account deletion (use a different test account)
+✓ Change language (Arabic/English)
+
+
+LANGUAGES SUPPORTED
+-------------------
+
+Primary: Arabic (ar)
+Secondary: English (en)
+
+
+CONTACT
+-------
+
+Support: support@wawappmr.com
+Privacy: https://wawappmr.com/privacy
+Delete Account: https://wawappmr.com/delete-account

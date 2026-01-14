@@ -507,11 +507,9 @@ class ClientProfileScreen extends ConsumerWidget {
       );
 
       try {
-        // Call delete account function (placeholder - implement actual deletion)
-        // await ref.read(authProvider.notifier).deleteAccount();
-
-        // For now, just sign out
-        await ref.read(authProvider.notifier).logout();
+        // CRITICAL: Call REAL account deletion (NOT logout)
+        // Google Play Compliance: Account Deletion Requirement (2024-2025)
+        await ref.read(authProvider.notifier).deleteAccount();
 
         if (context.mounted) {
           context.safeDialogPop(); // Close loading
@@ -527,8 +525,9 @@ class ClientProfileScreen extends ConsumerWidget {
           context.safeDialogPop(); // Close loading
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(l10n.error_delete_account),
+              content: Text('${l10n.error_delete_account}: $e'),
               backgroundColor: context.errorColor,
+              duration: const Duration(seconds: 5),
             ),
           );
         }

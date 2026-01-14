@@ -1,0 +1,194 @@
+Launching lib\main.dart on SM A145P in debug mode...
+Running Gradle task 'assembleDebug'...                          
+Your project is configured with Android NDK 25.1.8937393, but the following plugin(s) depend on a different Android NDK version:
+- cloud_firestore requires Android NDK 27.0.12077973
+- cloud_functions requires Android NDK 27.0.12077973
+- firebase_analytics requires Android NDK 27.0.12077973
+- firebase_auth requires Android NDK 27.0.12077973
+- firebase_core requires Android NDK 27.0.12077973
+- firebase_crashlytics requires Android NDK 27.0.12077973
+- firebase_dynamic_links requires Android NDK 27.0.12077973
+- firebase_messaging requires Android NDK 27.0.12077973
+- firebase_remote_config requires Android NDK 27.0.12077973
+- flutter_local_notifications requires Android NDK 27.0.12077973
+- flutter_plugin_android_lifecycle requires Android NDK 27.0.12077973
+- geolocator_android requires Android NDK 27.0.12077973
+- google_maps_flutter_android requires Android NDK 27.0.12077973
+- integration_test requires Android NDK 27.0.12077973
+- shared_preferences_android requires Android NDK 27.0.12077973
+- url_launcher_android requires Android NDK 27.0.12077973
+Fix this issue by using the highest Android NDK version (they are backward compatible).
+Add the following to C:\Users\hp\Music\wawapp-ai\apps\wawapp_driver\android\app\build.gradle.kts:
+
+    android {
+        ndkVersion = "27.0.12077973"
+        ...
+    }
+Running Gradle task 'assembleDebug'...                             11.4s
+√ Built build\app\outputs\flutter-apk\app-debug.apk
+Installing build\app\outputs\flutter-apk\app-debug.apk...           8.4s
+D/FlutterJNI( 7408): Beginning load of flutter...
+D/FlutterJNI( 7408): flutter (null) was loaded normally!
+I/flutter ( 7408): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FlutterGeolocator( 7408): Attaching Geolocator to activity
+I/flutter ( 7408): 🟢 WawApp Driver starting...
+I/flutter ( 7408): 🔵 Initializing Firebase manually...
+D/FlutterGeolocator( 7408): Creating service.
+D/FlutterGeolocator( 7408): Binding to location service.
+D/FlutterGeolocator( 7408): Geolocator foreground service connected
+D/FlutterGeolocator( 7408): Initializing Geolocator services
+D/FlutterGeolocator( 7408): Flutter engine connected. Connected engine count 1
+D/EventGDTLogger( 7408): Session Event Type: SESSION_START
+D/SessionFirelogPublisher( 7408): Successfully logged Session Start event.
+Syncing files to device SM A145P...                             
+I/flutter ( 7408): ❌ Uncaught error: [core/duplicate-app] A Firebase App named "[DEFAULT]" already exists
+I/flutter ( 7408): Stack trace: #0      MethodChannelFirebase.initializeApp (package:firebase_core_platform_interface/src/method_channel/method_channel_firebase.dart:131:11)
+I/flutter ( 7408): <asynchronous suspension>
+I/flutter ( 7408): #1      Firebase.initializeApp (package:firebase_core/src/firebase.dart:66:31)
+I/flutter ( 7408): <asynchronous suspension>
+I/flutter ( 7408): #2      main.<anonymous closure> (package:wawapp_driver/main.dart:35:7)
+I/flutter ( 7408): <asynchronous suspension>
+I/flutter ( 7408): ----------------FIREBASE CRASHLYTICS----------------
+I/flutter ( 7408): [core/duplicate-app] A Firebase App named "[DEFAULT]" already exists
+I/flutter ( 7408): #0      MethodChannelFirebase.initializeApp (package:firebase_core_platform_interface/src/method_channel/method_channel_firebase.dart:131:11)
+I/flutter ( 7408): <asynchronous suspension>
+I/flutter ( 7408): #1      Firebase.initializeApp (package:firebase_core/src/firebase.dart:66:31)
+I/flutter ( 7408): <asynchronous suspension>
+I/flutter ( 7408): #2      main.<anonymous closure> (package:wawapp_driver/main.dart:35:7)
+I/flutter ( 7408): <asynchronous suspension>
+I/flutter ( 7408): ----------------------------------------------------
+Syncing files to device SM A145P...                                124ms
+
+Flutter run key commands.
+r Hot reload. 
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on SM A145P is available at: http://127.0.0.1:54216/F8GfHot7DE4=/
+The Flutter DevTools debugger and profiler on SM A145P is available at: http://127.0.0.1:9102?uri=http://127.0.0.1:54216/F8GfHot7DE4=/
+I/TRuntime.CctTransportBackend( 7408): Making request to: https://crashlyticsreports-pa.googleapis.com/v1/firelog/legacy/batchlog
+I/TRuntime.CctTransportBackend( 7408): Status Code: 200
+D/ProfileInstaller( 7408): Installing profile for com.wawapp.driver
+I/TRuntime.CctTransportBackend( 7408): Making request to: https://firebaselogging-pa.googleapis.com/v1/firelog/legacy/batchlog
+I/TRuntime.CctTransportBackend( 7408): Status Code: 200
+D/SessionLifecycleClient( 7408): Sending lifecycle 2 to service
+D/SessionLifecycleService( 7408): Activity backgrounding at 171017316
+D/OpenGLRenderer( 7408): CacheManager::trimMemory(20)
+I/ViewRootImpl@3a2872[MainActivity]( 7408): handleAppVisibility mAppVisible = true visible = false
+I/SurfaceView@7e57837( 7408): onWindowVisibilityChanged(8) false io.flutter.embedding.android.FlutterSurfaceView{7e57837 V.E...... ......ID 0,0-1080,2273} of ViewRootImpl@3a2872[MainActivity]
+I/SurfaceView( 7408): 132479031 Changes: creating=false format=false size=false visible=true alpha=false hint=false visible=true left=false top=false z=false attached=true lifecycleStrategy=false
+I/SurfaceView@7e57837( 7408): 132479031 Cur surface: Surface(name=null)/@0x18a6015
+I/SurfaceView( 7408): 132479031 surfaceDestroyed
+I/SurfaceView@7e57837( 7408): surfaceDestroyed callback.size 1 #2 io.flutter.embedding.android.FlutterSurfaceView{7e57837 V.E...... ......ID 0,0-1080,2273}
+I/SurfaceView@7e57837( 7408): updateSurface: mVisible = false mSurface.isValid() = true
+D/BLASTBufferQueue( 7408): [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0#1](f:0,a:0) destructor()
+D/BufferQueueConsumer( 7408): [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0#1(BLAST Consumer)1](id:1cf000000001,api:0,p:-1,c:7408) disconnect
+I/SurfaceView@7e57837( 7408): releaseSurfaces: viewRoot = ViewRootImpl@3a2872[MainActivity]
+V/SurfaceView@7e57837( 7408): Layout: x=0 y=0 w=1080 h=2273, frame=Rect(0, 0 - 1080, 2273)
+I/ViewRootImpl@3a2872[MainActivity]( 7408): destroyHardwareResources: Callers=android.view.ViewRootImpl.performTraversals:3932 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 android.view.Choreographer.doCallbacks:1153 android.view.Choreographer.doFrame:1079 android.view.Choreographer$FrameDisplayEventReceiver.run:1646 android.os.Handler.handleCallback:958 android.os.Handler.dispatchMessage:99 
+D/OpenGLRenderer( 7408): CacheManager::trimMemory(20)
+D/BLASTBufferQueue( 7408): [ViewRootImpl@3a2872[MainActivity]#0](f:0,a:0) destructor()
+D/BufferQueueConsumer( 7408): [ViewRootImpl@3a2872[MainActivity]#0(BLAST Consumer)0](id:1cf000000000,api:0,p:-1,c:7408) disconnect
+I/ViewRootImpl@3a2872[MainActivity]( 7408): Relayout returned: old=(0,0,1080,2408) new=(0,0,1080,2408) relayoutAsync=false req=(1080,2408)8 dur=12 res=0x402 s={false 0x0} ch=true seqId=0
+I/SurfaceView@7e57837( 7408): windowStopped(true) false io.flutter.embedding.android.FlutterSurfaceView{7e57837 V.E...... ......ID 0,0-1080,2273} of ViewRootImpl@3a2872[MainActivity]
+D/SurfaceView@7e57837( 7408): updateSurface: surface is not valid
+I/SurfaceView@7e57837( 7408): releaseSurfaces: viewRoot = ViewRootImpl@3a2872[MainActivity]
+D/SurfaceView@7e57837( 7408): updateSurface: surface is not valid
+I/SurfaceView@7e57837( 7408): releaseSurfaces: viewRoot = ViewRootImpl@3a2872[MainActivity]
+I/ViewRootImpl@3a2872[MainActivity]( 7408): stopped(true) old = false
+D/ViewRootImpl@3a2872[MainActivity]( 7408): WindowStopped on com.wawapp.driver/com.wawapp.driver.MainActivity set to true
+D/OpenGLRenderer( 7408): CacheManager::trimMemory(20)
+D/SurfaceView@7e57837( 7408): updateSurface: surface is not valid
+I/SurfaceView@7e57837( 7408): releaseSurfaces: viewRoot = ViewRootImpl@3a2872[MainActivity]
+I/ViewRootImpl@3a2872[MainActivity]( 7408): onDisplayChanged oldDisplayState=2 newDisplayState=1
+D/SurfaceView@7e57837( 7408): updateSurface: surface is not valid
+I/SurfaceView@7e57837( 7408): releaseSurfaces: viewRoot = ViewRootImpl@3a2872[MainActivity]
+I/ViewRootImpl@3a2872[MainActivity]( 7408): onDisplayChanged oldDisplayState=1 newDisplayState=1
+I/ViewRootImpl@3a2872[MainActivity]( 7408): handleAppVisibility mAppVisible = false visible = true
+I/InsetsController( 7408): onStateChanged: host=com.wawapp.driver/com.wawapp.driver.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7209, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2408), mDisplayCutout=DisplayCutout{insets=Rect(0, 64 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(468, 0 - 612, 64), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2408 physicalDisplayWidth=1080 physicalDisplayHeight=2408 density={2.8125} cutoutSpec={M 0,0 H -25.6‬ V 22.75555555555556 H 25.6‬ V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2408), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 64) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=1080 displayHeight=2408 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {98150001 mType=navigationBars mFrame=[0,2273][1080,2408] mVisible=false mFlags=[]}, InsetsSource: {98150004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {98150005 mType=mandatorySystemGestures mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {98150006 mType=tappableElement mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {98150024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,64] mVisible=true mFlags=[]}, InsetsSource: {79c30000 mType=statusBars mFrame=[0,0][1080,64] mVisible=true mFlags=[]}, InsetsSource: {79c30005 mType=mandatorySystemGestures mFrame=[0,0][1080,98] mVisible=true mFlags=[]}, InsetsSource: {79c30006 mType=tappableElement mFrame=[0,0][1080,64] mVisible=true mFlags=[]} }
+I/SurfaceView@7e57837( 7408): onWindowVisibilityChanged(4) false io.flutter.embedding.android.FlutterSurfaceView{7e57837 G.E...... ......ID 0,0-1080,2273} of ViewRootImpl@3a2872[MainActivity]
+D/SurfaceView@7e57837( 7408): updateSurface: surface is not valid
+I/SurfaceView@7e57837( 7408): releaseSurfaces: viewRoot = ViewRootImpl@3a2872[MainActivity]
+I/ViewRootImpl@3a2872[MainActivity]( 7408): destroyHardwareResources: Callers=android.view.ViewRootImpl.performTraversals:3932 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 android.view.Choreographer.doCallbacks:1153 android.view.Choreographer.doFrame:1079 android.view.Choreographer$FrameDisplayEventReceiver.run:1646 android.os.Handler.handleCallback:958 android.os.Handler.dispatchMessage:99 
+D/OpenGLRenderer( 7408): CacheManager::trimMemory(20)
+I/InsetsController( 7408): onStateChanged: host=com.wawapp.driver/com.wawapp.driver.MainActivity, from=android.view.ViewRootImpl.relayoutWindow:10072, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2408), mDisplayCutout=DisplayCutout{insets=Rect(0, 64 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(468, 0 - 612, 64), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2408 physicalDisplayWidth=1080 physicalDisplayHeight=2408 density={2.8125} cutoutSpec={M 0,0 H -25.6‬ V 22.75555555555556 H 25.6‬ V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2408), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 64) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=1080 displayHeight=2408 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {98150001 mType=navigationBars mFrame=[0,2273][1080,2408] mVisible=false mFlags=[]}, InsetsSource: {98150004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {98150005 mType=mandatorySystemGestures mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {98150006 mType=tappableElement mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {98150024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {3 mType=ime mFrame=[0,0][0,0] mVisible=false mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,64] mVisible=true mFlags=[]}, InsetsSource: {79c30000 mType=statusBars mFrame=[0,0][1080,64] mVisible=true mFlags=[]}, InsetsSource: {79c30005 mType=mandatorySystemGestures mFrame=[0,0][1080,98] mVisible=true mFlags=[]}, InsetsSource: {79c30006 mType=tappableElement mFrame=[0,0][1080,64] mVisible=true mFlags=[]} }
+I/ViewRootImpl@3a2872[MainActivity]( 7408): Relayout returned: old=(0,0,1080,2408) new=(0,0,1080,2408) relayoutAsync=false req=(1080,2408)4 dur=11 res=0x400 s={false 0x0} ch=false seqId=0
+D/SurfaceView@7e57837( 7408): updateSurface: surface is not valid
+I/SurfaceView@7e57837( 7408): releaseSurfaces: viewRoot = ViewRootImpl@3a2872[MainActivity]
+I/ViewRootImpl@3a2872[MainActivity]( 7408): stopped(false) old = true
+D/ViewRootImpl@3a2872[MainActivity]( 7408): WindowStopped on com.wawapp.driver/com.wawapp.driver.MainActivity set to false
+D/SurfaceView@7e57837( 7408): updateSurface: surface is not valid
+I/SurfaceView@7e57837( 7408): releaseSurfaces: viewRoot = ViewRootImpl@3a2872[MainActivity]
+I/ViewRootImpl@3a2872[MainActivity]( 7408): onDisplayChanged oldDisplayState=1 newDisplayState=2
+D/SessionLifecycleClient( 7408): Sending lifecycle 1 to service
+I/SurfaceView@7e57837( 7408): onWindowVisibilityChanged(0) false io.flutter.embedding.android.FlutterSurfaceView{7e57837 V.E...... ......ID 0,0-1080,2273} of ViewRootImpl@3a2872[MainActivity]
+D/SurfaceView@7e57837( 7408): updateSurface: surface is not valid
+I/SurfaceView@7e57837( 7408): releaseSurfaces: viewRoot = ViewRootImpl@3a2872[MainActivity]
+D/SessionLifecycleService( 7408): Activity foregrounding at 171018917.
+I/InsetsController( 7408): onStateChanged: host=com.wawapp.driver/com.wawapp.driver.MainActivity, from=android.view.ViewRootImpl.relayoutWindow:10072, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2408), mDisplayCutout=DisplayCutout{insets=Rect(0, 64 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(468, 0 - 612, 64), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2408 physicalDisplayWidth=1080 physicalDisplayHeight=2408 density={2.8125} cutoutSpec={M 0,0 H -25.6‬ V 22.75555555555556 H 25.6‬ V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2408), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 64) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=1080 displayHeight=2408 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {98150001 mType=navigationBars mFrame=[0,2273][1080,2408] mVisible=false mFlags=[]}, InsetsSource: {98150004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {98150005 mType=mandatorySystemGestures mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {98150006 mType=tappableElement mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {98150024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,64] mVisible=true mFlags=[]}, InsetsSource: {79c30000 mType=statusBars mFrame=[0,0][1080,64] mVisible=true mFlags=[]}, InsetsSource: {79c30005 mType=mandatorySystemGestures mFrame=[0,0][1080,98] mVisible=true mFlags=[]}, InsetsSource: {79c30006 mType=tappableElement mFrame=[0,0][1080,64] mVisible=true mFlags=[]} }
+D/BufferQueueConsumer( 7408): [](id:1cf000000002,api:0,p:-1,c:7408) connect: controlledByApp=false
+I/BLASTBufferQueue_Java( 7408): new BLASTBufferQueue, mName= ViewRootImpl@3a2872[MainActivity] mNativeObject= 0xb400007aa2263b80 sc.mNativeObject= 0xb400007aa21e6080 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3028 android.view.ViewRootImpl.relayoutWindow:10131 android.view.ViewRootImpl.performTraversals:4110 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 android.view.Choreographer.doCallbacks:1153 android.view.Choreographer.doFrame:1079 android.view.Choreographer$FrameDisplayEventReceiver.run:1646 
+I/BLASTBufferQueue_Java( 7408): update, w= 1080 h= 2408 mName = ViewRootImpl@3a2872[MainActivity] mNativeObject= 0xb400007aa2263b80 sc.mNativeObject= 0xb400007aa21e6080 format= -3 caller= android.graphics.BLASTBufferQueue.<init>:89 android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3028 android.view.ViewRootImpl.relayoutWindow:10131 android.view.ViewRootImpl.performTraversals:4110 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 
+I/ViewRootImpl@3a2872[MainActivity]( 7408): Relayout returned: old=(0,0,1080,2408) new=(0,0,1080,2408) relayoutAsync=false req=(1080,2408)0 dur=30 res=0x403 s={true 0xb400007a4cef0000} ch=true seqId=0
+D/ViewRootImpl@3a2872[MainActivity]( 7408): mThreadedRenderer.initialize() mSurface={isValid=true 0xb400007a4cef0000} hwInitialized=true
+I/SurfaceView( 7408): 132479031 Changes: creating=false format=false size=false visible=false alpha=false hint=false visible=false left=false top=false z=false attached=true lifecycleStrategy=false
+I/SurfaceView@7e57837( 7408): windowStopped(false) true io.flutter.embedding.android.FlutterSurfaceView{7e57837 V.E...... ......ID 0,0-1080,2273} of ViewRootImpl@3a2872[MainActivity]
+I/SurfaceView( 7408): 132479031 Changes: creating=true format=false size=false visible=true alpha=false hint=false visible=true left=false top=false z=false attached=true lifecycleStrategy=false
+D/BufferQueueConsumer( 7408): [](id:1cf000000003,api:0,p:-1,c:7408) connect: controlledByApp=false
+I/BLASTBufferQueue_Java( 7408): update, w= 1080 h= 2273 mName = null mNativeObject= 0xb400007aa2263f00 sc.mNativeObject= 0xb400007ab13cf780 format= 4 caller= android.view.SurfaceView.createBlastSurfaceControls:1517 android.view.SurfaceView.updateSurface:1193 android.view.SurfaceView.setWindowStopped:403 android.view.SurfaceView.surfaceCreated:1994 android.view.ViewRootImpl.notifySurfaceCreated:2945 android.view.ViewRootImpl.performTraversals:4580 
+I/SurfaceView@7e57837( 7408): 132479031 Cur surface: Surface(name=null)/@0x18a6015
+I/SurfaceView@7e57837( 7408): pST: sr = Rect(0, 0 - 1080, 2273) sw = 1080 sh = 2273
+D/SurfaceView@7e57837( 7408): 132479031 performSurfaceTransaction RenderWorker position = [0, 0, 1080, 2273] surfaceSize = 1080x2273
+I/SurfaceView@7e57837( 7408): updateSurface: mVisible = true mSurface.isValid() = true
+I/SurfaceView@7e57837( 7408): updateSurface: mSurfaceCreated = false surfaceChanged = true visibleChanged = true
+I/SurfaceView( 7408): 132479031 visibleChanged -- surfaceCreated
+I/SurfaceView@7e57837( 7408): surfaceCreated 1 #1 io.flutter.embedding.android.FlutterSurfaceView{7e57837 V.E...... ......ID 0,0-1080,2273}
+E/gralloc4( 7408): ERROR: Format allocation info not found for format: 38
+E/gralloc4( 7408): ERROR: Format allocation info not found for format: 0
+E/gralloc4( 7408): Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+E/gralloc4( 7408): ERROR: Unrecognized and/or unsupported format 0x38 and usage 0xb00
+E/gralloc4( 7408): Allocation for the given description will not succeed. error: -22
+E/Gralloc4( 7408): isSupported(1, 1, 56, 1, ...) failed with 5
+E/GraphicBufferAllocator( 7408): Failed to allocate (4 x 4) layerCount 1 format 56 usage b00: 5
+E/AHardwareBuffer( 7408): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -5), handle=0x0
+E/gralloc4( 7408): ERROR: Format allocation info not found for format: 3b
+E/gralloc4( 7408): ERROR: Format allocation info not found for format: 0
+E/gralloc4( 7408): Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+E/gralloc4( 7408): ERROR: Unrecognized and/or unsupported format 0x3b and usage 0xb00
+E/gralloc4( 7408): Allocation for the given description will not succeed. error: -22
+E/Gralloc4( 7408): isSupported(1, 1, 59, 1, ...) failed with 5
+E/GraphicBufferAllocator( 7408): Failed to allocate (4 x 4) layerCount 1 format 59 usage b00: 5
+E/AHardwareBuffer( 7408): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -5), handle=0x0
+E/gralloc4( 7408): ERROR: Format allocation info not found for format: 38
+E/gralloc4( 7408): ERROR: Format allocation info not found for format: 0
+E/gralloc4( 7408): Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+E/gralloc4( 7408): ERROR: Unrecognized and/or unsupported format 0x38 and usage 0xb00
+E/gralloc4( 7408): Allocation for the given description will not succeed. error: -22
+E/Gralloc4( 7408): isSupported(1, 1, 56, 1, ...) failed with 5
+E/GraphicBufferAllocator( 7408): Failed to allocate (4 x 4) layerCount 1 format 56 usage b00: 5
+E/AHardwareBuffer( 7408): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -5), handle=0x0
+E/gralloc4( 7408): ERROR: Format allocation info not found for format: 3b
+E/gralloc4( 7408): ERROR: Format allocation info not found for format: 0
+E/gralloc4( 7408): Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+E/gralloc4( 7408): ERROR: Unrecognized and/or unsupported format 0x3b and usage 0xb00
+E/gralloc4( 7408): Allocation for the given description will not succeed. error: -22
+E/Gralloc4( 7408): isSupported(1, 1, 59, 1, ...) failed with 5
+E/GraphicBufferAllocator( 7408): Failed to allocate (4 x 4) layerCount 1 format 59 usage b00: 5
+E/AHardwareBuffer( 7408): GraphicBuffer(w=4, h=4, lc=1) failed (Unknown error -5), handle=0x0
+I/SurfaceView( 7408): 132479031 surfaceChanged -- format=4 w=1080 h=2273
+I/SurfaceView@7e57837( 7408): surfaceChanged (1080,2273) 1 #1 io.flutter.embedding.android.FlutterSurfaceView{7e57837 V.E...... ......ID 0,0-1080,2273}
+I/SurfaceView( 7408): 132479031 surfaceRedrawNeeded
+V/SurfaceView@7e57837( 7408): Layout: x=0 y=0 w=1080 h=2273, frame=Rect(0, 0 - 1080, 2273)
+D/ViewRootImpl@3a2872[MainActivity]( 7408): reportNextDraw android.view.ViewRootImpl.performTraversals:4718 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 
+I/ViewRootImpl@3a2872[MainActivity]( 7408): Resizing android.view.ViewRootImpl@f5ddfa3: frame = [0,0][1080,2408] reportDraw = true forceLayout = false syncSeqId = -1
+I/InsetsController( 7408): onStateChanged: host=com.wawapp.driver/com.wawapp.driver.MainActivity, from=android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7196, state=InsetsState: {mDisplayFrame=Rect(0, 0 - 1080, 2408), mDisplayCutout=DisplayCutout{insets=Rect(0, 64 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(468, 0 - 612, 64), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2408 physicalDisplayWidth=1080 physicalDisplayHeight=2408 density={2.8125} cutoutSpec={M 0,0 H -25.6‬ V 22.75555555555556 H 25.6‬ V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}, mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}  mRoundedCornerFrame=Rect(0, 0 - 1080, 2408), mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 64) rotation=0}, mDisplayShape=DisplayShape{ spec=-311912193 displayWidth=1080 displayHeight=2408 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}, mSources= { InsetsSource: {98150001 mType=navigationBars mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {98150004 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {98150005 mType=mandatorySystemGestures mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {98150006 mType=tappableElement mFrame=[0,2273][1080,2408] mVisible=true mFlags=[]}, InsetsSource: {98150024 mType=systemGestures mFrame=[0,0][0,0] mVisible=true mFlags=[]}, InsetsSource: {27 mType=displayCutout mFrame=[0,0][1080,64] mVisible=true mFlags=[]}, InsetsSource: {79c30000 mType=statusBars mFrame=[0,0][1080,64] mVisible=true mFlags=[]}, InsetsSource: {79c30005 mType=mandatorySystemGestures mFrame=[0,0][1080,98] mVisible=true mFlags=[]}, InsetsSource: {79c30006 mType=tappableElement mFrame=[0,0][1080,64] mVisible=true mFlags=[]} }
+I/ViewRootImpl@3a2872[MainActivity]( 7408): handleResized, msg = 5 frames=ClientWindowFrames{frame=[0,0][1080,2408] display=[0,0][1080,2408] parentFrame=[0,0][0,0]} forceNextWindowRelayout=false displayId=0 dragResizing=false compatScale=1.0 frameChanged=false attachedFrameChanged=false configChanged=false displayChanged=false compatScaleChanged=false
+I/ViewRootImpl@3a2872[MainActivity]( 7408): handleResized mSyncSeqId = 0
+D/ViewRootImpl@3a2872[MainActivity]( 7408): reportNextDraw android.view.ViewRootImpl.handleResized:2530 android.view.ViewRootImpl.-$$Nest$mhandleResized:0 android.view.ViewRootImpl$ViewRootHandler.handleMessageImpl:7197 android.view.ViewRootImpl$ViewRootHandler.handleMessage:7166 android.os.Handler.dispatchMessage:106 
+I/ViewRootImpl@3a2872[MainActivity]( 7408): onDisplayChanged oldDisplayState=2 newDisplayState=2
+I/InsetsSourceConsumer( 7408): applyRequestedVisibilityToControl: visible=true, type=statusBars, host=com.wawapp.driver/com.wawapp.driver.MainActivity
+I/InsetsSourceConsumer( 7408): applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.wawapp.driver/com.wawapp.driver.MainActivity
+Lost connection to device.

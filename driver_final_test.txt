@@ -1,0 +1,72 @@
+Launching lib\main.dart on SM A145P in debug mode...
+Running Gradle task 'assembleDebug'...                          
+Your project is configured with Android NDK 25.1.8937393, but the following plugin(s) depend on a different Android NDK version:
+- cloud_firestore requires Android NDK 27.0.12077973
+- cloud_functions requires Android NDK 27.0.12077973
+- firebase_analytics requires Android NDK 27.0.12077973
+- firebase_auth requires Android NDK 27.0.12077973
+- firebase_core requires Android NDK 27.0.12077973
+- firebase_crashlytics requires Android NDK 27.0.12077973
+- firebase_dynamic_links requires Android NDK 27.0.12077973
+- firebase_messaging requires Android NDK 27.0.12077973
+- firebase_remote_config requires Android NDK 27.0.12077973
+- flutter_local_notifications requires Android NDK 27.0.12077973
+- flutter_plugin_android_lifecycle requires Android NDK 27.0.12077973
+- geolocator_android requires Android NDK 27.0.12077973
+- google_maps_flutter_android requires Android NDK 27.0.12077973
+- integration_test requires Android NDK 27.0.12077973
+- shared_preferences_android requires Android NDK 27.0.12077973
+- url_launcher_android requires Android NDK 27.0.12077973
+Fix this issue by using the highest Android NDK version (they are backward compatible).
+Add the following to C:\Users\hp\Music\wawapp-ai\apps\wawapp_driver\android\app\build.gradle.kts:
+
+    android {
+        ndkVersion = "27.0.12077973"
+        ...
+    }
+Running Gradle task 'assembleDebug'...                             21.1s
+√ Built build\app\outputs\flutter-apk\app-debug.apk
+Installing build\app\outputs\flutter-apk\app-debug.apk...           8.4s
+D/FlutterJNI( 6993): Beginning load of flutter...
+D/FlutterJNI( 6993): flutter (null) was loaded normally!
+I/flutter ( 6993): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FlutterGeolocator( 6993): Attaching Geolocator to activity
+I/flutter ( 6993): 🟢 WawApp Driver starting...
+I/flutter ( 6993): 🔵 Initializing Firebase manually...
+D/FlutterGeolocator( 6993): Creating service.
+D/FlutterGeolocator( 6993): Binding to location service.
+D/FlutterGeolocator( 6993): Geolocator foreground service connected
+D/FlutterGeolocator( 6993): Initializing Geolocator services
+D/FlutterGeolocator( 6993): Flutter engine connected. Connected engine count 1
+I/flutter ( 6993): ❌ Uncaught error: [core/duplicate-app] A Firebase App named "[DEFAULT]" already exists
+I/flutter ( 6993): Stack trace: #0      MethodChannelFirebase.initializeApp (package:firebase_core_platform_interface/src/method_channel/method_channel_firebase.dart:131:11)
+I/flutter ( 6993): <asynchronous suspension>
+I/flutter ( 6993): #1      Firebase.initializeApp (package:firebase_core/src/firebase.dart:66:31)
+I/flutter ( 6993): <asynchronous suspension>
+I/flutter ( 6993): #2      main.<anonymous closure> (package:wawapp_driver/main.dart:38:7)
+I/flutter ( 6993): <asynchronous suspension>
+I/flutter ( 6993): ----------------FIREBASE CRASHLYTICS----------------
+I/flutter ( 6993): [core/duplicate-app] A Firebase App named "[DEFAULT]" already exists
+I/flutter ( 6993): #0      MethodChannelFirebase.initializeApp (package:firebase_core_platform_interface/src/method_channel/method_channel_firebase.dart:131:11)
+I/flutter ( 6993): <asynchronous suspension>
+I/flutter ( 6993): #1      Firebase.initializeApp (package:firebase_core/src/firebase.dart:66:31)
+I/flutter ( 6993): <asynchronous suspension>
+I/flutter ( 6993): #2      main.<anonymous closure> (package:wawapp_driver/main.dart:38:7)
+I/flutter ( 6993): <asynchronous suspension>
+I/flutter ( 6993): ----------------------------------------------------
+Syncing files to device SM A145P...                                144ms
+
+Flutter run key commands.
+r Hot reload. 
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on SM A145P is available at: http://127.0.0.1:53086/lW1O7EkS0Cs=/
+The Flutter DevTools debugger and profiler on SM A145P is available at: http://127.0.0.1:9102?uri=http://127.0.0.1:53086/lW1O7EkS0Cs=/
+I/TRuntime.CctTransportBackend( 6993): Making request to: https://crashlyticsreports-pa.googleapis.com/v1/firelog/legacy/batchlog
+I/TRuntime.CctTransportBackend( 6993): Status Code: 200
+D/ProfileInstaller( 6993): Installing profile for com.wawapp.driver
+Lost connection to device.

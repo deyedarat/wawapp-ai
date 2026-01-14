@@ -1,0 +1,4 @@
+01-12 07:30:35.036 I/[IPSA-C] IpsUtilityFunction(17019): checkSelfLocationPermission: current=true, last=true
+01-12 07:30:41.913 I/NSLocationMonitor( 1373): getGPSUsingApps() called
+01-12 07:30:41.913 W/NSLocationMonitor( 1373): NSMonitorService is not connected, return null
+01-12 07:30:41.938 D/SLocationProxy( 1373): GNSS batching is disabled.
