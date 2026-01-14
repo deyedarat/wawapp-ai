@@ -1,4 +1,5 @@
 import 'package:auth_shared/auth_shared.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:core_shared/core_shared.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -403,6 +404,70 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         error: e.toString(),
         isPinResetFlow: false,
       );
+    }
+  }
+
+  /// Delete Account - Google Play Compliance (Account Deletion Requirement 2024-2025)
+  ///
+  /// This is a DESTRUCTIVE operation that permanently deletes:
+  /// - Firebase Authentication user
+  /// - Firestore user document
+  /// - All associated user data
+  ///
+  /// This action CANNOT be undone.
+  Future<void> deleteAccount() async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null) {
+        throw Exception('لا يوجد مستخدم مسجل دخول');
+      }
+
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Deleting account for user: ${user.uid}');
+      }
+
+      // Call Cloud Function to delete server-side data
+      final callable = FirebaseFunctions.instance.httpsCallable('deleteAccount');
+      final result = await callable.call();
+
+      // Validate response
+      if (result.data['ok'] != true) {
+        throw Exception('فشل حذف الحساب من الخادم');
+      }
+
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Account deleted successfully from server');
+      }
+
+      // Clear PIN status cache
+      await PinStatusCache.clearAll();
+
+      // Reset to initial state
+      // Note: Firebase Auth will automatically sign out after server deletes the auth account
+      state = const AuthState();
+
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Account deletion complete');
+      }
+    } on FirebaseFunctionsException catch (e) {
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Delete account error (Firebase): ${e.code} - ${e.message}');
+      }
+      state = state.copyWith(
+        isLoading: false,
+        error: 'فشل حذف الحساب: ${e.message ?? e.code}',
+      );
+      rethrow;
+    } on Object catch (e) {
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Delete account error: $e');
+      }
+      state = state.copyWith(
+        isLoading: false,
+        error: 'فشل حذف الحساب: ${e.toString()}',
+      );
+      rethrow;
     }
   }
 }

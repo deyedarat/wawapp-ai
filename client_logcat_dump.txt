@@ -1,0 +1,281 @@
+--------- beginning of main
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.android.settings.category.ia.sound
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.apps.miphone.aiai.captions.settingsui.settingsactivity.CaptionsSettingsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.android.settings.category.ia.privacy
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.apps.miphone.aiai.settings.ui.user.AsiSettingsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.accountsettings.ui.PrivacyHubActivityControlsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.adsidentity.settings.AdsIdentityIaSettingsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.android.settings.category.ia.device
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.auth.proximity.multidevice.SettingsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.autofill.ui.AutofillSettingsPrivacyHubActivity , tileID : null
+01-11 08:01:42.173 32088 32134 I SecTileUtils: tileID : google_settings , tile.support GLOBAL
+01-11 08:01:42.173 32088 32134 D SecTileUtils: [GLOBAL, Common, SalesCode] category.addTile com.google.android.gms.app.settings.GoogleSettingsIALink , tileID : google_settings
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.android.settings.category.ia.emergency
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.location.settings.DrivingBehaviorPlatformSettingsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.location.settings.EAlertPlatformSettingsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.multidevice.ui.link.LinkDevicesSettingsAppCompatActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.personalsafety.settings.BleTagPlatformSettingsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.android.settings.category.ia.advanced_security
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.personalsafety.settings.autolock.AutoLockSettingsActivityAdvancedSecuritySafetyCenter , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.android.settings.category.ia.legacy_advanced_security
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.personalsafety.settings.autolock.AutoLockSettingsActivityAdvancedSecurity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.google.android.settings.category.ia.advanced_security
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.personalsafety.settings.autolock.AutoLockSettingsActivityAdvancedSettings , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.safebrowsing.settings.SafeBrowsingSettingsActivityAdvancedSettings , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.safebrowsing.settings.SafeBrowsingSettingsActivityAdvancedSecurity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.safebrowsing.settings.SafeBrowsingSettingsActivityAdvancedSecuritySafetyCenter , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.thunderbird.settings.ThunderbirdSettingInjectorPlatformService , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.usagereporting.settings.UsageReportingActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.android.healthconnect.controller.LegacySettingsEntryPoint , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.projection.gearhead.companion.settings.DefaultSettingsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.android.settings.category.ia.apps
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.android.providers.media.photopicker.PhotoPickerSettingsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.samsung.android.settings.category.ia.usefulfeatures
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.samsung.android.app.settings.SettingsAliasActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.samsung.android.settings.category.ia.multidevices
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.samsung.android.cmcsettings.view.CMCMainActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.android.settings.category.ia.my_device_info
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.samsung.android.settingshelper.uiview.activity.SHSettingsAboutDeviceActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.samsung.android.settings.category.ia.reset_settings
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.samsung.android.settingshelper.uiview.activity.SHSettingsResetActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.samsung.android.settingshelper.uiview.aliasResetActivityName , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.android.settings.backup.UserBackupSettingsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.android.settings.category.ia.development
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.android.traceur.MainActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.android.settings.category.ia.privacy_controls
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.adsidentity.settings.AdsIdentitySettingsActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.apps.search.assistant.surfaces.settings.root.SettingsActivityForAppsSettings , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.samsung.android.honeyboard.settings.aiwriter.WritingAssistSettings , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.samsung.android.app.watchmanager.setupwizard.SetupWizardWelcomeActivity , tileID : null
+01-11 08:01:42.173 32088 32134 D SecTileUtils: new DashBoardCategory key : com.android.settings.category.ia.account_detail
+01-11 08:01:42.173 32088 32134 D SecTileUtils: category.addTile com.google.android.gms.accountsettings.mg.ui.main.MainActivity , tileID : null
+01-11 08:01:42.192 32088 32088 I AppBarLayout: [updateInternalHeight] orientation : 1, density : 450, windowHeight : 2209, [3]updateInternalHeight: lp.height : 861, mHeightProportion : 0.39 , mIsImmersiveScroll : false , mIsSetByUser : false , mImmersiveTopInset : 0
+01-11 08:01:42.192 32088 32088 I AppBarLayout: WindowInsets{
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     statusBars=Insets{left=0, top=64, right=0, bottom=0} max=Insets{left=0, top=64, right=0, bottom=0} vis=true
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     navigationBars=Insets{left=0, top=0, right=0, bottom=0} max=Insets{left=0, top=0, right=0, bottom=135} vis=false
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     captionBar=null max=null vis=false
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     ime=Insets{left=0, top=0, right=0, bottom=0} max=null vis=false
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     systemGestures=Insets{left=0, top=98, right=0, bottom=135} max=Insets{left=0, top=98, right=0, bottom=135} vis=true
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     mandatorySystemGestures=Insets{left=0, top=98, right=0, bottom=135} max=Insets{left=0, top=98, right=0, bottom=135} vis=true
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     tappableElement=Insets{left=0, top=64, right=0, bottom=135} max=Insets{left=0, top=64, right=0, bottom=135} vis=true
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     displayCutout=Insets{left=0, top=64, right=0, bottom=0} max=Insets{left=0, top=64, right=0, bottom=0} vis=true
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     windowDecor=null max=null vis=false
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     systemOverlays=null max=null vis=false
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     cutout=DisplayCutout{insets=Rect(0, 64 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(468, 0 - 612, 64), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2408 physicalDisplayWidth=1080 physicalDisplayHeight=2408 density={2.8125} cutoutSpec={M 0,0 H -25.6‬ V 22.75555555555556 H 25.6‬ V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     roundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     privacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 64) rotation=0}
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     displayShape=DisplayShape{ spec=-311912193 displayWidth=1080 displayHeight=2408 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     forceConsumingTypes=
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     suppressScrimTypes=
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     compatInsetsTypes=statusBars navigationBars captionBar displayCutout systemOverlays
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     compatIgnoreVisibility=false
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     systemWindowInsetsConsumed=false
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     stableInsetsConsumed=false
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     displayCutoutConsumed=false
+01-11 08:01:42.192 32088 32088 I AppBarLayout:     }
+01-11 08:01:42.193  1745  4297 V WindowManager: Relayout Window{942312e u0 com.android.settings/com.android.settings.Settings$LocationSettingsActivity}: viewVisibility=0 req=1080x2408 ty=1 d0
+--------- beginning of system
+01-11 08:01:42.193  1745  4297 D RestrictionPolicy: isScreenCaptureEnabled : ret=true userId=0
+01-11 08:01:42.194  1215  1808 E BufferQueueDebug: [com.android.settings/com.android.settings.Settings$LocationSettingsActivity$_32088#619](this:0xb40000719ef10790,id:-1,api:0,p:-1,c:-1) id info cannot be read from 'com.android.settings/com.android.settings.Settings$LocationSettingsActivity$_32088#619'
+01-11 08:01:42.194  1215  1808 I BufferQueueDebug: [com.android.settings/com.android.settings.Settings$LocationSettingsActivity$_32088#619](this:0xb40000719ef10790,id:-1,api:0,p:-1,c:-1) BufferQueue core=(1215:/system/bin/surfaceflinger)
+01-11 08:01:42.194  1215  1808 I SurfaceFlinger: id=619 createSurf, flag=44004, com.android.settings/com.android.settings.Settings$LocationSettingsActivity$_32088#619
+01-11 08:01:42.194  1745  4297 D WindowManager: makeSurface duration=1 name=com.android.settings/com.android.settings.Settings$LocationSettingsActivity$_32088
+01-11 08:01:42.196  1745  4297 D WindowManager: SyncGroup 41:  Unfinished container: ActivityRecord{1a55cdc u0 com.android.settings/.Settings$LocationSettingsActivity t10919} mSyncState=2
+01-11 08:01:42.197  1745  4297 V Transition:  allReady query: used=true, override=false, defer=0, states=Display{#0 state=OFF size=1080x2408 ROTATION_0}:true
+01-11 08:01:42.199  1745  4297 V WindowManager: SyncGroup 41: Finished!
+01-11 08:01:42.199  1745  4297 D ChangeTransitionController: onTransactionReady: TransitionRecord{1ef3d4f id=41 type=OPEN flags=0x0}
+01-11 08:01:42.199  1745  4297 V WindowManager: Start calculating TransitionInfo based on participants: {ActivityRecord{1a55cdc u0 com.android.settings/.Settings$LocationSettingsActivity t10919}, Task{3dbc1e5 #10919 type=standard A=1000:com.android.settings}}
+01-11 08:01:42.200  1745  4297 V WindowManager:   Final targets: []
+01-11 08:01:42.200  1745  4297 D RestrictionPolicy: isScreenCaptureEnabled : ret=true userId=0
+01-11 08:01:42.200  1745  4297 I WindowManager: Attempted to take screenshot while display was off.
+01-11 08:01:42.200  1745  4297 V WindowManager: Calling onTransitionReady: {id=41 t=OPEN f=0x40 trk=0 r=[] c=[]}
+01-11 08:01:42.201  1745  1767 V WindowManager: Sent Transition #41 createdAt=01-11 08:01:41.364 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=10919 displayId=0 isRunning=true baseIntent=Intent { act=android.settings.LOCATION_SOURCE_SETTINGS cat=[android.intent.category.DEFAULT] flg=0x50800000 cmp=com.android.settings/.Settings$LocationSettingsActivity } baseActivity=ComponentInfo{com.android.settings/com.android.settings.Settings$LocationSettingsActivity} topActivity=ComponentInfo{com.android.settings/com.android.settings.Settings$LocationSettingsActivity} origActivity=null realActivity=ComponentInfo{com.android.settings/com.android.settings.Settings$LocationSettingsActivity} numActivities=1 lastActiveTime=28819702 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 maxWidth=-1 maxHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{8333eeb Task{3dbc1e5 #10919 type=standard A=1000:com.android.settings}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 64 - 0, 0) topActivityInfo=ActivityInfo{fbf9448 com.android.settings.Settings$LocationSettingsActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=true topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden originallySupportedMultiWindow=true hasWallpaper=false topActivityInFixedAspectRatio=false rootAffinity=1000:com.android.settings topActivityInDisplayCompat=false topActivityInBoundsCompat=false topActivityBounds=null singleTapFromLetterbox=false isTopTaskInStage=false topActivityUiMode=33 CoverLauncherWidgetTask=false CoverScreenTask=false isAllowedSeamlessRotation=false isTopTransparentActivity=false hasPopOver=false}, remoteTransition = null, displayChange = null }
+01-11 08:01:42.202  1745  1767 V WindowManager:     startWCT=WindowContainerTransaction { changes = {} hops = [] errorCallbackToken=null taskFragmentOrganizer=null }
+01-11 08:01:42.202  1745  1767 V WindowManager:     info={id=41 t=OPEN f=0x40 trk=0 r=[] c=[]}
+01-11 08:01:42.202  1745  4297 V WindowManager: Relayout hash=942312e, pid=32088, syncId=-1: mAttrs={(0,0)(fillxfill) sim={adjust=resize forwardNavigation} layoutInDisplayCutoutMode=shortEdges ty=BASE_APPLICATION wanim=0x10302f2
+01-11 08:01:42.202  1745  4297 V WindowManager:   fl=81810100
+01-11 08:01:42.202  1745  4297 V WindowManager:   pfl=12088040
+01-11 08:01:42.202  1745  4297 V WindowManager:   bhv=DEFAULT
+01-11 08:01:42.202  1745  4297 V WindowManager:   fitSides= naviIconColor=0
+01-11 08:01:42.202  1745  4297 V WindowManager:   sfl=1}
+01-11 08:01:42.202  2341  2422 V WindowManagerShell: onTransitionReady android.os.BinderProxy@c95723: {id=41 t=OPEN f=0x40 trk=0 r=[] c=[]}
+01-11 08:01:42.203  2341  2422 V WindowManagerShell: No transition roots in (#41)android.os.BinderProxy@c95723@0 so abort
+01-11 08:01:42.203  1343  2627 I CameraService: onUidStateChanged: uid=10046, procState is changed. (5 -> 1)
+01-11 08:01:42.203  2341  2422 I SurfaceControl: apply is called, name=StartTransaction_SyncId<41>, caller=android.view.SurfaceControl$Transaction.apply:2921 com.android.wm.shell.transition.Transitions.processReadyQueue:188 com.android.wm.shell.transition.Transitions.onAbort:72 com.android.wm.shell.transition.Transitions.dispatchReady:213 com.android.wm.shell.transition.Transitions.onTransitionReady:119 com.android.wm.shell.transition.Transitions$TransitionPlayerImpl$$ExternalSyntheticLambda0.run:13 
+01-11 08:01:42.204  2341  2422 V WindowManagerShell: Transition animation finished (aborted=true), notifying core (#41)android.os.BinderProxy@c95723@0
+01-11 08:01:42.205  2341  2422 I SurfaceControl: apply is called, name=FinishTransaction_SyncId<41>, caller=android.view.SurfaceControl$Transaction.apply:2921 com.android.wm.shell.transition.Transitions.onFinish:302 com.android.wm.shell.transition.Transitions.processReadyQueue:191 com.android.wm.shell.transition.Transitions.onAbort:72 com.android.wm.shell.transition.Transitions.dispatchReady:213 com.android.wm.shell.transition.Transitions.onTransitionReady:119 
+01-11 08:01:42.205  1745  1782 W libprocessgroup: SetCgroup::ExecuteForProcess: failed to open /dev/blkio//cgroup.procs: No such file or directory
+01-11 08:01:42.206  1745  4297 V WindowManager: Finish Transition: TransitionRecord{1ef3d4f id=41 type=OPEN flags=0x40}, caller=com.android.server.wm.WindowOrganizerController.finishTransition:456 android.window.IWindowOrganizerController$Stub.onTransact:286 com.android.server.wm.WindowOrganizerController.onTransact:219 
+01-11 08:01:42.206  1189  1208 I mtkpower@impl: [setMode] type:5, enabled:0
+01-11 08:01:42.206 32088 32088 D BufferQueueConsumer: [](id:7d5800000000,api:0,p:-1,c:32088) connect: controlledByApp=false
+01-11 08:01:42.207  2341  2422 V WindowManagerShell: Track 0 became idle
+01-11 08:01:42.207  2341  2422 V WindowManagerShell: All active transition animations finished
+01-11 08:01:42.208  1745  1767 V WindowManager: Finish Transition #41: created at 01-11 08:01:41.364 collect-started=1.397ms request-sent=20.815ms started=29.2ms ready=98.054ms sent=836.074ms finished=841.481ms
+01-11 08:01:42.208 32088 32088 I BLASTBufferQueue_Java: new BLASTBufferQueue, mName= ViewRootImpl@77a9c83[Settings$LocationSettingsActivity] mNativeObject= 0xb400007c18140f00 sc.mNativeObject= 0xb400007bab962940 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3028 android.view.ViewRootImpl.relayoutWindow:10131 android.view.ViewRootImpl.performTraversals:4110 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 android.view.Choreographer.doCallbacks:1153 android.view.Choreographer.doFrame:1079 android.view.Choreographer$FrameDisplayEventReceiver.run:1646 
+01-11 08:01:42.208 32088 32088 I BLASTBufferQueue_Java: update, w= 1080 h= 2408 mName = ViewRootImpl@77a9c83[Settings$LocationSettingsActivity] mNativeObject= 0xb400007c18140f00 sc.mNativeObject= 0xb400007bab962940 format= -1 caller= android.graphics.BLASTBufferQueue.<init>:89 android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3028 android.view.ViewRootImpl.relayoutWindow:10131 android.view.ViewRootImpl.performTraversals:4110 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 
+01-11 08:01:42.208  1343  2627 I CameraService: onUidStateChanged: uid=10046, procState is changed. (1 -> 5)
+01-11 08:01:42.210 32088 32088 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: Relayout returned: old=(0,0,1080,2408) new=(0,0,1080,2408) relayoutAsync=false req=(1080,2408)0 dur=13 res=0x403 s={true 0xb400007baba92000} ch=true seqId=0
+01-11 08:01:42.211 32088 32088 D ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: mThreadedRenderer.initialize() mSurface={isValid=true 0xb400007baba92000} hwInitialized=true
+01-11 08:01:42.211  1215  2509 E HWComposer: getSupportedContentTypes: getSupportedContentTypes failed for display 0: Unsupported (8)
+01-11 08:01:42.233 32088 32088 D ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: reportNextDraw android.view.ViewRootImpl.performTraversals:4718 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 
+01-11 08:01:42.234 32088 32088 I AppIconCacheManager: MAX_CACHE_SIZE_IN_KB : 26214
+01-11 08:01:42.234 32088 32110 D OpenGLRenderer: CacheManager::trimMemory(20)
+01-11 08:01:42.235 32088 32110 D OpenGLRenderer: HWUI - treat SMPTE_170M as sRGB
+01-11 08:01:42.237 32088 32088 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: Setup new sync=wmsSync-ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]#0
+01-11 08:01:42.237 32088 32088 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: Creating new active sync group ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]#1
+01-11 08:01:42.239 32088 32088 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: registerCallbacksForSync syncBuffer=false
+01-11 08:01:42.248  1745  2326 I Pageboost: db insert done, overLimit false
+01-11 08:01:42.250  1745  2326 I Pageboost: captureFinished success : 94756864
+01-11 08:01:42.252 32088 32137 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: Received frameDrawingCallback syncResult=0 frameNum=1.
+01-11 08:01:42.253 32088 32137 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: mWNT: t=0xb400007bab91b980 mBlastBufferQueue=0xb400007c18140f00 fn= 1 mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$8.onFrameDraw:13841 android.view.ThreadedRenderer$1.onFrameDraw:792 <bottom of call stack> 
+01-11 08:01:42.253 32088 32137 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: Setting up sync and frameCommitCallback
+01-11 08:01:42.253 32088 32110 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+01-11 08:01:42.255  1745  2326 I Pageboost: db update :com.wawapp.client ret 1
+01-11 08:01:42.318 32088 32110 D BLASTBufferQueue: [ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]#0](f:0,a:0) onFrameAvailable the first frame is available
+01-11 08:01:42.320 32088 32110 D BLASTBufferQueue: [ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]#0](f:0,a:1) acquireNextBufferLocked size=1080x2408 mFrameNumber=1 applyTransaction=true mTimestamp=6561600881005(auto) mPendingTransactions.size=0 graphicBufferId=137816910594050 transform=0
+01-11 08:01:42.321 32088 32110 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: Received frameCommittedCallback lastAttemptedDrawFrameNum=1 didProduceBuffer=true
+01-11 08:01:42.322 32088 32110 D OpenGLRenderer: CFMS:: SetUp Pid : 32088    Tid : 32110
+01-11 08:01:42.323 32088 32088 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: reportDrawFinished seqId=0
+01-11 08:01:42.323  1745  4885 D WindowManager: finishDrawingWindow: Window{942312e u0 com.android.settings/com.android.settings.Settings$LocationSettingsActivity} mDrawState=DRAW_PENDING seqId=0
+01-11 08:01:42.333 32088 32088 I AppBarLayout: [updateInternalHeight] orientation : 1, density : 450, windowHeight : 2209, [3]updateInternalHeight: lp.height : 861, mHeightProportion : 0.39 , mIsImmersiveScroll : false , mIsSetByUser : false , mImmersiveTopInset : 0
+01-11 08:01:42.333 32088 32088 I AppBarLayout: WindowInsets{
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     statusBars=Insets{left=0, top=64, right=0, bottom=0} max=Insets{left=0, top=64, right=0, bottom=0} vis=true
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     navigationBars=Insets{left=0, top=0, right=0, bottom=0} max=Insets{left=0, top=0, right=0, bottom=135} vis=false
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     captionBar=null max=null vis=false
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     ime=Insets{left=0, top=0, right=0, bottom=0} max=null vis=false
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     systemGestures=Insets{left=0, top=98, right=0, bottom=135} max=Insets{left=0, top=98, right=0, bottom=135} vis=true
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     mandatorySystemGestures=Insets{left=0, top=98, right=0, bottom=135} max=Insets{left=0, top=98, right=0, bottom=135} vis=true
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     tappableElement=Insets{left=0, top=64, right=0, bottom=135} max=Insets{left=0, top=64, right=0, bottom=135} vis=true
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     displayCutout=Insets{left=0, top=64, right=0, bottom=0} max=Insets{left=0, top=64, right=0, bottom=0} vis=true
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     windowDecor=null max=null vis=false
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     systemOverlays=null max=null vis=false
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     cutout=DisplayCutout{insets=Rect(0, 64 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(468, 0 - 612, 64), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2408 physicalDisplayWidth=1080 physicalDisplayHeight=2408 density={2.8125} cutoutSpec={M 0,0 H -25.6‬ V 22.75555555555556 H 25.6‬ V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     roundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     privacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 64) rotation=0}
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     displayShape=DisplayShape{ spec=-311912193 displayWidth=1080 displayHeight=2408 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     forceConsumingTypes=
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     suppressScrimTypes=
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     compatInsetsTypes=statusBars navigationBars captionBar displayCutout systemOverlays
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     compatIgnoreVisibility=false
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     systemWindowInsetsConsumed=false
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     stableInsetsConsumed=false
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     displayCutoutConsumed=false
+01-11 08:01:42.333 32088 32088 I AppBarLayout:     }
+01-11 08:01:42.334 32088 32088 I AppBarLayout: [updateInternalHeight] orientation : 1, density : 450, windowHeight : 2209, [3]updateInternalHeight: lp.height : 861, mHeightProportion : 0.39 , mIsImmersiveScroll : false , mIsSetByUser : false , mImmersiveTopInset : 0
+01-11 08:01:42.334 32088 32088 I AppBarLayout: WindowInsets{
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     statusBars=Insets{left=0, top=64, right=0, bottom=0} max=Insets{left=0, top=64, right=0, bottom=0} vis=true
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     navigationBars=Insets{left=0, top=0, right=0, bottom=0} max=Insets{left=0, top=0, right=0, bottom=135} vis=false
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     captionBar=null max=null vis=false
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     ime=Insets{left=0, top=0, right=0, bottom=0} max=null vis=false
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     systemGestures=Insets{left=0, top=98, right=0, bottom=135} max=Insets{left=0, top=98, right=0, bottom=135} vis=true
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     mandatorySystemGestures=Insets{left=0, top=98, right=0, bottom=135} max=Insets{left=0, top=98, right=0, bottom=135} vis=true
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     tappableElement=Insets{left=0, top=64, right=0, bottom=135} max=Insets{left=0, top=64, right=0, bottom=135} vis=true
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     displayCutout=Insets{left=0, top=64, right=0, bottom=0} max=Insets{left=0, top=64, right=0, bottom=0} vis=true
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     windowDecor=null max=null vis=false
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     systemOverlays=null max=null vis=false
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     cutout=DisplayCutout{insets=Rect(0, 64 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(468, 0 - 612, 64), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=1080 displayHeight=2408 physicalDisplayWidth=1080 physicalDisplayHeight=2408 density={2.8125} cutoutSpec={M 0,0 H -25.6‬ V 22.75555555555556 H 25.6‬ V 0 H 0 Z @dp} rotation={0} scale={1.0} physicalPixelDisplaySizeRatio={1.0}}}}
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     roundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     privacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=Rect(956, 0 - 1080, 64) rotation=0}
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     displayShape=DisplayShape{ spec=-311912193 displayWidth=1080 displayHeight=2408 physicalPixelDisplaySizeRatio=1.0 rotation=0 offsetX=0 offsetY=0 scale=1.0}
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     forceConsumingTypes=
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     suppressScrimTypes=
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     compatInsetsTypes=statusBars navigationBars captionBar displayCutout systemOverlays
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     compatIgnoreVisibility=false
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     systemWindowInsetsConsumed=false
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     stableInsetsConsumed=false
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     displayCutoutConsumed=false
+01-11 08:01:42.334 32088 32088 I AppBarLayout:     }
+01-11 08:01:42.335 32088 32088 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: stopped(true) old = false
+01-11 08:01:42.335 32088 32088 D ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: WindowStopped on com.android.settings/com.android.settings.Settings$LocationSettingsActivity set to true
+01-11 08:01:42.335 32088 32110 D OpenGLRenderer: CacheManager::trimMemory(20)
+01-11 08:01:42.337  1215  1215 I gralloc4: @set_metadata: update dataspace from GM (0x08010000 -> 0x00000000)
+01-11 08:01:42.337  1745  1767 D [secipm]: mSecIpmManager report to nap
+01-11 08:01:42.338  1745  1767 I PkgPredictorService-SecIpmManagerServiceImpl: reportToNAP uid:1000 com.android.settings/com.android.settings.Settings$LocationSettingsActivity thisTime:1154
+01-11 08:01:42.338  1745  1767 D PkgPredictorService-SecIpmManagerServiceImpl: reportToNAP: mHeavyLaunchCounter is false
+01-11 08:01:42.339  1745  2941 D PkgPredictorService-SecIpmManagerServiceImpl: ACTION_FOREGROUND_FINISH_EVENT sCurForegroundApp :com.android.settings
+01-11 08:01:42.346 32088 32088 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: destroyHardwareResources: Callers=android.view.ViewRootImpl.performTraversals:3932 android.view.ViewRootImpl.doTraversal:3288 android.view.ViewRootImpl$TraversalRunnable.run:11344 android.view.Choreographer$CallbackRecord.run:1689 android.view.Choreographer$CallbackRecord.run:1698 android.view.Choreographer.doCallbacks:1153 android.view.Choreographer.doFrame:1079 android.view.Choreographer$FrameDisplayEventReceiver.run:1646 android.os.Handler.handleCallback:958 android.os.Handler.dispatchMessage:99 
+01-11 08:01:42.347 32088 32110 D BLASTBufferQueue: [ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]#0](f:0,a:1) destructor()
+01-11 08:01:42.347 32088 32110 D BufferQueueConsumer: [ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]#0(BLAST Consumer)0](id:7d5800000000,api:0,p:-1,c:32088) disconnect
+01-11 08:01:42.348  1745  1767 D DmaBufLeakDetector: SystemHeap:       197436 kB
+01-11 08:01:42.348 32088 32110 D OpenGLRenderer: CacheManager::trimMemory(20)
+01-11 08:01:42.348  1745  1767 I DmaBufLeakDetector: DmaBuf : 197436 KB
+01-11 08:01:42.351  1745  4885 V WindowManager: Relayout Window{942312e u0 com.android.settings/com.android.settings.Settings$LocationSettingsActivity}: viewVisibility=4 req=1080x2408 ty=1 d0
+01-11 08:01:42.352  1745  1767 I ActivityTaskManager: Displayed com.android.settings/.Settings$LocationSettingsActivity for user 0: +1s154ms
+01-11 08:01:42.352  1745  1767 I Pageboost: Launch time gathered : pid 32088 com.android.settings 1154
+01-11 08:01:42.352  1745  1767 I ActivityTaskManager: Fully drawn com.android.settings/.Settings$LocationSettingsActivity: +1s154ms
+01-11 08:01:42.352  3098  3098 E pageboostd: Received HALT command code 2
+01-11 08:01:42.355  1745  4885 V WindowManager: Relayout hash=942312e, pid=32088, syncId=-1: mAttrs={(0,0)(fillxfill) sim={adjust=pan forwardNavigation} layoutInDisplayCutoutMode=shortEdges ty=BASE_APPLICATION wanim=0x10302f2
+01-11 08:01:42.355  1745  4885 V WindowManager:   fl=81810100
+01-11 08:01:42.355  1745  4885 V WindowManager:   pfl=12008040
+01-11 08:01:42.355  1745  4885 V WindowManager:   bhv=DEFAULT
+01-11 08:01:42.355  1745  4885 V WindowManager:   fitSides= naviIconColor=0
+01-11 08:01:42.355  1745  4885 V WindowManager:   sfl=1}
+01-11 08:01:42.356 32088 32088 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: Relayout returned: old=(0,0,1080,2408) new=(0,0,1080,2408) relayoutAsync=false req=(1080,2408)4 dur=5 res=0x402 s={false 0x0} ch=false seqId=0
+01-11 08:01:42.359  1745  4885 V WindowManager: Setting visibility of Window{942312e u0 com.android.settings/com.android.settings.Settings$LocationSettingsActivity}: false, caller=com.android.server.wm.WindowContainer.sendAppVisibilityToClients:1301 com.android.server.wm.WindowToken.setClientVisible:446 com.android.server.wm.ActivityRecord.setClientVisible:8121 com.android.server.wm.ActivityRecord.activityStopped:7631 com.android.server.wm.ActivityClientController.activityStopped:321 
+01-11 08:01:42.359  1745  4885 E WindowManager: win=Window{942312e u0 com.android.settings/com.android.settings.Settings$LocationSettingsActivity} destroySurfaces: appStopped=true cleanupOnResume=false win.mWindowRemovalAllowed=false win.mRemoveOnExit=false win.mViewVisibility=4 caller=com.android.server.wm.ActivityRecord.destroySurfaces:6952 com.android.server.wm.ActivityRecord.destroySurfaces:6933 com.android.server.wm.ActivityRecord.activityStopped:7633 com.android.server.wm.ActivityClientController.activityStopped:321 android.app.IActivityClientController$Stub.onTransact:702 com.android.server.wm.ActivityClientController.onTransact:186 android.os.Binder.execTransactInternal:1380 
+01-11 08:01:42.359  1745  4885 I WindowManager: Destroying surface Surface(name=com.android.settings/com.android.settings.Settings$LocationSettingsActivity$_32088)/@0xf6f3166 called by com.android.server.wm.WindowStateAnimator.destroySurface:799 com.android.server.wm.WindowStateAnimator.destroySurfaceLocked:472 com.android.server.wm.WindowState.destroySurfaceUnchecked:4201 com.android.server.wm.WindowState.destroySurface:4175 com.android.server.wm.ActivityRecord.destroySurfaces:6952 com.android.server.wm.ActivityRecord.destroySurfaces:6933 com.android.server.wm.ActivityRecord.activityStopped:7633 com.android.server.wm.ActivityClientController.activityStopped:321 
+01-11 08:01:42.360 32088 32088 I ViewRootImpl@77a9c83[Settings$LocationSettingsActivity]: handleAppVisibility mAppVisible = true visible = false
+01-11 08:01:42.370  1215  1215 I Layer   : id=619 removeFromCurrentState com.android.settings/com.android.settings.Settings$LocationSettingsActivity$_32088#619 (115)
+01-11 08:01:42.904  1183 32087 I mtkpower_client: perf_lock_rel, hdl:782, tid:32087
+01-11 08:01:42.905  1183 32087 I mtkpower_client: perf_lock_rel, hdl:783, tid:32087
+01-11 08:01:42.905  1189  1241 I libPowerHal: [perfLockRel] hdl:782, idx:1
+01-11 08:01:42.905  1189  1241 I libPowerHal: [PD] vendor.samsung. update cmd:300c000 param:0
+01-11 08:01:42.907  1189  1241 I libPowerHal: [perfLockRel] hdl:783, idx:2
+01-11 08:01:42.907  1189  1241 I libPowerHal: [PD] vendor.samsung. update cmd:1c3c000 param:1
+01-11 08:01:42.907  1183 32087 I mtkpower_client: perf_lock_rel, hdl:784, tid:32087
+01-11 08:01:42.907  1189  1241 I libPowerHal: [PD] (more) /proc/mcdi/state set +prefix:enable 1;
+01-11 08:01:42.907  1183 32087 I mtkpower_client: perf_lock_rel, hdl:785, tid:32087
+01-11 08:01:42.908  1189  1241 I libPowerHal: [perfLockRel] hdl:784, idx:3
+01-11 08:01:42.908  1189  1241 I libPowerHal: vendor.samsung.: cpu_ctrl set cpu freq: -1 -1 2000000 -1
+01-11 08:01:42.908  1183 32087 I mtkpower_client: perf_lock_rel, hdl:786, tid:32087
+01-11 08:01:42.908  1189  1241 I libPowerHal: [perfLockRel] hdl:785, idx:4
+01-11 08:01:42.908  1189  1241 I libPowerHal: [PD] vendor.samsung. update cmd:1000000, param:-1
+01-11 08:01:42.909  1189  1241 I libPowerHal: [PD] vendor.samsung. update cmd:1000000 param:-1
+01-11 08:01:42.909  1189  1241 I libPowerHal: [perfLockRel] hdl:786, idx:5
+01-11 08:01:42.909  1183 32087 I HYPER-HAL: [RequestManager.cpp]releaseLocked(): Released ID : 1553220
+01-11 08:01:42.909  1189  1241 I libPowerHal: vendor.samsung.: cpu_ctrl set cpu freq: -1 -1 -1 -1
+01-11 08:01:42.993  1745  3033 I SemWifiApDataUsage: handleMessage: 15
+01-11 08:01:42.995  1148  1148 E audit   : type=1400 audit(1768118502.993:8888): avc:  denied  { ioctl } for  pid=1745 comm="SemWifiApDataUs" path="/data/system/SemWifiApDataUsageHistory.db" dev="dm-50" ino=202538 ioctlcmd=0xf522 scontext=u:r:system_server:s0 tcontext=u:object_r:system_data_file:s0 tclass=file permissive=0 SEPF_SM-A145P_12_0001 audit_filtered
+01-11 08:01:43.000  1745  3033 D SemWifiApDbHistoryTableHelper: insertOrUpdateOnGivenDate() : data has been updated or inserted for date=2026-01-11
+01-11 08:01:43.003  1745  3033 I SemWifiApDbSimTableHelper: updated for SIM : 8922201040**********
+01-11 08:01:43.357  1385  1385 I thermal_repeater: socket -1
+01-11 08:01:43.891 31895 31895 I flutter : 🌐 Fetching config from https://config.wawappmr.com/api/public/config
+01-11 08:01:43.950   540   540 D io_stats: !@ 179,0 r 1871774 33264742 w 330472 5916300 d 82245 7492504 f 0 0 iot 619408 0 th 0 0 0 pt 0 inp 0 0 6563.233
+01-11 08:01:44.000  1745  3033 I SemWifiApDataUsage: handleMessage: 14
+01-11 08:01:44.000  1745  3033 I SemWifiApEbpf: DATA_USAGE_STATS_START_POLL,mhs= true,upstream= 2,client size 1
+01-11 08:01:44.001  1745  3033 D SemWifiApEbpf: getWifiApDataUsageForOverAllMhs():  overall data is106910255
+01-11 08:01:44.001  1745  3033 I SemWifiApEbpf: updating the overall dataUsage , overall =106910255 , global = {mTotalDataBytes=106438917,mTotalDataIngressBytes=0,mTotalDataEgressBytes=0,mCellularBytes=106438917,mCurrentDayAndSimCellularBytes=106438917}
+01-11 08:01:44.483 31895 31895 I flutter : [ClientAuthNotifier] Auth state changed: user=null, phone=null, isPinResetFlow=false
+01-11 08:01:44.716  1745  2245 D NetdEventListenerService: DNS Requested by 101, 10219, 122
+01-11 08:01:45.367  1745  2326 I Pageboost: Launcher App Execution
+01-11 08:01:45.455  1148  1148 E audit   : type=1400 audit(1768118505.453:8889): avc:  denied  { ioctl } for  pid=31895 comm=4D6561737572656D656E7420576F72 path="/data/data/com.wawapp.client/databases/google_app_measurement_local.db" dev="dm-50" ino=1456553 ioctlcmd=0xf522 scontext=u:r:untrusted_app:s0:c219,c256,c512,c768 tcontext=u:object_r:app_data_file:s0:c219,c256,c512,c768 tclass=file permissive=0 SEPF_SM-A145P_12_0001 audit_filtered
+01-11 08:01:45.477  1148  1148 E audit   : type=1400 audit(1768118505.473:8890): avc:  denied  { ioctl } for  pid=31895 comm=4D6561737572656D656E7420576F72 path="/data/data/com.wawapp.client/databases/google_app_measurement_local.db" dev="dm-50" ino=1456553 ioctlcmd=0xf522 scontext=u:r:untrusted_app:s0:c219,c256,c512,c768 tcontext=u:object_r:app_data_file:s0:c219,c256,c512,c768 tclass=file permissive=0 SEPF_SM-A145P_12_0001 audit_filtered
+01-11 08:01:45.498 31895 31961 I FA      : Application backgrounded at: timestamp_millis: 1768118500314
+01-11 08:01:45.519  1745  2245 D NetdEventListenerService: DNS Requested by 101, 10219, 7, false, 119
+01-11 08:01:45.526  1745  2245 D NetdEventListenerService: DNS Requested by 101, 10219, 7, false, 1
+01-11 08:01:45.571 31895 31895 I flutter : [Analytics] User property set: user_type = client
+01-11 08:01:45.955   540   540 D io_stats: !@ 179,0 r 1871819 33265766 w 330509 5916448 d 82245 7492504 f 0 0 iot 619432 0 th 0 0 0 pt 0 inp 0 0 6565.237
+01-11 08:01:46.014 32001 32023 I Finsky:background: [65] playLoggingServerUrl: https://play.googleapis.com/play/log
+01-11 08:01:46.015 32001 32023 I Finsky:background: [65] playLoggingServerTimestampUrl: https://play.googleapis.com/play/log/timestamp
+01-11 08:01:46.108  3081  3081 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+01-11 08:01:46.476 31895 31895 I flutter : ✅ Config fetched successfully: AppConfig(minClientVersion: 1.0.0, maintenance: false, forceUpdate: false, supportWhatsApp: +222XXXXXXXX, message: أعمال لوائح. ستُعاد الخدمة قريبًا., serverTime: 2026-01-11 08:01:46.204Z)
+01-11 08:01:46.492 31895 32157 D ProfileInstaller: Installing profile for com.wawapp.client
+01-11 08:01:47.559  1745  1773 E Watchdog: !@Sync: 217 heap: 89 / 101 FD: 970 [2026-01-11 08:01:47.558]
+01-11 08:01:47.958   540   540 D io_stats: !@ 179,0 r 1871949 33267566 w 330523 5916556 d 82245 7492504 f 0 0 iot 619480 0 th 0 0 0 pt 0 inp 0 0 6567.241
+01-11 08:01:48.358  1385  1385 I thermal_repeater: socket -1
+01-11 08:01:49.007  1745  3033 I SemWifiApDataUsage: handleMessage: 14
+01-11 08:01:49.007  1745  3033 I SemWifiApEbpf: DATA_USAGE_STATS_START_POLL,mhs= true,upstream= 2,client size 1
+01-11 08:01:49.008  1745  3033 D SemWifiApEbpf: getWifiApDataUsageForOverAllMhs():  overall data is108246084
+01-11 08:01:49.008  1745  3033 I SemWifiApEbpf: updating the overall dataUsage , overall =108246084 , global = {mTotalDataBytes=106910255,mTotalDataIngressBytes=0,mTotalDataEgressBytes=0,mCellularBytes=106910255,mCurrentDayAndSimCellularBytes=106910255}
+01-11 08:01:49.135 32158 32158 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+01-11 08:01:49.139  1745  4885 I EDMNativeHelperService: isScreenCaptureEnabled
+01-11 08:01:49.144  1745  4885 D RestrictionPolicy: isScreenCaptureEnabled : ret=true userId=0
+01-11 08:01:49.166 32158 32158 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x790c7da018). Use sp<> to manage this object.
+01-11 08:01:49.200 32158 32158 D RefBase :   #00 pc 00000000001059f0  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+144) (BuildId: a6a4bb5d4c7b3e99262fee774c3907c6)
+01-11 08:01:49.200 32158 32158 D RefBase :   #01 pc 00000000000f79f8  /apex/com.android.runtime/lib64/bionic/libc.so (exit+24) (BuildId: a6a4bb5d4c7b3e99262fee774c3907c6)
+01-11 08:01:49.200 32158 32158 D RefBase :   #02 pc 000000000008c5bc  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+108) (BuildId: a6a4bb5d4c7b3e99262fee774c3907c6)
+01-11 08:01:49.808  2454  2694 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1627920678} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+01-11 08:01:49.809  2454  2694 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.28.213.241, srcPort: 53384, dst4: /142.250.185.10, dstPort: 443), msg: 50000000000105010100000000000000020000003400018014000180080001000A1CD5F1080002008EFAB90A1C000280050001000600000006000200D08800000600030001BB00000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1627920678} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+01-11 08:01:49.913  2454  2694 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1004860825} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+01-11 08:01:49.914  2454  2694 W Tethering: [BpfCoordinator] WARN Failed to update conntrack entry (proto: 6, src4: /10.28.213.241, srcPort: 53384, dst4: /142.250.185.10, dstPort: 443), msg: 50000000000105010100000000000000020000003400018014000180080001000A1CD5F1080002008EFAB90A1C000280050001000600000006000200D08800000600030001BB00000800070000069780, e: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{100}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-1004860825} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{80}, nlmsg_type{256()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+01-11 08:01:49.962   540   540 D io_stats: !@ 179,0 r 1873385 33296334 w 330523 5916556 d 82245 7492504 f 0 0 iot 619880 0 th 0 0 0 pt 0 inp 0 0 6569.244

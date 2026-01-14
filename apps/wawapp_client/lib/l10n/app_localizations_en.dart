@@ -9,620 +9,626 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'WawApp Client';
+  String get appTitle => 'WawApp';
 
   @override
-  String get pickup => 'موقع الاستلام';
+  String get pickup => 'Pickup Location';
 
   @override
-  String get dropoff => 'موقع التسليم';
+  String get dropoff => 'Drop-off Location';
 
   @override
-  String get get_quote => 'احسب السعر';
+  String get get_quote => 'Get Quote';
 
   @override
-  String get request_now => 'اطلب الآن';
+  String get request_now => 'Request Now';
 
   @override
-  String get track => 'تتبع';
+  String get track => 'Track';
 
   @override
-  String get currency => 'أوقية';
+  String get currency => 'MRU';
 
   @override
-  String get estimated_price => 'السعر المقدر';
+  String get estimated_price => 'Estimated Price';
 
   @override
-  String get confirm => 'تأكيد';
+  String get confirm => 'Confirm';
 
   @override
-  String get cancel => 'إلغاء';
+  String get cancel => 'Cancel';
 
   @override
-  String get save => 'حفظ';
+  String get save => 'Save';
 
   @override
-  String get edit => 'تعديل';
+  String get edit => 'Edit';
 
   @override
-  String get delete => 'حذف';
+  String get delete => 'Delete';
 
   @override
-  String get close => 'إغلاق';
+  String get close => 'Close';
 
   @override
-  String get back => 'رجوع';
+  String get back => 'Back';
 
   @override
-  String get done => 'تم';
+  String get done => 'Done';
 
   @override
-  String get loading => 'جاري التحميل...';
+  String get loading => 'Loading...';
 
   @override
-  String get error => 'خطأ';
+  String get error => 'Error';
 
   @override
-  String get success => 'نجح';
+  String get success => 'Success';
 
   @override
-  String get greeting => 'أهلاً';
+  String get greeting => 'Hello';
 
   @override
-  String get welcome_back => 'مرحباً بعودتك';
+  String get welcome_back => 'Welcome Back';
 
   @override
-  String get start_new_shipment => 'ابدأ شحنة جديدة';
+  String get start_new_shipment => 'Start New Shipment';
 
   @override
-  String get select_pickup_dropoff => 'حدد مواقع الالتقاط والتسليم';
+  String get select_pickup_dropoff => 'Select pickup and drop-off locations';
 
   @override
-  String get begin_shipment => 'بدء شحنة';
+  String get begin_shipment => 'Begin Shipment';
 
   @override
-  String get selected_category => 'الفئة المختارة';
+  String get selected_category => 'Selected Category';
 
   @override
-  String get quick_select_category => 'اختر فئة بسرعة';
+  String get quick_select_category => 'Quick Select Category';
 
   @override
-  String get current_shipment => 'الشحنة الحالية';
+  String get current_shipment => 'Current Shipment';
 
   @override
-  String get no_active_shipments => 'لا توجد شحنات جارية حالياً';
+  String get no_active_shipments => 'No active shipments';
 
   @override
-  String get track_shipment => 'تتبع الشحنة';
+  String get track_shipment => 'Track Shipment';
 
   @override
-  String get past_shipments => 'شحناتك السابقة';
+  String get past_shipments => 'Past Shipments';
 
   @override
-  String get view_history => 'عرض السجل';
+  String get view_history => 'View History';
 
   @override
   String get safe_reliable_delivery =>
-      'نقوم بنقل الحمولة داخل نواكشوط بأمان واحتراف';
+      'We transport cargo within Nouakchott safely and professionally';
 
   @override
-  String get driver_assigned => 'تم تعيين سائق';
+  String get driver_assigned => 'Driver Assigned';
 
   @override
-  String get shipment_status => 'حالة الشحنة';
+  String get shipment_status => 'Shipment Status';
 
   @override
-  String get settings => 'الإعدادات';
+  String get settings => 'Settings';
 
   @override
-  String get language => 'اللغة';
+  String get language => 'Language';
 
   @override
-  String get profile => 'الملف الشخصي';
+  String get profile => 'Profile';
 
   @override
-  String get about_app => 'حول التطبيق';
+  String get about_app => 'About App';
 
   @override
-  String get price_breakdown => 'تفاصيل السعر';
+  String get price_breakdown => 'Price Breakdown';
 
   @override
-  String get base_fare => 'أجرة الأساس';
+  String get base_fare => 'Base Fare';
 
   @override
-  String get per_km => 'لكل كم';
+  String get per_km => 'per km';
 
   @override
-  String get distance => 'المسافة';
+  String get distance => 'Distance';
 
   @override
-  String get total => 'المجموع';
+  String get total => 'Total';
 
   @override
-  String get shipment_type_multiplier => 'مُضاعف نوع الشحنة';
+  String get shipment_type_multiplier => 'Shipment Type Multiplier';
 
   @override
-  String get final_price => 'السعر النهائي';
+  String get final_price => 'Final Price';
 
   @override
-  String get estimated_time => 'الوقت المقدر';
+  String get estimated_time => 'Estimated Time';
 
   @override
-  String get base_price => 'السعر الأساسي';
+  String get base_price => 'Base Price';
 
   @override
-  String get distance_cost => 'تكلفة المسافة';
+  String get distance_cost => 'Distance Cost';
 
   @override
-  String get shipment_multiplier => 'مضاعف الشحنة';
+  String get shipment_multiplier => 'Shipment Multiplier';
 
   @override
-  String get minute => 'دقيقة';
+  String get minute => 'minute';
 
   @override
-  String get km => 'كم';
+  String get km => 'km';
 
   @override
   String get error_create_order =>
-      'حدث خطأ أثناء إنشاء الطلب. يرجى المحاولة مرة أخرى';
+      'An error occurred while creating the order. Please try again';
 
   @override
-  String get confirm_shipment => 'تأكيد الشحنة';
+  String get confirm_shipment => 'Confirm Shipment';
 
   @override
-  String get requesting_driver => 'جاري البحث عن سائق...';
+  String get requesting_driver => 'Requesting driver...';
 
   @override
-  String get finding_nearby_drivers => 'البحث عن السائقين القريبين';
+  String get finding_nearby_drivers => 'Finding nearby drivers';
 
   @override
-  String get price_summary => 'ملخص السعر';
+  String get price_summary => 'Price Summary';
 
   @override
-  String get from => 'من';
+  String get from => 'From';
 
   @override
-  String get to => 'إلى';
+  String get to => 'To';
 
   @override
-  String get shipment_details => 'تفاصيل الشحنة';
+  String get shipment_details => 'Shipment Details';
 
   @override
-  String get order_tracking => 'تتبع الطلب';
+  String get order_tracking => 'Order Tracking';
 
   @override
-  String get shipment_timeline => 'الجدول الزمني للشحنة';
+  String get shipment_timeline => 'Shipment Timeline';
 
   @override
-  String get order_placed => 'تم تقديم الطلب';
+  String get order_placed => 'Order Placed';
 
   @override
-  String get driver_accepted => 'قبل السائق';
+  String get driver_accepted => 'Driver Accepted';
 
   @override
-  String get driver_arrived => 'وصل السائق';
+  String get driver_arrived => 'Driver Arrived';
 
   @override
-  String get picked_up => 'تم الاستلام';
+  String get picked_up => 'Picked Up';
 
   @override
-  String get in_transit => 'في الطريق';
+  String get in_transit => 'In Transit';
 
   @override
-  String get delivered => 'تم التسليم';
+  String get delivered => 'Delivered';
 
   @override
-  String get cancelled => 'ملغى';
+  String get cancelled => 'Cancelled';
 
   @override
-  String get driver_info => 'معلومات السائق';
+  String get driver_info => 'Driver Info';
 
   @override
-  String get driver_name => 'اسم السائق';
+  String get driver_name => 'Driver Name';
 
   @override
-  String get vehicle_info => 'معلومات المركبة';
+  String get vehicle_info => 'Vehicle Info';
 
   @override
-  String get phone_number => 'رقم الهاتف';
+  String get phone_number => 'Phone Number';
 
   @override
-  String get call_driver => 'اتصل بالسائق';
+  String get call_driver => 'Call Driver';
 
   @override
-  String get arriving_in => 'يصل خلال';
+  String get arriving_in => 'Arriving in';
 
   @override
-  String get minutes => 'دقيقة';
+  String get minutes => 'minutes';
 
   @override
-  String get order_status => 'حالة الطلب';
+  String get order_status => 'Order Status';
 
   @override
-  String get waiting_for_pickup => 'في انتظار الاستلام';
+  String get waiting_for_pickup => 'Waiting for Pickup';
 
   @override
-  String get on_the_way => 'في الطريق';
+  String get on_the_way => 'On the Way';
 
   @override
-  String get order_details => 'تفاصيل الطلب';
+  String get order_details => 'Order Details';
 
   @override
-  String get saved_locations => 'المواقع المحفوظة';
+  String get saved_locations => 'Saved Locations';
 
   @override
-  String get add_location => 'إضافة موقع';
+  String get add_location => 'Add Location';
 
   @override
-  String get edit_location => 'تعديل الموقع';
+  String get edit_location => 'Edit Location';
 
   @override
-  String get delete_location => 'حذف الموقع';
+  String get delete_location => 'Delete Location';
 
   @override
-  String get location_name => 'اسم الموقع';
+  String get location_name => 'Location Name';
 
   @override
-  String get location_address => 'عنوان الموقع';
+  String get location_address => 'Location Address';
 
   @override
-  String get home => 'المنزل';
+  String get home => 'Home';
 
   @override
-  String get work => 'العمل';
+  String get work => 'Work';
 
   @override
-  String get other => 'أخرى';
+  String get other => 'Other';
 
   @override
-  String get no_saved_locations => 'لا توجد مواقع محفوظة';
+  String get no_saved_locations => 'No saved locations';
 
   @override
-  String get add_your_first_location => 'أضف موقعك الأول لتسهيل الاستخدام';
+  String get add_your_first_location =>
+      'Add your first location for easier use';
 
   @override
-  String get location_saved => 'تم حفظ الموقع';
+  String get location_saved => 'Location saved';
 
   @override
-  String get location_deleted => 'تم حذف الموقع';
+  String get location_deleted => 'Location deleted';
 
   @override
-  String get confirm_delete => 'تأكيد الحذف';
+  String get confirm_delete => 'Confirm Delete';
 
   @override
-  String get delete_location_message => 'هل أنت متأكد من حذف هذا الموقع؟';
+  String get delete_location_message =>
+      'Are you sure you want to delete this location?';
 
   @override
-  String get no_saved_locations_message => 'اضغط على + لإضافة موقع جديد';
+  String get no_saved_locations_message => 'Tap + to add a new location';
 
   @override
   String delete_location_confirm(String name) {
-    return 'هل أنت متأكد من حذف \"$name\"؟';
+    return 'Are you sure you want to delete \"$name\"?';
   }
 
   @override
-  String get location_deleted_success => 'تم حذف الموقع بنجاح';
+  String get location_deleted_success => 'Location deleted successfully';
 
   @override
-  String get error_delete_location => 'خطأ في حذف الموقع';
+  String get error_delete_location => 'Error deleting location';
 
   @override
-  String get order_history => 'سجل الطلبات';
+  String get order_history => 'Order History';
 
   @override
-  String get no_past_orders => 'لا توجد طلبات سابقة';
+  String get no_past_orders => 'No past orders';
 
   @override
-  String get start_your_first_shipment => 'ابدأ شحنتك الأولى الآن';
+  String get start_your_first_shipment => 'Start your first shipment now';
 
   @override
-  String get completed_on => 'اكتمل في';
+  String get completed_on => 'Completed on';
 
   @override
-  String get view_details => 'عرض التفاصيل';
+  String get view_details => 'View Details';
 
   @override
-  String get reorder => 'إعادة الطلب';
+  String get reorder => 'Reorder';
 
   @override
-  String get trip_completed => 'اكتمل التوصيل';
+  String get trip_completed => 'Trip Completed';
 
   @override
-  String get thank_you => 'شكراً لاستخدامك واو أب';
+  String get thank_you => 'Thank you for using WawApp';
 
   @override
-  String get delivery_successful => 'تم التوصيل بنجاح';
+  String get delivery_successful => 'Delivery Successful';
 
   @override
-  String get rate_your_experience => 'قيّم تجربتك';
+  String get rate_your_experience => 'Rate Your Experience';
 
   @override
-  String get rate_driver => 'قيّم السائق';
+  String get rate_driver => 'Rate Driver';
 
   @override
-  String get share_feedback => 'شارك رأيك';
+  String get share_feedback => 'Share Feedback';
 
   @override
-  String get write_feedback => 'اكتب رأيك (اختياري)';
+  String get write_feedback => 'Write your feedback (optional)';
 
   @override
-  String get submit_rating => 'إرسال التقييم';
+  String get submit_rating => 'Submit Rating';
 
   @override
-  String get skip => 'تخطي';
+  String get skip => 'Skip';
 
   @override
-  String get excellent => 'ممتاز';
+  String get excellent => 'Excellent';
 
   @override
-  String get good => 'جيد';
+  String get good => 'Good';
 
   @override
-  String get average => 'متوسط';
+  String get average => 'Average';
 
   @override
-  String get poor => 'ضعيف';
+  String get poor => 'Poor';
 
   @override
-  String get very_poor => 'ضعيف جداً';
+  String get very_poor => 'Very Poor';
 
   @override
-  String get rating_submitted => 'تم إرسال التقييم';
+  String get rating_submitted => 'Rating submitted';
 
   @override
-  String get delivery_summary => 'ملخص التوصيل';
+  String get delivery_summary => 'Delivery Summary';
 
   @override
-  String get trip_completed_success => 'تم إكمال الرحلة بنجاح';
+  String get trip_completed_success => 'Trip completed successfully';
 
   @override
-  String get trip_details => 'تفاصيل الرحلة';
+  String get trip_details => 'Trip Details';
 
   @override
-  String get total_cost => 'التكلفة الكلية';
+  String get total_cost => 'Total Cost';
 
   @override
-  String get completed_at => 'وقت الإنجاز';
+  String get completed_at => 'Completed At';
 
   @override
-  String get rate_driver_subtitle => 'ساعدنا في تحسين الخدمة بتقييمك';
+  String get rate_driver_subtitle =>
+      'Help us improve the service with your rating';
 
   @override
-  String get rating_thank_you => 'شكراً لتقييمك!';
+  String get rating_thank_you => 'Thank you for your rating!';
 
   @override
-  String get error_submit_rating => 'تعذّر إرسال التقييم، حاول مرة أخرى';
+  String get error_submit_rating => 'Failed to submit rating, try again';
 
   @override
-  String get order_not_found => 'الطلب غير موجود';
+  String get order_not_found => 'Order not found';
 
   @override
-  String get my_profile => 'ملفي الشخصي';
+  String get my_profile => 'My Profile';
 
   @override
-  String get edit_profile => 'تعديل الملف الشخصي';
+  String get edit_profile => 'Edit Profile';
 
   @override
-  String get full_name => 'الاسم الكامل';
+  String get full_name => 'Full Name';
 
   @override
-  String get email => 'البريد الإلكتروني';
+  String get email => 'Email';
 
   @override
-  String get phone => 'رقم الهاتف';
+  String get phone => 'Phone Number';
 
   @override
-  String get account_info => 'معلومات الحساب';
+  String get account_info => 'Account Info';
 
   @override
-  String get preferences => 'التفضيلات';
+  String get preferences => 'Preferences';
 
   @override
-  String get language_settings => 'إعدادات اللغة';
+  String get language_settings => 'Language Settings';
 
   @override
-  String get notifications => 'الإشعارات';
+  String get notifications => 'Notifications';
 
   @override
-  String get notification_settings => 'إعدادات الإشعارات';
+  String get notification_settings => 'Notification Settings';
 
   @override
-  String get privacy => 'الخصوصية';
+  String get privacy => 'Privacy';
 
   @override
-  String get terms => 'الشروط والأحكام';
+  String get terms => 'Terms and Conditions';
 
   @override
-  String get help => 'المساعدة';
+  String get help => 'Help';
 
   @override
-  String get logout => 'تسجيل الخروج';
+  String get logout => 'Logout';
 
   @override
   String get logout_confirmation => 'Are you sure you want to logout?';
 
   @override
-  String get profile_updated => 'تم تحديث الملف الشخصي';
+  String get profile_updated => 'Profile updated';
 
   @override
-  String get version => 'الإصدار';
+  String get version => 'Version';
 
   @override
-  String get no_profile => 'لم يتم إعداد الملف الشخصي بعد';
+  String get no_profile => 'Profile not set up yet';
 
   @override
-  String get no_profile_message => 'أنشئ ملفك الشخصي للحصول على تجربة أفضل';
+  String get no_profile_message =>
+      'Create your profile for a better experience';
 
   @override
-  String get setup_profile => 'إعداد الملف الشخصي';
+  String get setup_profile => 'Setup Profile';
 
   @override
-  String get personal_info => 'المعلومات الشخصية';
+  String get personal_info => 'Personal Info';
 
   @override
-  String get quick_actions => 'إجراءات سريعة';
+  String get quick_actions => 'Quick Actions';
 
   @override
-  String get total_trips => 'إجمالي الرحلات';
+  String get total_trips => 'Total Trips';
 
   @override
-  String get rating => 'التقييم';
+  String get rating => 'Rating';
 
   @override
-  String get saved_locations_subtitle => 'إدارة المواقع المفضلة لديك';
+  String get saved_locations_subtitle => 'Manage your favorite locations';
 
   @override
-  String get retry => 'إعادة المحاولة';
+  String get retry => 'Retry';
 
   @override
-  String get error_loading_data => 'خطأ في تحميل البيانات';
+  String get error_loading_data => 'Error loading data';
 
   @override
-  String get language_ar => 'العربية';
+  String get language_ar => 'Arabic';
 
   @override
-  String get language_fr => 'الفرنسية';
+  String get language_fr => 'French';
 
   @override
-  String get language_en => 'الإنجليزية';
+  String get language_en => 'English';
 
   @override
-  String get app_settings => 'إعدادات التطبيق';
+  String get app_settings => 'App Settings';
 
   @override
-  String get general => 'عام';
+  String get general => 'General';
 
   @override
-  String get theme => 'المظهر';
+  String get theme => 'Theme';
 
   @override
-  String get light_mode => 'الوضع النهاري';
+  String get light_mode => 'Light Mode';
 
   @override
-  String get dark_mode => 'الوضع الليلي';
+  String get dark_mode => 'Dark Mode';
 
   @override
-  String get system_default => 'افتراضي النظام';
+  String get system_default => 'System Default';
 
   @override
-  String get push_notifications => 'الإشعارات الفورية';
+  String get push_notifications => 'Push Notifications';
 
   @override
-  String get order_updates => 'تحديثات الطلبات';
+  String get order_updates => 'Order Updates';
 
   @override
-  String get promotional => 'العروض الترويجية';
+  String get promotional => 'Promotional';
 
   @override
-  String get sound => 'الصوت';
+  String get sound => 'Sound';
 
   @override
-  String get vibration => 'الاهتزاز';
+  String get vibration => 'Vibration';
 
   @override
-  String get legal => 'قانوني';
+  String get legal => 'Legal';
 
   @override
   String get privacy_policy => 'Privacy Policy';
 
   @override
-  String get about => 'حول';
+  String get about => 'About';
 
   @override
-  String get app_version => 'نسخة التطبيق';
+  String get app_version => 'App Version';
 
   @override
-  String get contact_support => 'اتصل بالدعم';
+  String get contact_support => 'Contact Support';
 
   @override
-  String get app_description => 'تطبيق لتوصيل البضائع داخل نواكشوط بأمان وسرعة';
+  String get app_description =>
+      'An app for delivering goods within Nouakchott safely and quickly';
 
   @override
-  String get version_info => 'معلومات الإصدار';
+  String get version_info => 'Version Info';
 
   @override
-  String get branch => 'الفرع';
+  String get branch => 'Branch';
 
   @override
-  String get commit => 'الكوميت';
+  String get commit => 'Commit';
 
   @override
-  String get flavor => 'النكهة';
+  String get flavor => 'Flavor';
 
   @override
-  String get flutter_version => 'إصدار فلاتر';
+  String get flutter_version => 'Flutter Version';
 
   @override
-  String get features => 'المميزات';
+  String get features => 'Features';
 
   @override
-  String get feature_realtime_tracking => 'تتبع الشحنات في الوقت الفعلي';
+  String get feature_realtime_tracking => 'Real-time shipment tracking';
 
   @override
-  String get feature_cargo_types => '6 فئات متخصصة للبضائع';
+  String get feature_cargo_types => '6 specialized cargo categories';
 
   @override
-  String get feature_instant_quotes => 'أسعار فورية ودقيقة';
+  String get feature_instant_quotes => 'Instant and accurate pricing';
 
   @override
-  String get feature_multilingual => 'دعم اللغة العربية والفرنسية';
+  String get feature_multilingual => 'Arabic and French language support';
 
   @override
-  String get copyright => '© 2025 واو أب. جميع الحقوق محفوظة';
+  String get copyright => '© 2025 WawApp. All rights reserved';
 
   @override
-  String get choose_shipment_type => 'اختر نوع الحمولة';
+  String get choose_shipment_type => 'Choose Cargo Type';
 
   @override
-  String get cargo_delivery_service => 'خدمة توصيل البضائع';
+  String get cargo_delivery_service => 'Cargo Delivery Service';
 
   @override
-  String get cargo_delivery_subtitle => 'اختر نوع الحمولة لنوفر لك أفضل خدمة';
+  String get cargo_delivery_subtitle =>
+      'Choose your cargo type for the best service';
 
   @override
-  String get select_cargo_type => 'اختر نوع الشحنة';
+  String get select_cargo_type => 'Select Cargo Type';
 
   @override
-  String get notifications_title => 'الإشعارات';
+  String get notifications_title => 'Notifications';
 
   @override
-  String get no_notifications => 'لا توجد إشعارات';
+  String get no_notifications => 'No notifications';
 
   @override
-  String get mark_all_read => 'تحديد الكل كمقروء';
+  String get mark_all_read => 'Mark All as Read';
 
   @override
-  String get clear_all => 'مسح الكل';
+  String get clear_all => 'Clear All';
 
   @override
-  String get today => 'اليوم';
+  String get today => 'Today';
 
   @override
-  String get yesterday => 'أمس';
+  String get yesterday => 'Yesterday';
 
   @override
-  String get earlier => 'سابقاً';
+  String get earlier => 'Earlier';
 
   @override
-  String get newLabel => 'جديد';
+  String get newLabel => 'New';
 
   @override
-  String get error_occurred => 'حدث خطأ';
+  String get error_occurred => 'An error occurred';
 
   @override
-  String get try_again => 'حاول مرة أخرى';
+  String get try_again => 'Try Again';
 
   @override
-  String get network_error => 'خطأ في الاتصال';
+  String get network_error => 'Network error';
 
   @override
-  String get no_internet => 'لا يوجد اتصال بالإنترنت';
+  String get no_internet => 'No internet connection';
 
   @override
-  String get something_went_wrong => 'حدث خطأ ما';
+  String get something_went_wrong => 'Something went wrong';
 
   @override
-  String get please_wait => 'يرجى الانتظار';
+  String get please_wait => 'Please wait';
 
   @override
   String get sign_in => 'Sign In';

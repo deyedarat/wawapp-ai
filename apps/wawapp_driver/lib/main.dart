@@ -23,10 +23,41 @@ void main() async {
 
     WidgetsFlutterBinding.ensureInitialized();
 
-    // Initialize Firebase
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    // Initialize Firebase with retry logic to handle race conditions
+    // Firebase may auto-initialize in parallel on Android
+    bool firebaseInitialized = false;
+    for (int attempt = 0; attempt < 3 && !firebaseInitialized; attempt++) {
+      try {
+        if (Firebase.apps.isEmpty) {
+          if (kDebugMode && attempt == 0) {
+            print('🔵 Initializing Firebase...');
+          }
+          await Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform,
+          );
+          firebaseInitialized = true;
+          if (kDebugMode) {
+            print('✅ Firebase initialized successfully');
+          }
+        } else {
+          firebaseInitialized = true;
+          if (kDebugMode) {
+            print('✅ Firebase already initialized');
+          }
+        }
+      } on FirebaseException catch (e) {
+        if (e.code == 'duplicate-app') {
+          // Race condition: Firebase was initialized between isEmpty check and initializeApp
+          firebaseInitialized = true;
+          if (kDebugMode) {
+            print('✅ Firebase already initialized (race condition resolved)');
+          }
+        } else {
+          // Different error, wait and retry
+          await Future.delayed(Duration(milliseconds: 100 * (attempt + 1)));
+        }
+      }
+    }
 
     // Initialize Crashlytics
     await _initializeCrashlytics();

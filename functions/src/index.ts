@@ -35,6 +35,7 @@ export { adminCancelOrder, adminReassignOrder } from './admin/adminOrderActions'
 export { getAdminStats } from './admin/getAdminStats';
 export { checkPhoneExists } from './auth/checkPhoneExists';
 export { createCustomToken } from './auth/createCustomToken';
+export { deleteAccount } from './auth/deleteAccount'; // Google Play Compliance: Account deletion
 export { manualSetDriverClaims } from './auth/setDriverClaims';
 // export { adminFixMissingDriverData } from './admin/fixMissingDriverData';
 // export { adminCreateTestClient } from './admin/createTestClient';

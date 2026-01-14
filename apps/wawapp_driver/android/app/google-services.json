@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "896204324632",
-    "project_id": "wawapp-production",
-    "storage_bucket": "wawapp-production.firebasestorage.app"
+    "project_number": "363341993641",
+    "project_id": "wawapp-952d6",
+    "storage_bucket": "wawapp-952d6.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:896204324632:android:1ef57a257b245b45d0286d",
+        "mobilesdk_app_id": "1:363341993641:android:344b79d7b86a067d683bb8",
         "android_client_info": {
           "package_name": "com.wawapp.client"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAYQes-USHWGM9rR3P8AG9zQVyEn7aJv8Y"
+          "current_key": "AIzaSyBO67aaNMqotGFF73jlCB8uVGUQ5bILfVM"
         }
       ],
       "services": {
@@ -26,7 +26,7 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:896204324632:android:02c7e9be1866a965d0286d",
+        "mobilesdk_app_id": "1:363341993641:android:1a58dd28a46889d5683bb8",
         "android_client_info": {
           "package_name": "com.wawapp.driver"
         }
@@ -34,7 +34,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAYQes-USHWGM9rR3P8AG9zQVyEn7aJv8Y"
+          "current_key": "AIzaSyBO67aaNMqotGFF73jlCB8uVGUQ5bILfVM"
         }
       ],
       "services": {
