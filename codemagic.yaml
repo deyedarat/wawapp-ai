@@ -122,6 +122,10 @@ workflows:
         - $FLUTTER_ROOT/.pub-cache
         - $HOME/Library/Caches/CocoaPods
     working_directory: apps/wawapp_client
+    
+    integrations:
+      app_store_connect: codemagic-wawapp
+
     scripts:
       - name: Get dependencies
         script: flutter pub get
