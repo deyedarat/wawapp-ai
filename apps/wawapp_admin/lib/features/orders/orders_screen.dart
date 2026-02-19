@@ -1,12 +1,14 @@
+import 'package:core_shared/core_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:core_shared/core_shared.dart';
 import 'package:intl/intl.dart';
+
 import '../../core/theme/colors.dart';
+import '../../core/utils/responsive_helper.dart';
 import '../../core/widgets/admin_scaffold.dart';
 import '../../core/widgets/status_badge.dart';
 import '../../providers/admin_data_providers.dart';
-import '../../services/admin_orders_service.dart';
+import 'create_order_screen.dart';
 
 class OrdersScreen extends ConsumerStatefulWidget {
   const OrdersScreen({super.key});
@@ -17,7 +19,8 @@ class OrdersScreen extends ConsumerStatefulWidget {
 
 class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   String? _selectedStatusFilter;
-  
+  String _searchQuery = '';
+
   final Map<String, String> _statusFilterMap = {
     'الكل': '',
     'قيد التعيين': 'assigning',
@@ -35,8 +38,26 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
     return AdminScaffold(
       title: 'إدارة الطلبات',
+      onSearchChanged: (query) {
+        setState(() {
+          _searchQuery = query;
+        });
+      },
       actions: [
-        SizedBox(width: AdminSpacing.md),
+        const SizedBox(width: AdminSpacing.md),
+        ElevatedButton.icon(
+          onPressed: () {
+            debugPrint('Add Order button pressed');
+            _showAddOrderDialog(context);
+          },
+          icon: const Icon(Icons.add),
+          label: const Text('إضافة طلب'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AdminAppColors.primaryGreen,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        const SizedBox(width: AdminSpacing.md),
         ElevatedButton.icon(
           onPressed: () {
             // TODO: Export orders to CSV
@@ -58,7 +79,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                 'تصفية حسب الحالة:',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              SizedBox(width: AdminSpacing.md),
+              const SizedBox(width: AdminSpacing.md),
               Expanded(
                 child: Wrap(
                   spacing: AdminSpacing.sm,
@@ -66,7 +87,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                   children: _statusFilterMap.keys.map((label) {
                     final value = _statusFilterMap[label]!;
                     final isSelected = (_selectedStatusFilter ?? '') == value;
-                    
+
                     return FilterChip(
                       label: Text(label),
                       selected: isSelected,
@@ -78,9 +99,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                       backgroundColor: AdminAppColors.surfaceLight,
                       selectedColor: AdminAppColors.primaryGreen.withOpacity(0.2),
                       labelStyle: TextStyle(
-                        color: isSelected
-                            ? AdminAppColors.primaryGreen
-                            : AdminAppColors.textPrimaryLight,
+                        color: isSelected ? AdminAppColors.primaryGreen : AdminAppColors.textPrimaryLight,
                         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                       ),
                     );
@@ -90,10 +109,11 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
             ],
           ),
 
-          SizedBox(height: AdminSpacing.lg),
+          const SizedBox(height: AdminSpacing.lg),
 
           // Orders table with real-time data
-          Expanded(
+          SizedBox(
+            height: ResponsiveHelper.getTableHeight(context),
             child: StreamBuilder<List<Order>>(
               stream: ordersAsync,
               builder: (context, snapshot) {
@@ -121,12 +141,24 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
                 final orders = snapshot.data ?? [];
 
-                if (orders.isEmpty) {
+                // Filter orders by search query
+                final filteredOrders = _searchQuery.isEmpty
+                    ? orders
+                    : orders.where((order) {
+                        final searchLower = _searchQuery.toLowerCase();
+                        return (order.id ?? '').toLowerCase().contains(searchLower) ||
+                            (order.ownerId ?? '').toLowerCase().contains(searchLower) ||
+                            order.pickupAddress.toLowerCase().contains(searchLower) ||
+                            order.dropoffAddress.toLowerCase().contains(searchLower) ||
+                            (order.status ?? '').toLowerCase().contains(searchLower);
+                      }).toList();
+
+                if (filteredOrders.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.inbox_outlined,
                           size: 64,
                           color: AdminAppColors.textSecondaryLight,
@@ -136,14 +168,18 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                           'لا توجد طلبات',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: () => _showAddOrderDialog(context),
+                          icon: const Icon(Icons.add),
+                          label: const Text('إضافة أول طلب'),
+                        ),
                         const SizedBox(height: 8),
                         Text(
-                          _selectedStatusFilter != null
-                              ? 'لا توجد طلبات بهذه الحالة'
-                              : 'لا توجد طلبات في النظام',
+                          _selectedStatusFilter != null ? 'لا توجد طلبات بهذه الحالة' : 'لا توجد طلبات في النظام',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AdminAppColors.textSecondaryLight,
-                          ),
+                                color: AdminAppColors.textSecondaryLight,
+                              ),
                         ),
                       ],
                     ),
@@ -219,7 +255,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                   ),
                                 ),
                               ],
-                              rows: orders.map((order) {
+                              rows: filteredOrders.map((order) {
                                 return DataRow(
                                   cells: [
                                     DataCell(
@@ -240,9 +276,8 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                             ? order.assignedDriverId!.substring(0, 8)
                                             : 'غير معيّن',
                                         style: TextStyle(
-                                          color: order.assignedDriverId == null
-                                              ? AdminAppColors.textSecondaryLight
-                                              : null,
+                                          color:
+                                              order.assignedDriverId == null ? AdminAppColors.textSecondaryLight : null,
                                         ),
                                       ),
                                     ),
@@ -269,7 +304,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                     ),
                                     DataCell(
                                       Text(
-                                        '${order.price?.toStringAsFixed(0) ?? '0'} MRU',
+                                        '${order.price.toStringAsFixed(0)} MRU',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w600,
                                           color: AdminAppColors.primaryGreen,
@@ -294,8 +329,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                             tooltip: 'عرض التفاصيل',
                                             color: AdminAppColors.infoLight,
                                           ),
-                                          if (order.status != 'completed' &&
-                                              order.status != 'cancelled')
+                                          if (order.status != 'completed' && order.status != 'cancelled')
                                             IconButton(
                                               icon: const Icon(Icons.cancel),
                                               onPressed: () {
@@ -316,14 +350,14 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                       ),
                     ),
 
-                    SizedBox(height: AdminSpacing.md),
+                    const SizedBox(height: AdminSpacing.md),
 
                     // Summary
                     Text(
-                      'عرض ${orders.length} طلب',
+                      'عرض ${filteredOrders.length} من ${orders.length} طلب',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AdminAppColors.textSecondaryLight,
-                      ),
+                            color: AdminAppColors.textSecondaryLight,
+                          ),
                     ),
                   ],
                 );
@@ -342,7 +376,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
       case 'accepted':
         return StatusBadge.active('مقبول');
       case 'on_route':
-        return StatusBadge(label: 'في الطريق', color: AdminAppColors.activeBlue);
+        return const StatusBadge(label: 'في الطريق', color: AdminAppColors.activeBlue);
       case 'completed':
         return StatusBadge.success('مكتمل');
       case 'cancelled':
@@ -384,21 +418,15 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                 _buildDetailRow('نقطة التسليم:', order.dropoffAddress),
                 _buildDetailRow(
                   'المسافة:',
-                  order.distanceKm != null
-                      ? '${order.distanceKm!.toStringAsFixed(1)} كم'
-                      : '-',
+                  '${order.distanceKm.toStringAsFixed(1)} كم',
                 ),
                 _buildDetailRow(
                   'السعر:',
-                  order.price != null
-                      ? '${order.price!.toStringAsFixed(0)} MRU'
-                      : '-',
+                  '${order.price.toStringAsFixed(0)} MRU',
                 ),
                 _buildDetailRow('وقت الإنشاء:', _formatDate(order.createdAt)),
-                if (order.updatedAt != null)
-                  _buildDetailRow('آخر تحديث:', _formatDate(order.updatedAt)),
-                if (order.completedAt != null)
-                  _buildDetailRow('وقت الاكتمال:', _formatDate(order.completedAt)),
+                if (order.updatedAt != null) _buildDetailRow('آخر تحديث:', _formatDate(order.updatedAt)),
+                if (order.completedAt != null) _buildDetailRow('وقت الاكتمال:', _formatDate(order.completedAt)),
               ],
             ),
           ),
@@ -415,7 +443,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: AdminSpacing.xs),
+      padding: const EdgeInsets.symmetric(vertical: AdminSpacing.xs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -439,7 +467,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
   void _showCancelDialog(BuildContext context, Order order) {
     final reasonController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -448,64 +476,63 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('هل أنت متأكد من إلغاء الطلب ${(order.id ?? 'N/A').substring(0, 8)}؟'),
-            SizedBox(height: AdminSpacing.md),
+            const Text('هل أنت متأكد من إلغاء هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.'),
+            const SizedBox(height: AdminSpacing.md),
             TextField(
               controller: reasonController,
               decoration: const InputDecoration(
-                labelText: 'سبب الإلغاء (اختياري)',
+                labelText: 'سبب الإلغاء',
                 border: OutlineInputBorder(),
               ),
-              maxLines: 3,
+              maxLines: 2,
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('لا'),
+            child: const Text('رجوع'),
           ),
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(context);
-              
-              // Show loading
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('جارٍ إلغاء الطلب...')),
-              );
-
-              // Cancel order
               final service = ref.read(adminOrdersServiceProvider);
               final success = await service.cancelOrder(
-                order.id ?? '',
-                reason: reasonController.text.isNotEmpty
-                    ? reasonController.text
-                    : null,
+                order.id!,
+                reason: reasonController.text,
               );
 
-              if (mounted) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              if (context.mounted) {
+                Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                      success
-                          ? 'تم إلغاء الطلب ${(order.id ?? 'N/A').substring(0, 8)}'
-                          : 'فشل إلغاء الطلب',
-                    ),
-                    backgroundColor: success
-                        ? AdminAppColors.successLight
-                        : AdminAppColors.errorLight,
+                    content: Text(success ? 'تم إلغاء الطلب بنجاح' : 'فشل إلغاء الطلب'),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
                 );
               }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AdminAppColors.errorLight,
+              foregroundColor: Colors.white,
             ),
-            child: const Text('نعم، إلغاء'),
+            child: const Text('إلغاء الطلب'),
           ),
         ],
       ),
     );
+  }
+
+  void _showAddOrderDialog(BuildContext context) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CreateOrderScreen(),
+      ),
+    );
+
+    // Refresh the list if order was created
+    if (result == true && mounted) {
+      setState(() {});
+    }
   }
 }

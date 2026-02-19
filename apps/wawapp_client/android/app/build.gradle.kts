@@ -58,6 +58,9 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            ndk {
+                debugSymbolLevel = "none"
+            }
         }
     }
 }
@@ -68,4 +71,11 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    
+    // CRITICAL FIX: Force upgrade play-services-auth to fix SignInHubActivity NullPointerException
+    // Root cause: Firebase Auth pulls in play-services-auth:20.7.0 transitively
+    // Version 20.7.0 has known NPE issues in SignInHubActivity.onCreate() when Intent extras are null
+    // Version 21.2.0 has improved null safety and error handling
+    // See: SIGNIN_HUB_CRASH_RCA.md for full analysis
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 }

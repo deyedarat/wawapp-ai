@@ -35,6 +35,7 @@ void main() {
           dropoffAddress: 'Test Dropoff Address',
           distanceKm: 2.5,
           price: 100,
+          weightTons: 0.5,
         );
         print('Integration test - Order created: $orderId');
       }, returnsNormally);

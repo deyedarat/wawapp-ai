@@ -1,12 +1,13 @@
+import 'package:core_shared/core_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:core_shared/core_shared.dart';
 import 'package:intl/intl.dart';
+
 import '../../core/theme/colors.dart';
+import '../../core/utils/responsive_helper.dart';
 import '../../core/widgets/admin_scaffold.dart';
 import '../../core/widgets/status_badge.dart';
 import '../../providers/admin_data_providers.dart';
-import '../../services/admin_clients_service.dart';
 
 class ClientsScreen extends ConsumerStatefulWidget {
   const ClientsScreen({super.key});
@@ -44,31 +45,28 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                   Expanded(
                     child: Card(
                       child: Padding(
-                        padding: EdgeInsets.all(AdminSpacing.lg),
+                        padding: const EdgeInsets.all(AdminSpacing.lg),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.people,
                                   color: AdminAppColors.primaryGreen,
                                   size: 24,
                                 ),
-                                SizedBox(width: AdminSpacing.sm),
+                                const SizedBox(width: AdminSpacing.sm),
                                 Text(
                                   'إجمالي العملاء',
                                   style: Theme.of(context).textTheme.titleMedium,
                                 ),
                               ],
                             ),
-                            SizedBox(height: AdminSpacing.sm),
+                            const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$totalClients',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge
-                                  ?.copyWith(
+                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                                     color: AdminAppColors.primaryGreen,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -78,35 +76,32 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(width: AdminSpacing.md),
+                  const SizedBox(width: AdminSpacing.md),
                   Expanded(
                     child: Card(
                       child: Padding(
-                        padding: EdgeInsets.all(AdminSpacing.lg),
+                        padding: const EdgeInsets.all(AdminSpacing.lg),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.verified_user,
                                   color: AdminAppColors.activeBlue,
                                   size: 24,
                                 ),
-                                SizedBox(width: AdminSpacing.sm),
+                                const SizedBox(width: AdminSpacing.sm),
                                 Text(
                                   'موثّقون',
                                   style: Theme.of(context).textTheme.titleMedium,
                                 ),
                               ],
                             ),
-                            SizedBox(height: AdminSpacing.sm),
+                            const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$verifiedClients',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge
-                                  ?.copyWith(
+                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                                     color: AdminAppColors.activeBlue,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -116,35 +111,32 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(width: AdminSpacing.md),
+                  const SizedBox(width: AdminSpacing.md),
                   Expanded(
                     child: Card(
                       child: Padding(
-                        padding: EdgeInsets.all(AdminSpacing.lg),
+                        padding: const EdgeInsets.all(AdminSpacing.lg),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.block,
                                   color: AdminAppColors.errorLight,
                                   size: 24,
                                 ),
-                                SizedBox(width: AdminSpacing.sm),
+                                const SizedBox(width: AdminSpacing.sm),
                                 Text(
                                   'محظورون',
                                   style: Theme.of(context).textTheme.titleMedium,
                                 ),
                               ],
                             ),
-                            SizedBox(height: AdminSpacing.sm),
+                            const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$blockedClients',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge
-                                  ?.copyWith(
+                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                                     color: AdminAppColors.errorLight,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -159,7 +151,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
             },
           ),
 
-          SizedBox(height: AdminSpacing.xl),
+          const SizedBox(height: AdminSpacing.xl),
 
           // Filters
           Row(
@@ -168,7 +160,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                 'تصفية:',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              SizedBox(width: AdminSpacing.md),
+              const SizedBox(width: AdminSpacing.md),
               FilterChip(
                 label: const Text('الكل'),
                 selected: _verifiedFilter == null,
@@ -178,7 +170,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                   });
                 },
               ),
-              SizedBox(width: AdminSpacing.sm),
+              const SizedBox(width: AdminSpacing.sm),
               FilterChip(
                 label: const Text('موثّقون'),
                 selected: _verifiedFilter == true,
@@ -188,7 +180,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                   });
                 },
               ),
-              SizedBox(width: AdminSpacing.sm),
+              const SizedBox(width: AdminSpacing.sm),
               FilterChip(
                 label: const Text('غير موثّقين'),
                 selected: _verifiedFilter == false,
@@ -201,10 +193,11 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
             ],
           ),
 
-          SizedBox(height: AdminSpacing.lg),
+          const SizedBox(height: AdminSpacing.lg),
 
           // Clients table
-          Expanded(
+          SizedBox(
+            height: ResponsiveHelper.getTableHeight(context),
             child: StreamBuilder<List<ClientProfile>>(
               stream: clientsAsync,
               builder: (context, snapshot) {
@@ -237,7 +230,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.people_outline,
                           size: 64,
                           color: AdminAppColors.textSecondaryLight,
@@ -326,9 +319,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                                         client.name,
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          color: isBlocked
-                                              ? AdminAppColors.textSecondaryLight
-                                              : null,
+                                          color: isBlocked ? AdminAppColors.textSecondaryLight : null,
                                         ),
                                       ),
                                     ),
@@ -338,18 +329,18 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           if (isVerified)
-                                            StatusBadge(
+                                            const StatusBadge(
                                               label: 'موثّق',
                                               color: AdminAppColors.successLight,
                                             )
                                           else
-                                            StatusBadge(
+                                            const StatusBadge(
                                               label: 'غير موثّق',
                                               color: AdminAppColors.textSecondaryLight,
                                             ),
                                           if (isBlocked) ...[
-                                            SizedBox(width: AdminSpacing.xs),
-                                            StatusBadge(
+                                            const SizedBox(width: AdminSpacing.xs),
+                                            const StatusBadge(
                                               label: 'محظور',
                                               color: AdminAppColors.errorLight,
                                             ),
@@ -374,7 +365,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                                             size: 16,
                                             color: AdminAppColors.goldenYellow,
                                           ),
-                                          SizedBox(width: AdminSpacing.xxs),
+                                          const SizedBox(width: AdminSpacing.xxs),
                                           Text(
                                             client.averageRating.toStringAsFixed(1),
                                             style: const TextStyle(
@@ -454,14 +445,12 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                         ),
                       ),
                     ),
-
-                    SizedBox(height: AdminSpacing.md),
-
+                    const SizedBox(height: AdminSpacing.md),
                     Text(
                       'عرض ${clients.length} عميل',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AdminAppColors.textSecondaryLight,
-                      ),
+                            color: AdminAppColors.textSecondaryLight,
+                          ),
                     ),
                   ],
                 );
@@ -527,8 +516,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                   _getLanguageLabel(client.preferredLanguage),
                 ),
                 _buildDetailRow('تاريخ التسجيل:', _formatDate(client.createdAt)),
-                if (client.updatedAt != null)
-                  _buildDetailRow('آخر تحديث:', _formatDate(client.updatedAt)),
+                _buildDetailRow('آخر تحديث:', _formatDate(client.updatedAt)),
               ],
             ),
           ),
@@ -545,7 +533,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: AdminSpacing.xs),
+      padding: const EdgeInsets.symmetric(vertical: AdminSpacing.xs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -596,9 +584,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                     content: Text(
                       success ? 'تم توثيق العميل ${client.name}' : 'فشل توثيق العميل',
                     ),
-                    backgroundColor: success
-                        ? AdminAppColors.successLight
-                        : AdminAppColors.errorLight,
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
                 );
               }
@@ -642,9 +628,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                     content: Text(
                       success ? 'تم إلغاء توثيق العميل ${client.name}' : 'فشل إلغاء التوثيق',
                     ),
-                    backgroundColor: success
-                        ? AdminAppColors.successLight
-                        : AdminAppColors.errorLight,
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
                 );
               }
@@ -671,7 +655,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('هل أنت متأكد من حظر العميل ${client.name}؟'),
-            SizedBox(height: AdminSpacing.md),
+            const SizedBox(height: AdminSpacing.md),
             TextField(
               controller: reasonController,
               decoration: const InputDecoration(
@@ -698,9 +682,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
               final service = ref.read(adminClientsServiceProvider);
               final success = await service.blockClient(
                 client.id,
-                reason: reasonController.text.isNotEmpty
-                    ? reasonController.text
-                    : null,
+                reason: reasonController.text.isNotEmpty ? reasonController.text : null,
               );
 
               if (mounted) {
@@ -710,9 +692,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                     content: Text(
                       success ? 'تم حظر العميل ${client.name}' : 'فشل حظر العميل',
                     ),
-                    backgroundColor: success
-                        ? AdminAppColors.successLight
-                        : AdminAppColors.errorLight,
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
                 );
               }
@@ -756,9 +736,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                     content: Text(
                       success ? 'تم إلغاء حظر العميل ${client.name}' : 'فشل إلغاء الحظر',
                     ),
-                    backgroundColor: success
-                        ? AdminAppColors.successLight
-                        : AdminAppColors.errorLight,
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
                 );
               }

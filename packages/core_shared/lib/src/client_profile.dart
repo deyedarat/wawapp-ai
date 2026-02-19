@@ -32,6 +32,15 @@ class ClientProfile {
 
   /// Create ClientProfile from JSON map
   factory ClientProfile.fromJson(Map<String, dynamic> json) {
+    // Helper function to safely parse timestamp
+    DateTime _parseTimestamp(dynamic value) {
+      if (value == null) return DateTime.now();
+      if (value is Timestamp) return value.toDate();
+      if (value is DateTime) return value;
+      // Fallback for any other type
+      return DateTime.now();
+    }
+
     return ClientProfile(
       id: json['id'] as String? ?? '',
       name: json['name'] as String? ?? 'غير محدد',
@@ -40,12 +49,8 @@ class ClientProfile {
       preferredLanguage: json['preferredLanguage'] as String? ?? 'ar',
       totalTrips: json['totalTrips'] as int? ?? 0,
       averageRating: (json['averageRating'] as num?)?.toDouble() ?? 0.0,
-      createdAt: json['createdAt'] != null
-          ? (json['createdAt'] as Timestamp).toDate()
-          : DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? (json['updatedAt'] as Timestamp).toDate()
-          : DateTime.now(),
+      createdAt: _parseTimestamp(json['createdAt']),
+      updatedAt: _parseTimestamp(json['updatedAt']),
     );
   }
 

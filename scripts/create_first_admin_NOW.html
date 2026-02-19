@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء أول Admin - الحل السريع</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #00704A;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 26px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 13px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .warning-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .warning-text {
+            color: #856404;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00704A;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #00704A 0%, #005a3c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 112, 74, 0.4);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 16px;
+            margin-top: 20px;
+            border-radius: 10px;
+            display: none;
+            font-weight: 500;
+            white-space: pre-line;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #00704A;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .steps {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            font-size: 13px;
+        }
+
+        .steps h3 {
+            margin: 0 0 10px 0;
+            color: #00704A;
+            font-size: 15px;
+        }
+
+        .steps ul {
+            margin: 0;
+            padding-right: 20px;
+        }
+
+        .steps li {
+            margin-bottom: 8px;
+            color: #2e7d32;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔐 إنشاء أول مدير</h1>
+        <p class="subtitle">Create First Admin - Quick Fix</p>
+
+        <div class="warning">
+            <div class="warning-icon">⚠️</div>
+            <div class="warning-text">
+                <strong>هذه دالة مؤقتة!</strong><br>
+                تعمل لمرة واحدة فقط. بعد الاستخدام يجب حذفها فوراً.
+            </div>
+        </div>
+
+        <div class="steps">
+            <h3>📋 كيف يعمل:</h3>
+            <ul>
+                <li>1️⃣ سجل الدخول بحسابك</li>
+                <li>2️⃣ سيتم إضافة صلاحية Admin تلقائياً</li>
+                <li>3️⃣ ستتمكن من الدخول للوحة التحكم</li>
+            </ul>
+        </div>
+
+        <form onsubmit="createFirstAdmin(); return false;">
+            <div class="form-group">
+                <label for="email">📧 البريد الإلكتروني:</label>
+                <input type="email" id="email" value="myadmin@wawapp.co" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">🔒 كلمة المرور:</label>
+                <input type="password" id="password" value="Madmin1234" required>
+            </div>
+
+            <button type="submit" id="submitBtn">✨ إنشاء أول مدير الآن</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>جاري الإنشاء...</p>
+        </div>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: 'AIzaSyBO67aaNMqotGFF73jlCB8uVGUQ5bILfVM',
+            authDomain: 'wawapp-952d6.firebaseapp.com',
+            projectId: 'wawapp-952d6',
+            storageBucket: 'wawapp-952d6.firebasestorage.app',
+            messagingSenderId: '363341993641',
+            appId: '1:363341993641:web:617f5384a6162a8b683bb8'
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const functions = getFunctions(app);
+
+        window.createFirstAdmin = async function () {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            const loadingDiv = document.getElementById('loading');
+            const submitBtn = document.getElementById('submitBtn');
+
+            submitBtn.disabled = true;
+            loadingDiv.style.display = 'block';
+            messageDiv.style.display = 'none';
+
+            try {
+                console.log('🔍 Step 1: Signing in...');
+
+                let user;
+                try {
+                    // Try to sign in
+                    const signInResult = await signInWithEmailAndPassword(auth, email, password);
+                    user = signInResult.user;
+                    console.log('✅ Signed in:', user.uid);
+                } catch (signInError) {
+                    // If user doesn't exist, create it
+                    if (signInError.code === 'auth/user-not-found' ||
+                        signInError.code === 'auth/wrong-password' ||
+                        signInError.code === 'auth/invalid-credential') {
+                        console.log('📝 User not found, creating...');
+                        const createResult = await createUserWithEmailAndPassword(auth, email, password);
+                        user = createResult.user;
+                        console.log('✅ User created:', user.uid);
+                    } else {
+                        throw signInError;
+                    }
+                }
+
+                console.log('🔧 Step 2: Calling tempFirstAdmin function...');
+
+                // Call the temp function
+                const tempFirstAdmin = httpsCallable(functions, 'tempFirstAdmin');
+                const result = await tempFirstAdmin({ uid: user.uid });
+
+                console.log('✅ Result:', result.data);
+
+                // Force token refresh
+                console.log('🔄 Step 3: Refreshing token...');
+                await user.getIdToken(true);
+
+                // Verify claims
+                const idTokenResult = await user.getIdTokenResult();
+                console.log('Claims:', idTokenResult.claims);
+
+                showMessage(
+                    `✅ تم إنشاء أول مدير بنجاح!\n\n` +
+                    `📧 البريد: ${email}\n` +
+                    `🔑 UID: ${user.uid}\n\n` +
+                    `🎉 يمكنك الآن الدخول إلى لوحة التحكم:\n` +
+                    `🌐 https://wawapp-952d6.web.app\n\n` +
+                    `⚠️ مهم: يجب حذف دالة tempFirstAdmin فوراً:\n` +
+                    `1. احذف ملف functions/src/admin/tempFirstAdmin.ts\n` +
+                    `2. احذف السطر من functions/src/index.ts\n` +
+                    `3. نفذ: firebase deploy --only functions\n\n` +
+                    `سيتم التحويل للوحة التحكم بعد 5 ثواني...`,
+                    'success'
+                );
+
+                // Redirect after 5 seconds
+                setTimeout(() => {
+                    window.location.href = 'https://wawapp-952d6.web.app';
+                }, 5000);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+
+                let errorMessage = 'حدث خطأ: ';
+
+                if (error.code === 'auth/invalid-email') {
+                    errorMessage += 'البريد الإلكتروني غير صالح';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage += 'كلمة المرور ضعيفة (يجب 6 أحرف على الأقل)';
+                } else if (error.code === 'auth/email-already-in-use') {
+                    errorMessage += 'البريد مستخدم مسبقاً. حاول تسجيل الدخول.';
+                } else if (error.code === 'functions/failed-precondition') {
+                    errorMessage += 'يوجد مدير بالفعل في النظام.\nاستخدم الدالة العادية setAdminRole.';
+                } else if (error.code === 'functions/not-found') {
+                    errorMessage += 'الدالة غير موجودة. تأكد من نشرها:\nfirebase deploy --only functions:tempFirstAdmin';
+                } else {
+                    errorMessage += error.message || 'خطأ غير معروف';
+                }
+
+                showMessage('❌ ' + errorMessage, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                loadingDiv.style.display = 'none';
+            }
+        };
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>

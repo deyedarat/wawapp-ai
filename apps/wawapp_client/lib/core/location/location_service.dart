@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer' as dev;
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class LocationService {
   static const String _tag = 'WAWAPP_LOC';
@@ -63,32 +65,33 @@ class LocationService {
     );
   }
 
+  /// Reverse geocoding via Nominatim (OpenStreetMap) — no API key required.
+  /// Returns coordinates string as fallback if the request fails.
   static Future<String> resolveAddressFromLatLng(double lat, double lng) async {
     try {
-      final placemarks = await placemarkFromCoordinates(lat, lng)
-          .timeout(const Duration(seconds: 5));
+      final url = Uri.parse(
+        'https://nominatim.openstreetmap.org/reverse'
+        '?format=json&lat=$lat&lon=$lng&accept-language=ar',
+      );
+      final response = await http.get(
+        url,
+        headers: {'User-Agent': 'WawApp/1.0'},
+      ).timeout(const Duration(seconds: 8));
 
-      if (placemarks.isNotEmpty) {
-        final place = placemarks.first;
-        final parts = <String>[];
-
-        if (place.street?.isNotEmpty == true) {
-          parts.add(place.street!);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        final displayName = data['display_name'] as String?;
+        if (displayName != null && displayName.isNotEmpty) {
+          dev.log('Nominatim resolved: $displayName', name: _tag);
+          return displayName;
         }
-        if (place.locality?.isNotEmpty == true) {
-          parts.add(place.locality!);
-        }
-        if (place.administrativeArea?.isNotEmpty == true) {
-          parts.add(place.administrativeArea!);
-        }
-
-        return parts.isNotEmpty ? parts.join(', ') : 'موقع غير محدد';
       }
 
-      return 'موقع غير محدد';
+      dev.log('Nominatim returned no result, using coordinates', name: _tag);
+      return '(${lat.toStringAsFixed(5)}, ${lng.toStringAsFixed(5)})';
     } catch (e) {
       dev.log('Reverse geocoding error: $e', name: _tag);
-      return 'تعذّر جلب العنوان. تحقّق من الإنترنت أو فعّل الموقع.';
+      return '(${lat.toStringAsFixed(5)}, ${lng.toStringAsFixed(5)})';
     }
   }
 

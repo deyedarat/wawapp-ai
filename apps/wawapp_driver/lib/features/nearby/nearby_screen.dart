@@ -1,18 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'dart:developer' as dev;
+import 'dart:math';
+
 import 'package:core_shared/core_shared.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../core/theme/colors.dart';
+import '../../core/theme/components.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/location_service.dart';
 import '../../services/orders_service.dart';
 import '../../widgets/error_screen.dart';
-import '../../core/theme/colors.dart';
-import '../../core/theme/components.dart';
 import 'providers/nearby_orders_provider.dart';
-import 'dart:math';
-import 'dart:developer' as dev;
 
 class NearbyScreen extends ConsumerStatefulWidget {
   const NearbyScreen({super.key});
@@ -36,6 +38,14 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     if (kDebugMode) {
       dev.log('[Matching] NearbyScreen: Initializing location');
     }
+
+    // Clear previous error
+    if (mounted) {
+      setState(() {
+        _error = null;
+      });
+    }
+
     try {
       _currentPosition = await _locationService.getCurrentPosition();
       if (kDebugMode) {
@@ -43,15 +53,29 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
             '[Matching] NearbyScreen: Location obtained: lat=${_currentPosition!.latitude.toStringAsFixed(4)}, lng=${_currentPosition!.longitude.toStringAsFixed(4)}');
       }
       if (mounted) {
-        setState(() {});
+        setState(() {
+          _error = null; // Clear any previous errors
+        });
       }
     } on Object catch (e) {
       if (kDebugMode) {
         dev.log('[Matching] NearbyScreen: Location error: $e');
       }
+
+      // Provide user-friendly error message
+      String errorMessage = 'خطأ في الحصول على الموقع';
+      if (e.toString().contains('permission')) {
+        errorMessage = 'يرجى منح صلاحية الموقع للتطبيق من الإعدادات';
+      } else if (e.toString().contains('disabled')) {
+        errorMessage = 'يرجى تفعيل خدمات الموقع (GPS) على الجهاز';
+      } else if (e.toString().contains('timeout')) {
+        errorMessage = 'انتهت مهلة الحصول على الموقع. يرجى المحاولة مرة أخرى';
+      }
+
       if (mounted) {
         setState(() {
-          _error = e.toString();
+          _error = errorMessage;
+          _currentPosition = null; // Ensure position is null on error
         });
       }
     }
@@ -71,22 +95,17 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(
-                'خطأ: ${e.toString().contains('already taken') ? 'تم أخذ الطلب بالفعل' : e.toString()}')),
+            content: Text('خطأ: ${e.toString().contains('already taken') ? 'تم أخذ الطلب بالفعل' : e.toString()}')),
       );
     }
   }
 
-  double _calculateDistance(
-      double lat1, double lon1, double lat2, double lon2) {
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     const R = 6371;
     final dLat = (lat2 - lat1) * pi / 180;
     final dLon = (lon2 - lon1) * pi / 180;
-    final a = sin(dLat / 2) * sin(dLat / 2) +
-        cos(lat1 * pi / 180) *
-            cos(lat2 * pi / 180) *
-            sin(dLon / 2) *
-            sin(dLon / 2);
+    final a =
+        sin(dLat / 2) * sin(dLat / 2) + cos(lat1 * pi / 180) * cos(lat2 * pi / 180) * sin(dLon / 2) * sin(dLon / 2);
     return R * 2 * atan2(sqrt(a), sqrt(1 - a));
   }
 
@@ -112,12 +131,10 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error,
-                        size: 64, color: DriverAppColors.errorLight),
+                    const Icon(Icons.error, size: 64, color: DriverAppColors.errorLight),
                     SizedBox(height: DriverAppSpacing.md),
                     Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: DriverAppSpacing.lg),
+                      padding: EdgeInsets.symmetric(horizontal: DriverAppSpacing.lg),
                       child: Text(
                         'خطأ في الموقع: $_error',
                         textAlign: TextAlign.center,
@@ -169,19 +186,14 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       },
       data: (orders) {
         if (kDebugMode) {
-          dev.log(
-              '[Matching] NearbyScreen: ✅ Stream returned ${orders.length} orders');
+          dev.log('[Matching] NearbyScreen: ✅ Stream returned ${orders.length} orders');
           if (orders.isEmpty) {
-            dev.log(
-                '[Matching] NearbyScreen: ℹ️ Possible reasons for empty list:');
-            dev.log(
-                '[Matching] NearbyScreen:   1. Driver is OFFLINE - check driver status');
+            dev.log('[Matching] NearbyScreen: ℹ️ Possible reasons for empty list:');
+            dev.log('[Matching] NearbyScreen:   1. Driver is OFFLINE - check driver status');
             dev.log(
                 '[Matching] NearbyScreen:   2. No orders in Firestore with status="matching" and assignedDriverId=null');
-            dev.log(
-                '[Matching] NearbyScreen:   3. All orders are >8km away from driver');
-            dev.log(
-                '[Matching] NearbyScreen:   4. Firestore composite index not created');
+            dev.log('[Matching] NearbyScreen:   3. All orders are >8km away from driver');
+            dev.log('[Matching] NearbyScreen:   4. Firestore composite index not created');
           } else {
             for (var i = 0; i < orders.length; i++) {
               final order = orders[i];
@@ -220,8 +232,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                           Container(
                             padding: EdgeInsets.all(DriverAppSpacing.sm),
                             decoration: BoxDecoration(
-                              color:
-                                  DriverAppColors.primaryLight.withOpacity(0.1),
+                              color: DriverAppColors.primaryLight.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -236,19 +247,13 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                             children: [
                               Text(
                                 'طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),
                               Text(
                                 'المسافة: ${distance.toStringAsFixed(1)} كم',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                       color: DriverAppColors.textSecondaryLight,
                                     ),
                               ),
@@ -263,8 +268,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: DriverAppColors.successLight.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(
-                              DriverAppSpacing.radiusFull),
+                          borderRadius: BorderRadius.circular(DriverAppSpacing.radiusFull),
                         ),
                         child: Text(
                           '${order.price} MRU',
@@ -319,8 +323,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                   DriverActionButton(
                     label: 'قبول الطلب',
                     icon: Icons.check_circle,
-                    onPressed:
-                        order.id != null ? () => _acceptOrder(order.id!) : null,
+                    onPressed: order.id != null ? () => _acceptOrder(order.id!) : null,
                     isFullWidth: true,
                   ),
                 ],

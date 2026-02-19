@@ -19,6 +19,7 @@ import '../../core/pricing/pricing.dart';
 import '../../services/analytics_service.dart';
 import '../shipment_type/shipment_type_provider.dart';
 import '../../core/models/shipment_type.dart';
+import '../../core/models/cargo_weight.dart';
 import '../../core/pricing/shipment_pricing.dart';
 
 // NEW THEME IMPORTS
@@ -107,23 +108,30 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                   elevation: WawAppElevation.medium,
                   child: Builder(
                     builder: (context) {
-                      // Get selected shipment type
                       final shipmentType =
                           ref.watch(selectedShipmentTypeProvider);
+                      final cargoWeight =
+                          ref.watch(selectedCargoWeightProvider);
 
                       final breakdown = quoteState.distanceKm != null
                           ? Pricing.computeWithShipmentType(
                               quoteState.distanceKm!,
                               shipmentType,
+                              cargoWeight: cargoWeight,
                             )
                           : null;
-                      final price = breakdown?.rounded ?? 0;
+
+                      // Total shown to user = rounded subtotal + weight cost
+                      final displayPrice = breakdown != null
+                          ? breakdown.rounded + breakdown.weightCost
+                          : 0;
+
                       return Column(
                         children: [
                           // Price Display
                           Text(
-                            price > 0
-                                ? '${price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ${l10n.currency}'
+                            displayPrice > 0
+                                ? '${displayPrice.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ${l10n.currency}'
                                 : '--- ${l10n.currency}',
                             style: theme.textTheme.displayLarge?.copyWith(
                               color: theme.colorScheme.primary,
@@ -167,6 +175,25 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                         ],
                       );
                     },
+                  ),
+                ),
+
+                // Cargo Weight Selector
+                SizedBox(height: WawAppSpacing.md),
+                WawCard(
+                  elevation: WawAppElevation.low,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'وزن الشحنة',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: WawAppSpacing.sm),
+                      _buildWeightSelector(context),
+                    ],
                   ),
                 ),
 
@@ -223,6 +250,44 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
     );
   }
 
+  Widget _buildWeightSelector(BuildContext context) {
+    final selectedWeight = ref.watch(selectedCargoWeightProvider);
+    final theme = Theme.of(context);
+
+    return Wrap(
+      spacing: WawAppSpacing.sm,
+      runSpacing: WawAppSpacing.xs,
+      children: CargoWeight.values.map((weight) {
+        final isSelected = selectedWeight == weight;
+        return ChoiceChip(
+          label: Text(
+            '${weight.arabicLabel}\n+${weight.costMRU} MRU',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight:
+                  isSelected ? FontWeight.bold : FontWeight.normal,
+              color: isSelected
+                  ? theme.colorScheme.onPrimary
+                  : theme.colorScheme.onSurface,
+            ),
+          ),
+          selected: isSelected,
+          selectedColor: theme.colorScheme.primary,
+          onSelected: (_) {
+            ref.read(selectedCargoWeightProvider.notifier).state = weight;
+          },
+          avatar: Icon(
+            weight.icon,
+            size: 16,
+            color: isSelected
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.primary,
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   Widget _buildPriceBreakdown(
       BuildContext context, AppLocalizations l10n, PricingBreakdown breakdown) {
     final theme = Theme.of(context);
@@ -243,12 +308,26 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
           ),
         ],
         SizedBox(height: WawAppSpacing.xs),
+        _buildBreakdownRow(
+          context,
+          'معامل التسعير',
+          '× ${PricingConfig.antigravityMultiplier.toStringAsFixed(1)}',
+          color: theme.colorScheme.secondary,
+        ),
+        SizedBox(height: WawAppSpacing.xs),
+        _buildBreakdownRow(
+          context,
+          'تكلفة الوزن (${breakdown.weightTons} طن)',
+          '+ ${breakdown.weightCost} ${l10n.currency}',
+          color: Colors.orange,
+        ),
+        SizedBox(height: WawAppSpacing.xs),
         Divider(color: context.wawAppTheme.dividerColor),
         SizedBox(height: WawAppSpacing.xs),
         _buildBreakdownRow(
           context,
           l10n.total,
-          '${breakdown.rounded} ${l10n.currency}',
+          '${breakdown.rounded + breakdown.weightCost} ${l10n.currency}',
           isBold: true,
         ),
       ],
@@ -289,7 +368,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+            color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
           ),
         ),
         SizedBox(height: WawAppSpacing.xxs),
@@ -319,12 +398,17 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
         latLng: routeState.dropoff,
       );
 
-      // Get selected shipment type and compute price with it
+      // Get selected shipment type, cargo weight, and compute price
       final shipmentType = ref.read(selectedShipmentTypeProvider);
+      final cargoWeight = ref.read(selectedCargoWeightProvider);
       final breakdown = Pricing.computeWithShipmentType(
         quoteState.distanceKm!,
         shipmentType,
+        cargoWeight: cargoWeight,
       );
+
+      // Final price = rounded subtotal + weight cost
+      final finalPrice = breakdown.rounded + breakdown.weightCost;
 
       final authState = ref.read(authProvider);
       final user = authState.user;
@@ -337,21 +421,24 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
         pickup: {
           'lat': routeState.pickup!.latitude,
           'lng': routeState.pickup!.longitude,
+          'label': fromText,
         },
         dropoff: {
           'lat': routeState.dropoff!.latitude,
           'lng': routeState.dropoff!.longitude,
+          'label': toText,
         },
         pickupAddress: fromText,
         dropoffAddress: toText,
         distanceKm: quoteState.distanceKm!,
-        price: breakdown.rounded,
+        price: finalPrice,
+        weightTons: cargoWeight.tons,
       );
 
       // Log analytics event
       AnalyticsService.instance.logOrderCreated(
         orderId: orderId,
-        priceAmount: breakdown.rounded,
+        priceAmount: finalPrice,
         distanceKm: quoteState.distanceKm!,
       );
 
@@ -360,7 +447,7 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
         id: orderId,
         ownerId: user.uid,
         distanceKm: quoteState.distanceKm!,
-        price: breakdown.rounded.toDouble(),
+        price: finalPrice.toDouble(),
         pickupAddress: fromText,
         dropoffAddress: toText,
         pickup: LocationPoint(
@@ -374,13 +461,13 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
           label: toText,
         ),
         status: OrderStatus.assigning.toFirestore(),
+        weightTons: cargoWeight.tons,
       );
 
       _startOrderTracking(orderId);
       if (!mounted) return;
       context.push('/track', extra: order);
     } catch (e, stackTrace) {
-      // Debug logging for future diagnostics
       debugPrint('[OrdersClient] Failed to create order: $e');
       debugPrint('[OrdersClient] Stack trace: $stackTrace');
 

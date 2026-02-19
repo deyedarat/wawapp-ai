@@ -1,13 +1,13 @@
-/**
- * Admin Login Screen
- * Authentication screen for admin panel access
- */
+/// Admin Login Screen
+/// Authentication screen for admin panel access
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../core/theme/colors.dart';
 import '../../core/theme/typography.dart';
-import '../../services/admin_auth_service.dart';
 import '../../providers/admin_auth_providers.dart';
 
 class AdminLoginScreen extends ConsumerStatefulWidget {
@@ -46,7 +46,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
         _emailController.text.trim(),
         _passwordController.text,
       );
-      
+
       // Navigation is handled by router redirect
     } catch (e) {
       setState(() {
@@ -81,7 +81,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       // Logo/Title
-                      Icon(
+                      const Icon(
                         Icons.admin_panel_settings,
                         size: 72,
                         color: AdminAppColors.primaryLight,
@@ -118,7 +118,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                           ),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.error_outline,
                                 color: AdminAppColors.errorLight,
                                 size: 20,
@@ -170,9 +170,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                           prefixIcon: const Icon(Icons.lock_outlined),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
+                              _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                             ),
                             onPressed: () {
                               setState(() {
@@ -229,7 +227,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                       // Register link (DEV MODE)
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pushNamed('/register');
+                          GoRouter.of(context).push('/register');
                         },
                         child: Text(
                           'ليس لديك حساب؟ إنشاء حساب جديد (وضع التطوير)',

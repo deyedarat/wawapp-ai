@@ -1,16 +1,15 @@
-/**
- * Live Operations Providers
- * Riverpod providers for real-time driver and order data
- */
+/// Live Operations Providers
+/// Riverpod providers for real-time driver and order data
+library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:core_shared/core_shared.dart';
+
 import '../models/live_driver_marker.dart';
-import '../models/live_order_marker.dart';
 import '../models/live_ops_filters.dart';
+import '../models/live_order_marker.dart';
 
 // ============================================================================
 // Filter State Provider
@@ -56,7 +55,7 @@ final liveDriversStreamProvider = StreamProvider<List<LiveDriverMarker>>((ref) {
     for (final doc in snapshot.docs) {
       try {
         final data = doc.data();
-        
+
         // Skip if no location data
         if (data['location'] == null) continue;
 
@@ -160,7 +159,7 @@ final liveOrdersStreamProvider = StreamProvider<List<LiveOrderMarker>>((ref) {
       case OrderStatusFilter.all:
         break;
     }
-    
+
     if (statusValue != null) {
       query = query.where('status', isEqualTo: statusValue);
     }
@@ -208,7 +207,7 @@ final liveOrdersStreamProvider = StreamProvider<List<LiveOrderMarker>>((ref) {
         if (pickupLocation == null || dropoffLocation == null) continue;
 
         final status = data['status'] as String? ?? 'unknown';
-        
+
         // Apply cancelled status filter (client-side)
         if (filters.orderStatus == OrderStatusFilter.cancelled) {
           if (!status.startsWith('cancelled')) continue;
@@ -306,9 +305,7 @@ final liveOpsStatsProvider = Provider<LiveOpsStats>((ref) {
   final assignedOrders = orders.where((o) => o.assignmentTimeMinutes != null).toList();
   double? averageAssignmentTime;
   if (assignedOrders.isNotEmpty) {
-    final totalMinutes = assignedOrders
-        .map((o) => o.assignmentTimeMinutes!)
-        .reduce((a, b) => a + b);
+    final totalMinutes = assignedOrders.map((o) => o.assignmentTimeMinutes!).reduce((a, b) => a + b);
     averageAssignmentTime = totalMinutes / assignedOrders.length;
   }
 

@@ -55,7 +55,18 @@ class PhonePinAuth {
   String? _lastVerificationId;
   String? get lastVerificationId => _lastVerificationId;
 
+  // Track in-flight phone session request to prevent concurrent calls
+  Future<void>? _inFlightPhoneSession;
+
   Future<void> ensurePhoneSession(String phoneE164, {bool forceNewSession = false}) async {
+    // If a session request is already in-flight and we're not forcing a new one, return the existing future
+    if (_inFlightPhoneSession != null && !forceNewSession) {
+      if (kDebugMode) {
+        print('[PhonePinAuth] ensurePhoneSession() already in progress, returning existing future');
+      }
+      return _inFlightPhoneSession!;
+    }
+
     // Initialize auth settings for debug builds (enable reCAPTCHA)
     await _initializeAuth();
 
@@ -90,7 +101,10 @@ class PhonePinAuth {
       FirebaseCrashlytics.instance.log('OTP_VERIFY_PHONE_START: ${DateTime.now()}');
     }
 
+    // Store the in-flight future and ensure it's cleared when done
     try {
+      _inFlightPhoneSession = completer.future;
+
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneE164,
         timeout: const Duration(seconds: 60),
@@ -102,13 +116,35 @@ class PhonePinAuth {
           try {
             await _auth.signInWithCredential(cred);
             if (kDebugMode) print('[PhonePinAuth] Auto sign-in successful');
-            completer.complete();
+            
+            // SAFE COMPLETION: Only complete if not already completed
+            if (!completer.isCompleted) {
+              if (kDebugMode) {
+                print('[PhonePinAuth] Completing future via verificationCompleted (success path)');
+              }
+              completer.complete();
+            } else {
+              if (kDebugMode) {
+                print('[PhonePinAuth] WARNING: verificationCompleted tried to complete already-completed future');
+              }
+            }
           } on Object catch (e) {
             if (kDebugMode) {
               print('[PhonePinAuth] DIAGNOSTIC: Auto sign-in failed: $e');
               FirebaseCrashlytics.instance.log('OTP_AUTO_SIGNIN_FAILED: $e');
             }
-            completer.completeError(e);
+            
+            // SAFE COMPLETION: Only complete if not already completed
+            if (!completer.isCompleted) {
+              if (kDebugMode) {
+                print('[PhonePinAuth] Completing future via verificationCompleted (error path)');
+              }
+              completer.completeError(e);
+            } else {
+              if (kDebugMode) {
+                print('[PhonePinAuth] WARNING: verificationCompleted error tried to complete already-completed future');
+              }
+            }
           }
         },
         verificationFailed: (e) {
@@ -130,7 +166,18 @@ class PhonePinAuth {
               ],
             );
           }
-          completer.completeError(e);
+          
+          // SAFE COMPLETION: Only complete if not already completed
+          if (!completer.isCompleted) {
+            if (kDebugMode) {
+              print('[PhonePinAuth] Completing future via verificationFailed');
+            }
+            completer.completeError(e);
+          } else {
+            if (kDebugMode) {
+              print('[PhonePinAuth] WARNING: verificationFailed tried to complete already-completed future');
+            }
+          }
         },
         codeSent: (verificationId, resendToken) {
           if (kDebugMode) {
@@ -149,7 +196,17 @@ class PhonePinAuth {
             );
           }
 
-          completer.complete();
+          // SAFE COMPLETION: Only complete if not already completed
+          if (!completer.isCompleted) {
+            if (kDebugMode) {
+              print('[PhonePinAuth] Completing future via codeSent');
+            }
+            completer.complete();
+          } else {
+            if (kDebugMode) {
+              print('[PhonePinAuth] WARNING: codeSent tried to complete already-completed future (likely auto-verified)');
+            }
+          }
         },
         codeAutoRetrievalTimeout: (vid) {
           if (kDebugMode) {
@@ -157,6 +214,7 @@ class PhonePinAuth {
             FirebaseCrashlytics.instance.log('OTP_AUTO_RETRIEVAL_TIMEOUT: verificationId=$vid');
           }
           _lastVerificationId = vid;
+          // Note: This callback does not complete the future - it's just informational
         },
       );
 
@@ -189,6 +247,12 @@ class PhonePinAuth {
         );
       }
       rethrow;
+    } finally {
+      // CRITICAL: Clear the in-flight future reference when done (success or error)
+      _inFlightPhoneSession = null;
+      if (kDebugMode) {
+        print('[PhonePinAuth] Cleared in-flight phone session reference');
+      }
     }
   }
 

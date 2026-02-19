@@ -32,8 +32,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     navigatorKey: appNavigatorKey,
     initialLocation: '/',
     redirect: (context, state) => _redirect(state, authState),
-    refreshListenable:
-        _GoRouterRefreshStream(ref.read(authProvider.notifier).stream),
+    refreshListenable: _GoRouterRefreshStream(ref.read(authProvider.notifier).stream),
     observers: [
       FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
     ],
@@ -117,9 +116,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
 String? _redirect(GoRouterState s, AuthState st) {
   final loggedIn = st.user != null;
-  final canOtp = st.otpFlowActive ||
-      st.otpStage == OtpStage.sending ||
-      st.otpStage == OtpStage.codeSent;
+  final canOtp = st.otpFlowActive || st.otpStage == OtpStage.sending || st.otpStage == OtpStage.codeSent;
 
   if (kDebugMode) {
     debugPrint('[ROUTER] Navigation check | '
@@ -135,8 +132,7 @@ String? _redirect(GoRouterState s, AuthState st) {
   if (canOtp) {
     if (s.matchedLocation != '/otp') {
       if (kDebugMode) {
-        debugPrint(
-            '[ROUTER] → Redirect to /otp (OTP flow active, otpStage=${st.otpStage})');
+        debugPrint('[ROUTER] → Redirect to /otp (OTP flow active, otpStage=${st.otpStage})');
       }
       return '/otp';
     }
@@ -162,20 +158,16 @@ String? _redirect(GoRouterState s, AuthState st) {
 
   // 3. AUTHENTICATED BUT PIN STATUS UNKNOWN/LOADING/ERROR
   // Redirect to PinGateScreen to wait for check or retry
-  if (st.pinStatus == PinStatus.unknown ||
-      st.pinStatus == PinStatus.loading ||
-      st.pinStatus == PinStatus.error) {
+  if (st.pinStatus == PinStatus.unknown || st.pinStatus == PinStatus.loading || st.pinStatus == PinStatus.error) {
     if (s.matchedLocation != '/pin-gate') {
       if (kDebugMode) {
-        debugPrint(
-            '[ROUTER] → Redirect to /pin-gate (pinStatus=${st.pinStatus})');
+        debugPrint('[ROUTER] → Redirect to /pin-gate (pinStatus=${st.pinStatus})');
       }
       return '/pin-gate';
     }
     // Already on gate, stay here until status resolves
     if (kDebugMode) {
-      debugPrint(
-          '[ROUTER] ✓ Already on /pin-gate (waiting for pinStatus=${st.pinStatus})');
+      debugPrint('[ROUTER] ✓ Already on /pin-gate (waiting for pinStatus=${st.pinStatus})');
     }
     return null;
   }
@@ -202,36 +194,58 @@ String? _redirect(GoRouterState s, AuthState st) {
         s.matchedLocation == '/create-pin' ||
         s.matchedLocation == '/pin-gate') {
       if (kDebugMode) {
-        debugPrint(
-            '[ROUTER] → Redirect to / (authenticated with PIN, leaving ${s.matchedLocation})');
+        debugPrint('[ROUTER] → Redirect to / (authenticated with PIN, leaving ${s.matchedLocation})');
       }
       return '/';
     }
     if (kDebugMode) {
-      debugPrint(
-          '[ROUTER] ✓ Authenticated - allowing access to ${s.matchedLocation}');
+      debugPrint('[ROUTER] ✓ Authenticated - allowing access to ${s.matchedLocation}');
     }
     return null;
   }
 
   // Fallback: unexpected state
   if (kDebugMode) {
-    debugPrint(
-        '[ROUTER] ⚠️ Unexpected state - no redirect | pinStatus=${st.pinStatus}');
+    debugPrint('[ROUTER] ⚠️ Unexpected state - no redirect | pinStatus=${st.pinStatus}');
   }
   return null;
 }
 
 class _GoRouterRefreshStream extends ChangeNotifier {
   _GoRouterRefreshStream(Stream<AuthState> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
+    // CRITICAL FIX: Do NOT call notifyListeners() immediately in constructor
+    // This was causing go_router to rebuild before initialization completed,
+    // leading to "registry.containsKey(page)" assertion failures.
+    // go_router will call redirect() on initial build anyway.
+
+    // Add debouncing to prevent rapid redirect conflicts
+    _subscription = stream.asBroadcastStream().transform(StreamTransformer.fromHandlers(
+      handleData: (AuthState data, EventSink<AuthState> sink) {
+        // Cancel any pending timer
+        _debounceTimer?.cancel();
+
+        // Set a new timer to emit after debounce period
+        _debounceTimer = Timer(const Duration(milliseconds: 100), () {
+          sink.add(data);
+        });
+      },
+    )).listen((authState) {
+      if (kDebugMode) {
+        debugPrint('[Router] Auth state changed, triggering redirect check | '
+            'user=${authState.user?.uid ?? 'null'} | '
+            'pinStatus=${authState.pinStatus} | '
+            'otpStage=${authState.otpStage}');
+      }
+      notifyListeners();
+    });
   }
 
   late final StreamSubscription<AuthState> _subscription;
+  Timer? _debounceTimer;
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _subscription.cancel();
     super.dispose();
   }

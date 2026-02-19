@@ -1,7 +1,7 @@
 name: wawapp_client
 description: WawApp Client Application
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+8
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -26,7 +26,6 @@ dependencies:
   cloud_functions: ^5.1.4
   crypto: ^3.0.3
   firebase_messaging: ^15.2.10
-  firebase_analytics: ^11.3.3
   firebase_crashlytics: ^4.1.3
   # firebase_dynamic_links: ^6.1.10  # Removed - not used in Client app (Memory Optimization Phase 1)
   auth_shared:

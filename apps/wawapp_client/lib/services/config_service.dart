@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+
 import '../core/models/app_config.dart';
 
 /// Service for fetching app configuration from backend
@@ -9,11 +11,10 @@ class ConfigService {
   /// Production config URL (HTTPS domain)
   /// Can be overridden via --dart-define=WAWAPP_CONFIG_URL=https://your-domain.com
   static const String _defaultConfigUrl = 'https://config.wawappmr.com/api/public/config';
-  
+
   /// Get config URL from environment or use default
-  static String get configUrl => 
-      const String.fromEnvironment('WAWAPP_CONFIG_URL', defaultValue: _defaultConfigUrl);
-  
+  static String get configUrl => const String.fromEnvironment('WAWAPP_CONFIG_URL', defaultValue: _defaultConfigUrl);
+
   static const Duration timeout = Duration(seconds: 10);
 
   /// Singleton instance
@@ -62,9 +63,7 @@ class ConfigService {
 
         return config;
       } else {
-        throw ConfigException(
-          'Failed to fetch config: ${response.statusCode} ${response.reasonPhrase}',
-        );
+        throw ConfigException('Failed to fetch config: ${response.statusCode} ${response.reasonPhrase}');
       }
     } on http.ClientException catch (e) {
       if (kDebugMode) {

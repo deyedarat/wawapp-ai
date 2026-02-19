@@ -20,6 +20,7 @@ class OrdersRepository {
     required String dropoffAddress,
     required double distanceKm,
     required int price,
+    required double weightTons,
   }) async {
     try {
       debugPrint('[OrdersClient] Creating order for user: $ownerId');
@@ -34,6 +35,7 @@ class OrdersRepository {
         'dropoffAddress': dropoffAddress,
         'distanceKm': distanceKm,
         'price': price,
+        'weightTons': weightTons,
         'status': OrderStatus.assigning.toFirestore(), // 'matching'
         'assignedDriverId': null, // Ensure null for Phase A compatibility
         'createdAt': FieldValue.serverTimestamp(),

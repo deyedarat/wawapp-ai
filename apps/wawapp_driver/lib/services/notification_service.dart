@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
-import 'dart:convert';
+
 import 'notification_helper.dart';
 
 class NotificationService {
@@ -11,8 +14,7 @@ class NotificationService {
   NotificationService._internal();
 
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
   BuildContext? _context;
   String? _pendingRoute;
@@ -26,8 +28,7 @@ class NotificationService {
   }
 
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings();
 
     await _localNotifications.initialize(
@@ -63,13 +64,11 @@ class NotificationService {
     );
 
     await _localNotifications
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(newOrdersChannel);
 
     await _localNotifications
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(orderUpdatesChannel);
   }
 
@@ -92,17 +91,12 @@ class NotificationService {
     final notification = message.notification;
     if (notification != null) {
       final payload = jsonEncode(message.data);
-      final notificationType =
-          message.data['notificationType'] ?? message.data['type'];
+      final notificationType = message.data['notificationType'] ?? message.data['type'];
 
       // Determine channel based on notification type
-      final channelId =
-          notificationType == 'new_order' ? 'new_orders' : 'order_updates';
-      final channelName =
-          notificationType == 'new_order' ? 'طلبات جديدة' : 'تحديثات الطلبات';
-      final importance = notificationType == 'new_order'
-          ? Importance.high
-          : Importance.defaultImportance;
+      final channelId = notificationType == 'new_order' ? 'new_orders' : 'order_updates';
+      final channelName = notificationType == 'new_order' ? 'طلبات جديدة' : 'تحديثات الطلبات';
+      final importance = notificationType == 'new_order' ? Importance.high : Importance.defaultImportance;
 
       _localNotifications.show(
         notification.hashCode,
@@ -113,9 +107,7 @@ class NotificationService {
             channelId,
             channelName,
             importance: importance,
-            priority: notificationType == 'new_order'
-                ? Priority.high
-                : Priority.defaultPriority,
+            priority: notificationType == 'new_order' ? Priority.high : Priority.defaultPriority,
             sound: const RawResourceAndroidNotificationSound('notification'),
             enableVibration: true,
             playSound: true,
@@ -158,13 +150,43 @@ class NotificationService {
   }
 
   void _navigateFromMessage(Map<String, dynamic> data) {
+    if (kDebugMode) {
+      debugPrint('[NotificationService] _navigateFromMessage called with data: $data');
+      debugPrint('[NotificationService] Context available: ${_context != null}');
+    }
+
     final route = NotificationHelper.getRouteFromNotification(
       type: data['type'],
       role: data['role'],
     );
 
+    if (kDebugMode) {
+      debugPrint('[NotificationService] Route from helper: $route');
+    }
+
     if (route != null && _context != null) {
-      _context!.go(route);
+      if (kDebugMode) {
+        debugPrint('[NotificationService] ✅ Navigating to: $route');
+      }
+      try {
+        _context!.go(route);
+        if (kDebugMode) {
+          debugPrint('[NotificationService] ✅ Navigation successful');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint('[NotificationService] ❌ Navigation error: $e');
+        }
+      }
+    } else {
+      if (kDebugMode) {
+        if (route == null) {
+          debugPrint('[NotificationService] ❌ Route is null, cannot navigate');
+        }
+        if (_context == null) {
+          debugPrint('[NotificationService] ❌ Context is null, cannot navigate');
+        }
+      }
     }
   }
 
