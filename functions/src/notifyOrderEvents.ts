@@ -13,6 +13,7 @@
 
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { writeAdminNotification } from './helpers/adminNotifications';
 
 /**
  * Notification configuration
@@ -362,18 +363,28 @@ export const notifyOrderEvents = functions.firestore
     if ((beforeStatus === 'accepted' || beforeStatus === 'onRoute') &&
         afterStatus === 'cancelledByClient') {
       const assignedDriverId = afterData.assignedDriverId as string | undefined;
-      
+
       if (assignedDriverId) {
         console.log('[NotifyOrderEvents] Notifying assigned driver of cancellation', {
           order_id: orderId,
           driver_id: assignedDriverId,
         });
-        
+
         const driverNotificationConfig = getNotificationConfig(beforeStatus, afterStatus);
         if (driverNotificationConfig) {
           await sendNotification(assignedDriverId, orderId, driverNotificationConfig);
         }
       }
+    }
+
+    // Write admin notification for expired orders
+    if (afterStatus === 'expired') {
+      await writeAdminNotification({
+        type: 'expired_order',
+        title: 'طلب منتهي الصلاحية',
+        body: `طلب #${orderId.substring(0, 6)} انتهت مهلته دون إسناد سائق`,
+        data: { orderId, ownerId },
+      });
     }
 
     return null;

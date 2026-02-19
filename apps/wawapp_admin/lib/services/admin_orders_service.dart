@@ -1,12 +1,11 @@
-/**
- * Admin Orders Service
- * Handles order-related operations for admin panel
- */
+/// Admin Orders Service
+/// Handles order-related operations for admin panel
+library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:core_shared/core_shared.dart' as core_shared;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:core_shared/core_shared.dart' as core_shared;
 
 class AdminOrdersService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -17,19 +16,15 @@ class AdminOrdersService {
     String? statusFilter,
     int limit = 50,
   }) {
-    Query<Map<String, dynamic>> query = _firestore
-        .collection('orders')
-        .orderBy('createdAt', descending: true)
-        .limit(limit);
+    Query<Map<String, dynamic>> query =
+        _firestore.collection('orders').orderBy('createdAt', descending: true).limit(limit);
 
     if (statusFilter != null && statusFilter.isNotEmpty) {
       query = query.where('status', isEqualTo: statusFilter);
     }
 
     return query.snapshots().map((snapshot) {
-      return snapshot.docs
-          .map((doc) => core_shared.Order.fromFirestoreWithId(doc.id, doc.data()))
-          .toList();
+      return snapshot.docs.map((doc) => core_shared.Order.fromFirestoreWithId(doc.id, doc.data())).toList();
     });
   }
 
@@ -100,7 +95,7 @@ class AdminOrdersService {
   Future<Map<String, int>> getOrderStats() async {
     try {
       final snapshot = await _firestore.collection('orders').get();
-      
+
       final stats = <String, int>{
         'total': snapshot.size,
         'assigning': 0,
@@ -123,6 +118,56 @@ class AdminOrdersService {
         print('Error fetching order stats: $e');
       }
       return {};
+    }
+  }
+
+  /// Create a manual order (e.g. from phone request)
+  Future<String?> createManualOrder({
+    required String clientPhone,
+    required String pickupAddress,
+    required String dropoffAddress,
+    required double distanceKm,
+    required double price,
+    required double pickupLat,
+    required double pickupLng,
+    required double dropoffLat,
+    required double dropoffLng,
+  }) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw Exception('Not authenticated');
+
+      final docRef = await _firestore.collection('orders').add({
+        'clientPhone': clientPhone,
+        'ownerId': 'manual_${DateTime.now().millisecondsSinceEpoch}', // Placeholder for manual orders
+        'pickupAddress': pickupAddress,
+        'dropoffAddress': dropoffAddress,
+        'distanceKm': distanceKm,
+        'price': price,
+        'pickup': {
+          'lat': pickupLat,
+          'lng': pickupLng,
+          'label': pickupAddress,
+        },
+        'dropoff': {
+          'lat': dropoffLat,
+          'lng': dropoffLng,
+          'label': dropoffAddress,
+        },
+        'status': 'assigning',
+        'assignedDriverId': null,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'createdByAdmin': user.uid,
+        'isManual': true,
+      });
+
+      return docRef.id;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error creating manual order: $e');
+      }
+      return null;
     }
   }
 }

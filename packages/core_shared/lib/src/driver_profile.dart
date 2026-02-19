@@ -44,10 +44,19 @@ class DriverProfile {
 
   /// Create DriverProfile from JSON map
   factory DriverProfile.fromJson(Map<String, dynamic> json) {
+    // Helper function to safely parse timestamp
+    DateTime _parseTimestamp(dynamic value) {
+      if (value == null) return DateTime.now();
+      if (value is Timestamp) return value.toDate();
+      if (value is DateTime) return value;
+      // Fallback for any other type
+      return DateTime.now();
+    }
+
     return DriverProfile(
       id: json['id'] as String,
-      name: json['name'] as String,
-      phone: json['phone'] as String,
+      name: json['name'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
       photoUrl: json['photoUrl'] as String?,
       vehicleType: json['vehicleType'] as String?,
       vehiclePlate: json['vehiclePlate'] as String?,
@@ -58,8 +67,8 @@ class DriverProfile {
       isOnline: json['isOnline'] as bool? ?? false,
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       totalTrips: json['totalTrips'] as int? ?? 0,
-      createdAt: (json['createdAt'] as Timestamp).toDate(),
-      updatedAt: (json['updatedAt'] as Timestamp).toDate(),
+      createdAt: _parseTimestamp(json['createdAt']),
+      updatedAt: _parseTimestamp(json['updatedAt']),
     );
   }
 
@@ -193,8 +202,7 @@ extension DriverProfileValidation on DriverProfile {
     final missing = <String>[];
     if (name.isEmpty) missing.add('الاسم');
     if (vehicleType == null || vehicleType!.isEmpty) missing.add('نوع السيارة');
-    if (vehiclePlate == null || vehiclePlate!.isEmpty)
-      missing.add('رقم اللوحة');
+    if (vehiclePlate == null || vehiclePlate!.isEmpty) missing.add('رقم اللوحة');
     if (city == null || city!.isEmpty) missing.add('المدينة');
     return missing;
   }

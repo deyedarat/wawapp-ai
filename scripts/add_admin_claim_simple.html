@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة صلاحية Admin - WawApp</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #00704A;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .step {
+            background: #f8f9fa;
+            border-right: 4px solid #00704A;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #00704A;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00704A;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #00704A 0%, #005a3c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 10px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            display: none;
+            font-weight: 500;
+            white-space: pre-line;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+
+        .user-info {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #00704A;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔐 إضافة صلاحية Admin</h1>
+        <p class="subtitle">Add isAdmin Custom Claim</p>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">1</span>
+                سجل الدخول أولاً
+            </div>
+            <div class="form-group">
+                <label for="email">📧 البريد الإلكتروني:</label>
+                <input type="email" id="email" value="myadmin@wawapp.co" placeholder="admin@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="password">🔒 كلمة المرور:</label>
+                <input type="password" id="password" value="Madmin1234" placeholder="كلمة المرور">
+            </div>
+
+            <button onclick="signIn()" id="signInBtn">1️⃣ تسجيل الدخول</button>
+        </div>
+
+        <div class="user-info" id="userInfo">
+            <p><strong>✅ تم تسجيل الدخول:</strong></p>
+            <p id="userEmail"></p>
+            <p id="userUid"></p>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">2</span>
+                إضافة صلاحية Admin
+            </div>
+            <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                سيتم استدعاء Cloud Function: <code>setAdminRole</code>
+            </p>
+            <button onclick="setAdminClaim()" id="addClaimBtn" disabled>2️⃣ إضافة صلاحية Admin</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>جاري المعالجة...</p>
+        </div>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: 'AIzaSyBO67aaNMqotGFF73jlCB8uVGUQ5bILfVM',
+            authDomain: 'wawapp-952d6.firebaseapp.com',
+            projectId: 'wawapp-952d6',
+            storageBucket: 'wawapp-952d6.firebasestorage.app',
+            messagingSenderId: '363341993641',
+            appId: '1:363341993641:web:617f5384a6162a8b683bb8'
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const functions = getFunctions(app);
+
+        let currentUser = null;
+
+        // Sign In Function
+        window.signIn = async function () {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            const loadingDiv = document.getElementById('loading');
+            const signInBtn = document.getElementById('signInBtn');
+            const userInfoDiv = document.getElementById('userInfo');
+            const addClaimBtn = document.getElementById('addClaimBtn');
+
+            if (!email || !password) {
+                showMessage('❌ يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+
+            signInBtn.disabled = true;
+            loadingDiv.style.display = 'block';
+            messageDiv.style.display = 'none';
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                currentUser = userCredential.user;
+
+                console.log('✅ Signed in:', currentUser.uid);
+
+                // Show user info
+                document.getElementById('userEmail').textContent = `📧 ${currentUser.email}`;
+                document.getElementById('userUid').textContent = `🔑 UID: ${currentUser.uid}`;
+                userInfoDiv.style.display = 'block';
+
+                // Enable add claim button
+                addClaimBtn.disabled = false;
+
+                showMessage('✅ تم تسجيل الدخول بنجاح!\nالآن يمكنك إضافة صلاحية Admin.', 'success');
+
+            } catch (error) {
+                console.error('Error:', error);
+
+                let errorMessage = 'خطأ في تسجيل الدخول: ';
+
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage += 'المستخدم غير موجود';
+                } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    errorMessage += 'كلمة المرور غير صحيحة';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage += 'البريد الإلكتروني غير صالح';
+                } else {
+                    errorMessage += error.message;
+                }
+
+                showMessage('❌ ' + errorMessage, 'error');
+            } finally {
+                signInBtn.disabled = false;
+                loadingDiv.style.display = 'none';
+            }
+        };
+
+        // Set Admin Claim Function
+        window.setAdminClaim = async function () {
+            if (!currentUser) {
+                showMessage('❌ يرجى تسجيل الدخول أولاً', 'error');
+                return;
+            }
+
+            const messageDiv = document.getElementById('message');
+            const loadingDiv = document.getElementById('loading');
+            const addClaimBtn = document.getElementById('addClaimBtn');
+
+            addClaimBtn.disabled = true;
+            loadingDiv.style.display = 'block';
+            messageDiv.style.display = 'none';
+
+            try {
+                console.log('🔧 Calling setAdminRole function...');
+
+                // Call the Cloud Function
+                const setAdminRole = httpsCallable(functions, 'setAdminRole');
+                const result = await setAdminRole({
+                    uid: currentUser.uid
+                });
+
+                console.log('✅ Result:', result.data);
+
+                // Force token refresh
+                console.log('🔄 Refreshing token...');
+                await currentUser.getIdToken(true);
+
+                // Get updated claims
+                const idTokenResult = await currentUser.getIdTokenResult();
+                const hasAdminClaim = idTokenResult.claims.isAdmin === true;
+
+                if (hasAdminClaim) {
+                    showMessage(
+                        `✅ تم إضافة صلاحية Admin بنجاح!\n\n` +
+                        `📧 البريد: ${currentUser.email}\n` +
+                        `🔑 UID: ${currentUser.uid}\n\n` +
+                        `الآن يمكنك الدخول إلى لوحة التحكم:\n` +
+                        `🌐 https://wawapp-952d6.web.app\n\n` +
+                        `⚠️ ملاحظة: يجب تسجيل الخروج ثم الدخول مرة أخرى`,
+                        'success'
+                    );
+
+                    // Redirect after 5 seconds
+                    setTimeout(() => {
+                        window.location.href = 'https://wawapp-952d6.web.app';
+                    }, 5000);
+                } else {
+                    showMessage(
+                        `⚠️ تم تنفيذ الأمر لكن الـ claim لم يظهر بعد.\n` +
+                        `يرجى الانتظار قليلاً ثم تحديث الصفحة.`,
+                        'info'
+                    );
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+
+                let errorMessage = 'حدث خطأ: ';
+
+                if (error.code === 'functions/unauthenticated') {
+                    errorMessage += 'يجب تسجيل الدخول أولاً';
+                } else if (error.code === 'functions/permission-denied') {
+                    errorMessage += 'تحتاج إلى أن تكون admin بالفعل لاستدعاء هذه الدالة.\n\n' +
+                        '💡 استخدم بدلاً من ذلك: bootstrap_admin.html';
+                } else if (error.code === 'functions/not-found') {
+                    errorMessage += 'Cloud Function غير موجودة. تأكد من نشرها.';
+                } else {
+                    errorMessage += error.message || 'خطأ غير معروف';
+                }
+
+                showMessage('❌ ' + errorMessage, 'error');
+            } finally {
+                addClaimBtn.disabled = false;
+                loadingDiv.style.display = 'none';
+            }
+        };
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+        }
+
+        // Auto-check if already signed in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('userEmail').textContent = `📧 ${user.email}`;
+                document.getElementById('userUid').textContent = `🔑 UID: ${user.uid}`;
+                document.getElementById('userInfo').style.display = 'block';
+                document.getElementById('addClaimBtn').disabled = false;
+                console.log('✅ User already signed in:', user.uid);
+            }
+        });
+    </script>
+</body>
+
+</html>

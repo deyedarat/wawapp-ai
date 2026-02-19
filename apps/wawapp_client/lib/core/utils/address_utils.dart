@@ -1,16 +1,25 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AddressUtils {
-  /// يُفضّل استبدال هذه الدالة لاحقاً بـ geocoding فعلي.
-  /// حالياً: يختار userInput إن وجد، وإلا plusCode إن وجد، وإلا lat,lng بشكل مختصر.
+  /// Prefixes that indicate a geocoding failure — not valid address strings.
+  static const _errorPrefixes = [
+    'تعذّر',
+    'جار تحديد',
+    'موقع غير محدد',
+  ];
+
+  /// Returns a human-readable address string.
+  /// Rejects geocoding error strings and falls back to coordinates.
   static String friendly({
     String? userInput,
     String? plusCode,
     LatLng? latLng,
   }) {
-    if (userInput != null && userInput.trim().isNotEmpty) {
-      return userInput.trim();
-    }
+    final trimmed = userInput?.trim() ?? '';
+    final isValidInput = trimmed.isNotEmpty &&
+        !_errorPrefixes.any((p) => trimmed.startsWith(p));
+
+    if (isValidInput) return trimmed;
     if (plusCode != null && plusCode.trim().isNotEmpty) {
       return plusCode.trim();
     }

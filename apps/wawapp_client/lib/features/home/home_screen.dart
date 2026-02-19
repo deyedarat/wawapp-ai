@@ -1,5 +1,6 @@
 import 'dart:developer' as dev;
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +19,7 @@ import '../map/pick_route_controller.dart';
 import '../map/places_autocomplete_sheet.dart';
 import '../map/saved_location_selector_sheet.dart';
 import '../notifications/providers/notifications_provider.dart';
+import '../profile/providers/client_profile_providers.dart';
 import '../quote/models/latlng.dart' as quote_latlng;
 import '../quote/providers/quote_provider.dart';
 import '../shipment_type/shipment_type_provider.dart';
@@ -360,6 +362,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildHeaderSection(BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
 
+    // Get personalized greeting
+    final greetingText = _getPersonalizedGreeting(l10n);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -371,23 +376,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               size: 24,
             ),
             const SizedBox(width: WawAppSpacing.xs),
-            Text(
-              l10n.greeting,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+            Flexible(
+              child: Text(
+                greetingText,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ],
         ),
-        const SizedBox(height: WawAppSpacing.xxs),
-        Text(
-          l10n.welcome_back,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: WawAppColors.textSecondaryLight,
-          ),
-        ),
       ],
     );
+  }
+
+  String _getPersonalizedGreeting(AppLocalizations l10n) {
+    // Try to get user name from multiple sources
+    String? userName;
+
+    // 1. Try FirebaseAuth displayName first (fastest)
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser?.displayName != null && firebaseUser!.displayName!.trim().isNotEmpty) {
+      userName = firebaseUser.displayName!.trim();
+    }
+
+    // 2. Try ClientProfile from provider (if available)
+    if (userName == null) {
+      final profileAsync = ref.read(clientProfileStreamProvider);
+      final profile = profileAsync.asData?.value;
+      if (profile?.name != null && profile!.name.trim().isNotEmpty && profile.name != 'غير محدد') {
+        userName = profile.name.trim();
+      }
+    }
+
+    // Extract first name if we have a full name
+    String? firstName;
+    if (userName != null) {
+      final nameParts = userName.split(' ');
+      firstName = nameParts.isNotEmpty ? nameParts[0] : null;
+    }
+
+    // Return personalized or fallback greeting
+    if (firstName != null && firstName.isNotEmpty) {
+      return 'أهلاً يا $firstName، مرحباً بعودتك';
+    } else {
+      return 'أهلاً، مرحباً بعودتك';
+    }
   }
 
   Widget _buildPrimaryActionCard(

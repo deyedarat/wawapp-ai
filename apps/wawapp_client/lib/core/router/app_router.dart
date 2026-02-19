@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:auth_shared/auth_shared.dart';
 import 'package:core_shared/core_shared.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -38,9 +37,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     redirect: (context, state) => _redirect(state, authState),
     refreshListenable: _GoRouterRefreshStream(ref.read(authProvider.notifier).stream),
-    observers: [
-      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-    ],
     routes: [
       GoRoute(
         path: '/shipment-type',
@@ -255,14 +251,37 @@ String? _redirect(GoRouterState s, AuthState st) {
 
 class _GoRouterRefreshStream extends ChangeNotifier {
   _GoRouterRefreshStream(Stream<AuthState> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
+    // CRITICAL FIX: Do NOT call notifyListeners() immediately in constructor
+    // This was causing go_router to rebuild before initialization completed,
+    // leading to "registry.containsKey(page)" assertion failures.
+    // go_router will call redirect() on initial build anyway.
+
+    // Add debouncing to prevent rapid redirect conflicts
+    _subscription = stream.asBroadcastStream().transform(StreamTransformer.fromHandlers(
+      handleData: (AuthState data, EventSink<AuthState> sink) {
+        // Cancel any pending timer
+        _debounceTimer?.cancel();
+
+        // Set a new timer to emit after debounce period
+        _debounceTimer = Timer(const Duration(milliseconds: 100), () {
+          sink.add(data);
+        });
+      },
+    )).listen((authState) {
+      debugPrint('[Router] Auth state changed, triggering redirect check | '
+          'user=${authState.user?.uid ?? 'null'} | '
+          'pinStatus=${authState.pinStatus} | '
+          'otpStage=${authState.otpStage}');
+      notifyListeners();
+    });
   }
 
   late final StreamSubscription<AuthState> _subscription;
+  Timer? _debounceTimer;
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _subscription.cancel();
     super.dispose();
   }

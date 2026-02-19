@@ -1,34 +1,33 @@
-/**
- * Production Configuration
- * 
- * ✅ SECURE: Enforces strict authentication and security measures
- * 
- * Features:
- * - STRICT authentication (isAdmin custom claim REQUIRED)
- * - No debug logging (clean production logs)
- * - No dev tools
- * - Production Firebase project
- * - Maximum security and performance
- */
+/// Production Configuration
+///
+/// ✅ SECURE: Enforces strict authentication and security measures
+///
+/// Features:
+/// - STRICT authentication (isAdmin custom claim REQUIRED)
+/// - No debug logging (clean production logs)
+/// - No dev tools
+/// - Production Firebase project
+/// - Maximum security and performance
+library;
 
 import 'app_config.dart';
 
-class ProdConfig implements AppConfig {
+class ProdConfig extends AppConfig {
   @override
   String get environment => 'prod';
-  
+
   @override
-  bool get useStrictAuth => true;  // ✅ ENFORCE strict admin authentication
-  
+  bool get useStrictAuth => true; // ✅ ENFORCE strict admin authentication
+
   @override
-  bool get enableDebugLogging => false;  // Clean production logs
-  
+  bool get enableDebugLogging => false; // Clean production logs
+
   @override
-  bool get showDevTools => false;  // Hide dev tools
-  
+  bool get showDevTools => false; // Hide dev tools
+
   @override
-  String get firebaseProjectId => 'wawapp-952d6';  // Production project
-  
+  String get firebaseProjectId => 'wawapp-952d6'; // Production project
+
   @override
-  String? get apiBaseUrl => null;  // Use default Firebase Functions
+  String? get apiBaseUrl => null; // Use default Firebase Functions
 }

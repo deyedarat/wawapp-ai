@@ -1,14 +1,12 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 
-/// Base Analytics service providing common Firebase Analytics infrastructure
+/// Base Analytics service - NO-OP implementation (Firebase Analytics removed for Google Play AdServices compliance)
 /// for both client and driver apps.
 ///
-/// This abstract class handles:
-/// - Firebase Analytics initialization and singleton pattern
-/// - Common event logging (errors, auth, app lifecycle, notifications)
-/// - Screen view tracking
-/// - Protected logging helper with error handling
+/// This abstract class provides:
+/// - No-op event logging (all methods do nothing)
+/// - Preserved API signatures for backwards compatibility
+/// - No Firebase Analytics dependency
 ///
 /// Apps must extend this class and implement:
 /// - [setUserType] - Set 'client' or 'driver' user type
@@ -33,9 +31,6 @@ abstract class BaseAnalyticsService {
   @protected
   BaseAnalyticsService.internal();
 
-  /// Firebase Analytics instance
-  final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
-
   // ===== ABSTRACT METHODS (app-specific) =====
 
   /// Set user type property ('client' or 'driver')
@@ -59,19 +54,9 @@ abstract class BaseAnalyticsService {
     required String screen,
     String? errorMessage,
   }) async {
-    try {
-      await _analytics.logEvent(
-        name: 'error_occurred',
-        parameters: {
-          'error_type': errorType,
-          'screen': screen,
-          if (errorMessage != null) 'error_message': errorMessage,
-        },
-      );
-      if (kDebugMode)
-        print('[Analytics] error_occurred: $errorType on $screen');
-    } on Object catch (e) {
-      if (kDebugMode) print('[Analytics] Error logging error_occurred: $e');
+    // No-op: Analytics disabled for AdServices compliance
+    if (kDebugMode) {
+      debugPrint('[Analytics NO-OP] error_occurred: $errorType on $screen');
     }
   }
 
@@ -82,27 +67,16 @@ abstract class BaseAnalyticsService {
   /// Parameters:
   /// - [method]: Authentication method used (e.g., 'phone', 'email')
   Future<void> logAuthCompleted({required String method}) async {
-    try {
-      await _analytics.logEvent(
-        name: 'auth_completed',
-        parameters: {'method': method},
-      );
-      if (kDebugMode) print('[Analytics] auth_completed: $method');
-    } on Object catch (e) {
-      if (kDebugMode) print('[Analytics] Error logging auth_completed: $e');
-    }
+    // No-op: Analytics disabled for AdServices compliance
+    if (kDebugMode) debugPrint('[Analytics NO-OP] auth_completed: $method');
   }
 
   /// Log app opened event
   ///
   /// Tracks app launches for engagement metrics.
   Future<void> logAppOpened() async {
-    try {
-      await _analytics.logEvent(name: 'app_opened');
-      if (kDebugMode) print('[Analytics] app_opened');
-    } on Object catch (e) {
-      if (kDebugMode) print('[Analytics] Error logging app_opened: $e');
-    }
+    // No-op: Analytics disabled for AdServices compliance
+    if (kDebugMode) debugPrint('[Analytics NO-OP] app_opened');
   }
 
   /// Log screen view for navigation tracking
@@ -116,15 +90,8 @@ abstract class BaseAnalyticsService {
     required String screenName,
     String? screenClass,
   }) async {
-    try {
-      await _analytics.logScreenView(
-        screenName: screenName,
-        screenClass: screenClass,
-      );
-      if (kDebugMode) print('[Analytics] screen_view: $screenName');
-    } on Object catch (e) {
-      if (kDebugMode) print('[Analytics] Error logging screen_view: $e');
-    }
+    // No-op: Analytics disabled for AdServices compliance
+    if (kDebugMode) debugPrint('[Analytics NO-OP] screen_view: $screenName');
   }
 
   /// Log notification delivered event (foreground)
@@ -138,22 +105,9 @@ abstract class BaseAnalyticsService {
     required String notificationType,
     required String orderId,
   }) async {
-    try {
-      await _analytics.logEvent(
-        name: 'notification_delivered',
-        parameters: {
-          'notification_type': notificationType,
-          'order_id': orderId,
-          'app_state': 'foreground',
-        },
-      );
-      if (kDebugMode) {
-        print('[Analytics] notification_delivered: $notificationType');
-      }
-    } on Object catch (e) {
-      if (kDebugMode) {
-        print('[Analytics] Error logging notification_delivered: $e');
-      }
+    // No-op: Analytics disabled for AdServices compliance
+    if (kDebugMode) {
+      debugPrint('[Analytics NO-OP] notification_delivered: $notificationType');
     }
   }
 
@@ -170,22 +124,9 @@ abstract class BaseAnalyticsService {
     required String orderId,
     required String appState,
   }) async {
-    try {
-      await _analytics.logEvent(
-        name: 'notification_tapped',
-        parameters: {
-          'notification_type': notificationType,
-          'order_id': orderId,
-          'app_state': appState,
-        },
-      );
-      if (kDebugMode) {
-        print('[Analytics] notification_tapped: $notificationType ($appState)');
-      }
-    } on Object catch (e) {
-      if (kDebugMode) {
-        print('[Analytics] Error logging notification_tapped: $e');
-      }
+    // No-op: Analytics disabled for AdServices compliance
+    if (kDebugMode) {
+      debugPrint('[Analytics NO-OP] notification_tapped: $notificationType ($appState)');
     }
   }
 
@@ -201,12 +142,8 @@ abstract class BaseAnalyticsService {
   /// - [parameters]: Event parameters
   @protected
   Future<void> logEvent(String name, Map<String, Object> parameters) async {
-    try {
-      await _analytics.logEvent(name: name, parameters: parameters);
-      if (kDebugMode) print('[Analytics] $name');
-    } on Object catch (e) {
-      if (kDebugMode) print('[Analytics] Error logging $name: $e');
-    }
+    // No-op: Analytics disabled for AdServices compliance
+    if (kDebugMode) debugPrint('[Analytics NO-OP] $name');
   }
 
   /// Protected helper to set user ID
@@ -214,12 +151,8 @@ abstract class BaseAnalyticsService {
   /// Subclasses can use this in their setUserProperties implementations.
   @protected
   Future<void> setUserId(String userId) async {
-    try {
-      await _analytics.setUserId(id: userId);
-      if (kDebugMode) print('[Analytics] User ID set: $userId');
-    } on Object catch (e) {
-      if (kDebugMode) print('[Analytics] Error setting user ID: $e');
-    }
+    // No-op: Analytics disabled for AdServices compliance
+    if (kDebugMode) debugPrint('[Analytics NO-OP] User ID set: $userId');
   }
 
   /// Protected helper to set user property
@@ -230,12 +163,7 @@ abstract class BaseAnalyticsService {
     required String name,
     required String value,
   }) async {
-    try {
-      await _analytics.setUserProperty(name: name, value: value);
-      if (kDebugMode) print('[Analytics] User property set: $name = $value');
-    } on Object catch (e) {
-      if (kDebugMode)
-        print('[Analytics] Error setting user property $name: $e');
-    }
+    // No-op: Analytics disabled for AdServices compliance
+    if (kDebugMode) debugPrint('[Analytics NO-OP] User property set: $name = $value');
   }
 }

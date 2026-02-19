@@ -12,6 +12,7 @@
 
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { writeAdminNotification } from './helpers/adminNotifications';
 
 /**
  * Configuration constants
@@ -303,6 +304,16 @@ export const notifyNewOrder = functions.firestore
         pickup_lat: pickupLat,
         pickup_lng: pickupLng,
       });
+      // Still write admin notification even when no drivers found
+      await writeAdminNotification({
+        type: 'new_order',
+        title: 'طلب جديد',
+        body: `طلب جديد #${orderId.substring(0, 6)} — ${orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${orderData.dropoffAddress?.label || 'الوجهة'}`,
+        data: {
+          orderId,
+          clientName: orderData.clientName || '',
+        },
+      });
       return null;
     }
 
@@ -356,6 +367,17 @@ export const notifyNewOrder = functions.firestore
       drivers_failed: failedCount,
       pickup_lat: pickupLat,
       pickup_lng: pickupLng,
+    });
+
+    // Write admin notification
+    await writeAdminNotification({
+      type: 'new_order',
+      title: 'طلب جديد',
+      body: `طلب جديد #${orderId.substring(0, 6)} — ${orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${orderData.dropoffAddress?.label || 'الوجهة'}`,
+      data: {
+        orderId,
+        clientName: orderData.clientName || '',
+      },
     });
 
     return null;

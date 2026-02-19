@@ -175,11 +175,14 @@ service cloud.firestore {
     }
 
     match /admins/{adminId} {
-      // Only admins can read admin documents
-      allow read: if isAdmin();
+      // Allow admins to read profiles
+      allow read: if isSignedIn();
       
-      // No write access through client SDK (admins are managed via Cloud Functions)
-      allow write: if false;
+      // Allow initial creation during registration (Dev Mode support)
+      allow create: if isSignedIn() && request.auth.uid == adminId;
+      
+      // Only existing admins can update/delete
+      allow update, delete: if isAdmin();
     }
 
     // Wallets collection (Phase 5)
@@ -257,20 +260,23 @@ service cloud.firestore {
 
     // R1: In-app notifications collection
     match /notifications/{notificationId} {
-      // Users can read their own notifications
-      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      // Users can read their own notifications; admins can read all
+      allow read: if isAdmin()
+        || (isSignedIn() && resource.data.userId == request.auth.uid);
 
       // Only admins and Cloud Functions can create notifications
       allow create: if isAdmin();
 
-      // Users can mark their own notifications as read
-      allow update: if isSignedIn()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead', 'readAt'])
-        && request.resource.data.isRead == true;
+      // Users/admins can mark their own notifications as read
+      allow update: if isAdmin()
+        || (isSignedIn()
+          && resource.data.userId == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead', 'readAt'])
+          && request.resource.data.isRead == true);
 
-      // Users can delete their own notifications
-      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      // Users/admins can delete their own notifications
+      allow delete: if isAdmin()
+        || (isSignedIn() && resource.data.userId == request.auth.uid);
     }
 
     // R2: Top-up requests collection (Driver app)

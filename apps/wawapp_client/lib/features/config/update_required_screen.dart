@@ -23,9 +23,8 @@ class UpdateRequiredScreen extends StatelessWidget {
     Uri? storeUrl;
 
     if (Platform.isAndroid) {
-      // Temporary update path via GitHub Releases
       storeUrl = Uri.parse(
-        'https://github.com/deyedarat/wawapp-ai/releases/latest',
+        'https://play.google.com/store/apps/details?id=com.wawapp.client',
       );
     } else if (Platform.isIOS) {
       // Replace with your actual App Store ID

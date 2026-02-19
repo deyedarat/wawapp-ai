@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/colors.dart';
+
+import '../../features/notifications/providers/admin_notifications_provider.dart';
 import '../../providers/admin_auth_providers.dart';
+import '../theme/colors.dart';
 
 class AdminSidebar extends ConsumerWidget {
   final bool isCollapsed;
@@ -19,20 +21,15 @@ class AdminSidebar extends ConsumerWidget {
     final isRTL = Directionality.of(context) == TextDirection.rtl;
     final currentPath = GoRouterState.of(context).uri.path;
     final authService = ref.read(adminAuthServiceProvider);
+    final unreadCount = ref.watch(adminUnreadCountProvider).valueOrNull ?? 0;
 
     return Container(
-      width: isCollapsed 
-          ? AdminSpacing.sidebarWidthCollapsed 
-          : AdminSpacing.sidebarWidth,
+      width: isCollapsed ? AdminSpacing.sidebarWidthCollapsed : AdminSpacing.sidebarWidth,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
-          right: isRTL
-              ? const BorderSide(color: AdminAppColors.borderLight)
-              : BorderSide.none,
-          left: !isRTL
-              ? const BorderSide(color: AdminAppColors.borderLight)
-              : BorderSide.none,
+          left: isRTL ? const BorderSide(color: AdminAppColors.borderLight) : BorderSide.none,
+          right: !isRTL ? const BorderSide(color: AdminAppColors.borderLight) : BorderSide.none,
         ),
       ),
       child: Column(
@@ -40,7 +37,7 @@ class AdminSidebar extends ConsumerWidget {
           // Logo / Header
           Container(
             height: AdminSpacing.appBarHeight,
-            padding: EdgeInsets.symmetric(horizontal: AdminSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.md),
             decoration: const BoxDecoration(
               border: Border(
                 bottom: BorderSide(color: AdminAppColors.borderLight),
@@ -48,20 +45,20 @@ class AdminSidebar extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.admin_panel_settings,
                   color: AdminAppColors.primaryGreen,
                   size: 32,
                 ),
                 if (!isCollapsed) ...[
-                  SizedBox(width: AdminSpacing.sm),
+                  const SizedBox(width: AdminSpacing.sm),
                   Expanded(
                     child: Text(
                       'لوحة الإدارة',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: AdminAppColors.primaryGreen,
-                        fontWeight: FontWeight.bold,
-                      ),
+                            color: AdminAppColors.primaryGreen,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
                 ],
@@ -77,7 +74,7 @@ class AdminSidebar extends ConsumerWidget {
           // Navigation items
           Expanded(
             child: ListView(
-              padding: EdgeInsets.symmetric(vertical: AdminSpacing.sm),
+              padding: const EdgeInsets.symmetric(vertical: AdminSpacing.sm),
               children: [
                 _buildNavItem(
                   context: context,
@@ -111,7 +108,7 @@ class AdminSidebar extends ConsumerWidget {
                   isActive: currentPath.startsWith('/clients'),
                   isCollapsed: isCollapsed,
                 ),
-                Divider(
+                const Divider(
                   height: AdminSpacing.lg,
                   indent: AdminSpacing.md,
                   endIndent: AdminSpacing.md,
@@ -148,7 +145,16 @@ class AdminSidebar extends ConsumerWidget {
                   isActive: currentPath.startsWith('/finance/payouts'),
                   isCollapsed: isCollapsed,
                 ),
-                Divider(
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.notifications_outlined,
+                  label: 'الإشعارات',
+                  path: '/notifications',
+                  isActive: currentPath.startsWith('/notifications'),
+                  isCollapsed: isCollapsed,
+                  badgeCount: unreadCount,
+                ),
+                const Divider(
                   height: AdminSpacing.lg,
                   indent: AdminSpacing.md,
                   endIndent: AdminSpacing.md,
@@ -168,7 +174,7 @@ class AdminSidebar extends ConsumerWidget {
           // User profile section
           if (!isCollapsed)
             Container(
-              padding: EdgeInsets.all(AdminSpacing.md),
+              padding: const EdgeInsets.all(AdminSpacing.md),
               decoration: const BoxDecoration(
                 border: Border(
                   top: BorderSide(color: AdminAppColors.borderLight),
@@ -176,11 +182,11 @@ class AdminSidebar extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     backgroundColor: AdminAppColors.primaryGreen,
-                    child: const Icon(Icons.person, color: Colors.white),
+                    child: Icon(Icons.person, color: Colors.white),
                   ),
-                  SizedBox(width: AdminSpacing.sm),
+                  const SizedBox(width: AdminSpacing.sm),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,45 +250,46 @@ class AdminSidebar extends ConsumerWidget {
     required String path,
     required bool isActive,
     required bool isCollapsed,
+    int badgeCount = 0,
   }) {
     return Padding(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: AdminSpacing.sm,
         vertical: AdminSpacing.xxs,
       ),
       child: Material(
-        color: isActive
-            ? AdminAppColors.primaryGreen.withOpacity(0.1)
-            : Colors.transparent,
+        color: isActive ? AdminAppColors.primaryGreen.withValues(alpha: 0.1) : Colors.transparent,
         borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
         child: InkWell(
-          onTap: () => context.go(path),
+          onTap: () {
+            context.go(path);
+          },
           borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
           child: Container(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: AdminSpacing.md,
               vertical: AdminSpacing.sm,
             ),
             child: Row(
               children: [
-                Icon(
-                  icon,
-                  color: isActive
-                      ? AdminAppColors.primaryGreen
-                      : AdminAppColors.textSecondaryLight,
-                  size: 24,
+                Badge(
+                  label: Text('$badgeCount'),
+                  isLabelVisible: badgeCount > 0,
+                  child: Icon(
+                    icon,
+                    color: isActive ? AdminAppColors.primaryGreen : AdminAppColors.textSecondaryLight,
+                    size: 24,
+                  ),
                 ),
                 if (!isCollapsed) ...[
-                  SizedBox(width: AdminSpacing.md),
+                  const SizedBox(width: AdminSpacing.md),
                   Expanded(
                     child: Text(
                       label,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: isActive
-                            ? AdminAppColors.primaryGreen
-                            : AdminAppColors.textPrimaryLight,
-                        fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                      ),
+                            color: isActive ? AdminAppColors.primaryGreen : AdminAppColors.textPrimaryLight,
+                            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                          ),
                     ),
                   ),
                 ],

@@ -18,6 +18,7 @@ export { createTopupRequest } from './createTopupRequest'; // Phase D: Driver to
 export { enforceOrderExclusivity } from './enforceOrderExclusivity'; // Phase C: Order exclusivity guards
 export { enforceWalletBalance } from './enforceWalletBalance'; // Phase D: Wallet balance enforcement
 export { expireStaleOrders } from './expireStaleOrders';
+export { getNearbyOrders } from './getNearbyOrders'; // FIX: Get nearby orders for drivers (bypasses Firestore Rules)
 export { notifyNewOrder } from './notifyNewOrder'; // FIX #1: Notify drivers on order creation
 export { notifyOrderEvents } from './notifyOrderEvents';
 export { notifyUnassignedOrders } from './notifyUnassignedOrders'; // Phase A: Repeated notifications for unassigned orders

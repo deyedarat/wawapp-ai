@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/navigation/safe_navigation.dart';
 import '../../l10n/app_localizations.dart';
 // NEW THEME IMPORTS
+import '../../services/config_provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/components.dart';
 import '../../theme/theme_extensions.dart';
@@ -245,6 +246,9 @@ class ClientProfileScreen extends ConsumerWidget {
                   subtitle: 'سياسة الخصوصية وحماية البيانات',
                   onTap: () => _launchPrivacyPolicy(),
                 ),
+                Divider(height: 1, color: context.wawAppTheme.dividerColor),
+                // Contact Support
+                _buildContactSupportTile(context, ref, l10n),
                 Divider(height: 1, color: context.wawAppTheme.dividerColor),
                 _buildActionTile(
                   context,
@@ -546,5 +550,74 @@ class ClientProfileScreen extends ConsumerWidget {
       default:
         return languageCode;
     }
+  }
+
+  Widget _buildContactSupportTile(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+    final config = ref.watch(cachedConfigProvider);
+
+    // ALWAYS show button with official support number as fallback
+    // Official WawApp Support (Mauritania): +222 48 10 06 05
+    final supportNumber = config?.supportWhatsApp ?? '+22248100605';
+
+    return _buildActionTile(
+      context,
+      l10n,
+      icon: Icons.support_agent,
+      title: l10n.contact_support,
+      subtitle: 'WhatsApp',
+      onTap: () => _launchWhatsApp(context, supportNumber),
+    );
+  }
+
+  /// Normalize phone number to E.164 format and launch WhatsApp
+  Future<void> _launchWhatsApp(BuildContext context, String phoneNumber) async {
+    // Normalize to E.164 format
+    String normalized = _normalizePhoneNumber(phoneNumber);
+
+    // Remove '+' for WhatsApp URL (wa.me expects digits only)
+    final digitsOnly = normalized.replaceAll('+', '');
+
+    // Try WhatsApp app first, fallback to web
+    final waUrl = Uri.parse('https://wa.me/$digitsOnly');
+    final webUrl = Uri.parse('https://api.whatsapp.com/send?phone=$digitsOnly');
+
+    try {
+      // Try launching WhatsApp app
+      if (await canLaunchUrl(waUrl)) {
+        await launchUrl(waUrl, mode: LaunchMode.externalApplication);
+      } else {
+        // Fallback to web WhatsApp
+        await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error opening WhatsApp: $e')),
+        );
+      }
+    }
+  }
+
+  /// Normalize phone number to E.164 format (+222XXXXXXXX)
+  String _normalizePhoneNumber(String phoneNumber) {
+    // Remove all non-digit characters except '+'
+    String cleaned = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+
+    // Convert "00" prefix to "+"
+    if (cleaned.startsWith('00')) {
+      cleaned = '+${cleaned.substring(2)}';
+    }
+
+    // If exactly 8 digits (local Mauritania format), add country code
+    if (RegExp(r'^\d{8}$').hasMatch(cleaned)) {
+      cleaned = '+222$cleaned';
+    }
+
+    // Ensure it starts with '+'
+    if (!cleaned.startsWith('+')) {
+      cleaned = '+$cleaned';
+    }
+
+    return cleaned;
   }
 }
