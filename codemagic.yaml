@@ -116,7 +116,7 @@ workflows:
         distribution_type: app_store
         bundle_identifier: com.wawapp.client
       groups:
-        - appstore_credentials
+        - appstore
     triggering:
       events:
         - tag
