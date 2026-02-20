@@ -26,9 +26,10 @@ workflows:
         script: flutter build apk --debug --no-shrink
     artifacts:
       - build/app/outputs/flutter-apk/app-debug.apk
-ios_release:
+
+  ios_release:
     name: iOS Release IPA
-    max_build_duration: 60
+    max_build_duration: 120
     environment:
       flutter: stable
       xcode: latest
@@ -38,12 +39,6 @@ ios_release:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.wawapp.client
-    triggering:
-      events:
-        - tag
-      tag_patterns:
-        - pattern: 'ios-v*'
-          include: true
     cache:
       cache_paths:
         - $FLUTTER_ROOT/.pub-cache
