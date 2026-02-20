@@ -35,7 +35,7 @@ workflows:
       xcode: latest
       cocoapods: default
       groups:
-        - appstore_credentials
+        - appstore
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.wawapp.client
