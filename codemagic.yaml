@@ -140,11 +140,12 @@ workflows:
           pod install
       - name: Fetch signing files
         script: |
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > /tmp/private_key.p8
           app-store-connect fetch-signing-files com.wawapp.client \
             --type IOS_APP_STORE \
             --key-id $APP_STORE_CONNECT_KEY_ID \
             --issuer-id $APP_STORE_CONNECT_ISSUER_ID \
-            --private-key $APP_STORE_CONNECT_PRIVATE_KEY \
+            --private-key @file:/tmp/private_key.p8 \
             --create
           keychain add-certificates
       - name: Set up code signing settings on Xcode project
