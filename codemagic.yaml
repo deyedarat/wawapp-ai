@@ -154,14 +154,16 @@ workflows:
         script: xcode-project use-profiles
       - name: Build IPA (release)
         script: flutter build ipa --release
+      - name: Publish to TestFlight
+        script: |
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > /tmp/private_key.p8
+          app-store-connect publish \
+            --path build/ios/ipa/wawapp_client.ipa \
+            --key-id $APP_STORE_CONNECT_KEY_ID \
+            --issuer-id $APP_STORE_CONNECT_ISSUER_ID \
+            --private-key @file:/tmp/private_key.p8 \
+            --testflight \
+            --beta-group "Internal Testing"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-    publishing:
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_ID
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: true
-        beta_groups:
-          - Internal Testing
