@@ -162,8 +162,7 @@ workflows:
             --key-id $APP_STORE_CONNECT_KEY_ID \
             --issuer-id $APP_STORE_CONNECT_ISSUER_ID \
             --private-key @file:/tmp/private_key.p8 \
-            --testflight \
-            --beta-group "Internal Testing"
+            --testflight
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
