@@ -10,7 +10,7 @@ import GoogleMaps
           didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
           FirebaseApp.configure()
-                    GMSServices.provideAPIKey("AIzaSyCHEUg-xyto3FAwRhP0BM5zR6E4JUP_I-A")
+                    GMSServices.provideAPIKey("AIzaSyAWBq8WiUVzdS2fi7lG1RqV-YDz3DoJWoQ")
           GeneratedPluginRegistrant.register(with: self)
           application.registerForRemoteNotifications()
           return super.application(application, didFinishLaunchingWithOptions: launchOptions)
