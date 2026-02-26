@@ -53,6 +53,8 @@
 		<false/>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>WawApp needs your location to show nearby drivers and calculate routes.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>WawApp needs your location to track your ride and update driver location.</string>
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 		<string>WawApp needs your location in the background to track your ride and update driver location.</string>
 	</dict>

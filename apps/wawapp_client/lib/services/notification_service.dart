@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
-import 'dart:convert';
+
 import 'notification_helper.dart';
 
 class NotificationService {
@@ -11,8 +13,7 @@ class NotificationService {
   NotificationService._internal();
 
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
   BuildContext? _context;
   String? _pendingRoute;
@@ -26,8 +27,7 @@ class NotificationService {
   }
 
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings();
 
     await _localNotifications.initialize(
@@ -37,6 +37,14 @@ class NotificationService {
   }
 
   Future<void> _setupFirebaseMessaging() async {
+    // Request permission on iOS (mandatory — without this, no notifications on iOS)
+    await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+      provisional: false,
+    );
+
     // Foreground messages
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
@@ -61,6 +69,11 @@ class NotificationService {
         notification.body,
         const NotificationDetails(
           android: AndroidNotificationDetails('default', 'Default'),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
         ),
         payload: payload,
       );
