@@ -29,28 +29,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> _checkHasPin() async {
     try {
-      // SET LOADING FLAG before async operation
       state = state.copyWith(isPinCheckLoading: true);
-
       if (kDebugMode) print('[AuthNotifier] Checking if user has PIN');
 
       final user = _firebaseAuth.currentUser;
       if (user != null) {
         final hasPinHash = await _authService.hasPinHash();
-
         if (kDebugMode) print('[AuthNotifier] hasPinHash=$hasPinHash');
-
         state = state.copyWith(
           hasPin: hasPinHash,
           phoneE164: user.phoneNumber,
-          isPinCheckLoading: false, // CLEAR FLAG after completion
+          isPinCheckLoading: false,
         );
       } else {
         state = state.copyWith(isPinCheckLoading: false);
       }
     } on Object catch (e) {
       if (kDebugMode) print('[AuthNotifier] Error checking PIN: $e');
-      // CLEAR FLAG on error to prevent infinite loading
       state = state.copyWith(isPinCheckLoading: false);
     }
   }
@@ -65,39 +60,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> sendOtp(String phone) async {
-    if (kDebugMode) {
-      print('[AuthNotifier] sendOtp() called with phone=$phone');
-    }
+    if (kDebugMode) print('[AuthNotifier] sendOtp() called with phone=$phone');
 
-    if (state.otpStage == OtpStage.sending ||
-        state.otpStage == OtpStage.codeSent) {
-      if (kDebugMode) {
-        print(
-          '[AuthNotifier] sendOtp() aborted - already in stage ${state.otpStage}',
-        );
-      }
+    if (state.otpStage == OtpStage.sending || state.otpStage == OtpStage.codeSent) {
+      if (kDebugMode) print('[AuthNotifier] sendOtp() aborted - already in stage ${state.otpStage}');
       return;
     }
 
-    // CRITICAL: Signal streams to stop BEFORE starting OTP flow
-    // This prevents permission-denied errors during auth transitions
     state = state.copyWith(
       isStreamsSafeToRun: false,
       isLoading: true,
       error: null,
       otpStage: OtpStage.sending,
     );
-    if (kDebugMode) {
-      print('[AuthNotifier] Streams disabled, OTP stage set to sending');
-    }
 
-    // Give streams 100ms to cleanly shut down before proceeding
     await Future.delayed(const Duration(milliseconds: 100));
 
     try {
-      if (kDebugMode) {
-        print('[AuthNotifier] Calling ensurePhoneSession() for phone=$phone');
-      }
+      if (kDebugMode) print('[AuthNotifier] Calling ensurePhoneSession() for phone=$phone');
       await _authService.ensurePhoneSession(phone);
 
       state = state.copyWith(
@@ -108,76 +88,45 @@ class AuthNotifier extends StateNotifier<AuthState> {
         verificationId: _authService.lastVerificationId,
       );
 
-      if (kDebugMode) {
-        print(
-          '[AuthNotifier] ensurePhoneSession() completed, state: otpStage=${state.otpStage}, otpFlowActive=${state.otpFlowActive}, verificationId isNull=${state.verificationId == null}',
-        );
-      }
+      if (kDebugMode) print('[AuthNotifier] ensurePhoneSession() completed, verificationId isNull=${state.verificationId == null}');
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print(
-          '[AuthNotifier] ensurePhoneSession() FAILED: ${e.runtimeType} - $e',
-        );
+        print('[AuthNotifier] ensurePhoneSession() FAILED: ${e.runtimeType} - $e');
         print('[AuthNotifier] Stacktrace: $stackTrace');
       }
-
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
         otpFlowActive: false,
-        isStreamsSafeToRun: true, // Re-enable streams on error
+        isStreamsSafeToRun: true,
       );
-
-      if (kDebugMode) {
-        print(
-          '[AuthNotifier] State after error: otpStage=${state.otpStage}, otpFlowActive=${state.otpFlowActive}, error=${state.error}',
-        );
-      }
     }
   }
 
   Future<void> verifyOtp(String code) async {
-    if (kDebugMode) {
-      print('[AuthNotifier] verifyOtp() called with code=$code');
-    }
-
+    if (kDebugMode) print('[AuthNotifier] verifyOtp() called');
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      if (kDebugMode) {
-        print('[AuthNotifier] Calling confirmOtp...');
-      }
-
       await _authService.confirmOtp(code);
-
-      if (kDebugMode) {
-        print('[AuthNotifier] confirmOtp successful, updating state');
-      }
-
-      // Re-enable streams after successful OTP verification
       state = state.copyWith(
         isLoading: false,
         otpFlowActive: false,
         isStreamsSafeToRun: true,
       );
-    } on Object catch (e, stackTrace) {
-      if (kDebugMode) {
-        print('[AuthNotifier] verifyOtp FAILED: ${e.runtimeType} - $e');
-        print('[AuthNotifier] Stacktrace: $stackTrace');
-      }
+    } on Object catch (e) {
+      if (kDebugMode) print('[AuthNotifier] verifyOtp FAILED: ${e.runtimeType} - $e');
 
-      // Extract user-friendly error message
       String errorMessage = e.toString();
       if (errorMessage.contains('invalid-verification-code')) {
-        errorMessage = 'Invalid verification code. Please check and try again.';
+        errorMessage = 'رمز التحقق غير صحيح، يرجى المحاولة مجدداً.';
       } else if (errorMessage.contains('session-expired')) {
-        errorMessage = 'Verification session expired. Please request a new code.';
+        errorMessage = 'انتهت صلاحية الجلسة، يرجى طلب رمز جديد.';
       } else if (errorMessage.contains('No verification id')) {
-        errorMessage = 'No verification session found. Please request a new code.';
+        errorMessage = 'لم يتم العثور على جلسة تحقق، يرجى طلب رمز جديد.';
       }
 
       state = state.copyWith(isLoading: false, error: errorMessage);
-      // Note: Keep isStreamsSafeToRun=false on error since user is still in OTP flow
     }
   }
 
@@ -191,20 +140,30 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  // ✅ loginByPin: يستخدم PIN مباشرة عبر Cloud Function - لا يرسل OTP
   Future<void> loginByPin(String pin, String phoneE164) async {
+    if (kDebugMode) print('[AuthNotifier] loginByPin() called for phone=$phoneE164');
     state = state.copyWith(isLoading: true, error: null);
+
     try {
-      // First authenticate with phone to get user context
-      await _authService.ensurePhoneSession(phoneE164);
-      
-      // Wait for authentication to complete, then verify PIN
-      // This will be handled by the auth state listener
-      state = state.copyWith(
-        otpStage: OtpStage.codeSent,
-        otpFlowActive: true,
-        phoneE164: phoneE164,
-      );
+      final success = await _authService.verifyPin(pin, phoneE164);
+
+      if (success) {
+        if (kDebugMode) print('[AuthNotifier] loginByPin() success');
+        state = state.copyWith(
+          isLoading: false,
+          phoneE164: phoneE164,
+          isStreamsSafeToRun: true,
+        );
+      } else {
+        if (kDebugMode) print('[AuthNotifier] loginByPin() failed - wrong PIN');
+        state = state.copyWith(
+          isLoading: false,
+          error: 'رقم السري غير صحيح، يرجى المحاولة مجدداً.',
+        );
+      }
     } on Object catch (e) {
+      if (kDebugMode) print('[AuthNotifier] loginByPin() exception: $e');
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
