@@ -33,17 +33,18 @@ class PhonePinAuth {
   final _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
 
-  // Enable reCAPTCHA fallback for debug builds
+  bool _authInitialized = false;
+
+  // Force reCAPTCHA flow for all builds (required for iOS reCAPTCHA callback via URL Scheme)
   Future<void> _initializeAuth() async {
+    if (_authInitialized) return;
+    await _auth.setSettings(
+      appVerificationDisabledForTesting: false,
+      forceRecaptchaFlow: true,
+    );
+    _authInitialized = true;
     if (kDebugMode) {
-      // Force reCAPTCHA flow for debug builds to avoid Play Integrity issues
-      await _auth.setSettings(
-        appVerificationDisabledForTesting: false,
-        forceRecaptchaFlow: true,
-      );
-      if (kDebugMode) {
-        print('[PhonePinAuth] Initialized with forceRecaptchaFlow=true for debug build');
-      }
+      print('[PhonePinAuth] Initialized with forceRecaptchaFlow=true');
     }
   }
 
@@ -67,7 +68,7 @@ class PhonePinAuth {
       return _inFlightPhoneSession!;
     }
 
-    // Initialize auth settings for debug builds (enable reCAPTCHA)
+    // Initialize auth settings (force reCAPTCHA on iOS)
     await _initializeAuth();
 
     if (kDebugMode) {
@@ -76,7 +77,6 @@ class PhonePinAuth {
       print(
         '[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow for phone=$maskedPhone, forceNewSession=$forceNewSession',
       );
-      // Add Crashlytics breadcrumb for debugging
       FirebaseCrashlytics.instance.log('OTP_SEND_START: phone=$maskedPhone, forceNewSession=$forceNewSession');
     }
 
@@ -86,7 +86,6 @@ class PhonePinAuth {
       return;
     }
 
-    // If forceNewSession, sign out first to get new OTP
     if (u != null && forceNewSession) {
       if (kDebugMode) print('[PhonePinAuth] Signing out to force new OTP session');
       await _auth.signOut();
@@ -95,13 +94,10 @@ class PhonePinAuth {
     final completer = Completer<void>();
 
     if (kDebugMode) {
-      print(
-        '[PhonePinAuth] DIAGNOSTIC: Calling Firebase verifyPhoneNumber() for phone=$phoneE164 at ${DateTime.now()}',
-      );
+      print('[PhonePinAuth] DIAGNOSTIC: Calling Firebase verifyPhoneNumber() for phone=$phoneE164 at ${DateTime.now()}');
       FirebaseCrashlytics.instance.log('OTP_VERIFY_PHONE_START: ${DateTime.now()}');
     }
 
-    // Store the in-flight future and ensure it's cleared when done
     try {
       _inFlightPhoneSession = completer.future;
 
@@ -116,44 +112,19 @@ class PhonePinAuth {
           try {
             await _auth.signInWithCredential(cred);
             if (kDebugMode) print('[PhonePinAuth] Auto sign-in successful');
-            
-            // SAFE COMPLETION: Only complete if not already completed
-            if (!completer.isCompleted) {
-              if (kDebugMode) {
-                print('[PhonePinAuth] Completing future via verificationCompleted (success path)');
-              }
-              completer.complete();
-            } else {
-              if (kDebugMode) {
-                print('[PhonePinAuth] WARNING: verificationCompleted tried to complete already-completed future');
-              }
-            }
+            if (!completer.isCompleted) completer.complete();
           } on Object catch (e) {
             if (kDebugMode) {
               print('[PhonePinAuth] DIAGNOSTIC: Auto sign-in failed: $e');
               FirebaseCrashlytics.instance.log('OTP_AUTO_SIGNIN_FAILED: $e');
             }
-            
-            // SAFE COMPLETION: Only complete if not already completed
-            if (!completer.isCompleted) {
-              if (kDebugMode) {
-                print('[PhonePinAuth] Completing future via verificationCompleted (error path)');
-              }
-              completer.completeError(e);
-            } else {
-              if (kDebugMode) {
-                print('[PhonePinAuth] WARNING: verificationCompleted error tried to complete already-completed future');
-              }
-            }
+            if (!completer.isCompleted) completer.completeError(e);
           }
         },
         verificationFailed: (e) {
           if (kDebugMode) {
-            print(
-              '[PhonePinAuth] DIAGNOSTIC: verificationFailed callback - code: ${e.code}, message: ${e.message}, details: ${e.toString()}',
-            );
+            print('[PhonePinAuth] DIAGNOSTIC: verificationFailed - code: ${e.code}, message: ${e.message}');
             FirebaseCrashlytics.instance.log('OTP_VERIFICATION_FAILED: code=${e.code}, message=${e.message}');
-            // Record non-fatal error for detailed analysis
             FirebaseCrashlytics.instance.recordError(
               'OTP Verification Failed',
               StackTrace.current,
@@ -162,133 +133,62 @@ class PhonePinAuth {
                 'Phone: ${phoneE164.length > 5 ? '${phoneE164.substring(0, 3)}...${phoneE164.substring(phoneE164.length - 2)}' : '***'}',
                 'Error Code: ${e.code}',
                 'Error Message: ${e.message}',
-                'Full Error: ${e.toString()}',
               ],
             );
           }
-          
-          // SAFE COMPLETION: Only complete if not already completed
-          if (!completer.isCompleted) {
-            if (kDebugMode) {
-              print('[PhonePinAuth] Completing future via verificationFailed');
-            }
-            completer.completeError(e);
-          } else {
-            if (kDebugMode) {
-              print('[PhonePinAuth] WARNING: verificationFailed tried to complete already-completed future');
-            }
-          }
+          if (!completer.isCompleted) completer.completeError(e);
         },
         codeSent: (verificationId, resendToken) {
           if (kDebugMode) {
-            print(
-              '[PhonePinAuth] DIAGNOSTIC: codeSent callback - verificationId=${'present'}, resendToken=${resendToken != null ? 'present' : 'null'}',
-            );
-            FirebaseCrashlytics.instance.log(
-              'OTP_CODE_SENT: verificationId=${'present'}',
-            );
+            print('[PhonePinAuth] DIAGNOSTIC: codeSent callback - verificationId=present');
+            FirebaseCrashlytics.instance.log('OTP_CODE_SENT');
           }
           _lastVerificationId = verificationId;
-
-          if (kDebugMode) {
-            print(
-              '[PhonePinAuth] Firebase Auth phone verification started successfully: verificationId isNull=${_lastVerificationId == null}',
-            );
-          }
-
-          // SAFE COMPLETION: Only complete if not already completed
-          if (!completer.isCompleted) {
-            if (kDebugMode) {
-              print('[PhonePinAuth] Completing future via codeSent');
-            }
-            completer.complete();
-          } else {
-            if (kDebugMode) {
-              print('[PhonePinAuth] WARNING: codeSent tried to complete already-completed future (likely auto-verified)');
-            }
-          }
+          if (!completer.isCompleted) completer.complete();
         },
         codeAutoRetrievalTimeout: (vid) {
           if (kDebugMode) {
-            print('[PhonePinAuth] DIAGNOSTIC: codeAutoRetrievalTimeout callback - verificationId=$vid');
+            print('[PhonePinAuth] DIAGNOSTIC: codeAutoRetrievalTimeout - verificationId=$vid');
             FirebaseCrashlytics.instance.log('OTP_AUTO_RETRIEVAL_TIMEOUT: verificationId=$vid');
           }
           _lastVerificationId = vid;
-          // Note: This callback does not complete the future - it's just informational
         },
       );
-
-      if (kDebugMode) {
-        print('[PhonePinAuth] DIAGNOSTIC: verifyPhoneNumber() call initiated, waiting for callbacks...');
-      }
 
       await completer.future;
 
       if (kDebugMode) {
-        print(
-          '[PhonePinAuth] DIAGNOSTIC: ensurePhoneSession() completed successfully, verificationId=$_lastVerificationId',
-        );
-        FirebaseCrashlytics.instance.log('OTP_SEND_SUCCESS: verificationId=$_lastVerificationId');
+        print('[PhonePinAuth] DIAGNOSTIC: ensurePhoneSession() completed successfully');
+        FirebaseCrashlytics.instance.log('OTP_SEND_SUCCESS');
       }
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        final maskedPhone = phoneE164.length > 5
-            ? '${phoneE164.substring(0, 3)}...${phoneE164.substring(phoneE164.length - 2)}'
-            : '***';
         print('[PhonePinAuth] DIAGNOSTIC: ensurePhoneSession() EXCEPTION: ${e.runtimeType} - $e');
-        print('[PhonePinAuth] DIAGNOSTIC: Stacktrace: $stackTrace');
         FirebaseCrashlytics.instance.log('OTP_SEND_EXCEPTION: ${e.runtimeType} - $e');
-        // Record the exception for analysis with REDACTED info
-        FirebaseCrashlytics.instance.recordError(
-          e,
-          stackTrace,
-          fatal: false,
-          information: ['Phone: $maskedPhone', 'Operation: ensurePhoneSession'],
-        );
+        FirebaseCrashlytics.instance.recordError(e, stackTrace, fatal: false);
       }
       rethrow;
     } finally {
-      // CRITICAL: Clear the in-flight future reference when done (success or error)
       _inFlightPhoneSession = null;
-      if (kDebugMode) {
-        print('[PhonePinAuth] Cleared in-flight phone session reference');
-      }
+      if (kDebugMode) print('[PhonePinAuth] Cleared in-flight phone session reference');
     }
   }
 
   Future<void> confirmOtp(String smsCode) async {
-    if (kDebugMode) {
-      print('[PhonePinAuth] confirmOtp() called with smsCode=$smsCode');
-    }
+    if (kDebugMode) print('[PhonePinAuth] confirmOtp() called');
 
     final vid = _lastVerificationId;
     if (vid == null) {
-      if (kDebugMode) {
-        print('[PhonePinAuth] ERROR: No verification ID available');
-      }
+      if (kDebugMode) print('[PhonePinAuth] ERROR: No verification ID available');
       throw Exception('No verification id');
-    }
-
-    if (kDebugMode) {
-      print('[PhonePinAuth] Creating credential with verificationId=$vid');
     }
 
     try {
       final cred = PhoneAuthProvider.credential(verificationId: vid, smsCode: smsCode);
-
-      if (kDebugMode) {
-        print('[PhonePinAuth] Signing in with credential...');
-      }
-
       await _auth.signInWithCredential(cred);
-
-      if (kDebugMode) {
-        print('[PhonePinAuth] Sign-in successful!');
-      }
+      if (kDebugMode) print('[PhonePinAuth] Sign-in successful!');
     } catch (e) {
-      if (kDebugMode) {
-        print('[PhonePinAuth] Sign-in FAILED: ${e.runtimeType} - $e');
-      }
+      if (kDebugMode) print('[PhonePinAuth] Sign-in FAILED: ${e.runtimeType} - $e');
       rethrow;
     }
   }
@@ -312,30 +212,19 @@ class PhonePinAuth {
       print('[PhonePinAuth] Verifying PIN for phone: $maskedPhone');
     }
 
-    // GUARD: Ensure phone is in E.164 format
     if (!phoneE164.startsWith('+')) {
-      if (kDebugMode) {
-        print('[PhonePinAuth] ERROR: Phone not in E.164 format: $phoneE164');
-      }
       throw ArgumentError('Phone must be in E.164 format (starting with +)');
     }
 
-    // Check if user is already signed in
     final currentUser = _auth.currentUser;
     if (currentUser != null && currentUser.phoneNumber == phoneE164) {
-      if (kDebugMode) {
-        print('[PhonePinAuth] User already signed in with matching phone');
-      }
+      if (kDebugMode) print('[PhonePinAuth] User already signed in with matching phone');
       return true;
     }
 
     try {
-      // Call Cloud Function to verify PIN and get custom token
       final callable = FirebaseFunctions.instance.httpsCallable('createCustomToken');
-
-      // Determine userType from collection name
       final userType = userCollection == 'drivers' ? 'driver' : 'user';
-
       final result = await callable.call({
         'phoneE164': phoneE164,
         'pin': pin,
@@ -346,33 +235,19 @@ class PhonePinAuth {
       final uid = result.data['uid'] as String?;
 
       if (token == null) {
-        if (kDebugMode) {
-          print('[PhonePinAuth] No token returned from createCustomToken');
-        }
+        if (kDebugMode) print('[PhonePinAuth] No token returned from createCustomToken');
         return false;
       }
 
-      if (kDebugMode) {
-        print('[PhonePinAuth] Custom token received, signing in user: $uid');
-      }
-
-      // Sign in with custom token
+      if (kDebugMode) print('[PhonePinAuth] Custom token received, signing in user: $uid');
       await _auth.signInWithCustomToken(token);
-
-      if (kDebugMode) {
-        print('[PhonePinAuth] Successfully signed in with custom token');
-      }
-
+      if (kDebugMode) print('[PhonePinAuth] Successfully signed in with custom token');
       return true;
     } on FirebaseFunctionsException catch (e) {
-      if (kDebugMode) {
-        print('[PhonePinAuth] Cloud Function error: ${e.code} - ${e.message}');
-      }
+      if (kDebugMode) print('[PhonePinAuth] Cloud Function error: ${e.code} - ${e.message}');
       return false;
     } on Object catch (e) {
-      if (kDebugMode) {
-        print('[PhonePinAuth] Error verifying PIN: $e');
-      }
+      if (kDebugMode) print('[PhonePinAuth] Error verifying PIN: $e');
       return false;
     }
   }
@@ -385,29 +260,18 @@ class PhonePinAuth {
 
   Future<bool> phoneExists(String phoneE164) async {
     try {
-      // Use Cloud Function instead of direct query to avoid Firestore permission issues
-      // Cloud Functions bypass security rules and can safely check phone existence
       final callable = FirebaseFunctions.instance.httpsCallable('checkPhoneExists');
-
-      // Determine userType from collection name
       final userType = userCollection == 'drivers' ? 'driver' : 'user';
-
       final result = await callable.call({
         'phoneE164': phoneE164,
         'userType': userType,
       });
-
       return result.data['exists'] as bool? ?? false;
     } on FirebaseFunctionsException catch (e) {
-      if (kDebugMode) {
-        print('[PhonePinAuth] Cloud Function error checking phone: ${e.code} - ${e.message}');
-      }
-      // On error, return false to prevent blocking user flow
+      if (kDebugMode) print('[PhonePinAuth] Cloud Function error checking phone: ${e.code} - ${e.message}');
       return false;
     } on Object catch (e) {
-      if (kDebugMode) {
-        print('[PhonePinAuth] Error checking phone existence: $e');
-      }
+      if (kDebugMode) print('[PhonePinAuth] Error checking phone existence: $e');
       return false;
     }
   }
