@@ -14,6 +14,10 @@ import '../../features/reports/reports_screen.dart';
 import '../../features/finance/wallets/wallets_screen.dart';
 import '../../features/finance/payouts/payouts_screen.dart';
 import '../../features/settings/settings_screen.dart';
+import '../../features/settings/delivery_pricing_screen.dart';
+import '../../features/settings/service_zones_screen.dart';
+import '../../features/settings/working_hours_screen.dart';
+import '../../features/settings/security_settings_screen.dart';
 import '../../providers/admin_auth_providers.dart';
 
 final adminRouterProvider = Provider<GoRouter>((ref) {
@@ -97,11 +101,33 @@ final adminRouterProvider = Provider<GoRouter>((ref) {
         name: 'payouts',
         builder: (context, state) => const PayoutsScreen(),
       ),
+      // ── Settings (parent + sub-pages) ──
       GoRoute(
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
       ),
+      GoRoute(
+        path: '/settings/pricing',
+        name: 'settings-pricing',
+        builder: (context, state) => const DeliveryPricingScreen(),
+      ),
+      GoRoute(
+        path: '/settings/zones',
+        name: 'settings-zones',
+        builder: (context, state) => const ServiceZonesScreen(),
+      ),
+      GoRoute(
+        path: '/settings/hours',
+        name: 'settings-hours',
+        builder: (context, state) => const WorkingHoursScreen(),
+      ),
+      GoRoute(
+        path: '/settings/security',
+        name: 'settings-security',
+        builder: (context, state) => const SecuritySettingsScreen(),
+      ),
+      // ── Notifications ──
       GoRoute(
         path: '/notifications',
         name: 'notifications',
