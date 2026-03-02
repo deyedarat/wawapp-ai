@@ -121,33 +121,7 @@ class _LiveOpsScreenState extends ConsumerState<LiveOpsScreen> {
                           child: Text('خطأ في تحميل الطلبات: $error'),
                         ),
                         data: (orders) {
-                          if (drivers.isEmpty && orders.isEmpty) {
-                            return Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.map_outlined,
-                                    size: 64,
-                                    color: AdminAppColors.textSecondaryLight,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'لا توجد بيانات للعرض',
-                                    style: Theme.of(context).textTheme.titleLarge,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'لا يوجد سائقون أو طلبات نشطة حالياً',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: AdminAppColors.textSecondaryLight,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-
+                          // Always show the map – overlay an info banner when empty
                           return Stack(
                             children: [
                               LiveMap(
@@ -174,6 +148,38 @@ class _LiveOpsScreenState extends ConsumerState<LiveOpsScreen> {
                                   left: 16,
                                   right: 16,
                                   child: _buildInfoPanel(context),
+                                ),
+
+                              // Empty-data banner (always show map underneath)
+                              if (drivers.isEmpty && orders.isEmpty)
+                                Positioned(
+                                  top: 16,
+                                  left: 0,
+                                  right: 0,
+                                  child: Center(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        borderRadius: BorderRadius.circular(24),
+                                      ),
+                                      child: const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(Icons.info_outline,
+                                              color: Colors.white, size: 18),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            'لا يوجد سائقون أو طلبات نشطة حالياً',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
                             ],
                           );
