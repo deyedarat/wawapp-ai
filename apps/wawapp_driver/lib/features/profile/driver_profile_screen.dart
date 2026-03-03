@@ -201,10 +201,20 @@ class DriverProfileScreen extends ConsumerWidget {
       ));
 
       try {
-        // Here we should call backend to delete account
-        // For now (P0), we assume a backend trigger or manual process
-        // In a real implementation, call: await ref.read(authProvider.notifier).deleteAccount();
-
+        // TODO: Implement proper account deletion via Cloud Function
+        // This should:
+        // 1. Delete user data from Firestore (drivers collection)
+        // 2. Delete user's wallet data
+        // 3. Anonymize completed orders
+        // 4. Delete Firebase Auth account
+        // 
+        // For now, we'll call logout and show a message
+        // The admin must manually complete the deletion process
+        
+        // Call backend to request account deletion
+        // await ref.read(authProvider.notifier).requestAccountDeletion();
+        
+        // For P0: Just logout and notify admin
         await ref.read(authProvider.notifier).logout();
 
         if (context.mounted) {
@@ -212,7 +222,10 @@ class DriverProfileScreen extends ConsumerWidget {
           context.go('/');
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تم حذف الحساب بنجاح')),
+            const SnackBar(
+              content: Text('تم إرسال طلب حذف الحساب. سيتم مراجعته من قبل الإدارة.'),
+              duration: Duration(seconds: 5),
+            ),
           );
         }
       } catch (e) {

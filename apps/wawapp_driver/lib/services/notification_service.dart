@@ -16,11 +16,14 @@ class NotificationService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
-  BuildContext? _context;
+  // Use GlobalKey for router instead of storing BuildContext
+  GlobalKey<NavigatorState>? _navigatorKey;
   String? _pendingRoute;
 
   Future<void> initialize(BuildContext context) async {
-    _context = context;
+    // Get the navigator key from the router
+    final router = GoRouter.of(context);
+    _navigatorKey = router.routerDelegate.navigatorKey;
 
     await _initializeLocalNotifications();
     await _setupFirebaseMessaging();
@@ -129,8 +132,8 @@ class NotificationService {
     );
 
     if (route != null) {
-      if (_context != null) {
-        _context!.go(route);
+      if (_navigatorKey?.currentContext != null) {
+        _navigatorKey!.currentContext!.go(route);
       } else {
         _pendingRoute = route;
       }
@@ -152,7 +155,7 @@ class NotificationService {
   void _navigateFromMessage(Map<String, dynamic> data) {
     if (kDebugMode) {
       debugPrint('[NotificationService] _navigateFromMessage called with data: $data');
-      debugPrint('[NotificationService] Context available: ${_context != null}');
+      debugPrint('[NotificationService] Navigator available: ${_navigatorKey?.currentContext != null}');
     }
 
     final route = NotificationHelper.getRouteFromNotification(
@@ -164,12 +167,12 @@ class NotificationService {
       debugPrint('[NotificationService] Route from helper: $route');
     }
 
-    if (route != null && _context != null) {
+    if (route != null && _navigatorKey?.currentContext != null) {
       if (kDebugMode) {
         debugPrint('[NotificationService] ✅ Navigating to: $route');
       }
       try {
-        _context!.go(route);
+        _navigatorKey!.currentContext!.go(route);
         if (kDebugMode) {
           debugPrint('[NotificationService] ✅ Navigation successful');
         }
@@ -183,17 +186,18 @@ class NotificationService {
         if (route == null) {
           debugPrint('[NotificationService] ❌ Route is null, cannot navigate');
         }
-        if (_context == null) {
-          debugPrint('[NotificationService] ❌ Context is null, cannot navigate');
+        if (_navigatorKey?.currentContext == null) {
+          debugPrint('[NotificationService] ❌ Navigator context is null, cannot navigate');
         }
       }
     }
   }
 
   void updateContext(BuildContext context) {
-    _context = context;
-    if (_pendingRoute != null) {
-      context.go(_pendingRoute!);
+    final router = GoRouter.of(context);
+    _navigatorKey = router.routerDelegate.navigatorKey;
+    if (_pendingRoute != null && _navigatorKey?.currentContext != null) {
+      _navigatorKey!.currentContext!.go(_pendingRoute!);
       _pendingRoute = null;
     }
   }

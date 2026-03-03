@@ -16,6 +16,7 @@ import '../../services/location_service.dart';
 import '../../services/tracking_service.dart';
 import '../auth/providers/auth_service_provider.dart';
 import '../profile/providers/driver_profile_providers.dart';
+import '../wallet/wallet_provider.dart';
 import 'providers/driver_status_provider.dart';
 
 class DriverHomeScreen extends ConsumerStatefulWidget {
@@ -308,6 +309,15 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       error: (_, __) => false, // Show offline on error
     );
 
+    // Get current user ID for daily summary
+    final authState = ref.watch(authProvider);
+    final driverId = authState.user?.uid;
+    
+    // Watch daily summary
+    final dailySummaryAsync = driverId != null 
+        ? ref.watch(dailySummaryProvider(driverId))
+        : null;
+
     final l10n = AppLocalizations.of(context)!;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
 
@@ -353,7 +363,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 ),
                 const PopupMenuItem(
                   value: 'signout',
-                  child: Text('Sign out'),
+                  child: Text('تسجيل الخروج'),
                 ),
               ],
             ),
@@ -582,103 +592,197 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                           ),
                     ),
                     const SizedBox(height: DriverAppSpacing.md),
-                    DriverCard(
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'عدد الرحلات',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: DriverAppColors
-                                              .textSecondaryLight,
+                    dailySummaryAsync == null
+                        ? DriverCard(
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'عدد الرحلات',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                color: DriverAppColors.textSecondaryLight,
+                                              ),
                                         ),
-                                  ),
-                                  const SizedBox(height: DriverAppSpacing.xxs),
-                                  Text(
-                                    '0',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
+                                        const SizedBox(height: DriverAppSpacing.xxs),
+                                        Text(
+                                          '0',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: DriverAppColors.primaryLight,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.all(DriverAppSpacing.sm),
+                                      decoration: BoxDecoration(
+                                        color: DriverAppColors.primaryLight.withOpacity(0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.local_shipping,
+                                        size: 28,
+                                        color: DriverAppColors.primaryLight,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Divider(height: DriverAppSpacing.lg),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'الأرباح',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                color: DriverAppColors.textSecondaryLight,
+                                              ),
+                                        ),
+                                        const SizedBox(height: DriverAppSpacing.xxs),
+                                        Text(
+                                          '0 MRU',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: DriverAppColors.successLight,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.all(DriverAppSpacing.sm),
+                                      decoration: BoxDecoration(
+                                        color: DriverAppColors.successLight.withOpacity(0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.monetization_on,
+                                        size: 28,
+                                        color: DriverAppColors.successLight,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )
+                        : dailySummaryAsync.when(
+                            loading: () => const DriverCard(
+                              child: Center(child: CircularProgressIndicator()),
+                            ),
+                            error: (error, stack) => DriverCard(
+                              child: Center(child: Text('خطأ: $error')),
+                            ),
+                            data: (summary) => DriverCard(
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'عدد الرحلات',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                  color: DriverAppColors.textSecondaryLight,
+                                                ),
+                                          ),
+                                          const SizedBox(height: DriverAppSpacing.xxs),
+                                          Text(
+                                            '${summary.tripsCount}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headlineMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: DriverAppColors.primaryLight,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.all(DriverAppSpacing.sm),
+                                        decoration: BoxDecoration(
+                                          color: DriverAppColors.primaryLight.withOpacity(0.1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.local_shipping,
+                                          size: 28,
                                           color: DriverAppColors.primaryLight,
                                         ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              Container(
-                                padding:
-                                    const EdgeInsets.all(DriverAppSpacing.sm),
-                                decoration: BoxDecoration(
-                                  color: DriverAppColors.primaryLight
-                                      .withOpacity(0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.local_shipping,
-                                  size: 28,
-                                  color: DriverAppColors.primaryLight,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Divider(height: DriverAppSpacing.lg),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'الأرباح',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: DriverAppColors
-                                              .textSecondaryLight,
+                                  const Divider(height: DriverAppSpacing.lg),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'الأرباح',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.copyWith(
+                                                  color: DriverAppColors.textSecondaryLight,
+                                                ),
+                                          ),
+                                          const SizedBox(height: DriverAppSpacing.xxs),
+                                          Text(
+                                            '${summary.earnings.toStringAsFixed(2)} MRU',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headlineMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: DriverAppColors.successLight,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.all(DriverAppSpacing.sm),
+                                        decoration: BoxDecoration(
+                                          color: DriverAppColors.successLight.withOpacity(0.1),
+                                          shape: BoxShape.circle,
                                         ),
-                                  ),
-                                  const SizedBox(height: DriverAppSpacing.xxs),
-                                  Text(
-                                    '0 MRU',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
+                                        child: const Icon(
+                                          Icons.monetization_on,
+                                          size: 28,
                                           color: DriverAppColors.successLight,
                                         ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                              Container(
-                                padding:
-                                    const EdgeInsets.all(DriverAppSpacing.sm),
-                                decoration: BoxDecoration(
-                                  color: DriverAppColors.successLight
-                                      .withOpacity(0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.monetization_on,
-                                  size: 28,
-                                  color: DriverAppColors.successLight,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),

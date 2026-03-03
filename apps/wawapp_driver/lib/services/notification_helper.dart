@@ -31,6 +31,19 @@ class NotificationHelper {
       case 'order_cancelled':
         route = '/';
         break;
+      case 'order_accepted':
+        route = '/active';
+        break;
+      case 'trip_started':
+      case 'order_started':
+        route = '/active';
+        break;
+      case 'order_completed':
+        route = '/earnings';
+        break;
+      case 'payment_received':
+        route = '/wallet';
+        break;
       default:
         route = null;
     }
