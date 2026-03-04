@@ -9,8 +9,14 @@ class LocationService {
 
   Position? _lastPosition;
   StreamSubscription<Position>? _positionStreamSubscription;
-  final StreamController<Position> _positionController =
-      StreamController<Position>.broadcast();
+  
+  // Make controller private and add proper cleanup
+  StreamController<Position>? _positionController;
+  
+  StreamController<Position> get _controller {
+    _positionController ??= StreamController<Position>.broadcast();
+    return _positionController!;
+  }
 
   static const String _logTag = '[LOCATION_SERVICE]';
 
@@ -192,7 +198,7 @@ class LocationService {
               '$_logTag Stream update: lat=${position.latitude}, lng=${position.longitude}, accuracy=${position.accuracy}m');
         }
         _lastPosition = position;
-        _positionController.add(position);
+        _controller.add(position);
         onPosition(position);
       },
       onError: (Object error) {
@@ -239,10 +245,11 @@ class LocationService {
 
   Position? get lastPosition => _lastPosition;
 
-  Stream<Position> get positionStream => _positionController.stream;
+  Stream<Position> get positionStream => _controller.stream;
 
   void dispose() {
     stopPositionStream();
-    _positionController.close();
+    _positionController?.close();
+    _positionController = null;
   }
 }

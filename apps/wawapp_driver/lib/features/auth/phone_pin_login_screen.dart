@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../l10n/app_localizations.dart';
 import 'providers/auth_service_provider.dart';
+import 'providers/pin_attempt_provider.dart';
 
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
@@ -27,6 +28,16 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   }
 
   Future<void> _handleLogin() async {
+    // Check PIN attempt lockout
+    final pinAttemptState = ref.read(pinAttemptProvider);
+    if (pinAttemptState.isLocked) {
+      final duration = pinAttemptState.lockoutDuration;
+      final minutes = duration.inMinutes;
+      final seconds = duration.inSeconds % 60;
+      setState(() => _err = 'تم قفل الحساب. حاول مرة أخرى بعد $minutes دقيقة و $seconds ثانية');
+      return;
+    }
+    
     final pin = _pin.text.trim();
     if (pin.isEmpty) {
       setState(() => _err = 'يرجى إدخال الرمز السري');
@@ -58,7 +69,24 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     setState(() => _err = null);
 
     // Pass normalized phone to loginByPin
-    await ref.read(authProvider.notifier).loginByPin(pin, phone);
+    try {
+      await ref.read(authProvider.notifier).loginByPin(pin, phone);
+      // If successful, reset attempts
+      await ref.read(pinAttemptProvider.notifier).recordSuccessfulAttempt();
+    } catch (e) {
+      // Record failed attempt
+      await ref.read(pinAttemptProvider.notifier).recordFailedAttempt();
+      
+      // Check if now locked
+      final newState = ref.read(pinAttemptProvider);
+      if (newState.isLocked) {
+        setState(() => _err = 'تم تجاوز الحد الأقصى من المحاولات. تم قفل الحساب لمدة 15 دقيقة');
+      } else {
+        final remaining = newState.remainingAttempts;
+        setState(() => _err = 'رمز PIN غير صحيح. المحاولات المتبقية: $remaining');
+      }
+      rethrow;
+    }
   }
 
   Future<void> _handleForgotPin() async {
