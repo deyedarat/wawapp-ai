@@ -71,5 +71,7 @@
  </array>
  <key>NSLocationWhenInUseUsageDescription</key>
  <string>WawApp needs your location to show nearby drivers and calculate routes.</string>
+ <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+ <string>WawApp needs your location to show nearby drivers and calculate routes.</string>
  </dict>
 </plist>
