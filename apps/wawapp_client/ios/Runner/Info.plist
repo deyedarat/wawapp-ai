@@ -68,7 +68,7 @@
  <array>
  <string>fetch</string>
  <string>remote-notification</string>
- <string>location</string>
+ 
  </array>
  <key>NSLocationWhenInUseUsageDescription</key>
  <string>WawApp needs your location to show nearby drivers and calculate routes.</string>
