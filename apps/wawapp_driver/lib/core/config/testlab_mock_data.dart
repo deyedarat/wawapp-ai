@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_shared/core_shared.dart' as core;
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// Mock data for Firebase Test Lab Mode
 class TestLabMockData {
@@ -30,8 +30,7 @@ class TestLabMockData {
       );
 
   /// Mock Firestore Document for driver profile
-  static DocumentSnapshot<Map<String, dynamic>> get mockDriverDoc =>
-      _MockDocumentSnapshot();
+  static DocumentSnapshot<Map<String, dynamic>> get mockDriverDoc => _MockDocumentSnapshot();
 
   /// Mock completed orders for earnings
   static List<core.Order> get mockCompletedOrders => [
@@ -42,15 +41,12 @@ class TestLabMockData {
           price: 1500,
           pickupAddress: 'السوق المركزي، نواكشوط',
           dropoffAddress: 'جامعة نواكشوط العصرية',
-          pickup: const core.LocationPoint(
-              lat: 18.0735, lng: -15.9582, label: 'السوق المركزي'),
-          dropoff: const core.LocationPoint(
-              lat: 18.1012, lng: -15.9456, label: 'جامعة نواكشوط'),
+          pickup: const core.LocationPoint(lat: 18.0735, lng: -15.9582, label: 'السوق المركزي'),
+          dropoff: const core.LocationPoint(lat: 18.1012, lng: -15.9456, label: 'جامعة نواكشوط'),
           status: 'completed',
           driverId: mockDriverId,
           createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-          completedAt:
-              DateTime.now().subtract(const Duration(hours: 1, minutes: 45)),
+          completedAt: DateTime.now().subtract(const Duration(hours: 1, minutes: 45)),
           driverRating: 5,
         ),
         core.Order(
@@ -60,15 +56,12 @@ class TestLabMockData {
           price: 900,
           pickupAddress: 'مطار نواكشوط الدولي',
           dropoffAddress: 'فندق الموريتاني',
-          pickup: const core.LocationPoint(
-              lat: 18.0969, lng: -15.9497, label: 'المطار'),
-          dropoff: const core.LocationPoint(
-              lat: 18.0866, lng: -15.9560, label: 'فندل الموريتاني'),
+          pickup: const core.LocationPoint(lat: 18.0969, lng: -15.9497, label: 'المطار'),
+          dropoff: const core.LocationPoint(lat: 18.0866, lng: -15.9560, label: 'فندل الموريتاني'),
           status: 'completed',
           driverId: mockDriverId,
           createdAt: DateTime.now().subtract(const Duration(days: 1)),
-          completedAt:
-              DateTime.now().subtract(const Duration(days: 1, hours: -1)),
+          completedAt: DateTime.now().subtract(const Duration(days: 1, hours: -1)),
           driverRating: 4,
         ),
       ];
@@ -82,10 +75,8 @@ class TestLabMockData {
           price: 800,
           pickupAddress: 'مستشفى الشيخ زايد',
           dropoffAddress: 'السوق الكبير',
-          pickup: const core.LocationPoint(
-              lat: 18.0845, lng: -15.9523, label: 'مستشفى الشيخ زايد'),
-          dropoff: const core.LocationPoint(
-              lat: 18.0735, lng: -15.9582, label: 'السوق الكبير'),
+          pickup: const core.LocationPoint(lat: 18.0845, lng: -15.9523, label: 'مستشفى الشيخ زايد'),
+          dropoff: const core.LocationPoint(lat: 18.0735, lng: -15.9582, label: 'السوق الكبير'),
           status: 'matching',
           createdAt: DateTime.now().subtract(const Duration(minutes: 5)),
         ),
@@ -96,10 +87,8 @@ class TestLabMockData {
           price: 1200,
           pickupAddress: 'جامعة نواكشوط',
           dropoffAddress: 'مركز التسوق',
-          pickup: const core.LocationPoint(
-              lat: 18.1012, lng: -15.9456, label: 'جامعة نواكشوط'),
-          dropoff: const core.LocationPoint(
-              lat: 18.0923, lng: -15.9634, label: 'مركز التسوق'),
+          pickup: const core.LocationPoint(lat: 18.1012, lng: -15.9456, label: 'جامعة نواكشوط'),
+          dropoff: const core.LocationPoint(lat: 18.0923, lng: -15.9634, label: 'مركز التسوق'),
           status: 'matching',
           createdAt: DateTime.now().subtract(const Duration(minutes: 2)),
         ),
@@ -145,68 +134,53 @@ class _MockUser implements User {
   MultiFactor get multiFactor => throw UnimplementedError();
 
   @override
-  Future<UserCredential> linkWithProvider(AuthProvider provider) =>
-      throw UnimplementedError();
+  Future<UserCredential> linkWithProvider(AuthProvider provider) => throw UnimplementedError();
 
   @override
-  Future<UserCredential> reauthenticateWithProvider(AuthProvider provider) =>
-      throw UnimplementedError();
+  Future<UserCredential> reauthenticateWithProvider(AuthProvider provider) => throw UnimplementedError();
 
   @override
   Future<void> delete() => throw UnimplementedError();
 
   @override
-  Future<String> getIdToken([bool forceRefresh = false]) =>
+  Future<String> getIdToken([bool forceRefresh = false]) => throw UnimplementedError();
+
+  @override
+  Future<IdTokenResult> getIdTokenResult([bool forceRefresh = false]) => throw UnimplementedError();
+
+  @override
+  Future<UserCredential> linkWithCredential(AuthCredential credential) => throw UnimplementedError();
+
+  @override
+  Future<ConfirmationResult> linkWithPhoneNumber(String phoneNumber, [RecaptchaVerifier? verifier]) =>
       throw UnimplementedError();
 
   @override
-  Future<IdTokenResult> getIdTokenResult([bool forceRefresh = false]) =>
-      throw UnimplementedError();
+  Future<UserCredential> linkWithPopup(AuthProvider provider) => throw UnimplementedError();
 
   @override
-  Future<UserCredential> linkWithCredential(AuthCredential credential) =>
-      throw UnimplementedError();
+  Future<void> linkWithRedirect(AuthProvider provider) => throw UnimplementedError();
 
   @override
-  Future<ConfirmationResult> linkWithPhoneNumber(String phoneNumber,
-          [RecaptchaVerifier? verifier]) =>
-      throw UnimplementedError();
+  Future<UserCredential> reauthenticateWithCredential(AuthCredential credential) => throw UnimplementedError();
 
   @override
-  Future<UserCredential> linkWithPopup(AuthProvider provider) =>
-      throw UnimplementedError();
+  Future<UserCredential> reauthenticateWithPopup(AuthProvider provider) => throw UnimplementedError();
 
   @override
-  Future<void> linkWithRedirect(AuthProvider provider) =>
-      throw UnimplementedError();
-
-  @override
-  Future<UserCredential> reauthenticateWithCredential(
-          AuthCredential credential) =>
-      throw UnimplementedError();
-
-  @override
-  Future<UserCredential> reauthenticateWithPopup(AuthProvider provider) =>
-      throw UnimplementedError();
-
-  @override
-  Future<void> reauthenticateWithRedirect(AuthProvider provider) =>
-      throw UnimplementedError();
+  Future<void> reauthenticateWithRedirect(AuthProvider provider) => throw UnimplementedError();
 
   @override
   Future<void> reload() => throw UnimplementedError();
 
   @override
-  Future<void> sendEmailVerification(
-          [ActionCodeSettings? actionCodeSettings]) =>
-      throw UnimplementedError();
+  Future<void> sendEmailVerification([ActionCodeSettings? actionCodeSettings]) => throw UnimplementedError();
 
   @override
   Future<User> unlink(String providerId) => throw UnimplementedError();
 
   @override
-  Future<void> updateDisplayName(String? displayName) =>
-      throw UnimplementedError();
+  Future<void> updateDisplayName(String? displayName) => throw UnimplementedError();
 
   @override
   Future<void> updateEmail(String newEmail) => throw UnimplementedError();
@@ -215,23 +189,21 @@ class _MockUser implements User {
   Future<void> updatePassword(String newPassword) => throw UnimplementedError();
 
   @override
-  Future<void> updatePhoneNumber(PhoneAuthCredential phoneCredential) =>
-      throw UnimplementedError();
+  Future<void> updatePhoneNumber(PhoneAuthCredential phoneCredential) => throw UnimplementedError();
 
   @override
   Future<void> updatePhotoURL(String? photoURL) => throw UnimplementedError();
 
   @override
-  Future<void> updateProfile({String? displayName, String? photoURL}) =>
-      throw UnimplementedError();
+  Future<void> updateProfile({String? displayName, String? photoURL}) => throw UnimplementedError();
 
   @override
-  Future<void> verifyBeforeUpdateEmail(String newEmail,
-          [ActionCodeSettings? actionCodeSettings]) =>
+  Future<void> verifyBeforeUpdateEmail(String newEmail, [ActionCodeSettings? actionCodeSettings]) =>
       throw UnimplementedError();
 }
 
 /// Mock Firestore DocumentSnapshot implementation
+// ignore: subtype_of_sealed_class
 class _MockDocumentSnapshot implements DocumentSnapshot<Map<String, dynamic>> {
   @override
   String get id => TestLabMockData.mockDriverId;
@@ -243,8 +215,7 @@ class _MockDocumentSnapshot implements DocumentSnapshot<Map<String, dynamic>> {
   Map<String, dynamic>? data() => TestLabMockData.mockDriverProfile.toJson();
 
   @override
-  DocumentReference<Map<String, dynamic>> get reference =>
-      throw UnimplementedError();
+  DocumentReference<Map<String, dynamic>> get reference => throw UnimplementedError();
 
   @override
   SnapshotMetadata get metadata => throw UnimplementedError();

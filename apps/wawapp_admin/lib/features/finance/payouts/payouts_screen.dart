@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/colors.dart';
 import '../../../core/widgets/admin_scaffold.dart';
 import '../../../providers/finance_providers.dart';
-import '../models/wallet_models.dart';
 import '../../reports/utils/csv_export.dart';
+import '../models/wallet_models.dart';
 
 class PayoutsScreen extends ConsumerStatefulWidget {
   const PayoutsScreen({super.key});
@@ -20,9 +20,8 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final payoutsAsync = _statusFilter == 'all'
-        ? ref.watch(payoutsProvider)
-        : ref.watch(payoutsByStatusProvider(_statusFilter));
+    final payoutsAsync =
+        _statusFilter == 'all' ? ref.watch(payoutsProvider) : ref.watch(payoutsByStatusProvider(_statusFilter));
 
     return AdminScaffold(
       title: 'إدارة الدفعات',
@@ -56,10 +55,10 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
 
   Widget _buildFilterBar() {
     return Container(
-      padding: EdgeInsets.all(AdminSpacing.md),
+      padding: const EdgeInsets.all(AdminSpacing.md),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        border: Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
+        border: const Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
       ),
       child: Row(
         children: [
@@ -76,7 +75,7 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
               ],
             ),
           ),
-          SizedBox(width: AdminSpacing.md),
+          const SizedBox(width: AdminSpacing.md),
           ElevatedButton.icon(
             onPressed: _exportPayoutsCsv,
             icon: const Icon(Icons.file_download, size: 20),
@@ -109,13 +108,13 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
 
   Widget _buildPayoutsTable(List<PayoutModel> payouts) {
     if (payouts.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.payment, size: 64, color: AdminAppColors.textSecondaryLight),
             SizedBox(height: AdminSpacing.md),
-            const Text('لا توجد دفعات'),
+            Text('لا توجد دفعات'),
           ],
         ),
       );
@@ -123,15 +122,14 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
 
     return SingleChildScrollView(
       child: Container(
-        margin: EdgeInsets.all(AdminSpacing.md),
+        margin: const EdgeInsets.all(AdminSpacing.md),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
           border: Border.all(color: AdminAppColors.borderLight),
         ),
         child: DataTable(
-          headingRowColor:
-              MaterialStateProperty.all(AdminAppColors.backgroundLight),
+          headingRowColor: WidgetStateProperty.all(AdminAppColors.backgroundLight),
           columns: const [
             DataColumn(label: Text('التاريخ')),
             DataColumn(label: Text('معرف السائق')),
@@ -145,9 +143,7 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
               cells: [
                 DataCell(
                   Text(
-                    payout.createdAt != null
-                        ? DateFormat('dd/MM/yyyy').format(payout.createdAt!)
-                        : '-',
+                    payout.createdAt != null ? DateFormat('dd/MM/yyyy').format(payout.createdAt!) : '-',
                   ),
                 ),
                 DataCell(Text(payout.driverId)),
@@ -171,8 +167,7 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
                       if (payout.status == 'requested' || payout.status == 'approved')
                         PopupMenuButton<String>(
                           icon: const Icon(Icons.more_vert),
-                          onSelected: (value) =>
-                              _updatePayoutStatus(payout.id, value),
+                          onSelected: (value) => _updatePayoutStatus(payout.id, value),
                           itemBuilder: (context) => [
                             if (payout.status == 'requested')
                               const PopupMenuItem(
@@ -231,7 +226,7 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: AdminSpacing.sm,
         vertical: AdminSpacing.xs,
       ),
@@ -264,8 +259,7 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
               _buildDetailRow('الطريقة', _getMethodLabel(payout.method)),
               _buildDetailRow('الحالة', payout.status),
               if (payout.note != null) _buildDetailRow('ملاحظة', payout.note!),
-              if (payout.rejectionReason != null)
-                _buildDetailRow('سبب الرفض', payout.rejectionReason!),
+              if (payout.rejectionReason != null) _buildDetailRow('سبب الرفض', payout.rejectionReason!),
             ],
           ),
         ),
@@ -281,7 +275,7 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: EdgeInsets.only(bottom: AdminSpacing.sm),
+      padding: const EdgeInsets.only(bottom: AdminSpacing.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -320,7 +314,7 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: AdminSpacing.md),
+              const SizedBox(height: AdminSpacing.md),
               TextField(
                 controller: amountController,
                 decoration: const InputDecoration(
@@ -329,9 +323,9 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
                 ),
                 keyboardType: TextInputType.number,
               ),
-              SizedBox(height: AdminSpacing.md),
+              const SizedBox(height: AdminSpacing.md),
               DropdownButtonFormField<String>(
-                value: selectedMethod,
+                initialValue: selectedMethod,
                 decoration: const InputDecoration(
                   labelText: 'طريقة الدفع',
                   border: OutlineInputBorder(),
@@ -345,7 +339,7 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
                   if (value != null) selectedMethod = value;
                 },
               ),
-              SizedBox(height: AdminSpacing.md),
+              const SizedBox(height: AdminSpacing.md),
               TextField(
                 controller: noteController,
                 decoration: const InputDecoration(
@@ -406,9 +400,7 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
 
   Future<void> _updatePayoutStatus(String payoutId, String newStatus) async {
     try {
-      await ref
-          .read(payoutServiceProvider)
-          .updatePayoutStatus(payoutId: payoutId, newStatus: newStatus);
+      await ref.read(payoutServiceProvider).updatePayoutStatus(payoutId: payoutId, newStatus: newStatus);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -447,9 +439,8 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
   }
 
   void _exportPayoutsCsv() {
-    final payoutsAsync = _statusFilter == 'all'
-        ? ref.read(payoutsProvider)
-        : ref.read(payoutsByStatusProvider(_statusFilter));
+    final payoutsAsync =
+        _statusFilter == 'all' ? ref.read(payoutsProvider) : ref.read(payoutsByStatusProvider(_statusFilter));
 
     payoutsAsync.whenData((payouts) {
       if (payouts.isEmpty) {
@@ -459,11 +450,8 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
         return;
       }
 
-      // Import the CSV utility
-      // ignore: unused_import
-      final csvUtil = CsvExportUtil();
       CsvExportUtil.exportPayouts(payouts);
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('تم تصدير ${payouts.length} دفعة بنجاح')),
       );

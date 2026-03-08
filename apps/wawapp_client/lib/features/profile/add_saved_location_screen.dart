@@ -1,10 +1,10 @@
+import 'package:core_shared/core_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:core_shared/core_shared.dart';
-import 'providers/client_profile_providers.dart';
-import '../auth/providers/auth_service_provider.dart';
+
 import '../../core/navigation/safe_navigation.dart';
+import '../auth/providers/auth_service_provider.dart';
+import 'providers/client_profile_providers.dart';
 
 class AddSavedLocationScreen extends ConsumerStatefulWidget {
   final String? locationId;
@@ -12,12 +12,10 @@ class AddSavedLocationScreen extends ConsumerStatefulWidget {
   const AddSavedLocationScreen({super.key, this.locationId});
 
   @override
-  ConsumerState<AddSavedLocationScreen> createState() =>
-      _AddSavedLocationScreenState();
+  ConsumerState<AddSavedLocationScreen> createState() => _AddSavedLocationScreenState();
 }
 
-class _AddSavedLocationScreenState
-    extends ConsumerState<AddSavedLocationScreen> {
+class _AddSavedLocationScreenState extends ConsumerState<AddSavedLocationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _addressController = TextEditingController();
@@ -43,9 +41,7 @@ class _AddSavedLocationScreenState
     if (authState.user == null) return;
 
     try {
-      final locations = await ref
-          .read(clientProfileRepositoryProvider)
-          .getSavedLocations(authState.user!.uid);
+      final locations = await ref.read(clientProfileRepositoryProvider).getSavedLocations(authState.user!.uid);
 
       final location = locations.firstWhere(
         (loc) => loc.id == widget.locationId,
@@ -95,8 +91,7 @@ class _AddSavedLocationScreenState
     try {
       final now = DateTime.now();
       final location = SavedLocation(
-        id: _existingLocation?.id ??
-            DateTime.now().millisecondsSinceEpoch.toString(),
+        id: _existingLocation?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         userId: authState.user!.uid,
         name: _nameController.text.trim(),
         address: _addressController.text.trim(),
@@ -108,20 +103,15 @@ class _AddSavedLocationScreenState
       );
 
       if (isEditing) {
-        await ref
-            .read(savedLocationsNotifierProvider.notifier)
-            .updateLocation(authState.user!.uid, location);
+        await ref.read(savedLocationsNotifierProvider.notifier).updateLocation(authState.user!.uid, location);
       } else {
-        await ref
-            .read(savedLocationsNotifierProvider.notifier)
-            .addLocation(authState.user!.uid, location);
+        await ref.read(savedLocationsNotifierProvider.notifier).addLocation(authState.user!.uid, location);
       }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-                isEditing ? 'تم تحديث الموقع بنجاح' : 'تم إضافة الموقع بنجاح'),
+            content: Text(isEditing ? 'تم تحديث الموقع بنجاح' : 'تم إضافة الموقع بنجاح'),
           ),
         );
         context.safePop();
@@ -223,8 +213,7 @@ class _AddSavedLocationScreenState
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.my_location),
                       ),
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'مطلوب';
@@ -246,8 +235,7 @@ class _AddSavedLocationScreenState
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.place),
                       ),
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'مطلوب';
@@ -287,9 +275,7 @@ class _AddSavedLocationScreenState
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: (_isLoading || updateState.isLoading)
-                      ? null
-                      : _saveLocation,
+                  onPressed: (_isLoading || updateState.isLoading) ? null : _saveLocation,
                   child: (_isLoading || updateState.isLoading)
                       ? const CircularProgressIndicator()
                       : Text(isEditing ? 'تحديث الموقع' : 'إضافة الموقع'),

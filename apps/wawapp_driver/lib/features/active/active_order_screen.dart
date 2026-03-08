@@ -1,17 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:developer' as dev;
+
 import 'package:core_shared/core_shared.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../core/theme/colors.dart';
+import '../../core/theme/components.dart';
 import '../../services/orders_service.dart';
 import '../../services/tracking_service.dart';
 import '../../widgets/error_screen.dart';
-import 'providers/active_order_provider.dart';
 import '../auth/providers/auth_service_provider.dart';
-import '../../core/theme/colors.dart';
-import '../../core/theme/components.dart';
-import 'dart:developer' as dev;
+import 'providers/active_order_provider.dart';
 
 class ActiveOrderScreen extends ConsumerStatefulWidget {
   const ActiveOrderScreen({super.key});
@@ -67,8 +69,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(
-                foregroundColor: DriverAppColors.accentRed),
+            style: TextButton.styleFrom(foregroundColor: DriverAppColors.accentRed),
             child: const Text('نعم'),
           ),
         ],
@@ -120,7 +121,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
 
   Future<void> _openMaps(double lat, double lng, String label) async {
     final googleMapsUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
-    
+
     if (await canLaunchUrl(googleMapsUrl)) {
       await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
     } else {
@@ -147,8 +148,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
     }
 
     if (kDebugMode) {
-      dev.log(
-          '[Matching] ActiveOrderScreen: Building screen for driver ${user.uid}');
+      dev.log('[Matching] ActiveOrderScreen: Building screen for driver ${user.uid}');
     }
 
     final ordersAsync = ref.watch(activeOrdersProvider);
@@ -174,8 +174,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
         },
         data: (orders) {
           if (kDebugMode) {
-            dev.log(
-                '[Matching] ActiveOrderScreen: Received ${orders.length} active orders');
+            dev.log('[Matching] ActiveOrderScreen: Received ${orders.length} active orders');
           }
 
           // Handle tracking based on active orders
@@ -195,11 +194,11 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
           }
 
           final order = orders.first;
-          
+
           // Calculate map center and markers
           final pickupLatLng = LatLng(order.pickup.lat, order.pickup.lng);
           final dropoffLatLng = LatLng(order.dropoff.lat, order.dropoff.lng);
-          
+
           // Calculate bounds to show both pickup and dropoff
           final bounds = LatLngBounds(
             southwest: LatLng(
@@ -211,7 +210,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
               order.pickup.lng > order.dropoff.lng ? order.pickup.lng : order.dropoff.lng,
             ),
           );
-          
+
           return Column(
             children: [
               // Map View
@@ -265,7 +264,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
                   mapToolbarEnabled: false,
                 ),
               ),
-              
+
               // Order Details Card
               Expanded(
                 flex: 2,
@@ -288,7 +287,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
                                     style: Theme.of(context).textTheme.headlineSmall,
                                   ),
                                   // Call customer button
-                                  if (order.customerId != null)
+                                  if (order.ownerId != null)
                                     IconButton(
                                       icon: const Icon(Icons.phone, color: DriverAppColors.primaryLight),
                                       onPressed: () {
@@ -335,13 +334,13 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text('المسافة: ${order.distanceKm.toStringAsFixed(1)} كم'),
-                                  Text('السعر: ${order.price} MRU', 
-                                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  Text('السعر: ${order.price} MRU',
+                                      style: const TextStyle(fontWeight: FontWeight.bold)),
                                 ],
                               ),
                               const SizedBox(height: 4),
                               Text('الحالة: ${order.orderStatus.toArabicLabel()}',
-                                style: TextStyle(color: _getStatusColor(order.orderStatus))),
+                                  style: TextStyle(color: _getStatusColor(order.orderStatus))),
                             ],
                           ),
                         ),
@@ -362,9 +361,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
                       ),
                       const SizedBox(height: 8),
                       OutlinedButton(
-                        onPressed: order.orderStatus.canDriverCancel &&
-                                !_isCancelling &&
-                                order.id != null
+                        onPressed: order.orderStatus.canDriverCancel && !_isCancelling && order.id != null
                             ? () => _showCancelDialog(order.id!)
                             : null,
                         style: OutlinedButton.styleFrom(
@@ -398,7 +395,8 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
         return DriverAppColors.infoLight;
       case OrderStatus.completed:
         return DriverAppColors.successLight;
-      case OrderStatus.cancelled:
+      case OrderStatus.cancelledByClient:
+      case OrderStatus.cancelledByDriver:
         return DriverAppColors.errorLight;
       default:
         return Colors.grey;

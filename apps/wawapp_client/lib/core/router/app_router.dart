@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/about/about_screen.dart';
 import '../../features/auth/auth_gate.dart';
+import '../../features/auth/bug_report_screen.dart';
 import '../../features/auth/create_pin_screen.dart';
 import '../../features/auth/otp_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
@@ -67,6 +68,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/pin-gate',
         name: 'pinGate',
         builder: (context, state) => const PinGateScreen(),
+      ),
+      GoRoute(
+        path: '/bug-report',
+        name: 'bugReport',
+        builder: (context, state) => const BugReportScreen(),
       ),
       GoRoute(
         path: '/quote',

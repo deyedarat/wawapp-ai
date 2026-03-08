@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/cache/pin_status_cache.dart';
 import '../../../core/logging/auth_logger.dart';
+import '../../../services/log_service.dart';
 
 // Provider for PhonePinAuth service singleton
 final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
@@ -188,17 +189,27 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       error: null,
       otpStage: OtpStage.sending,
       otpFlowActive: true, // MUST be set immediately
+      shouldOfferBugReport: false, // clear on every new attempt
     );
     try {
       if (kDebugMode) {
-        final maskedPhone =
-            phone.length > 5 ? '${phone.substring(0, 3)}...${phone.substring(phone.length - 2)}' : '***';
+        final maskedPhone = LogService.instance.maskPhone(phone);
         print('[ClientAuthNotifier] Sending OTP to $maskedPhone');
       }
-      await _authService.ensurePhoneSession(phone);
+      await _authService.ensurePhoneSession(
+        phone,
+        onLog: (event, rawPhone, code, msg) {
+          LogService.instance.addLog(
+            event: event,
+            phone: rawPhone,
+            errorCode: code,
+            errorMessage: msg,
+          );
+        },
+      );
       final verificationId = _authService.lastVerificationId;
       if (kDebugMode) {
-        print('[ClientAuthNotifier] OTP sent successfully, verificationId=$verificationId');
+        print('[ClientAuthNotifier] OTP sent successfully, verificationId=present');
       }
 
       // Update last sent time on success
@@ -210,15 +221,65 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         otpStage: OtpStage.codeSent,
         verificationId: verificationId,
       );
-    } on Object catch (e) {
-      if (kDebugMode) print('[ClientAuthNotifier] Send OTP error: $e');
+    } on FirebaseAuthException catch (e) {
+      // Translate Firebase error codes to user-friendly Arabic messages
+      final arabicMessage = _translateFirebaseError(e);
+      // Determine if this error warrants a bug report offer
+      final isBugReportWorthy = e.code == 'unknown' || (e.message != null && e.message!.contains('Error code:39'));
+      if (kDebugMode) print('[ClientAuthNotifier] Firebase Auth error: code=${e.code}');
+      LogService.instance.addLog(
+        event: 'otp_send_failed',
+        phone: phone,
+        errorCode: e.code,
+        errorMessage: e.message,
+      );
       state = state.copyWith(
         isLoading: false,
-        error: e.toString(),
-        otpFlowActive: false, // End flow on error
+        error: arabicMessage,
+        otpFlowActive: false,
         otpStage: OtpStage.failed,
-        isPinResetFlow: false, // Clear reset flag on error
+        isPinResetFlow: false,
+        shouldOfferBugReport: isBugReportWorthy,
       );
+    } on Object catch (e) {
+      if (kDebugMode) print('[ClientAuthNotifier] Send OTP error: ${e.runtimeType}');
+      LogService.instance.addLog(
+        event: 'otp_send_failed',
+        phone: phone,
+        errorCode: 'unknown',
+        errorMessage: e.runtimeType.toString(),
+      );
+      state = state.copyWith(
+        isLoading: false,
+        error: 'حدث خطأ أثناء التحقق. يرجى المحاولة مجدداً',
+        otpFlowActive: false,
+        otpStage: OtpStage.failed,
+        isPinResetFlow: false,
+        shouldOfferBugReport: true, // Unknown non-Firebase errors also warrant a report
+      );
+    }
+  }
+
+  /// Translates Firebase Auth error codes into user-friendly Arabic messages.
+  /// Never exposes technical details to the user.
+  static String _translateFirebaseError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'too-many-requests':
+        return 'لقد تجاوزت الحد المسموح. يرجى الانتظار قبل المحاولة مجدداً';
+      case 'invalid-phone-number':
+        return 'رقم الهاتف غير صالح. يرجى التحقق منه والمحاولة مجدداً';
+      case 'network-request-failed':
+        return 'فشل الاتصال بالشبكة. يرجى التحقق من اتصالك بالإنترنت';
+      case 'session-expired':
+        return 'انتهت صلاحية الجلسة. يرجى المحاولة مجدداً';
+      case 'unknown':
+        // Check for Error code:39 in the message
+        if (e.message != null && e.message!.contains('Error code:39')) {
+          return 'حدث خطأ داخلي أثناء التحقق [كود: 39]. يرجى المحاولة مجدداً';
+        }
+        return 'حدث خطأ أثناء التحقق. يرجى المحاولة مجدداً';
+      default:
+        return 'حدث خطأ أثناء التحقق. يرجى المحاولة مجدداً';
     }
   }
 

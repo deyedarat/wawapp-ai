@@ -1,18 +1,20 @@
 import 'dart:async';
 import 'dart:ui';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
-import 'l10n/app_localizations.dart';
 import 'firebase_options.dart';
-import 'services/notification_service.dart';
+import 'l10n/app_localizations.dart';
 import 'services/analytics_service.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   // Run app initialization in error zone to catch all errors
@@ -64,8 +66,7 @@ void main() async {
 
     // Suppress reCAPTCHA error in debug mode
     if (!kReleaseMode) {
-      await FirebaseAuth.instance
-          .setSettings(appVerificationDisabledForTesting: true);
+      await FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     }
 
     if (kDebugMode) {
@@ -143,7 +144,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     // This allows app to render smoothly first
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
-        NotificationService().initialize(context);
+        NotificationService().initialize();
       }
     });
   }

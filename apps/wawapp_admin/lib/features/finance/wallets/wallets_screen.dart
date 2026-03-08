@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/colors.dart';
 import '../../../core/widgets/admin_scaffold.dart';
 import '../../../providers/finance_providers.dart';
-import '../models/wallet_models.dart';
 import '../../reports/utils/csv_export.dart';
+import '../models/wallet_models.dart';
 
 class WalletsScreen extends ConsumerStatefulWidget {
   const WalletsScreen({super.key});
@@ -17,8 +17,8 @@ class WalletsScreen extends ConsumerStatefulWidget {
 
 class _WalletsScreenState extends ConsumerState<WalletsScreen> {
   String _searchQuery = '';
-  String? _selectedWalletId;
 
+  @override
   @override
   Widget build(BuildContext context) {
     final driverWalletsAsync = ref.watch(driverWalletsProvider);
@@ -33,9 +33,7 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
 
           // Platform wallet summary
           platformWalletAsync.when(
-            data: (wallet) => wallet != null
-                ? _buildPlatformWalletCard(wallet)
-                : const SizedBox.shrink(),
+            data: (wallet) => wallet != null ? _buildPlatformWalletCard(wallet) : const SizedBox.shrink(),
             loading: () => const LinearProgressIndicator(),
             error: (_, __) => const SizedBox.shrink(),
           ),
@@ -63,10 +61,10 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
 
   Widget _buildSearchBar() {
     return Container(
-      padding: EdgeInsets.all(AdminSpacing.md),
+      padding: const EdgeInsets.all(AdminSpacing.md),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        border: Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
+        border: const Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
       ),
       child: Row(
         children: [
@@ -78,7 +76,7 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
                 ),
-                contentPadding: EdgeInsets.symmetric(
+                contentPadding: const EdgeInsets.symmetric(
                   horizontal: AdminSpacing.md,
                   vertical: AdminSpacing.sm,
                 ),
@@ -86,7 +84,7 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
               onChanged: (value) => setState(() => _searchQuery = value),
             ),
           ),
-          SizedBox(width: AdminSpacing.md),
+          const SizedBox(width: AdminSpacing.md),
           OutlinedButton.icon(
             onPressed: _exportAllTransactions,
             icon: const Icon(Icons.file_download, size: 20),
@@ -102,19 +100,18 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
 
   Widget _buildPlatformWalletCard(WalletModel wallet) {
     return Container(
-      margin: EdgeInsets.all(AdminSpacing.md),
-      padding: EdgeInsets.all(AdminSpacing.lg),
+      margin: const EdgeInsets.all(AdminSpacing.md),
+      padding: const EdgeInsets.all(AdminSpacing.lg),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [AdminAppColors.primaryGreen, AdminAppColors.accentBlue],
         ),
         borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
       ),
       child: Row(
         children: [
-          const Icon(Icons.account_balance_wallet,
-              size: 48, color: Colors.white),
-          SizedBox(width: AdminSpacing.md),
+          const Icon(Icons.account_balance_wallet, size: 48, color: Colors.white),
+          const SizedBox(width: AdminSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +123,7 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                 ),
-                SizedBox(height: AdminSpacing.xs),
+                const SizedBox(height: AdminSpacing.xs),
                 Text(
                   '${_formatCurrency(wallet.balance)} MRU',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -162,13 +159,13 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
 
   Widget _buildWalletsTable(List<WalletModel> wallets) {
     if (wallets.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.wallet, size: 64, color: AdminAppColors.textSecondaryLight),
             SizedBox(height: AdminSpacing.md),
-            const Text('لا توجد محافظ'),
+            Text('لا توجد محافظ'),
           ],
         ),
       );
@@ -176,15 +173,14 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
 
     return SingleChildScrollView(
       child: Container(
-        margin: EdgeInsets.all(AdminSpacing.md),
+        margin: const EdgeInsets.all(AdminSpacing.md),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
           border: Border.all(color: AdminAppColors.borderLight),
         ),
         child: DataTable(
-          headingRowColor:
-              MaterialStateProperty.all(AdminAppColors.backgroundLight),
+          headingRowColor: WidgetStateProperty.all(AdminAppColors.backgroundLight),
           columns: const [
             DataColumn(label: Text('معرف السائق')),
             DataColumn(label: Text('الرصيد المتاح')),
@@ -232,8 +228,6 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
   }
 
   void _showWalletDetails(WalletModel wallet) {
-    setState(() => _selectedWalletId = wallet.id);
-
     showDialog(
       context: context,
       builder: (context) => _WalletDetailsDialog(walletId: wallet.id),
@@ -277,7 +271,7 @@ class _WalletDetailsDialog extends ConsumerWidget {
     return Dialog(
       child: Container(
         width: 800,
-        padding: EdgeInsets.all(AdminSpacing.lg),
+        padding: const EdgeInsets.all(AdminSpacing.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -285,7 +279,7 @@ class _WalletDetailsDialog extends ConsumerWidget {
             Row(
               children: [
                 const Icon(Icons.receipt_long, color: AdminAppColors.primaryGreen),
-                SizedBox(width: AdminSpacing.sm),
+                const SizedBox(width: AdminSpacing.sm),
                 Text(
                   'سجل المعاملات',
                   style: Theme.of(context).textTheme.titleLarge,
@@ -300,14 +294,14 @@ class _WalletDetailsDialog extends ConsumerWidget {
                     foregroundColor: Colors.white,
                   ),
                 ),
-                SizedBox(width: AdminSpacing.sm),
+                const SizedBox(width: AdminSpacing.sm),
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
             ),
-            SizedBox(height: AdminSpacing.md),
+            const SizedBox(height: AdminSpacing.md),
             Expanded(
               child: transactionsAsync.when(
                 data: (transactions) {
@@ -343,9 +337,7 @@ class _WalletDetailsDialog extends ConsumerWidget {
       ),
       title: Text(txn.note ?? _getSourceLabel(txn.source)),
       subtitle: Text(
-        txn.createdAt != null
-            ? DateFormat('dd/MM/yyyy HH:mm').format(txn.createdAt!)
-            : '-',
+        txn.createdAt != null ? DateFormat('dd/MM/yyyy HH:mm').format(txn.createdAt!) : '-',
       ),
       trailing: Text(
         '${isCredit ? '+' : '-'}${formatter.format(txn.amount)} MRU',
@@ -380,9 +372,7 @@ class _WalletDetailsDialog extends ConsumerWidget {
       }
 
       // Extract driver ID from wallet ID if applicable
-      final driverId = walletId.startsWith('driver_')
-          ? walletId.replaceFirst('driver_', '')
-          : null;
+      final driverId = walletId.startsWith('driver_') ? walletId.replaceFirst('driver_', '') : null;
 
       CsvExportUtil.exportTransactions(
         transactions,

@@ -3,8 +3,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../features/reports/models/reports_filter_state.dart';
 import '../features/reports/models/report_models.dart';
+import '../features/reports/models/reports_filter_state.dart';
 
 /// Reports filter state provider
 final reportsFilterProvider = StateProvider<ReportsFilterState>((ref) {
@@ -14,11 +14,10 @@ final reportsFilterProvider = StateProvider<ReportsFilterState>((ref) {
 // ─── Firestore Fallback Helpers ──────────────────────────────────────────────
 
 /// Builds overview data directly from Firestore when Functions aren't deployed.
-Future<OverviewReportData> _fetchOverviewFromFirestore(
-    ReportsFilterState filter) async {
+Future<OverviewReportData> _fetchOverviewFromFirestore(ReportsFilterState filter) async {
   final fs = FirebaseFirestore.instance;
   final startTs = Timestamp.fromDate(filter.startDate);
-  final endTs   = Timestamp.fromDate(filter.endDate);
+  final endTs = Timestamp.fromDate(filter.endDate);
 
   // Orders in period
   final ordersSnap = await fs
@@ -28,12 +27,11 @@ Future<OverviewReportData> _fetchOverviewFromFirestore(
       .get();
 
   final orders = ordersSnap.docs;
-  final total      = orders.length;
-  final completed  = orders.where((d) => d['status'] == 'completed').length;
-  final cancelled  = orders.where((d) => d['status'] == 'cancelled').length;
+  final total = orders.length;
+  final completed = orders.where((d) => d['status'] == 'completed').length;
+  final cancelled = orders.where((d) => d['status'] == 'cancelled').length;
 
-  final completionRate =
-      total > 0 ? ((completed / total) * 100).round() : 0;
+  final completionRate = total > 0 ? ((completed / total) * 100).round() : 0;
 
   // Average order value (field 'price' or 'totalPrice')
   int sumPrice = 0;
@@ -44,10 +42,7 @@ Future<OverviewReportData> _fetchOverviewFromFirestore(
   final avgValue = total > 0 ? (sumPrice / total).round() : 0;
 
   // Active drivers (isOnline = true)
-  final driversSnap = await fs
-      .collection('drivers')
-      .where('isOnline', isEqualTo: true)
-      .get();
+  final driversSnap = await fs.collection('drivers').where('isOnline', isEqualTo: true).get();
 
   // New clients in period
   final clientsSnap = await fs
@@ -70,11 +65,10 @@ Future<OverviewReportData> _fetchOverviewFromFirestore(
 }
 
 /// Builds financial data directly from Firestore when Functions aren't deployed.
-Future<FinancialReportData> _fetchFinancialFromFirestore(
-    ReportsFilterState filter) async {
+Future<FinancialReportData> _fetchFinancialFromFirestore(ReportsFilterState filter) async {
   final fs = FirebaseFirestore.instance;
   final startTs = Timestamp.fromDate(filter.startDate);
-  final endTs   = Timestamp.fromDate(filter.endDate);
+  final endTs = Timestamp.fromDate(filter.endDate);
 
   final ordersSnap = await fs
       .collection('orders')
@@ -88,10 +82,8 @@ Future<FinancialReportData> _fetchFinancialFromFirestore(
 
   for (final doc in ordersSnap.docs) {
     final data = doc.data();
-    grossRevenue +=
-        ((data['price'] ?? data['totalPrice'] ?? 0) as num).toInt();
-    driverEarnings +=
-        ((data['driverEarning'] ?? 0) as num).toInt();
+    grossRevenue += ((data['price'] ?? data['totalPrice'] ?? 0) as num).toInt();
+    driverEarnings += ((data['driverEarning'] ?? 0) as num).toInt();
   }
 
   final platformCommission = grossRevenue - driverEarnings;
@@ -102,9 +94,7 @@ Future<FinancialReportData> _fetchFinancialFromFirestore(
       grossRevenue: grossRevenue,
       totalDriverEarnings: driverEarnings,
       totalPlatformCommission: platformCommission > 0 ? platformCommission : 0,
-      averageCommissionRate: grossRevenue > 0
-          ? ((platformCommission / grossRevenue) * 100).round()
-          : 0,
+      averageCommissionRate: grossRevenue > 0 ? ((platformCommission / grossRevenue) * 100).round() : 0,
     ),
     dailyBreakdown: [],
     periodStart: filter.startDate.toIso8601String(),
@@ -113,11 +103,10 @@ Future<FinancialReportData> _fetchFinancialFromFirestore(
 }
 
 /// Builds driver performance data directly from Firestore.
-Future<DriverPerformanceReportData> _fetchDriverPerfFromFirestore(
-    ReportsFilterState filter) async {
+Future<DriverPerformanceReportData> _fetchDriverPerfFromFirestore(ReportsFilterState filter) async {
   final fs = FirebaseFirestore.instance;
   final startTs = Timestamp.fromDate(filter.startDate);
-  final endTs   = Timestamp.fromDate(filter.endDate);
+  final endTs = Timestamp.fromDate(filter.endDate);
 
   final ordersSnap = await fs
       .collection('orders')
@@ -132,33 +121,29 @@ Future<DriverPerformanceReportData> _fetchDriverPerfFromFirestore(
     final data = doc.data();
     final driverId = data['driverId'] as String? ?? '';
     if (driverId.isEmpty) continue;
-    byDriver.putIfAbsent(driverId, () => {
-          'driverId': driverId,
-          'driverName': data['driverName'] ?? 'سائق',
-          'completedOrders': 0,
-          'totalEarnings': 0,
-          'totalRating': 0.0,
-          'ratingCount': 0,
-        });
-    byDriver[driverId]!['completedOrders'] =
-        (byDriver[driverId]!['completedOrders'] as int) + 1;
+    byDriver.putIfAbsent(
+        driverId,
+        () => {
+              'driverId': driverId,
+              'driverName': data['driverName'] ?? 'سائق',
+              'completedOrders': 0,
+              'totalEarnings': 0,
+              'totalRating': 0.0,
+              'ratingCount': 0,
+            });
+    byDriver[driverId]!['completedOrders'] = (byDriver[driverId]!['completedOrders'] as int) + 1;
     byDriver[driverId]!['totalEarnings'] =
-        (byDriver[driverId]!['totalEarnings'] as int) +
-            ((data['driverEarning'] ?? 0) as num).toInt();
+        (byDriver[driverId]!['totalEarnings'] as int) + ((data['driverEarning'] ?? 0) as num).toInt();
     final rating = (data['rating'] ?? 0) as num;
     if (rating > 0) {
-      byDriver[driverId]!['totalRating'] =
-          (byDriver[driverId]!['totalRating'] as double) + rating.toDouble();
-      byDriver[driverId]!['ratingCount'] =
-          (byDriver[driverId]!['ratingCount'] as int) + 1;
+      byDriver[driverId]!['totalRating'] = (byDriver[driverId]!['totalRating'] as double) + rating.toDouble();
+      byDriver[driverId]!['ratingCount'] = (byDriver[driverId]!['ratingCount'] as int) + 1;
     }
   }
 
   final drivers = byDriver.values.map((d) {
     final rc = d['ratingCount'] as int;
-    final avgRating = rc > 0
-        ? ((d['totalRating'] as double) / rc * 10).round() / 10
-        : 5.0;
+    final avgRating = rc > 0 ? ((d['totalRating'] as double) / rc * 10).round() / 10 : 5.0;
     return DriverPerformance(
       driverId: d['driverId'] as String,
       name: d['driverName'] as String,
@@ -172,7 +157,7 @@ Future<DriverPerformanceReportData> _fetchDriverPerfFromFirestore(
       cancellationRate: 0,
     );
   }).toList()
-    ..sort((a, b) => b.completedOrders.compareTo(a.completedOrders));
+    ..sort((a, b) => b.completedTrips.compareTo(a.completedTrips));
 
   return DriverPerformanceReportData(
     drivers: drivers,
@@ -185,19 +170,17 @@ Future<DriverPerformanceReportData> _fetchDriverPerfFromFirestore(
 // ─── Providers ───────────────────────────────────────────────────────────────
 
 /// Overview report — tries Firebase Functions first, falls back to Firestore.
-final overviewReportProvider =
-    FutureProvider<OverviewReportData?>((ref) async {
+final overviewReportProvider = FutureProvider<OverviewReportData?>((ref) async {
   final filter = ref.watch(reportsFilterProvider);
 
   // Try Firebase Functions
   try {
-    final callable =
-        FirebaseFunctions.instance.httpsCallable('getReportsOverview');
+    final callable = FirebaseFunctions.instance.httpsCallable('getReportsOverview');
     final result = await callable.call<Map<String, dynamic>>({
       'startDate': filter.startDate.toIso8601String(),
       'endDate': filter.endDate.toIso8601String(),
     });
-    if (result.data != null) {
+    if (result.data.isNotEmpty) {
       return OverviewReportData.fromJson(result.data);
     }
   } catch (e) {
@@ -214,18 +197,16 @@ final overviewReportProvider =
 });
 
 /// Financial report — tries Firebase Functions first, falls back to Firestore.
-final financialReportProvider =
-    FutureProvider<FinancialReportData?>((ref) async {
+final financialReportProvider = FutureProvider<FinancialReportData?>((ref) async {
   final filter = ref.watch(reportsFilterProvider);
 
   try {
-    final callable =
-        FirebaseFunctions.instance.httpsCallable('getFinancialReport');
+    final callable = FirebaseFunctions.instance.httpsCallable('getFinancialReport');
     final result = await callable.call<Map<String, dynamic>>({
       'startDate': filter.startDate.toIso8601String(),
       'endDate': filter.endDate.toIso8601String(),
     });
-    if (result.data != null) {
+    if (result.data.isNotEmpty) {
       return FinancialReportData.fromJson(result.data);
     }
   } catch (e) {
@@ -241,19 +222,17 @@ final financialReportProvider =
 });
 
 /// Driver performance report — tries Firebase Functions first, falls back to Firestore.
-final driverPerformanceReportProvider =
-    FutureProvider<DriverPerformanceReportData?>((ref) async {
+final driverPerformanceReportProvider = FutureProvider<DriverPerformanceReportData?>((ref) async {
   final filter = ref.watch(reportsFilterProvider);
 
   try {
-    final callable = FirebaseFunctions.instance
-        .httpsCallable('getDriverPerformanceReport');
+    final callable = FirebaseFunctions.instance.httpsCallable('getDriverPerformanceReport');
     final result = await callable.call<Map<String, dynamic>>({
       'startDate': filter.startDate.toIso8601String(),
       'endDate': filter.endDate.toIso8601String(),
       'limit': 50,
     });
-    if (result.data != null) {
+    if (result.data.isNotEmpty) {
       return DriverPerformanceReportData.fromJson(result.data);
     }
   } catch (e) {

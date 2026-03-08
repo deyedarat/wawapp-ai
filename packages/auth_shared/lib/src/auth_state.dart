@@ -23,7 +23,12 @@ class AuthState {
   final bool isPinResetFlow;
   final bool isPinCheckLoading;
   final bool isStreamsSafeToRun;
-  final PinStatus pinStatus; // New field
+  final PinStatus pinStatus;
+
+  /// True when the last OTP error was unknown/code-39 and the UI should offer
+  /// the user a chance to send a bug report. Set by the notifier, cleared on
+  /// the next sendOtp() call. This avoids string-matching Arabic error text.
+  final bool shouldOfferBugReport;
 
   const AuthState({
     this.isLoading = false,
@@ -38,7 +43,8 @@ class AuthState {
     this.isPinResetFlow = false,
     this.isPinCheckLoading = false,
     this.isStreamsSafeToRun = true,
-    this.pinStatus = PinStatus.unknown, // Default
+    this.pinStatus = PinStatus.unknown,
+    this.shouldOfferBugReport = false,
   });
 
   AuthState copyWith({
@@ -55,6 +61,7 @@ class AuthState {
     bool? isPinCheckLoading,
     bool? isStreamsSafeToRun,
     PinStatus? pinStatus,
+    bool? shouldOfferBugReport,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
@@ -70,6 +77,7 @@ class AuthState {
       isPinCheckLoading: isPinCheckLoading ?? this.isPinCheckLoading,
       isStreamsSafeToRun: isStreamsSafeToRun ?? this.isStreamsSafeToRun,
       pinStatus: pinStatus ?? this.pinStatus,
+      shouldOfferBugReport: shouldOfferBugReport ?? this.shouldOfferBugReport,
     );
   }
 }

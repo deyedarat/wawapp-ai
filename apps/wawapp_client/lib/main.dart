@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:core_shared/core_shared.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -35,6 +36,12 @@ void main() async {
       // Initialize Firebase
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
+      );
+
+      // Initialize App Check
+      await FirebaseAppCheck.instance.activate(
+        androidProvider: AndroidProvider.playIntegrity,
+        appleProvider: AppleProvider.appAttest,
       );
 
       // Initialize Crashlytics

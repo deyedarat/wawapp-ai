@@ -56,10 +56,25 @@ class PhonePinAuth {
   String? _lastVerificationId;
   String? get lastVerificationId => _lastVerificationId;
 
+  /// Last phone number (E.164) for which a session was requested.
+  /// Used by the bug report screen to retrieve the masked phone.
+  String? _lastPhoneE164;
+  String? get lastPhoneE164 => _lastPhoneE164;
+
   // Track in-flight phone session request to prevent concurrent calls
   Future<void>? _inFlightPhoneSession;
 
-  Future<void> ensurePhoneSession(String phoneE164, {bool forceNewSession = false}) async {
+  Future<void> ensurePhoneSession(
+    String phoneE164, {
+    bool forceNewSession = false,
+
+    /// Optional structured log callback. Receives (event, maskedPhone, errorCode, errorMessage).
+    /// Avoids a reverse dependency: auth_shared → client services.
+    void Function(String event, String? phone, String? code, String? msg)? onLog,
+  }) async {
+    // Track last phone for bug-report screen
+    _lastPhoneE164 = phoneE164;
+
     // If a session request is already in-flight and we're not forcing a new one, return the existing future
     if (_inFlightPhoneSession != null && !forceNewSession) {
       if (kDebugMode) {
@@ -71,14 +86,15 @@ class PhonePinAuth {
     // Initialize auth settings (force reCAPTCHA on iOS)
     await _initializeAuth();
 
+    final maskedPhone =
+        phoneE164.length > 5 ? '${phoneE164.substring(0, 4)}******${phoneE164.substring(phoneE164.length - 3)}' : '***';
+
     if (kDebugMode) {
-      final maskedPhone =
-          phoneE164.length > 5 ? '${phoneE164.substring(0, 3)}...${phoneE164.substring(phoneE164.length - 2)}' : '***';
-      print(
-        '[PhonePinAuth] ensurePhoneSession() starting Firebase Auth flow for phone=$maskedPhone, forceNewSession=$forceNewSession',
-      );
-      FirebaseCrashlytics.instance.log('OTP_SEND_START: phone=$maskedPhone, forceNewSession=$forceNewSession');
+      print('[PhonePinAuth] ensurePhoneSession() starting for phone=$maskedPhone, forceNewSession=$forceNewSession');
     }
+    // Always-on Crashlytics breadcrumb
+    FirebaseCrashlytics.instance.log('OTP_SEND_START: phone=$maskedPhone');
+    onLog?.call('otp_send_start', phoneE164, null, null);
 
     final u = _auth.currentUser;
     if (u != null && !forceNewSession) {
@@ -94,7 +110,8 @@ class PhonePinAuth {
     final completer = Completer<void>();
 
     if (kDebugMode) {
-      print('[PhonePinAuth] DIAGNOSTIC: Calling Firebase verifyPhoneNumber() for phone=$phoneE164 at ${DateTime.now()}');
+      print(
+          '[PhonePinAuth] DIAGNOSTIC: Calling Firebase verifyPhoneNumber() for phone=$phoneE164 at ${DateTime.now()}');
       FirebaseCrashlytics.instance.log('OTP_VERIFY_PHONE_START: ${DateTime.now()}');
     }
 
@@ -105,72 +122,71 @@ class PhonePinAuth {
         phoneNumber: phoneE164,
         timeout: const Duration(seconds: 60),
         verificationCompleted: (cred) async {
-          if (kDebugMode) {
-            print('[PhonePinAuth] DIAGNOSTIC: verificationCompleted callback - auto sign-in');
-            FirebaseCrashlytics.instance.log('OTP_VERIFICATION_COMPLETED');
-          }
+          if (kDebugMode) print('[PhonePinAuth] verificationCompleted - auto sign-in');
+          FirebaseCrashlytics.instance.log('OTP_VERIFICATION_COMPLETED');
+          onLog?.call('verification_completed', phoneE164, null, null);
           try {
             await _auth.signInWithCredential(cred);
             if (kDebugMode) print('[PhonePinAuth] Auto sign-in successful');
             if (!completer.isCompleted) completer.complete();
           } on Object catch (e) {
-            if (kDebugMode) {
-              print('[PhonePinAuth] DIAGNOSTIC: Auto sign-in failed: $e');
-              FirebaseCrashlytics.instance.log('OTP_AUTO_SIGNIN_FAILED: $e');
-            }
+            if (kDebugMode) print('[PhonePinAuth] Auto sign-in failed: $e');
+            FirebaseCrashlytics.instance.log('OTP_AUTO_SIGNIN_FAILED');
+            onLog?.call('auto_signin_failed', phoneE164, null, e.runtimeType.toString());
             if (!completer.isCompleted) completer.completeError(e);
           }
         },
         verificationFailed: (e) {
-          if (kDebugMode) {
-            print('[PhonePinAuth] DIAGNOSTIC: verificationFailed - code: ${e.code}, message: ${e.message}');
-            FirebaseCrashlytics.instance.log('OTP_VERIFICATION_FAILED: code=${e.code}, message=${e.message}');
-            FirebaseCrashlytics.instance.recordError(
-              'OTP Verification Failed',
-              StackTrace.current,
-              fatal: false,
-              information: [
-                'Phone: ${phoneE164.length > 5 ? '${phoneE164.substring(0, 3)}...${phoneE164.substring(phoneE164.length - 2)}' : '***'}',
-                'Error Code: ${e.code}',
-                'Error Message: ${e.message}',
-              ],
-            );
-          }
+          if (kDebugMode) print('[PhonePinAuth] verificationFailed - code: ${e.code}');
+          // Always-on: record as non-fatal in Crashlytics (not behind kDebugMode)
+          // Use the exception's own stackTrace when available (Firebase provides it),
+          // fall back to StackTrace.current so the event is always trackable.
+          FirebaseCrashlytics.instance.recordError(
+            'OTP Verification Failed',
+            e.stackTrace ?? StackTrace.current,
+            fatal: false,
+            reason: 'code=${e.code}',
+            printDetails: false,
+            information: ['phone=$maskedPhone', 'code=${e.code}'],
+          );
+          onLog?.call('verification_failed', phoneE164, e.code, e.message);
           if (!completer.isCompleted) completer.completeError(e);
         },
         codeSent: (verificationId, resendToken) {
-          if (kDebugMode) {
-            print('[PhonePinAuth] DIAGNOSTIC: codeSent callback - verificationId=present');
-            FirebaseCrashlytics.instance.log('OTP_CODE_SENT');
-          }
+          if (kDebugMode) print('[PhonePinAuth] codeSent - verificationId=present (not logged)');
+          // Never log verificationId — it's a sensitive session credential
+          FirebaseCrashlytics.instance.log('OTP_CODE_SENT');
+          onLog?.call('otp_sent', phoneE164, null, null);
           _lastVerificationId = verificationId;
           if (!completer.isCompleted) completer.complete();
         },
         codeAutoRetrievalTimeout: (vid) {
-          if (kDebugMode) {
-            print('[PhonePinAuth] DIAGNOSTIC: codeAutoRetrievalTimeout - verificationId=$vid');
-            FirebaseCrashlytics.instance.log('OTP_AUTO_RETRIEVAL_TIMEOUT: verificationId=$vid');
-          }
+          if (kDebugMode) print('[PhonePinAuth] codeAutoRetrievalTimeout');
+          // Never log verificationId
+          FirebaseCrashlytics.instance.log('OTP_AUTO_RETRIEVAL_TIMEOUT');
+          onLog?.call('otp_auto_retrieval_timeout', phoneE164, null, null);
           _lastVerificationId = vid;
         },
       );
 
       await completer.future;
 
-      if (kDebugMode) {
-        print('[PhonePinAuth] DIAGNOSTIC: ensurePhoneSession() completed successfully');
-        FirebaseCrashlytics.instance.log('OTP_SEND_SUCCESS');
-      }
+      if (kDebugMode) print('[PhonePinAuth] ensurePhoneSession() completed successfully');
+      FirebaseCrashlytics.instance.log('OTP_SEND_SUCCESS');
+      onLog?.call('otp_send_success', phoneE164, null, null);
     } catch (e, stackTrace) {
-      if (kDebugMode) {
-        print('[PhonePinAuth] DIAGNOSTIC: ensurePhoneSession() EXCEPTION: ${e.runtimeType} - $e');
-        FirebaseCrashlytics.instance.log('OTP_SEND_EXCEPTION: ${e.runtimeType} - $e');
-        FirebaseCrashlytics.instance.recordError(e, stackTrace, fatal: false);
-      }
+      if (kDebugMode) print('[PhonePinAuth] ensurePhoneSession() EXCEPTION: ${e.runtimeType}');
+      // Always-on non-fatal recording (no sensitive data in message)
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        stackTrace,
+        fatal: false,
+        reason: 'ensurePhoneSession failed',
+        printDetails: false,
+      );
       rethrow;
     } finally {
       _inFlightPhoneSession = null;
-      if (kDebugMode) print('[PhonePinAuth] Cleared in-flight phone session reference');
     }
   }
 

@@ -58,8 +58,6 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       backgroundColor: AdminAppColors.backgroundLight,
       body: Center(

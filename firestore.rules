@@ -308,5 +308,22 @@ service cloud.firestore {
       // Only admins can modify
       allow write: if isAdmin();
     }
+
+    // Bug reports: write-only, no auth required (OTP errors happen before login).
+    // Abuse prevention: require minimal schema + strict size/type validation.
+    match /bug_reports/{docId} {
+      allow create: if
+        // Require minimal schema keys
+        request.resource.data.keys().hasAll(['createdAt','logs','deviceInfo','appVersion','maskedPhone','buildType'])
+        && request.resource.data.logs is list
+        && request.resource.data.logs.size() <= 50
+        && request.resource.data.maskedPhone is string
+        && request.resource.data.maskedPhone.size() <= 20
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 500
+        && request.resource.data.buildType in ['release','profile','debug'];
+
+      allow read, update, delete: if false;
+    }
   }
 }

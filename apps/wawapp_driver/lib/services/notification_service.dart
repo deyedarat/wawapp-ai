@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/router/navigator.dart'; // Add this line
 import 'notification_helper.dart';
 
 class NotificationService {
@@ -20,10 +21,9 @@ class NotificationService {
   GlobalKey<NavigatorState>? _navigatorKey;
   String? _pendingRoute;
 
-  Future<void> initialize(BuildContext context) async {
-    // Get the navigator key from the router
-    final router = GoRouter.of(context);
-    _navigatorKey = router.routerDelegate.navigatorKey;
+  Future<void> initialize() async {
+    // navigatorKey is now globally imported
+    _navigatorKey = appNavigatorKey;
 
     await _initializeLocalNotifications();
     await _setupFirebaseMessaging();
@@ -194,8 +194,8 @@ class NotificationService {
   }
 
   void updateContext(BuildContext context) {
-    final router = GoRouter.of(context);
-    _navigatorKey = router.routerDelegate.navigatorKey;
+    // We don't need to extract navigatorKey from context anymore since we have appNavigatorKey
+    _navigatorKey = appNavigatorKey;
     if (_pendingRoute != null && _navigatorKey?.currentContext != null) {
       _navigatorKey!.currentContext!.go(_pendingRoute!);
       _pendingRoute = null;

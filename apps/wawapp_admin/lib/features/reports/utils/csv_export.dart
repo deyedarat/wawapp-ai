@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_web_libraries_in_flutter
 import 'dart:convert';
 import 'dart:html' as html;
+
 import 'package:intl/intl.dart';
 
 import '../models/report_models.dart';
@@ -97,7 +98,7 @@ class CsvExportUtil {
     final blob = html.Blob([bytes], 'text/csv;charset=utf-8;');
     final url = html.Url.createObjectUrlFromBlob(blob);
 
-    final anchor = html.AnchorElement(href: url)
+    html.AnchorElement(href: url)
       ..setAttribute('download', filename)
       ..click();
 
@@ -108,7 +109,7 @@ class CsvExportUtil {
   static void exportPayouts(List<dynamic> payouts, {DateTime? startDate, DateTime? endDate}) {
     final dateFormat = DateFormat('yyyy-MM-dd');
     final dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-    
+
     final csv = StringBuffer();
     csv.writeln('WawApp Payouts Report');
     if (startDate != null && endDate != null) {
@@ -121,13 +122,9 @@ class CsvExportUtil {
         'Created At,Updated At,Note');
 
     for (final payout in payouts) {
-      final createdAt = payout.createdAt != null 
-          ? dateTimeFormat.format(payout.createdAt)
-          : '';
-      final updatedAt = payout.updatedAt != null
-          ? dateTimeFormat.format(payout.updatedAt)
-          : '';
-      
+      final createdAt = payout.createdAt != null ? dateTimeFormat.format(payout.createdAt) : '';
+      final updatedAt = payout.updatedAt != null ? dateTimeFormat.format(payout.updatedAt) : '';
+
       csv.writeln('${payout.id},${payout.driverId},'
           '${_escapeCsv(payout.driverName ?? "")},'
           '${payout.driverPhone ?? ""},'
@@ -158,7 +155,7 @@ class CsvExportUtil {
   }) {
     final dateFormat = DateFormat('yyyy-MM-dd');
     final dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-    
+
     final csv = StringBuffer();
     csv.writeln('WawApp Transactions Ledger');
     if (driverId != null) {
@@ -173,10 +170,8 @@ class CsvExportUtil {
         'Currency,Order ID,Admin ID,Created At,Balance Snapshot (MRU),Note');
 
     for (final txn in transactions) {
-      final createdAt = txn.createdAt != null
-          ? dateTimeFormat.format(txn.createdAt)
-          : '';
-      
+      final createdAt = txn.createdAt != null ? dateTimeFormat.format(txn.createdAt) : '';
+
       csv.writeln('${txn.id},${txn.walletId},'
           '${txn.type},'
           '${txn.source},'

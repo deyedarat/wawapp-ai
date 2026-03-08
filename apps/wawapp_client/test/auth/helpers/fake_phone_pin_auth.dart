@@ -59,7 +59,11 @@ class FakePhonePinAuth implements PhonePinAuth {
   }
 
   @override
-  Future<void> ensurePhoneSession(String phoneE164, {bool forceNewSession = false}) async {
+  Future<void> ensurePhoneSession(
+    String phoneE164, {
+    bool forceNewSession = false,
+    void Function(String event, String? phone, String? code, String? msg)? onLog,
+  }) async {
     sendOtpCallCount++;
     _lastPhone = phoneE164;
 
@@ -147,4 +151,7 @@ class FakePhonePinAuth implements PhonePinAuth {
 
   @override
   String? get lastVerificationId => null;
+
+  @override
+  String? get lastPhoneE164 => _lastPhone;
 }

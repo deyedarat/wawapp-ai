@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -66,8 +67,7 @@ class MockFirebaseAuth implements FirebaseAuth {
   Future<void> applyActionCode(String code) => throw UnimplementedError();
 
   @override
-  Future<ActionCodeInfo> checkActionCode(String code) =>
-      throw UnimplementedError();
+  Future<ActionCodeInfo> checkActionCode(String code) => throw UnimplementedError();
 
   @override
   Future<void> confirmPasswordReset({
@@ -84,8 +84,7 @@ class MockFirebaseAuth implements FirebaseAuth {
       throw UnimplementedError();
 
   @override
-  Future<List<String>> fetchSignInMethodsForEmail(String email) =>
-      throw UnimplementedError();
+  Future<List<String>> fetchSignInMethodsForEmail(String email) => throw UnimplementedError();
 
   @override
   String? get languageCode => null;
@@ -105,12 +104,10 @@ class MockFirebaseAuth implements FirebaseAuth {
       throw UnimplementedError();
 
   @override
-  Future<void> setLanguageCode(String? languageCode) =>
-      throw UnimplementedError();
+  Future<void> setLanguageCode(String? languageCode) => throw UnimplementedError();
 
   @override
-  Future<void> setPersistence(Persistence persistence) =>
-      throw UnimplementedError();
+  Future<void> setPersistence(Persistence persistence) => throw UnimplementedError();
 
   @override
   Future<void> setSettings({
@@ -134,8 +131,7 @@ class MockFirebaseAuth implements FirebaseAuth {
   }
 
   @override
-  Future<UserCredential> signInWithCustomToken(String token) =>
-      throw UnimplementedError();
+  Future<UserCredential> signInWithCustomToken(String token) => throw UnimplementedError();
 
   @override
   Future<UserCredential> signInWithEmailAndPassword({
@@ -159,16 +155,13 @@ class MockFirebaseAuth implements FirebaseAuth {
       throw UnimplementedError();
 
   @override
-  Future<UserCredential> signInWithPopup(AuthProvider provider) =>
-      throw UnimplementedError();
+  Future<UserCredential> signInWithPopup(AuthProvider provider) => throw UnimplementedError();
 
   @override
-  Future<void> signInWithRedirect(AuthProvider provider) =>
-      throw UnimplementedError();
+  Future<void> signInWithRedirect(AuthProvider provider) => throw UnimplementedError();
 
   @override
-  Future<String> verifyPasswordResetCode(String code) async =>
-      throw UnimplementedError();
+  Future<String> verifyPasswordResetCode(String code) async => throw UnimplementedError();
 
   @override
   Future<void> verifyPhoneNumber({
@@ -189,12 +182,10 @@ class MockFirebaseAuth implements FirebaseAuth {
   bool isSignInWithEmailLink(String emailLink) => throw UnimplementedError();
 
   @override
-  Future<UserCredential> signInWithProvider(AuthProvider provider) =>
-      throw UnimplementedError();
+  Future<UserCredential> signInWithProvider(AuthProvider provider) => throw UnimplementedError();
 
   @override
-  Future<void> useAuthEmulator(String host, int port,
-      {bool automaticHostMapping = true}) async {
+  Future<void> useAuthEmulator(String host, int port, {bool automaticHostMapping = true}) async {
     throw UnimplementedError();
   }
 
@@ -205,12 +196,12 @@ class MockFirebaseAuth implements FirebaseAuth {
   Future<void> initializeRecaptchaConfig() => throw UnimplementedError();
 
   @override
-  Future<void> revokeTokenWithAuthorizationCode(String authorizationCode) =>
-      throw UnimplementedError();
+  Future<void> revokeTokenWithAuthorizationCode(String authorizationCode) => throw UnimplementedError();
 
   @override
   Map<String, dynamic> get pluginConstants => throw UnimplementedError();
 
   @override
+  // ignore: override_on_non_overriding_member
   void useEmulator(String host, int port) => throw UnimplementedError();
 }

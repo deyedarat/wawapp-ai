@@ -24,8 +24,11 @@ class FakePhonePinAuth implements PhonePinAuth {
   final String userCollection = 'drivers';
 
   @override
-  Future<void> ensurePhoneSession(String phoneE164,
-      {bool forceNewSession = false}) async {
+  Future<void> ensurePhoneSession(
+    String phoneE164, {
+    bool forceNewSession = false,
+    void Function(String event, String? phone, String? code, String? msg)? onLog,
+  }) async {
     _otpSent = true;
   }
 
@@ -62,6 +65,9 @@ class FakePhonePinAuth implements PhonePinAuth {
 
   @override
   String? get lastVerificationId => 'fake-verification-id';
+
+  @override
+  String? get lastPhoneE164 => null;
 }
 
 /// Fake AuthNotifier
@@ -86,8 +92,7 @@ Future<void> settle(WidgetTester tester, {int ms = 300}) async {
   await tester.pump(Duration(milliseconds: ms));
 }
 
-Future<void> pushState(WidgetTester tester, FakeAuthNotifier fake, AuthState s,
-    {String? label}) async {
+Future<void> pushState(WidgetTester tester, FakeAuthNotifier fake, AuthState s, {String? label}) async {
   debugPrint(
       '[TEST] setTestState: ${label ?? ''} pinStatus=${s.pinStatus} otp=${s.otpFlowActive} stage=${s.otpStage} user=${s.user?.uid}');
   fake.setTestState(s);
@@ -201,8 +206,7 @@ void main() {
       await settle(tester);
 
       // 2. Simulate Login
-      final user =
-          MockUser(uid: 'driver_test_123', phoneNumber: '+22222123456');
+      final user = MockUser(uid: 'driver_test_123', phoneNumber: '+22222123456');
 
       await pushState(
           tester,
@@ -215,8 +219,7 @@ void main() {
           label: 'STEP 2 -> Login');
 
       print('STEP 2: Checking Pin Gate Screen');
-      await tester
-          .pumpUntilFound(find.byKey(const ValueKey('screen_pin_gate')));
+      await tester.pumpUntilFound(find.byKey(const ValueKey('screen_pin_gate')));
       expect(find.byKey(const ValueKey('screen_pin_gate')), findsOneWidget);
 
       await settle(tester);
@@ -234,8 +237,7 @@ void main() {
           label: 'STEP 3 -> NoPin');
 
       print('STEP 3: Checking Create Pin Screen');
-      await tester
-          .pumpUntilFound(find.byKey(const ValueKey('screen_create_pin')));
+      await tester.pumpUntilFound(find.byKey(const ValueKey('screen_create_pin')));
       expect(find.byKey(const ValueKey('screen_create_pin')), findsOneWidget);
 
       await settle(tester);
