@@ -68,25 +68,10 @@
  <array>
  <string>fetch</string>
  <string>remote-notification</string>
- <string>location</string>
  </array>
  <key>NSLocationWhenInUseUsageDescription</key>
  <string>WawApp needs your location to show nearby drivers and calculate routes.</string>
- <key>NSLocationAlwaysUsageDescription</key>
- <string>WawApp needs your location to track your ride and update driver location.</string>
  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
- <string>WawApp needs your location in the background to track your ride and update driver location.</string>
- <key>NSCameraUsageDescription</key>
- <string>WawApp needs access to your camera to capture photos for your profile or ride documentation.</string>
- <key>NSMicrophoneUsageDescription</key>
- <string>WawApp needs access to your microphone for voice calls with drivers and support.</string>
- <key>NSPhotoLibraryUsageDescription</key>
- <string>WawApp needs access to your photo library to upload profile pictures and ride photos.</string>
- <key>NSPhotoLibraryAddUsageDescription</key>
- <string>WawApp needs permission to save photos from your rides to your photo library.</string>
- <key>NSContactsUsageDescription</key>
- <string>WawApp needs access to your contacts to help you quickly add emergency contacts.</string>
- <key>NSCalendarsUsageDescription</key>
- <string>WawApp needs access to your calendar to help you schedule rides in advance.</string>
+ <string>WawApp needs your location to show nearby drivers and calculate routes.</string>
  </dict>
 </plist>
