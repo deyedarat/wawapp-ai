@@ -163,7 +163,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 String? _redirect(GoRouterState s, AuthState st) {
   final loggedIn = st.user != null;
   final pinStatus = st.pinStatus;
-  final canOtp = st.otpFlowActive || st.otpStage == OtpStage.sending || st.otpStage == OtpStage.codeSent;
+
+  // KEY FIX: Only redirect to /otp AFTER the code has actually been sent (codeSent).
+  // During OtpStage.sending, Firebase is still running RecaptchaActivity.
+  // Redirecting to /otp too early causes RecaptchaActivity to open ON TOP of the OTP screen.
+  final isSending = st.otpStage == OtpStage.sending;
+  final canOtp = ((st.otpFlowActive || st.otpStage == OtpStage.codeSent) && !isSending);
   final isLoading = st.isLoading;
   final userId = st.user?.uid;
 
@@ -175,10 +180,23 @@ String? _redirect(GoRouterState s, AuthState st) {
       'user=$userId | '
       'pinStatus=$pinStatus | '
       'canOtp=$canOtp | '
+      'isSending=$isSending | '
       'otpStage=${st.otpStage} | '
       'isLoading=$isLoading');
 
-  // 1. ABSOLUTE PRIORITY - OTP FLOW: User is in OTP verification process
+  // 0. CAPTCHA IN PROGRESS: Stay on /login while Firebase is sending OTP
+  // This prevents RecaptchaActivity from being covered by premature OTP redirect.
+  // CRITICAL FIX: Force redirect to /login during reCAPTCHA to prevent navigation conflicts
+  if (isSending) {
+    debugPrint('[Router] ⏳ OTP sending (CAPTCHA in progress) – staying on /login');
+    if (s.matchedLocation != '/login') {
+      debugPrint('[Router] → Redirecting to /login (CAPTCHA in progress)');
+      return '/login';
+    }
+    return null;
+  }
+
+  // 1. ABSOLUTE PRIORITY - OTP FLOW: User is in OTP verification process (codeSent)
   // OTP always takes precedence over ALL other flows (including public/loading)
   if (canOtp) {
     if (s.matchedLocation != '/otp') {
@@ -269,7 +287,7 @@ class _GoRouterRefreshStream extends ChangeNotifier {
         _debounceTimer?.cancel();
 
         // Set a new timer to emit after debounce period
-        _debounceTimer = Timer(const Duration(milliseconds: 100), () {
+        _debounceTimer = Timer(const Duration(milliseconds: 600), () {
           sink.add(data);
         });
       },

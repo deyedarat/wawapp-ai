@@ -18,7 +18,7 @@ class PhonePinLoginScreen extends ConsumerStatefulWidget {
   ConsumerState<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
 }
 
-class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
+class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with WidgetsBindingObserver {
   final _phone = TextEditingController();
   final _pin = TextEditingController();
   bool _isNewUser = false;
@@ -33,12 +33,46 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
   // Prevents showing the bug report dialog twice if widget rebuilds after error
   bool _bugReportShownForCurrentError = false;
 
+  // Prevents navigating to OTP screen more than once per attempt
+  bool _navigatedThisAttempt = false;
+
+  // Tracks whether we are waiting for the user to return from reCAPTCHA
+  bool _waitingForCaptchaReturn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _phone.dispose();
     _pin.dispose();
     _cooldownTimer?.cancel();
     super.dispose();
+  }
+
+  /// Called when the app lifecycle changes (e.g. returning from reCAPTCHA WebView).
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed && _waitingForCaptchaReturn) {
+      debugPrint('[LoginScreen] App resumed after reCAPTCHA – checking OTP stage');
+      _waitingForCaptchaReturn = false;
+
+      // Give Firebase 500 ms to process the CAPTCHA result, then check state
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (!mounted) return;
+        final authState = ref.read(authProvider);
+        debugPrint('[LoginScreen] Post-CAPTCHA resume: otpStage=${authState.otpStage}');
+        if (authState.otpStage == OtpStage.codeSent && !_navigatedThisAttempt) {
+          _navigatedThisAttempt = true;
+          debugPrint('[LoginScreen] ✓ codeSent confirmed after resume – GoRouter will redirect to /otp');
+        }
+      });
+    }
   }
 
   /// Starts the 60-second cooldown immediately when the button is tapped.
@@ -180,6 +214,10 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
 
     debugPrint('[LoginScreen] _createAccount() called for phone=${LogService.instance.maskPhone(phone)}');
 
+    // Reset per-attempt navigation guard
+    _navigatedThisAttempt = false;
+    _waitingForCaptchaReturn = true; // reCAPTCHA WebView is about to open
+
     // Start cooldown immediately on tap (before Firebase responds)
     _startCooldown();
     _isRequesting = true;
@@ -197,6 +235,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
       }
     } catch (e, stackTrace) {
       debugPrint('[LoginScreen] sendOtp() threw: ${e.runtimeType}');
+      _waitingForCaptchaReturn = false; // reCAPTCHA failed, not waiting anymore
       LogService.instance.addLog(
         event: 'otp_create_account_exception',
         errorCode: 'exception',
@@ -237,6 +276,10 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     setState(() => _phoneError = null);
     debugPrint('[LoginScreen] Starting PIN reset flow for phone: ${LogService.instance.maskPhone(phone)}');
 
+    // Reset per-attempt navigation guard
+    _navigatedThisAttempt = false;
+    _waitingForCaptchaReturn = true; // reCAPTCHA WebView is about to open
+
     // Start cooldown immediately on tap
     _startCooldown();
     _isRequesting = true;
@@ -254,6 +297,7 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
       }
     } on Object catch (e) {
       debugPrint('[LoginScreen] OTP send failed: ${e.runtimeType}');
+      _waitingForCaptchaReturn = false;
       // Error message already translated and stored in authState.error by the notifier
     } finally {
       if (mounted) setState(() => _isRequesting = false);
@@ -272,9 +316,20 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
           'user=${next.user?.uid ?? 'null'}, '
           'error=${next.error}');
 
-      // Log OTP flow initiation
-      if (next.otpStage == OtpStage.codeSent && prev?.otpStage != OtpStage.codeSent) {
-        debugPrint('[LoginScreen] ✓ OTP sent - GoRouter will redirect to /otp');
+      // OTP code sent: add 800ms delay before letting GoRouter redirect to /otp
+      // This prevents the about:blank race condition when returning from reCAPTCHA
+      // IMPROVED FIX: Increased delay for slow devices and to ensure WebView fully closes
+      if (next.otpStage == OtpStage.codeSent && prev?.otpStage != OtpStage.codeSent && !_navigatedThisAttempt) {
+        _navigatedThisAttempt = true;
+        _waitingForCaptchaReturn = false;
+        debugPrint('[LoginScreen] ✓ OTP codeSent – waiting 800ms for WebView to close before GoRouter redirect');
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (mounted) {
+            debugPrint('[LoginScreen] ✓ 800ms delay done – GoRouter will redirect to /otp');
+            // Force a state refresh so GoRouter re-evaluates the redirect
+            setState(() {});
+          }
+        });
       }
 
       // Initialize services when user logs in successfully
@@ -297,15 +352,6 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
             FCMService.instance.initialize(context);
 
             debugPrint('[LoginScreen] Services initialized - GoRouter will handle navigation');
-
-            // ANALYTICS VALIDATION:
-            // To verify this event in Firebase Console:
-            // 1. Run: adb shell setprop debug.firebase.analytics.app com.wawapp.client
-            // 2. Open Firebase Console → Analytics → DebugView
-            // 3. Complete auth flow and verify:
-            //    - Event: auth_completed (method: phone_pin)
-            //    - User property: user_type = client
-            //    - User ID is set
           }
         });
       }

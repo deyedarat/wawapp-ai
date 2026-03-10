@@ -32,8 +32,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  bool _hasLocationPermission = false;
-  String? _errorMessage;
   final TextEditingController _pickupController = TextEditingController();
   final TextEditingController _dropoffController = TextEditingController();
 
@@ -55,9 +53,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _checkLocationPermission() async {
     dev.log('Checking location permission...', name: 'WAWAPP_HOME');
-    setState(() {
-      _errorMessage = 'جاري تحديد موقعك...';
-    });
 
     final hasPermission = await LocationService.checkPermissions();
     dev.log('Location permission result: $hasPermission', name: 'WAWAPP_HOME');
@@ -65,15 +60,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (!mounted) return;
 
     if (hasPermission) {
-      setState(() {
-        _hasLocationPermission = true;
-        _errorMessage = null;
-      });
       await _getCurrentLocation();
     } else {
-      setState(() {
-        _errorMessage = null;
-      });
       dev.log('Location permission denied, showing manual mode', name: 'WAWAPP_HOME');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -265,7 +253,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context, AppLocalizations l10n) {
-    final theme = Theme.of(context);
     final unreadCount = ref.watch(unreadCountProvider);
 
     return AppBar(
@@ -526,6 +513,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(height: WawAppSpacing.md),
 
           // Pickup location field
+          // FIX: Replaced Row with PopupMenuButton to prevent overflow on small screens
           TextField(
             controller: _pickupController,
             decoration: InputDecoration(
@@ -535,52 +523,92 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 onPressed: () async {
                   await ref.read(routePickerProvider.notifier).setCurrentLocation();
                 },
+                tooltip: 'الموقع الحالي',
               ),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.bookmark),
-                    onPressed: () => _showSavedLocationsSheet(SavedLocationSelectionMode.pickup),
-                    tooltip: 'المواقع المحفوظة',
+              suffixIcon: PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                tooltip: 'خيارات الموقع',
+                onSelected: (value) {
+                  if (value == 'saved') {
+                    _showSavedLocationsSheet(SavedLocationSelectionMode.pickup);
+                  } else if (value == 'search') {
+                    _showPlacesSheet(true);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'saved',
+                    child: Row(
+                      children: [
+                        Icon(Icons.bookmark),
+                        SizedBox(width: 8),
+                        Text('المواقع المحفوظة'),
+                      ],
+                    ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: routeState.mapsEnabled ? () => _showPlacesSheet(true) : null,
-                  ),
+                  if (routeState.mapsEnabled)
+                    const PopupMenuItem(
+                      value: 'search',
+                      child: Row(
+                        children: [
+                          Icon(Icons.search),
+                          SizedBox(width: 8),
+                          Text('البحث'),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),
             readOnly: true,
-            // CHANGED: Navigate to MapPickerScreen
             onTap: routeState.mapsEnabled ? () => _handleLocationSelection(true) : null,
           ),
 
           const SizedBox(height: WawAppSpacing.sm),
 
           // Dropoff location field
+          // FIX: Replaced Row with PopupMenuButton to prevent overflow on small screens
           TextField(
             controller: _dropoffController,
             decoration: InputDecoration(
               labelText: l10n.dropoff,
               prefixIcon: const Icon(Icons.location_on),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.bookmark),
-                    onPressed: () => _showSavedLocationsSheet(SavedLocationSelectionMode.dropoff),
-                    tooltip: 'المواقع المحفوظة',
+              suffixIcon: PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                tooltip: 'خيارات الموقع',
+                onSelected: (value) {
+                  if (value == 'saved') {
+                    _showSavedLocationsSheet(SavedLocationSelectionMode.dropoff);
+                  } else if (value == 'search') {
+                    _showPlacesSheet(false);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'saved',
+                    child: Row(
+                      children: [
+                        Icon(Icons.bookmark),
+                        SizedBox(width: 8),
+                        Text('المواقع المحفوظة'),
+                      ],
+                    ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: routeState.mapsEnabled ? () => _showPlacesSheet(false) : null,
-                  ),
+                  if (routeState.mapsEnabled)
+                    const PopupMenuItem(
+                      value: 'search',
+                      child: Row(
+                        children: [
+                          Icon(Icons.search),
+                          SizedBox(width: 8),
+                          Text('البحث'),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),
             readOnly: true,
-            // CHANGED: Navigate to MapPickerScreen
             onTap: routeState.mapsEnabled ? () => _handleLocationSelection(false) : null,
           ),
 
