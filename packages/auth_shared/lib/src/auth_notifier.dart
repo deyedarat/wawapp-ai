@@ -94,9 +94,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
         print('[AuthNotifier] ensurePhoneSession() FAILED: ${e.runtimeType} - $e');
         print('[AuthNotifier] Stacktrace: $stackTrace');
       }
+      // CRITICAL FIX: Reset otpStage to failed when CAPTCHA fails
+      // This prevents the router from thinking we're still sending
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
+        otpStage: OtpStage.failed,  // ADDED: Reset stage to failed
         otpFlowActive: false,
         isStreamsSafeToRun: true,
       );
