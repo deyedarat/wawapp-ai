@@ -12,7 +12,52 @@
           "package_name": "com.wawapp.client"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "363341993641-4p336upbib526l1jfp6l59g4c09mloqo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wawapp.client",
+            "certificate_hash": "2477f7cd960ed7a9b9d7fc174a83540b4e67231a"
+          }
+        },
+        {
+          "client_id": "363341993641-5e26e41c64canirauh889h5kn1o6628l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wawapp.client",
+            "certificate_hash": "901279a730add4b1cc26af489dad7cc876f7759f"
+          }
+        },
+        {
+          "client_id": "363341993641-848fkgl3l3idlcrjcq04igf6qf4f4jki.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wawapp.client",
+            "certificate_hash": "217187959e2a010436086a0326b6dc7ee2c015f9"
+          }
+        },
+        {
+          "client_id": "363341993641-glsfue54dblg1hpe6ud56vemss16harq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wawapp.client",
+            "certificate_hash": "9d68c20f7ff1b72021ec40f9fbe19b636fcdc9c7"
+          }
+        },
+        {
+          "client_id": "363341993641-q3df63pb009m6nempg3j07gb6163bgt4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wawapp.client",
+            "certificate_hash": "badb928d91f456c8f3350ce454c380c20f54ea76"
+          }
+        },
+        {
+          "client_id": "363341993641-lcqcsfiqq0nsdochviut9ul5itn474m4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBO67aaNMqotGFF73jlCB8uVGUQ5bILfVM"
@@ -20,7 +65,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363341993641-lcqcsfiqq0nsdochviut9ul5itn474m4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "363341993641-m07mgi9dlrbbk50a4ceeahv2i6kjdvid.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wawapp.client"
+              }
+            }
+          ]
         }
       }
     },
@@ -31,7 +88,44 @@
           "package_name": "com.wawapp.driver"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "363341993641-281ghqo4nu3nsq8rkj3984rusbdcd9qr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wawapp.driver",
+            "certificate_hash": "2477f7cd960ed7a9b9d7fc174a83540b4e67231a"
+          }
+        },
+        {
+          "client_id": "363341993641-2e4hjb4tog53nhaadoaonhvsi1vquf02.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wawapp.driver",
+            "certificate_hash": "badb928d91f456c8f3350ce454c380c20f54ea76"
+          }
+        },
+        {
+          "client_id": "363341993641-4mgjobsth7c8qrdkn1o83soa9i7j21ma.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wawapp.driver",
+            "certificate_hash": "9d68c20f7ff1b72021ec40f9fbe19b636fcdc9c7"
+          }
+        },
+        {
+          "client_id": "363341993641-uv1b9jc9ckf58vn2jqps9n9v4m086hgn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wawapp.driver",
+            "certificate_hash": "7e8ab8ee30084c36ed7cf8067b6741fb7e223fec"
+          }
+        },
+        {
+          "client_id": "363341993641-lcqcsfiqq0nsdochviut9ul5itn474m4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBO67aaNMqotGFF73jlCB8uVGUQ5bILfVM"
@@ -39,7 +133,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363341993641-lcqcsfiqq0nsdochviut9ul5itn474m4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "363341993641-m07mgi9dlrbbk50a4ceeahv2i6kjdvid.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wawapp.client"
+              }
+            }
+          ]
         }
       }
     }

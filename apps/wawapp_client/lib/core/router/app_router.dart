@@ -31,13 +31,14 @@ import '../logging/auth_logger.dart';
 import 'navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
+  // CRITICAL FIX: Create refresh stream FIRST to store current state
+  final refreshStream = _GoRouterRefreshStream(ref.read(authProvider.notifier).stream);
 
   return GoRouter(
     navigatorKey: appNavigatorKey,
     initialLocation: '/',
-    redirect: (context, state) => _redirect(state, authState),
-    refreshListenable: _GoRouterRefreshStream(ref.read(authProvider.notifier).stream),
+    redirect: (context, state) => _redirect(state, refreshStream.currentState),
+    refreshListenable: refreshStream,
     routes: [
       GoRoute(
         path: '/shipment-type',
@@ -281,15 +282,30 @@ class _GoRouterRefreshStream extends ChangeNotifier {
     // go_router will call redirect() on initial build anyway.
 
     // Add debouncing to prevent rapid redirect conflicts
+    // CRITICAL FIX: Skip debounce for critical OTP state changes to ensure immediate navigation
     _subscription = stream.asBroadcastStream().transform(StreamTransformer.fromHandlers(
       handleData: (AuthState data, EventSink<AuthState> sink) {
+        // CRITICAL FIX: Store current state immediately (before debounce)
+        // This ensures redirect() always reads the latest state
+        _currentState = data;
+
         // Cancel any pending timer
         _debounceTimer?.cancel();
 
-        // Set a new timer to emit after debounce period
-        _debounceTimer = Timer(const Duration(milliseconds: 600), () {
+        // CRITICAL: Skip debounce for OTP critical states (codeSent, failed)
+        // These need immediate navigation to prevent "about:blank" or stuck screens
+        final isCriticalOtpState = data.otpStage == OtpStage.codeSent ||
+                                   data.otpStage == OtpStage.failed;
+
+        if (isCriticalOtpState) {
+          // Emit immediately for critical OTP states
           sink.add(data);
-        });
+        } else {
+          // Set a new timer to emit after debounce period for other states
+          _debounceTimer = Timer(const Duration(milliseconds: 600), () {
+            sink.add(data);
+          });
+        }
       },
     )).listen((authState) {
       debugPrint('[Router] Auth state changed, triggering redirect check | '
@@ -299,6 +315,10 @@ class _GoRouterRefreshStream extends ChangeNotifier {
       notifyListeners();
     });
   }
+
+  // CRITICAL FIX: Store current state for immediate access by redirect()
+  AuthState _currentState = const AuthState();
+  AuthState get currentState => _currentState;
 
   late final StreamSubscription<AuthState> _subscription;
   Timer? _debounceTimer;

@@ -42,18 +42,22 @@ void main() async {
     }
 
     // Step 2: App Check (must run AFTER Firebase, in its own try-catch)
-    // Using PlayIntegrity for production (app distributed via Google Play).
-    // PlayIntegrity verifies the app automatically — no per-device setup needed.
+    // CRITICAL: PlayIntegrity ONLY works for apps from Google Play Store
+    // Solution: Always use PlayIntegrity (works on Play Store, gracefully fails locally)
     try {
       await FirebaseAppCheck.instance.activate(
         androidProvider: AndroidProvider.playIntegrity,
         appleProvider: AppleProvider.appAttest,
       );
       if (kDebugMode) {
-        debugPrint('✅ Firebase App Check activated');
+        debugPrint('✅ Firebase App Check activated with Play Integrity');
       }
     } catch (e) {
-      debugPrint('⚠️ Firebase App Check activation failed: $e');
+      // Expected to fail on local ADB installs - this is NORMAL
+      // On Play Store, this will succeed
+      if (kDebugMode) {
+        debugPrint('⚠️ App Check activation failed (expected for ADB installs): $e');
+      }
     }
 
     // Step 3: Crashlytics (in its own try-catch)
