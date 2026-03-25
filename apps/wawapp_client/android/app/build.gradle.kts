@@ -5,6 +5,7 @@ plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
     // END: FlutterFire Configuration
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -63,6 +64,12 @@ android {
             }
         }
     }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
 }
 
 flutter {
@@ -71,11 +78,17 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-    
+
     // CRITICAL FIX: Force upgrade play-services-auth to fix SignInHubActivity NullPointerException
     // Root cause: Firebase Auth pulls in play-services-auth:20.7.0 transitively
     // Version 20.7.0 has known NPE issues in SignInHubActivity.onCreate() when Intent extras are null
     // Version 21.2.0 has improved null safety and error handling
     // See: SIGNIN_HUB_CRASH_RCA.md for full analysis
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+
+    // Play Integrity App Check (replaces deprecated SafetyNet)
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
+
+    // Note: SafetyNet is kept as transitive dependency for compatibility with firebase_app_check plugin
+    // But we use Play Integrity in production (see main.dart: AndroidProvider.playIntegrity)
 }

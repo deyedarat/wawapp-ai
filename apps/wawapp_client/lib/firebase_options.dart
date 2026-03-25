@@ -47,7 +47,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDejGR0uiXzdhbb_zN1wk3KDaxsQdfjzMk',
+    apiKey: 'AIzaSyBtGu287ydgRLb6Q9fphDW2BcwqPfK3sg0',
     appId: '1:363341993641:web:617f5384a6162a8b683bb8',
     messagingSenderId: '363341993641',
     projectId: 'wawapp-952d6',
@@ -56,7 +56,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBloqHWTJ5N5HaoWwxymrr34ZmgRrzvPGA',
+    apiKey: 'AIzaSyBO67aaNMqotGFF73jlCB8uVGUQ5bILfVM',
     appId: '1:363341993641:android:344b79d7b86a067d683bb8',
     messagingSenderId: '363341993641',
     projectId: 'wawapp-952d6',
@@ -64,11 +64,14 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDgebmhbF3bm3CaJOr5RBbbI0bfe1Cxy9Q',
+    apiKey: 'AIzaSyCHEUg-xyto3FAwRhP0BM5zR6E4JUP_I-A',
     appId: '1:363341993641:ios:2f5a5d64f06d6b8f683bb8',
     messagingSenderId: '363341993641',
     projectId: 'wawapp-952d6',
     storageBucket: 'wawapp-952d6.firebasestorage.app',
+    androidClientId: '363341993641-281ghqo4nu3nsq8rkj3984rusbdcd9qr.apps.googleusercontent.com',
+    iosClientId: '363341993641-m07mgi9dlrbbk50a4ceeahv2i6kjdvid.apps.googleusercontent.com',
     iosBundleId: 'com.wawapp.client',
   );
+
 }

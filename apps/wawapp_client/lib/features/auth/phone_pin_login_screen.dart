@@ -69,7 +69,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
         debugPrint('[LoginScreen] Post-CAPTCHA resume: otpStage=${authState.otpStage}');
         if (authState.otpStage == OtpStage.codeSent && !_navigatedThisAttempt) {
           _navigatedThisAttempt = true;
-          debugPrint('[LoginScreen] ✓ codeSent confirmed after resume – GoRouter will redirect to /otp');
+          debugPrint('[LoginScreen] ✓ codeSent confirmed after resume – forcing GoRouter redirect');
+          setState(() {});
         }
       });
     }

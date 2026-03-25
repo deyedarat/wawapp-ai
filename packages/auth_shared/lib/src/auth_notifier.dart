@@ -80,11 +80,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) print('[AuthNotifier] Calling ensurePhoneSession() for phone=$phone');
       await _authService.ensurePhoneSession(phone);
 
-      // CRITICAL FIX: Add 800ms delay BEFORE setting codeSent
-      // This ensures RecaptchaActivity/WebView fully closes before navigation
-      if (kDebugMode) print('[AuthNotifier] OTP sent, waiting 800ms for WebView to close...');
-      await Future.delayed(const Duration(milliseconds: 800));
-
       state = state.copyWith(
         isLoading: false,
         phoneE164: phone,

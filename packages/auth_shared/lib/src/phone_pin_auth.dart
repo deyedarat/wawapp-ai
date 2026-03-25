@@ -40,7 +40,6 @@ class PhonePinAuth {
     if (_authInitialized) return;
     await _auth.setSettings(
       appVerificationDisabledForTesting: false,
-      forceRecaptchaFlow: true,
     );
     _authInitialized = true;
     if (kDebugMode) {
