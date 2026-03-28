@@ -161,67 +161,67 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               ),
             ),
             children: [
-              // High-quality tile layer with better provider
+              // Carto Voyager – professional tile layer
               TileLayer(
-                urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: const ['a', 'b', 'c'], // Load balancing
+                urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+                subdomains: const ['a', 'b', 'c', 'd'],
                 userAgentPackageName: 'com.wawapp.admin',
-                maxZoom: 19,
-                minZoom: 3,
-                // Better quality settings
-                tileSize: 256,
-                retinaMode: true, // High DPI support
-                errorImage: const AssetImage('assets/icons/map_error.png'),
-                // Performance optimization
-                keepBuffer: 2,
-                panBuffer: 1,
-                // Better rendering
+                maxZoom: 20,
+                minZoom: 2,
+                retinaMode: true,
+                keepBuffer: 4,
+                panBuffer: 2,
                 tileProvider: NetworkTileProvider(),
               ),
-              // Marker layer with enhanced marker
               if (_selectedPosition != null)
                 MarkerLayer(
                   markers: [
                     Marker(
                       point: _selectedPosition!,
-                      width: 50,
-                      height: 50,
+                      width: 60,
+                      height: 70,
                       alignment: Alignment.topCenter,
-                      child: Stack(
-                        alignment: Alignment.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Shadow
                           Container(
-                            width: 50,
-                            height: 50,
+                            width: 42,
+                            height: 42,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
+                              color: const Color(0xFF00C853),
+                              border: Border.all(color: Colors.white, width: 3),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 8,
+                                  color: const Color(0xFF00C853).withOpacity(0.5),
+                                  blurRadius: 12,
+                                  spreadRadius: 2,
                                   offset: const Offset(0, 4),
                                 ),
                               ],
                             ),
+                            child: const Icon(
+                              Icons.location_on,
+                              color: Colors.white,
+                              size: 24,
+                            ),
                           ),
-                          // Marker icon
-                          const Icon(
-                            Icons.location_on,
-                            color: Colors.red,
-                            size: 50,
-                            shadows: [
-                              Shadow(
-                                color: Colors.white,
-                                blurRadius: 2,
-                              ),
-                            ],
+                          CustomPaint(
+                            size: const Size(14, 10),
+                            painter: _MarkerTrianglePainter(const Color(0xFF00C853)),
                           ),
                         ],
                       ),
                     ),
                   ],
                 ),
+              RichAttributionWidget(
+                animationConfig: const ScaleRAWA(),
+                attributions: [
+                  TextSourceAttribution('© Carto', onTap: () {}),
+                  TextSourceAttribution('© OpenStreetMap contributors', onTap: () {}),
+                ],
+              ),
             ],
           ),
 
@@ -416,4 +416,24 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       ),
     );
   }
+}
+
+/// Triangle painter for the marker pin tip
+class _MarkerTrianglePainter extends CustomPainter {
+  final Color color;
+  const _MarkerTrianglePainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final path = Path()
+      ..moveTo(0, 0)
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width / 2, size.height)
+      ..close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_MarkerTrianglePainter old) => old.color != color;
 }
