@@ -1,0 +1,18 @@
+Analyzing auth_shared...                                        
+
+  error - Target of URI doesn't exist: 'package:firebase_crashlytics/firebase_crashlytics.dart' - lib\src\phone_pin_auth.dart:9:8 - uri_does_not_exist
+  error - Undefined name 'FirebaseCrashlytics' - lib\src\phone_pin_auth.dart:67:7 - undefined_identifier
+  error - Undefined name 'FirebaseCrashlytics' - lib\src\phone_pin_auth.dart:88:7 - undefined_identifier
+  error - Undefined name 'FirebaseCrashlytics' - lib\src\phone_pin_auth.dart:98:13 - undefined_identifier
+  error - Undefined name 'FirebaseCrashlytics' - lib\src\phone_pin_auth.dart:107:15 - undefined_identifier
+  error - Undefined name 'FirebaseCrashlytics' - lib\src\phone_pin_auth.dart:117:13 - undefined_identifier
+  error - Undefined name 'FirebaseCrashlytics' - lib\src\phone_pin_auth.dart:119:13 - undefined_identifier
+warning - The operand can't be 'null', so the condition is always 'true' - lib\src\phone_pin_auth.dart:136:95 - unnecessary_null_comparison
+  error - Undefined name 'FirebaseCrashlytics' - lib\src\phone_pin_auth.dart:138:13 - undefined_identifier
+warning - The operand can't be 'null', so the condition is always 'true' - lib\src\phone_pin_auth.dart:139:63 - unnecessary_null_comparison
+  error - Undefined name 'FirebaseCrashlytics' - lib\src\phone_pin_auth.dart:155:13 - undefined_identifier
+  error - Undefined name 'FirebaseCrashlytics' - lib\src\phone_pin_auth.dart:171:9 - undefined_identifier
+  error - Undefined name 'FirebaseCrashlytics' - lib\src\phone_pin_auth.dart:177:9 - undefined_identifier
+  error - Undefined name 'FirebaseCrashlytics' - lib\src\phone_pin_auth.dart:179:9 - undefined_identifier
+
+14 issues found. (ran in 1.3s)

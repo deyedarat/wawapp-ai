@@ -1,0 +1,106 @@
+rules_version = '2';
+// Note: Firebase Admin SDK (used by Cloud Functions) bypasses these rules.
+// Cloud Functions can read/write any data regardless of the rules below.
+// These rules only apply to client SDK requests (Flutter apps).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() { return request.auth != null; }
+    function isOwner() { return resource.data.ownerId == request.auth.uid; }
+    function isDriver() { return resource.data.driverId == request.auth.uid; }
+    function validStatusTransition() {
+      let currentStatus = resource.data.status;
+      let newStatus = request.resource.data.status;
+      return (currentStatus == "matching" && newStatus in ["accepted", "cancelled", "cancelledByClient", "cancelledByDriver"]) ||
+             (currentStatus == "accepted" && newStatus in ["onRoute", "cancelled", "cancelledByClient", "cancelledByDriver"]) ||
+             (currentStatus == "onRoute" && newStatus in ["completed", "cancelled", "cancelledByDriver"]);
+    }
+    function isRatingUpdate() {
+      let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      return affectedKeys.hasOnly(['driverRating', 'ratedAt', 'updatedAt'])
+        && request.resource.data.driverRating is int
+        && request.resource.data.driverRating >= 1
+        && request.resource.data.driverRating <= 5
+        && resource.data.status == 'completed';
+    }
+
+    match /orders/{id} {
+      allow create: if isSignedIn()
+        && request.resource.data.status == "matching"
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.price is int
+        && request.resource.data.price >= 0
+        && request.resource.data.distanceKm is number
+        && request.resource.data.distanceKm >= 0
+        && request.resource.data.distanceKm < 100
+        && request.resource.data.pickup is map
+        && request.resource.data.pickup.lat is number
+        && request.resource.data.pickup.lng is number
+        && request.resource.data.pickup.lat >= -90
+        && request.resource.data.pickup.lat <= 90
+        && request.resource.data.pickup.lng >= -180
+        && request.resource.data.pickup.lng <= 180
+        && request.resource.data.dropoff is map
+        && request.resource.data.dropoff.lat is number
+        && request.resource.data.dropoff.lng is number
+        && request.resource.data.dropoff.lat >= -90
+        && request.resource.data.dropoff.lat <= 90
+        && request.resource.data.dropoff.lng >= -180
+        && request.resource.data.dropoff.lng <= 180
+        && request.resource.data.pickupAddress is string
+        && request.resource.data.pickupAddress.size() > 0
+        && request.resource.data.dropoffAddress is string
+        && request.resource.data.dropoffAddress.size() > 0;
+
+      allow read: if isSignedIn() && (isOwner() || isDriver() || resource.data.status == "matching");
+      
+      allow update: if isSignedIn()
+        && request.resource.data.price == resource.data.price
+        && request.resource.data.ownerId == resource.data.ownerId
+        && ((validStatusTransition() && ((request.resource.data.status == "accepted" && request.resource.data.driverId == request.auth.uid) ||
+            (request.resource.data.status == "cancelledByClient" && isOwner()) ||
+            (request.resource.data.status in ["onRoute", "completed", "cancelled", "cancelledByDriver"] && isDriver()))) ||
+            (isRatingUpdate() && isOwner()));
+    }
+
+    match /driver_locations/{driverId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == driverId;
+    }
+
+    match /users/{uid} {
+      // Read: only owner
+      allow read: if isSignedIn() && request.auth.uid == uid;
+
+      // Create: only owner
+      allow create: if isSignedIn() && request.auth.uid == uid;
+
+      // Update: only owner AND prevent partial, unsafe edits to sensitive fields
+      allow update: if isSignedIn()
+                    && request.auth.uid == uid
+                    && !(request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(['pinHash','pinSalt'])
+                         && !request.resource.data.keys().hasAll(['pinHash','pinSalt']))
+                    && !request.resource.data.diff(resource.data).affectedKeys()
+                       .hasAny(['totalTrips', 'averageRating']);
+    }
+
+    match /users/{userId}/savedLocations/{locationId} {
+      // Full CRUD only for the authenticated owner
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    match /drivers/{driverId} {
+      // Read: only the driver themselves
+      allow read: if isSignedIn() && request.auth.uid == driverId;
+
+      // Create: only the driver themselves
+      allow create: if isSignedIn() && request.auth.uid == driverId;
+
+      // Update: only the driver themselves, but prevent modification of sensitive fields
+      allow update: if isSignedIn() 
+                    && request.auth.uid == driverId
+                    && !request.resource.data.diff(resource.data).affectedKeys()
+                       .hasAny(['isVerified', 'rating', 'totalTrips']);
+    }
+  }
+}

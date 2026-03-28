@@ -45,5 +45,17 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
+	<!-- Google Maps API Key -->
+	<key>GMSApiKey</key>
+	<string>YOUR_IOS_GOOGLE_MAPS_API_KEY</string>
+	<!-- Location permissions -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>نحتاج إلى موقعك لإظهار الطلبات القريبة وتوجيهك للعملاء</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>نحتاج إلى موقعك في الخلفية لتتبع الرحلات واستقبال الطلبات حتى عندما يكون التطبيق مغلقاً</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>نحتاج إلى موقعك في الخلفية لتتبع الرحلات واستقبال الطلبات حتى عندما يكون التطبيق مغلقاً</string>
 </dict>
 </plist>

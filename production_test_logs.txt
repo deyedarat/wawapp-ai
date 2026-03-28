@@ -1,0 +1,102 @@
+--------- beginning of main
+12-06 07:38:29.066  1899  1899 D CarrierTextController: carrierTextForSimState(1)-(order: 0) : El Jawal 3G
+12-06 07:38:29.066  1899  1899 D CarrierTextController: carrierTextForSimState(2)-(order: 1) : MATTEL
+12-06 07:38:29.066  1899  1899 D CarrierTextController: setText : El Jawal 3G • MATTEL
+12-06 07:38:29.067  1899  1899 D CarrierTextController: carrierTextForSimState(1)-(order: 0) : El Jawal 3G
+12-06 07:38:29.067  1899  1899 D CarrierTextController: carrierTextForSimState(2)-(order: 1) : MATTEL
+12-06 07:38:29.067  1899  1899 D CarrierTextController: setText : El Jawal 3G • MATTEL
+12-06 07:38:29.067  1899  1899 D FaceWidgetPagesController: onRefreshCarrierInfo()
+12-06 07:38:29.067  1899  1899 D FaceWidgetClockRoamManager: isNetworkRoamingState id=1
+12-06 07:38:29.067  1899  1899 D FaceWidgetClockRoamManager: isNetworkRoamingState false
+12-06 07:38:29.067  1899  1899 D FaceWidgetClockRoamManager: onRefreshCarrierInfo(pre, now): false, false
+12-06 07:38:29.067  1899  1899 D FaceWidgetClockPage: onRefreshCarrierInfo : isChanged false mIsRoaming false
+--------- beginning of system
+12-06 07:38:29.069  1372  3628 I Telecom:SamsungTelecomServiceImpl: isInCall - callingPackage : com.android.systemui / callingUser : UserHandle{0} / hasCrossUserAccess : true
+12-06 07:38:29.070  1899  1899 D ShadeCarrierGroup: handleUpdateCarrierInfo [El Jawal 3G • MATTEL] isLatin=false
+12-06 07:38:29.080  1768  1768 I Telephony: TelecomAccountRegistry$TelecomAccountTelephonyCallback: onServiceStateChanged: newState=0, mServiceState=0
+12-06 07:38:29.082  1768  1768 I Telephony: TelecomAccountRegistry$AccountEntry: isRttCurrentlySupported -- regular acct,, hasVoiceAvailability: false, isRttSupported: false, alwaysAllowWhileRoaming: false, isRoaming: false, isOnWfc: false
+12-06 07:38:29.083  1768  1768 I Telephony: TelecomAccountRegistry$AccountEntry: isRttCurrentlySupported -- regular acct,, hasVoiceAvailability: false, isRttSupported: false, alwaysAllowWhileRoaming: false, isRoaming: false, isOnWfc: false
+12-06 07:38:29.083  1768  1768 V PhoneGlobals: handleServiceStateChanged
+12-06 07:38:29.083  1768  1768 D NotificationMgr: updateNetworkSelection, Use Samsung codes instead of AOSP codes
+12-06 07:38:29.083  1768  1768 V PhoneGlobals: subId=1, mDefaultDataSubId=2, ss roaming=false
+12-06 07:38:29.100  1899  1899 W View    : requestLayout() improperly called by android.widget.FrameLayout{a429a1 V.E...... ......ID 0,126-1080,2273 #7f0a0846 app:id/qs_frame} during layout: running second layout pass
+12-06 07:38:29.350   835   835 I BufferQueueProducer: [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#99572](this:0xb400007e99865790,id:-1,api:0,p:-1,c:835) queueBuffer: fps=59.57 dur=1007.16 max=33.04 min=13.89
+12-06 07:38:29.352   796   796 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:59.589073,dur:1006.90,max:32.67,min:13.90  
+12-06 07:38:29.406  1372  1372 D SemWifiService: onServiceStateChanged : state - 0, dataNetworkType : 13
+12-06 07:38:29.407  1372  3628 I LocationAccessPolicy: com.android.systemui is aware of fine but the app-ops permission is specifically denied.
+12-06 07:38:29.407  1372  3628 I LocationAccessPolicy: checkLocationPermission - callingUid: 10046, callingPid: 1899, resultForFine: DENIED_SOFT
+12-06 07:38:29.408  1372  3628 I LocationAccessPolicy: com.android.systemui is aware of coarse but the app-ops permission is specifically denied.
+12-06 07:38:29.408  1372  3628 I LocationAccessPolicy: checkLocationPermission - callingUid: 10046, callingPid: 1899, resultForCoarse: DENIED_SOFT
+12-06 07:38:29.410  1372  3628 I LocationAccessPolicy: com.android.systemui is aware of fine but the app-ops permission is specifically denied.
+12-06 07:38:29.410  1372  3628 I LocationAccessPolicy: checkLocationPermission - callingUid: 10046, callingPid: 1899, resultForFine: DENIED_SOFT
+12-06 07:38:29.411  2141  2141 I TelephonyCallbackForPdnController<0>: onServiceStateChanged: state={mVoiceRegState=0(IN_SERVICE), mDataRegState=0(IN_SERVICE), mChannelNumber=3300, duplexMode()=1, mCellBandwidths=[10000], mOperatorAlphaLong=60910, mOperatorAlphaShort=60910, isManualNetworkSelection=false(automatic), getRilVoiceRadioTechnology=14(LTE), getRilDataRadioTechnology=14(LTE), mCssIndicator=unsupported, mNetworkId=*1, mSystemId=*1, mCdmaRoamingIndicator=-1, mCdmaDefaultRoamingIndicator=-1, VoiceRegType=0, Snap=0, PsOnly=false, FemtocellInd=0, SprDisplayRoam=false, OptRadioTech=0, MsimSubmode=0, IsVoiceCallAvailable=true, mIsEmergencyOnly=false, isUsingCarrierAggregation=false, mArfcnRsrpBoost=0, mNetworkRegistrationInfos=[NetworkRegistrationInfo{ domain=PS transportType=WLAN registrationState=UNKNOWN networkRegistrationState=UNKNOWN roamingType=NOT_ROAMING accessNetworkTechnology=IWLAN rejectCause=0 emergencyEnabled=false availableServices=[] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=null nrState=**** rRplmn= isUsingCarrierAggregation=false}, NetworkRegistrationInfo{ domain=CS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[VOICE,SMS,VIDEO] cellIdentity=CellIdentityLte:{ mCi=1****14 mPci=2147483647 mTac=1***1 mEarfcn=3300 mBands=[7] mBandwidth=2147483647 mMcc=609 mMnc=10 mAlphaLong= mAlphaShort= mAdditionalPlmns={} mCsgInfo=null} voiceSpecificInfo=VoiceSpecificRegistrationInfo { mCssSupported=false mRoamingIndicator=0 mSystemIsInPrl=0 mDefaultRoamingIndicator=0} dataSpecificInfo=null nrState=**** rRplmn=60910 isUsingCarrierAggregation=false}, NetworkRegistrationInfo{ domain=PS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[DATA] cellIdentity=CellIdentityLte:{ mCi=1****14 mPci=0 mTac=1***1 mEarfcn=3300 mBands=[7] mBandwidth=2147483647 mMcc=609 mMnc=10 mAlphaLong= mAlphaShort= mAdditionalPlmns={} mCsgInfo=null} voiceSpecificInfo=null dataSpecificInfo=android.telephony.DataSpecificRegistrationInfo :{ maxDataCalls = 16 isDcNrRestricted = false isNrAvailable = false isEnDcAvailable = false mLteAttachResultType = 0 mLteAttachExtraInfo = 0 LteVopsSupportInfo :  mVopsSupport = 3 mEmcBearerSupport = 3 } nrState=**** rRplmn=60910 isUsingCarrierAggregation=false}], mNrFrequencyRange=0, mOperatorAlphaLongRaw=60910, mOperatorAlphaShortRaw=60910, mIsDataRoamingFromRegistration=false, mIsIwlanPreferred=false}Changed=
+12-06 07:38:29.411  2141  2141 I PdnController<0>: notifyDataConnectionState
+12-06 07:38:29.411  2141  2141 I PdnController<0>: initialize PendedEPDGWeakSignal flag
+12-06 07:38:29.411  2141  2141 I PdnController<0>: setPendedEPDGWeakSignal
+12-06 07:38:29.411  2141  2141 I PdnController<0>: notifyDataConnectionState: needNotify=false networkType=13 isEpdgConnected=false dataNetType=13=>13 dataRegState=0=>0
+12-06 07:38:29.411  2141  2141 I TelephonyCallbackForPdnController<0>: notifySnapshotState: snapshotState=0 old=0
+12-06 07:38:29.411  2141  2288 I GeolocationCon: handleMessage : what = SERVICE_STATE_CHANGED
+12-06 07:38:29.411  1372  3628 I LocationAccessPolicy: com.android.systemui is aware of coarse but the app-ops permission is specifically denied.
+12-06 07:38:29.411  1372  3628 I LocationAccessPolicy: checkLocationPermission - callingUid: 10046, callingPid: 1899, resultForCoarse: DENIED_SOFT
+12-06 07:38:29.412  2141  2288 I GeolocationCon: matchTimingReqLocation ,match=0, timing=4
+12-06 07:38:29.412  2141  2288 I GeolocationCon: profile is null
+12-06 07:38:29.412  2141  2288 I GeolocationCon<0>: onNetworkCountryIsoChanged: mCountryIso = mr, iso = mr
+12-06 07:38:29.413  1372  3628 I LocationAccessPolicy: com.android.systemui is aware of fine but the app-ops permission is specifically denied.
+12-06 07:38:29.413  2141  2454 I VolteServiceModule: onServiceStateChanged({mVoiceRegState=0(IN_SERVICE), mDataRegState=0(IN_SERVICE), mChannelNumber=3300, duplexMode()=1, mCellBandwidths=[10000], mOperatorAlphaLong=60910, mOperatorAlphaShort=60910, isManualNetworkSelection=false(automatic), getRilVoiceRadioTechnology=14(LTE), getRilDataRadioTechnology=14(LTE), mCssIndicator=unsupported, mNetworkId=*1, mSystemId=*1, mCdmaRoamingIndicator=-1, mCdmaDefaultRoamingIndicator=-1, VoiceRegType=0, Snap=0, PsOnly=false, FemtocellInd=0, SprDisplayRoam=false, OptRadioTech=0, MsimSubmode=0, IsVoiceCallAvailable=true, mIsEmergencyOnly=false, isUsingCarrierAggregation=false, mArfcnRsrpBoost=0, mNetworkRegistrationInfos=[NetworkRegistrationInfo{ domain=PS transportType=WLAN registrationState=UNKNOWN networkRegistrationState=UNKNOWN roamingType=NOT_ROAMING accessNetworkTechnology=IWLAN rejectCause=0 emergencyEnabled=false availableServices=[] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=null nrState=**** rRplmn= isUsingCarrierAggregation=false}, NetworkRegistrationInfo{ domain=CS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[VOICE,SMS,VIDEO] cellIdentity=CellIdentityLte:{ mCi=1****14 mPci=2147483647 mTac=1***1 mEarfcn=3300 mBands=[7] mBandwidth=2147483647 mMcc=609 mMnc=10 mAlphaLong= mAlphaShort= mAdditionalPlmns={} mCsgInfo=null} voiceSpecificInfo=VoiceSpecificRegistrationInfo { mCssSupported=false mRoamingIndicator=0 mSystemIsInPrl=0 mDefaultRoamingIndicator=0} dataSpecificInfo=null nrState=**** rRplmn=60910 isUsingCarrierAggregation=false}, NetworkRegistrationInfo{ domain=PS transportType=WWAN registrationState=HOME networkRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[DATA] cellIdentity=CellIdentityLte:{ mCi=1****14 mPci=0 mTac=1***1 mEarfcn=3300 mBands=[7] mBandwidth=2147483647 mMcc=609 mMnc=10 mAlphaLong= mAlphaShort= mAdditionalPlmns={} mCsgInfo=null} voiceSpecificInfo=null dataSpecificInfo=android.telephony.DataSpecificRegistrationInfo :{ maxDataCalls = 16 isDcNrRestricted = false isNrAvailable = false isEnDcAvailable = false mLteAttachResultType = 0 mLteAttachExtraInfo = 0 LteVopsSupportInfo :  mVopsSupport = 3 mEmcBearerSupport = 3 } nrState=**** rRplmn=60910 isUsingCarrierAggregation=false}], mNrFrequencyRange=0, mOperatorAlphaLongRaw=60910, mOperatorAlphaShortRaw=60910, mIsDataRoamingFromRegistration=false, mIsIwlanPreferred=false})
+12-06 07:38:29.413  1372  3628 I LocationAccessPolicy: checkLocationPermission - callingUid: 10046, callingPid: 1899, resultForFine: DENIED_SOFT
+12-06 07:38:29.413  2141  2454 I VolteServiceModule: mIsLteEpsOnlyAttached(0):false
+12-06 07:38:29.414  1372  3628 I LocationAccessPolicy: com.android.systemui is aware of coarse but the app-ops permission is specifically denied.
+12-06 07:38:29.414  1372  3628 I LocationAccessPolicy: checkLocationPermission - callingUid: 10046, callingPid: 1899, resultForCoarse: DENIED_SOFT
+12-06 07:38:29.414  1899  1899 D StatusBarIconController: ignoring old pipeline callbacks, because the new mobile icons are enabled
+12-06 07:38:29.416  1372  1372 D SemWifiApServiceImpl: onServiceStateChanged : 0dataNetworkType : 13
+12-06 07:38:29.416  1372  1372 I WifiService: getWifiApEnabledState uid=1000
+12-06 07:38:29.416  1372  1372 D SemWifiApServiceImpl: serviceState.getNrFrequencyRange=0 / mPrev5GNewRadioState=0
+12-06 07:38:29.416  1372  1681 V SemWifiBackOff.5G: checkAndSetup nrFrequencyRange=0 / prevNrFrequencyRange=0
+12-06 07:38:29.416  1372  1681 V SemWifiBackOff.5G: restore back off mode, current: [NONE]
+12-06 07:38:29.417  1372  3628 I LocationAccessPolicy: checkLocationPermission - callingUid: 10171, callingPid: 19514, resultForFine: DENIED_HARD
+12-06 07:38:29.417 22753 22821 I EPDG -- SIM0 [NetController]: WWAN Voice Regi: 0 Roaming: 0
+12-06 07:38:29.417 22753 22821 I EPDG -- SIM0 [NetController]: WWAN Data Regi: 0 Rat: 13 Roaming: false
+12-06 07:38:29.417  1372  3628 I LocationAccessPolicy: checkLocationPermission - callingUid: 10171, callingPid: 19514, resultForCoarse: DENIED_HARD
+12-06 07:38:29.419 22753 22821 I EPDG -- SIM0 [NetController]: onNetworkStatusChanged: disable Epdg
+12-06 07:38:29.419  1372  3628 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1331 android.content.Context.sendBroadcastMultiplePermissions:2480 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3657 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1753 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:542 
+12-06 07:38:29.422  1372  3628 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1364 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3662 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1753 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:542 android.os.Binder.execTransactInternal:1380 
+12-06 07:38:29.423  1372  1372 D SemWifiService: received: android.intent.action.SERVICE_STATE
+12-06 07:38:29.426  1372  3628 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1364 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3671 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1753 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:542 android.os.Binder.execTransactInternal:1380 
+12-06 07:38:29.431  1372  3628 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1364 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3677 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1753 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:542 android.os.Binder.execTransactInternal:1380 
+12-06 07:38:29.435  1899  1899 D MultiSIMController: onReceive() - action = android.intent.action.SERVICE_STATE
+12-06 07:38:29.436  1768  1768 I Telephony: TelecomAccountRegistry$TelecomAccountTelephonyCallback: onServiceStateChanged: newState=0, mServiceState=0
+12-06 07:38:29.436  1899  1899 D MultiSIMController: MESSAGE_UPDATE_SERVICE_STATE
+12-06 07:38:29.437  1768  1768 I Telephony: TelecomAccountRegistry$AccountEntry: isRttCurrentlySupported -- regular acct,, hasVoiceAvailability: false, isRttSupported: false, alwaysAllowWhileRoaming: false, isRoaming: false, isOnWfc: false
+12-06 07:38:29.438 20643 20643 D CellBroadcastReceiver: onReceive Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 cmp=com.google.android.cellbroadcastreceiver/com.android.cellbroadcastreceiver.CellBroadcastReceiver (has extras) }
+12-06 07:38:29.439  1768  1768 I Telephony: TelecomAccountRegistry$AccountEntry: isRttCurrentlySupported -- regular acct,, hasVoiceAvailability: false, isRttSupported: false, alwaysAllowWhileRoaming: false, isRoaming: false, isOnWfc: false
+12-06 07:38:29.439 20643 20643 D CellBroadcastReceiver: onServiceStateChanged, ss: 0
+12-06 07:38:29.439  1768  1768 V PhoneGlobals: handleServiceStateChanged
+12-06 07:38:29.439 20643 20643 D CellBroadcastReceiver: networkOperator: 60910
+12-06 07:38:29.439  1768  1768 D NotificationMgr: updateNetworkSelection, Use Samsung codes instead of AOSP codes
+12-06 07:38:29.439  1768  1768 V PhoneGlobals: subId=1, mDefaultDataSubId=2, ss roaming=false
+12-06 07:38:29.439 20643 20643 D CellBroadcastReceiver: update supported roaming operator as 
+12-06 07:38:29.446  1899  1899 D CarrierTextController: carrierTextForSimState(1)-(order: 0) : El Jawal 3G
+12-06 07:38:29.446  1899  1899 D CarrierTextController: carrierTextForSimState(2)-(order: 1) : MATTEL
+12-06 07:38:29.446  1899  1899 D CarrierTextController: setText : El Jawal 3G • MATTEL
+12-06 07:38:29.446  1899  1899 D CarrierTextController: carrierTextForSimState(1)-(order: 0) : El Jawal 3G
+12-06 07:38:29.446  1899  1899 D CarrierTextController: carrierTextForSimState(2)-(order: 1) : MATTEL
+12-06 07:38:29.446  1899  1899 D CarrierTextController: setText : El Jawal 3G • MATTEL
+12-06 07:38:29.446  1899  1899 D CarrierTextController: carrierTextForSimState(1)-(order: 0) : El Jawal 3G
+12-06 07:38:29.447  1899  1899 D CarrierTextController: carrierTextForSimState(2)-(order: 1) : MATTEL
+12-06 07:38:29.447  1899  1899 D CarrierTextController: setText : El Jawal 3G • MATTEL
+12-06 07:38:29.447  1899  1899 D FaceWidgetPagesController: onRefreshCarrierInfo()
+12-06 07:38:29.447  1899  1899 D FaceWidgetClockRoamManager: isNetworkRoamingState id=1
+12-06 07:38:29.447  1899  1899 D FaceWidgetClockRoamManager: isNetworkRoamingState false
+12-06 07:38:29.447  1899  1899 D FaceWidgetClockRoamManager: onRefreshCarrierInfo(pre, now): false, false
+12-06 07:38:29.447  1899  1899 D FaceWidgetClockPage: onRefreshCarrierInfo : isChanged false mIsRoaming false
+12-06 07:38:29.448  1372  2658 I Telecom:SamsungTelecomServiceImpl: isInCall - callingPackage : com.android.systemui / callingUser : UserHandle{0} / hasCrossUserAccess : true
+12-06 07:38:29.449  1899  1899 D ShadeCarrierGroup: handleUpdateCarrierInfo [El Jawal 3G • MATTEL] isLatin=false
+12-06 07:38:29.478  1899  1899 W View    : requestLayout() improperly called by android.widget.FrameLayout{a429a1 V.E...... ......ID 0,126-1080,2273 #7f0a0846 app:id/qs_frame} during layout: running second layout pass
+12-06 07:38:29.620  1899  1899 D StatusBarIconController: ignoring old pipeline callbacks, because the new mobile icons are enabled
+12-06 07:38:29.719  1899  1899 D StatusBarIconController: ignoring old pipeline callbacks, because the new mobile icons are enabled
+12-06 07:38:29.739  1899  2075 I gralloc4: @set_metadata: update dataspace from GM (0x00000000 -> 0x08010000)
+12-06 07:38:29.745   835   835 I BufferQueueProducer: [StatusBar$_1899#83](this:0xb400007e90cb0790,id:-1,api:0,p:-1,c:835) queueBuffer: fps=0.50 dur=2011.78 max=2011.78 min=2011.78
+12-06 07:38:29.815  1899  1899 D StatusBarIconController: ignoring old pipeline callbacks, because the new mobile icons are enabled
+12-06 07:38:30.153  1025  1025 I thermal_repeater: socket -1
+12-06 07:38:30.355   835   835 I BufferQueueProducer: [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#99572](this:0xb400007e99865790,id:-1,api:0,p:-1,c:835) queueBuffer: fps=60.69 dur=1005.18 max=17.50 min=15.55
+12-06 07:38:30.357   796   796 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:60.705791,dur:1004.85,max:17.33,min:15.45  

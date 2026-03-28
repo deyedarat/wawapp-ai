@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+  <base href="/">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="google" content="notranslate">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WawApp Admin</title>
+
+  <style>
+    body {
+      background-color: #0A1612;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #00704A;
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loading">جارٍ التحميل...</div>
+
+  <script>
+    // Force specific renderer if needed via URL parameter or leave default
+    window.flutterWebRenderer = "canvaskit"; // Force canvaskit for better RTL support
+  </script>
+
+  <script src="main.dart.js" type="application/javascript"></script>
+
+  <script>
+    // Remove loading indicator when app is ready
+    window.addEventListener('flutter-first-frame', function () {
+      var loading = document.getElementById('loading');
+      if (loading) loading.remove();
+    });
+  </script>
+</body>
+
+</html>

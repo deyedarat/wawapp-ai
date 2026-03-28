@@ -1,0 +1,81 @@
+Launching lib\main.dart on SM A145P in debug mode...
+Running Gradle task 'assembleDebug'...                          
+Your project is configured with Android NDK 25.1.8937393, but the following plugin(s) depend on a different Android NDK version:
+- cloud_firestore requires Android NDK 27.0.12077973
+- cloud_functions requires Android NDK 27.0.12077973
+- firebase_analytics requires Android NDK 27.0.12077973
+- firebase_auth requires Android NDK 27.0.12077973
+- firebase_core requires Android NDK 27.0.12077973
+- firebase_crashlytics requires Android NDK 27.0.12077973
+- firebase_dynamic_links requires Android NDK 27.0.12077973
+- firebase_messaging requires Android NDK 27.0.12077973
+- firebase_remote_config requires Android NDK 27.0.12077973
+- flutter_local_notifications requires Android NDK 27.0.12077973
+- flutter_plugin_android_lifecycle requires Android NDK 27.0.12077973
+- geolocator_android requires Android NDK 27.0.12077973
+- google_maps_flutter_android requires Android NDK 27.0.12077973
+- integration_test requires Android NDK 27.0.12077973
+- shared_preferences_android requires Android NDK 27.0.12077973
+- url_launcher_android requires Android NDK 27.0.12077973
+Fix this issue by using the highest Android NDK version (they are backward compatible).
+Add the following to C:\Users\hp\Music\wawapp-ai\apps\wawapp_driver\android\app\build.gradle.kts:
+
+    android {
+        ndkVersion = "27.0.12077973"
+        ...
+    }
+Running Gradle task 'assembleDebug'...                             11.2s
+√ Built build\app\outputs\flutter-apk\app-debug.apk
+Installing build\app\outputs\flutter-apk\app-debug.apk...           8.6s
+D/FlutterJNI( 6486): Beginning load of flutter...
+D/FlutterJNI( 6486): flutter (null) was loaded normally!
+I/flutter ( 6486): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FlutterGeolocator( 6486): Attaching Geolocator to activity
+I/flutter ( 6486): 🟢 WawApp Driver starting...
+I/flutter ( 6486): ! Crashlytics initialization failed: [core/no-app] No Firebase App '[DEFAULT]' has been created - call Firebase.initializeApp()
+I/flutter ( 6486):    App will continue without crash reporting.
+I/flutter ( 6486): ❌ Uncaught error: [core/no-app] No Firebase App '[DEFAULT]' has been created - call Firebase.initializeApp()
+I/flutter ( 6486): Stack trace: #0      MethodChannelFirebase.app (package:firebase_core_platform_interface/src/method_channel/method_channel_firebase.dart:190:5)
+I/flutter ( 6486): #1      Firebase.app (package:firebase_core/src/firebase.dart:79:41)
+I/flutter ( 6486): #2      FirebaseAuth.instance (package:firebase_auth/src/firebase_auth.dart:38:47)
+I/flutter ( 6486): #3      main.<anonymous closure> (package:wawapp_driver/main.dart:34:26)
+I/flutter ( 6486): <asynchronous suspension>
+E/flutter ( 6486): [ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: [core/no-app] No Firebase App '[DEFAULT]' has been created - call Firebase.initializeApp()
+E/flutter ( 6486): #0      MethodChannelFirebase.app (package:firebase_core_platform_interface/src/method_channel/method_channel_firebase.dart:190:5)
+E/flutter ( 6486): #1      Firebase.app (package:firebase_core/src/firebase.dart:79:41)
+E/flutter ( 6486): #2      FirebaseCrashlytics.instance (package:firebase_crashlytics/src/firebase_crashlytics.dart:33:55)
+E/flutter ( 6486): #3      main.<anonymous closure> (package:wawapp_driver/main.dart:49:25)
+E/flutter ( 6486): #4      _RootZone.runBinary (dart:async/zone.dart:1854:54)
+E/flutter ( 6486): #5      runZonedGuarded.<anonymous closure> (dart:async/zone.dart:2002:22)
+E/flutter ( 6486): #6      _Zone._processUncaughtError (dart:async/zone.dart:1178:14)
+E/flutter ( 6486): #7      _CustomZone.handleUncaughtError (dart:async/zone.dart:1399:5)
+E/flutter ( 6486): #8      Future._propagateToListeners (dart:async/future_impl.dart:848:24)
+E/flutter ( 6486): #9      Future._completeErrorObject (dart:async/future_impl.dart:738:5)
+E/flutter ( 6486): #10     Future._completeError (dart:async/future_impl.dart:742:5)
+E/flutter ( 6486): <asynchronous suspension>
+E/flutter ( 6486): 
+D/FlutterGeolocator( 6486): Creating service.
+D/FlutterGeolocator( 6486): Binding to location service.
+D/FlutterGeolocator( 6486): Geolocator foreground service connected
+D/FlutterGeolocator( 6486): Initializing Geolocator services
+D/FlutterGeolocator( 6486): Flutter engine connected. Connected engine count 1
+D/EventGDTLogger( 6486): Session Event Type: SESSION_START
+D/SessionFirelogPublisher( 6486): Successfully logged Session Start event.
+Syncing files to device SM A145P...                                168ms
+
+Flutter run key commands.
+r Hot reload. 
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on SM A145P is available at: http://127.0.0.1:52913/oSk-GaELnug=/
+The Flutter DevTools debugger and profiler on SM A145P is available at: http://127.0.0.1:9102?uri=http://127.0.0.1:52913/oSk-GaELnug=/
+I/TRuntime.CctTransportBackend( 6486): Making request to: https://crashlyticsreports-pa.googleapis.com/v1/firelog/legacy/batchlog
+I/TRuntime.CctTransportBackend( 6486): Status Code: 200
+D/ProfileInstaller( 6486): Installing profile for com.wawapp.driver
+I/TRuntime.CctTransportBackend( 6486): Making request to: https://firebaselogging-pa.googleapis.com/v1/firelog/legacy/batchlog
+I/TRuntime.CctTransportBackend( 6486): Status Code: 200
+Lost connection to device.

@@ -1,0 +1,101 @@
+diff --git a/apps/wawapp_client/ios/Runner/AppDelegate.swift b/apps/wawapp_client/ios/Runner/AppDelegate.swift
+index 0cab26b..2677da0 100644
+--- a/apps/wawapp_client/ios/Runner/AppDelegate.swift
++++ b/apps/wawapp_client/ios/Runner/AppDelegate.swift
+@@ -1,46 +1,50 @@
+ import Flutter
+ import UIKit
+ import Firebase
++import GoogleMaps
+ 
+ @main
+ @objc class AppDelegate: FlutterAppDelegate {
+     override func application(
+-          _ application: UIApplication,
+-          didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
++        _ application: UIApplication,
++        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+     ) -> Bool {
+-          FirebaseApp.configure()
+-          GeneratedPluginRegistrant.register(with: self)
+-          application.registerForRemoteNotifications()
+-          return super.application(application, didFinishLaunchingWithOptions: launchOptions)
++        FirebaseApp.configure()
++        GMSServices.provideAPIKey("AIzaSyAWBq8WiUVzdS2fi7lG1RqV-YDz3DoJWoQ")
++        GeneratedPluginRegistrant.register(with: self)
++        application.registerForRemoteNotifications()
++        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+     }
+ 
+     // MARK: - APNs Token Registration
+-
+     override func application(
+-          _ application: UIApplication,
+-          didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
++        _ application: UIApplication,
++        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+     ) {
+-          Auth.auth().setAPNSToken(deviceToken, type: .unknown)
++        #if DEBUG
++        Auth.auth().setAPNSToken(deviceToken, type: .sandbox)
++        #else
++        Auth.auth().setAPNSToken(deviceToken, type: .prod)
++        #endif
+     }
+ 
+     override func application(
+-          _ application: UIApplication,
+-          didFailToRegisterForRemoteNotificationsWithError error: Error
++        _ application: UIApplication,
++        didFailToRegisterForRemoteNotificationsWithError error: Error
+     ) {
+-          print("Failed to register for remote notifications: \(error.localizedDescription)")
++        print("Failed to register for remote notifications: \(error.localizedDescription)")
+     }
+ 
+     // MARK: - Silent Push for Firebase Phone Auth
+-
+     override func application(
+-          _ application: UIApplication,
+-          didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+-          fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
++        _ application: UIApplication,
++        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
++        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+     ) {
+-          if Auth.auth().canHandleNotification(userInfo) {
+-                  completionHandler(.noData)
+-                  return
+-          }
+-          completionHandler(.newData)
++        if Auth.auth().canHandleNotification(userInfo) {
++            completionHandler(.noData)
++            return
++        }
++        completionHandler(.newData)
+     }
+ }
+diff --git a/apps/wawapp_client/ios/Runner/GoogleService-Info.plist b/apps/wawapp_client/ios/Runner/GoogleService-Info.plist
+index a283b38..fcb551b 100644
+--- a/apps/wawapp_client/ios/Runner/GoogleService-Info.plist
++++ b/apps/wawapp_client/ios/Runner/GoogleService-Info.plist
+@@ -27,4 +27,4 @@
+ 	<key>GOOGLE_APP_ID</key>
+ 	<string>1:363341993641:ios:2f5a5d64f06d6b8f683bb8</string>
+ </dict>
+-</plist>
+\ No newline at end of file
++</plist>
+diff --git a/apps/wawapp_client/pubspec.yaml b/apps/wawapp_client/pubspec.yaml
+index 6545a52..a344ec4 100644
+--- a/apps/wawapp_client/pubspec.yaml
++++ b/apps/wawapp_client/pubspec.yaml
+@@ -1,7 +1,7 @@
+ name: wawapp_client
+ description: WawApp Client Application
+ publish_to: 'none'
+-version: 1.0.0+18
++version: 1.0.0+21
+ 
+ environment:
+   sdk: '>=3.0.0 <4.0.0'

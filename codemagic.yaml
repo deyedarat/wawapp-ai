@@ -27,6 +27,84 @@ workflows:
     artifacts:
       - build/app/outputs/flutter-apk/app-debug.apk
 
+  android_release:
+    name: Android Release APK
+    max_build_duration: 60
+    environment:
+      flutter: stable
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - ~/.gradle/caches
+        - ~/.gradle/wrapper
+    working_directory: apps/wawapp_client
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Generate l10n
+        script: flutter gen-l10n
+      - name: Build release APK
+        script: flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+
+  ios_debug:
+    name: iOS Debug Build
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: develop
+          include: true
+          source: true
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+    working_directory: apps/wawapp_client
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Generate l10n
+        script: flutter gen-l10n
+      - name: Build iOS
+        script: flutter build ios --debug --no-codesign
+    artifacts:
+      - build/ios/iphoneos/Runner.app
+
+  test_workflow:
+    name: Run Tests
+    max_build_duration: 30
+    environment:
+      flutter: stable
+    triggering:
+      events:
+        - pull_request
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+    working_directory: apps/wawapp_client
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Generate l10n
+        script: flutter gen-l10n
+      - name: Run tests
+        script: flutter test
+      - name: Run integration tests
+        script: flutter test integration_test/
+
   ios_release:
     name: iOS Release IPA
     max_build_duration: 120
@@ -39,7 +117,13 @@ workflows:
         distribution_type: app_store
         bundle_identifier: com.wawapp.client
       groups:
-        - appstore_credentials
+        - appstore
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'ios-v*'
+          include: true
     cache:
       cache_paths:
         - $FLUTTER_ROOT/.pub-cache
@@ -54,17 +138,31 @@ workflows:
         script: |
           cd ios
           pod install
+      - name: Fetch signing files
+        script: |
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > /tmp/private_key.p8
+          echo "$CERTIFICATE_PRIVATE_KEY" > /tmp/certificate_key.pem
+          app-store-connect fetch-signing-files com.wawapp.client \
+            --type IOS_APP_STORE \
+            --key-id $APP_STORE_CONNECT_KEY_ID \
+            --issuer-id $APP_STORE_CONNECT_ISSUER_ID \
+            --private-key @file:/tmp/private_key.p8 \
+            --certificate-key @file:/tmp/certificate_key.pem \
+            --create
+          keychain add-certificates
       - name: Set up code signing settings on Xcode project
         script: xcode-project use-profiles
-      - name: Build IPA for App Store
+      - name: Build IPA (release)
         script: flutter build ipa --release
+      - name: Publish to TestFlight
+        script: |
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > /tmp/private_key.p8
+          app-store-connect publish \
+            --path build/ios/ipa/wawapp_client.ipa \
+            --key-id $APP_STORE_CONNECT_KEY_ID \
+            --issuer-id $APP_STORE_CONNECT_ISSUER_ID \
+            --private-key @file:/tmp/private_key.p8 \
+            --testflight
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-    publishing:
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        submit_to_testflight: true
-        cancel_previous_submissions: true

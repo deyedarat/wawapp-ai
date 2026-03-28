@@ -1,0 +1,344 @@
+import 'package:auth_shared/auth_shared.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../l10n/app_localizations.dart';
+import 'providers/auth_service_provider.dart';
+import 'providers/pin_attempt_provider.dart';
+
+class PhonePinLoginScreen extends ConsumerStatefulWidget {
+  const PhonePinLoginScreen({super.key});
+  @override
+  ConsumerState<PhonePinLoginScreen> createState() =>
+      _PhonePinLoginScreenState();
+}
+
+class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
+  final _phone = TextEditingController();
+  final _pin = TextEditingController();
+  String? _err;
+
+  @override
+  void dispose() {
+    _phone.dispose();
+    _pin.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    // Check PIN attempt lockout
+    final pinAttemptState = ref.read(pinAttemptProvider);
+    if (pinAttemptState.isLocked) {
+      final duration = pinAttemptState.lockoutDuration;
+      final minutes = duration.inMinutes;
+      final seconds = duration.inSeconds % 60;
+      setState(() => _err = 'تم قفل الحساب. حاول مرة أخرى بعد $minutes دقيقة و $seconds ثانية');
+      return;
+    }
+    
+    final pin = _pin.text.trim();
+    if (pin.isEmpty) {
+      setState(() => _err = 'يرجى إدخال الرمز السري');
+      return;
+    }
+
+    // Get and normalize phone
+    String phone = _phone.text.trim();
+
+    // Validate and convert to E.164 format for Mauritania
+    try {
+      if (phone.startsWith('+')) {
+        if (!MauritaniaPhoneUtils.isValidMauritaniaE164(phone)) {
+          setState(() => _err = 'رقم هاتف غير صحيح بصيغة +222');
+          return;
+        }
+      } else {
+        if (!MauritaniaPhoneUtils.isValidMauritaniaLocalNumber(phone)) {
+          setState(() => _err = MauritaniaPhoneUtils.getValidationError(phone));
+          return;
+        }
+        phone = MauritaniaPhoneUtils.toMauritaniaE164(phone);
+      }
+    } catch (e) {
+      setState(() => _err = 'رقم هاتف غير صحيح');
+      return;
+    }
+
+    setState(() => _err = null);
+
+    // Pass normalized phone to loginByPin
+    try {
+      await ref.read(authProvider.notifier).loginByPin(pin, phone);
+      // If successful, reset attempts
+      await ref.read(pinAttemptProvider.notifier).recordSuccessfulAttempt();
+    } catch (e) {
+      // Record failed attempt
+      await ref.read(pinAttemptProvider.notifier).recordFailedAttempt();
+      
+      // Check if now locked
+      final newState = ref.read(pinAttemptProvider);
+      if (newState.isLocked) {
+        setState(() => _err = 'تم تجاوز الحد الأقصى من المحاولات. تم قفل الحساب لمدة 15 دقيقة');
+      } else {
+        final remaining = newState.remainingAttempts;
+        setState(() => _err = 'رمز PIN غير صحيح. المحاولات المتبقية: $remaining');
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> _handleForgotPin() async {
+    String phone = _phone.text.trim();
+
+    // Validate and convert to E.164 format for Mauritania
+    try {
+      if (phone.startsWith('+')) {
+        // Already in E.164, validate it
+        if (!MauritaniaPhoneUtils.isValidMauritaniaE164(phone)) {
+          setState(() => _err = 'رقم هاتف غير صحيح بصيغة +222');
+          return;
+        }
+      } else {
+        // Local format, validate and convert
+        if (!MauritaniaPhoneUtils.isValidMauritaniaLocalNumber(phone)) {
+          setState(() => _err = MauritaniaPhoneUtils.getValidationError(phone));
+          return;
+        }
+        phone = MauritaniaPhoneUtils.toMauritaniaE164(phone);
+        // Update text field with E.164 format
+        _phone.text = phone;
+      }
+    } catch (e) {
+      setState(() => _err = 'رقم هاتف غير صحيح');
+      return;
+    }
+
+    setState(() => _err = null);
+
+    // Check if phone exists before sending OTP
+    final phoneExists =
+        await ref.read(authProvider.notifier).checkPhoneExists(phone);
+    if (!phoneExists) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('رقم الهاتف غير مسجل. يرجى التسجيل أولاً'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    if (kDebugMode) {
+      print('[PhonePinLogin] Starting PIN reset flow for phone: $phone');
+    }
+
+    // Start PIN reset flow - sends OTP
+    ref.read(authProvider.notifier).startPinResetFlow();
+
+    try {
+      await ref.read(authProvider.notifier).sendOtp(phone);
+      if (kDebugMode) {
+        print('[PhonePinLogin] OTP sent for PIN reset');
+      }
+    } on Object catch (e) {
+      if (kDebugMode) {
+        print('[PhonePinLogin] OTP send failed: ${e.runtimeType} - $e');
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('فشل إرسال OTP: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleNewDeviceRegistration() async {
+    String phone = _phone.text.trim();
+
+    // Validate and convert to E.164 format for Mauritania
+    try {
+      if (phone.startsWith('+')) {
+        if (!MauritaniaPhoneUtils.isValidMauritaniaE164(phone)) {
+          setState(() => _err = 'رقم هاتف غير صحيح بصيغة +222');
+          return;
+        }
+      } else {
+        if (!MauritaniaPhoneUtils.isValidMauritaniaLocalNumber(phone)) {
+          setState(() => _err = MauritaniaPhoneUtils.getValidationError(phone));
+          return;
+        }
+        phone = MauritaniaPhoneUtils.toMauritaniaE164(phone);
+        _phone.text = phone;
+      }
+    } on Exception {
+      setState(() => _err = 'رقم هاتف غير صحيح');
+      return;
+    }
+
+    setState(() => _err = null);
+
+    if (kDebugMode) {
+      print('[PhonePinLogin] Starting registration flow for phone: $phone');
+    }
+
+    // Mark OTP flow as active for new registration
+    ref.read(authProvider.notifier).startOtpFlow();
+
+    try {
+      await ref.read(authProvider.notifier).sendOtp(phone);
+      if (kDebugMode) {
+        print('[PhonePinLogin] OTP sent for new registration');
+      }
+    } on Object catch (e) {
+      if (kDebugMode) {
+        print('[PhonePinLogin] OTP send failed: ${e.runtimeType} - $e');
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('فشل إرسال OTP: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
+    final errorMessage = _err ?? authState.error;
+
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      key: const ValueKey('screen_login'),
+      appBar: AppBar(title: Text(l10n.sign_in_with_phone)),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              key: const Key('phoneField'),
+              controller: _phone,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                labelText: 'رقم الهاتف (8 أرقام)',
+                helperText: 'مثال: 22123456 أو +22222123456',
+                errorText: _err,
+                prefixText: _phone.text.startsWith('+') ? '' : '+222 ',
+              ),
+              onChanged: (_) => setState(() => _err = null),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _pin,
+              maxLength: 4,
+              keyboardType: TextInputType.number,
+              obscureText: true,
+              decoration: InputDecoration(labelText: l10n.pin_label),
+            ),
+            if (errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  errorMessage,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              key: const Key('loginButton'),
+              onPressed: authState.isLoading ? null : _handleLogin,
+              child: authState.isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('تسجيل الدخول'),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: authState.isLoading ? null : _handleForgotPin,
+              child: const Text(
+                'نسيت الرمز السري؟',
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            TextButton(
+              onPressed:
+                  authState.isLoading ? null : _handleNewDeviceRegistration,
+              child: const Text('جهاز جديد أو تسجيل لأول مرة؟ التحقق عبر SMS'),
+            ),
+            const SizedBox(height: 24),
+            _buildLegalConsentFooter(context, l10n),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegalConsentFooter(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(
+            l10n.by_continuing_you_agree,
+            style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: () => _launchUrl('https://wawappmr.com/terms'),
+            child: Text(
+              l10n.terms_of_service,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.primary,
+                decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            l10n.and,
+            style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+          ),
+          const SizedBox(width: 4),
+          InkWell(
+            onTap: () => _launchUrl('https://wawappmr.com/privacy'),
+            child: Text(
+              l10n.privacy_policy,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.primary,
+                decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _launchUrl(String urlString) async {
+    final uri = Uri.parse(urlString);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+}

@@ -1,14 +1,30 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:core_shared/core_shared.dart' hide Order;
+import 'package:core_shared/src/order.dart' as core;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'providers/quote_provider.dart';
-import '../map/pick_route_controller.dart';
-import '../track/models/order.dart';
+
+import '../../core/models/cargo_weight.dart';
+import '../../core/models/shipment_type.dart';
+import '../../core/pricing/pricing.dart';
+import '../../core/pricing/shipment_pricing.dart';
 import '../../core/utils/address_utils.dart';
 import '../../core/utils/eta.dart';
-import '../../core/pricing/pricing.dart';
+import '../../l10n/app_localizations.dart';
+import '../../services/analytics_service.dart';
+// NEW THEME IMPORTS
+import '../../theme/colors.dart';
+import '../../theme/components.dart';
+import '../../theme/theme_extensions.dart';
+import '../auth/providers/auth_service_provider.dart';
+import '../map/pick_route_controller.dart';
+import '../shipment_type/shipment_type_provider.dart';
+import '../track/data/orders_repository.dart';
+import 'providers/quote_provider.dart';
 
 class QuoteScreen extends ConsumerStatefulWidget {
   const QuoteScreen({super.key});
@@ -18,108 +34,429 @@ class QuoteScreen extends ConsumerStatefulWidget {
 }
 
 class _QuoteScreenState extends ConsumerState<QuoteScreen> {
+  StreamSubscription<DocumentSnapshot>? _orderSubscription;
+
+  void _startOrderTracking(String orderId) {
+    _orderSubscription?.cancel();
+    final repo = ref.read(ordersRepositoryProvider);
+    _orderSubscription = repo.watchOrder(orderId).listen((snapshot) {
+      if (!mounted) return;
+
+      final data = snapshot.data() as Map<String, dynamic>?;
+      if (data == null) return;
+
+      final status = data['status'] as String?;
+      if (status == 'accepted') {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            context.go('/driver-found/$orderId');
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _orderSubscription?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
     final quoteState = ref.watch(quoteProvider);
+    final theme = Theme.of(context);
 
     return Directionality(
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         appBar: AppBar(
-          title:
-              Text(kReleaseMode ? l10n.get_quote : '${l10n.get_quote} • DEBUG'),
+          title: Text(kReleaseMode ? l10n.estimated_price : '${l10n.estimated_price} • DEBUG'),
+          centerTitle: true,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Icon(Icons.local_shipping, size: 80, color: Colors.blue),
-              const SizedBox(height: 24),
-              Text(
-                l10n.estimated_price,
-                style: Theme.of(context).textTheme.headlineMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Builder(
-                builder: (context) {
-                  final breakdown = quoteState.distanceKm != null
-                      ? Pricing.compute(quoteState.distanceKm!)
-                      : null;
-                  final price = breakdown?.rounded ?? 0;
-                  return Column(
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsetsDirectional.all(WawAppSpacing.screenPadding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Icon Header
+                Icon(
+                  Icons.local_shipping_outlined,
+                  size: 80,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(height: WawAppSpacing.lg),
+
+                // Title
+                Text(
+                  l10n.estimated_price,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: WawAppSpacing.md),
+
+                // Price Card
+                WawCard(
+                  elevation: WawAppElevation.medium,
+                  child: Builder(
+                    builder: (context) {
+                      final shipmentType = ref.watch(selectedShipmentTypeProvider);
+                      final cargoWeight = ref.watch(selectedCargoWeightProvider);
+
+                      final breakdown = quoteState.distanceKm != null
+                          ? Pricing.computeWithShipmentType(
+                              quoteState.distanceKm!,
+                              shipmentType,
+                              cargoWeight: cargoWeight,
+                            )
+                          : null;
+
+                      // Total shown to user = rounded subtotal + weight cost
+                      final displayPrice = breakdown != null ? breakdown.rounded + breakdown.weightCost : 0;
+
+                      return Column(
+                        children: [
+                          // Price Display
+                          Text(
+                            displayPrice > 0
+                                ? '${displayPrice.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ${l10n.currency}'
+                                : '--- ${l10n.currency}',
+                            style: theme.textTheme.displayLarge?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+
+                          if (breakdown != null) ...[
+                            const SizedBox(height: WawAppSpacing.md),
+
+                            // Shipment Type Badge
+                            WawStatusBadge(
+                              label: isRTL ? shipmentType.arabicLabel : shipmentType.frenchLabel,
+                              color: shipmentType.color,
+                              icon: shipmentType.icon,
+                            ),
+
+                            if (breakdown.multiplier != 1.0) ...[
+                              const SizedBox(height: WawAppSpacing.xs),
+                              Text(
+                                ShipmentPricingMultipliers.getMultiplierDescription(shipmentType),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: shipmentType.color,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+
+                            const SizedBox(height: WawAppSpacing.md),
+                            Divider(color: context.wawAppTheme.dividerColor),
+                            const SizedBox(height: WawAppSpacing.md),
+
+                            // Price Breakdown
+                            _buildPriceBreakdown(context, l10n, breakdown),
+                          ],
+                        ],
+                      );
+                    },
+                  ),
+                ),
+
+                // Cargo Weight Selector
+                const SizedBox(height: WawAppSpacing.md),
+                WawCard(
+                  elevation: WawAppElevation.low,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        price > 0
-                            ? '${l10n.currency} ${price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}'  
-                            : '--- ${l10n.currency}',
-                        style: const TextStyle(
-                            fontSize: 32, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
+                        'وزن الشحنة',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      if (breakdown != null) ...[
-                        const SizedBox(height: 12),
-                        Text(
-                          'تفصيل السعر: أساس ${breakdown.base} + مسافة ${breakdown.distancePart} = ${breakdown.total} → حد أدنى ${PricingConfig.minFare} → تقريب ${price}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                          textAlign: TextAlign.center,
+                      const SizedBox(height: WawAppSpacing.sm),
+                      _buildWeightSelector(context),
+                    ],
+                  ),
+                ),
+
+                // Distance & Time Card
+                if (quoteState.distanceKm != null) ...[
+                  const SizedBox(height: WawAppSpacing.md),
+                  WawCard(
+                    elevation: WawAppElevation.low,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildInfoColumn(
+                              context,
+                              icon: Icons.straighten,
+                              label: l10n.distance,
+                              value: '${quoteState.distanceKm!.toStringAsFixed(1)} ${l10n.km}',
+                            ),
+                            Container(
+                              width: 1,
+                              height: 40,
+                              color: context.wawAppTheme.dividerColor,
+                            ),
+                            _buildInfoColumn(
+                              context,
+                              icon: Icons.access_time,
+                              label: l10n.estimated_time,
+                              value: '${Eta.minutesFromKm(quoteState.distanceKm!).ceil()} ${l10n.minute}',
+                            ),
+                          ],
                         ),
                       ],
-                    ],
-                  );
-                },
-              ),
-              if (quoteState.distanceKm != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  '${quoteState.distanceKm!.toStringAsFixed(1)} km',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'الوقت التقريبي: ${Eta.minutesFromKm(quoteState.distanceKm!).ceil()} دقيقة',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: WawAppSpacing.xl),
+
+                // Request Button
+                WawActionButton(
+                  label: l10n.request_now,
+                  icon: Icons.check_circle,
+                  onPressed: quoteState.isReady ? _handleRequestOrder : null,
+                  isLoading: false,
                 ),
               ],
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: quoteState.isReady
-                    ? () {
-                        final routeState = ref.read(routePickerProvider);
-                        final fromText = AddressUtils.friendly(
-                          userInput: routeState.pickupAddress,
-                          latLng: routeState.pickup,
-                        );
-                        final toText = AddressUtils.friendly(
-                          userInput: routeState.dropoffAddress,
-                          latLng: routeState.dropoff,
-                        );
-                        final breakdown =
-                            Pricing.compute(quoteState.distanceKm!);
-                        final order = Order(
-                          distanceKm: quoteState.distanceKm!,
-                          price: breakdown.rounded.toDouble(),
-                          pickupAddress: fromText,
-                          dropoffAddress: toText,
-                          pickup: routeState.pickup!,
-                          dropoff: routeState.dropoff!,
-                          status: 'pending',
-                        );
-                        context.push('/track', extra: order);
-                      }
-                    : null,
-                child: Text(l10n.request_now),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildWeightSelector(BuildContext context) {
+    final selectedWeight = ref.watch(selectedCargoWeightProvider);
+    final theme = Theme.of(context);
+
+    return Wrap(
+      spacing: WawAppSpacing.sm,
+      runSpacing: WawAppSpacing.xs,
+      children: CargoWeight.values.map((weight) {
+        final isSelected = selectedWeight == weight;
+        return ChoiceChip(
+          label: Text(
+            '${weight.arabicLabel}\n+${weight.costMRU} MRU',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
+            ),
+          ),
+          selected: isSelected,
+          selectedColor: theme.colorScheme.primary,
+          onSelected: (_) {
+            ref.read(selectedCargoWeightProvider.notifier).state = weight;
+          },
+          avatar: Icon(
+            weight.icon,
+            size: 16,
+            color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildPriceBreakdown(BuildContext context, AppLocalizations l10n, PricingBreakdown breakdown) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        _buildBreakdownRow(context, l10n.base_price, '${breakdown.base} ${l10n.currency}'),
+        const SizedBox(height: WawAppSpacing.xs),
+        _buildBreakdownRow(context, l10n.distance_cost, '${breakdown.distancePart} ${l10n.currency}'),
+        if (breakdown.multiplier != 1.0) ...[
+          const SizedBox(height: WawAppSpacing.xs),
+          _buildBreakdownRow(
+            context,
+            l10n.shipment_multiplier,
+            '× ${breakdown.multiplier.toStringAsFixed(2)}',
+            color: theme.colorScheme.primary,
+          ),
+        ],
+        const SizedBox(height: WawAppSpacing.xs),
+        _buildBreakdownRow(
+          context,
+          'معامل التسعير',
+          '× ${PricingConfig.antigravityMultiplier.toStringAsFixed(1)}',
+          color: theme.colorScheme.secondary,
+        ),
+        const SizedBox(height: WawAppSpacing.xs),
+        _buildBreakdownRow(
+          context,
+          'تكلفة الوزن (${breakdown.weightTons} طن)',
+          '+ ${breakdown.weightCost} ${l10n.currency}',
+          color: Colors.orange,
+        ),
+        const SizedBox(height: WawAppSpacing.xs),
+        Divider(color: context.wawAppTheme.dividerColor),
+        const SizedBox(height: WawAppSpacing.xs),
+        _buildBreakdownRow(
+          context,
+          l10n.total,
+          '${breakdown.rounded + breakdown.weightCost} ${l10n.currency}',
+          isBold: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBreakdownRow(BuildContext context, String label, String value, {bool isBold = false, Color? color}) {
+    final theme = Theme.of(context);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            color: color,
+          ),
+        ),
+        Text(
+          value,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            color: color,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoColumn(BuildContext context,
+      {required IconData icon, required String label, required String value}) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        Icon(icon, color: theme.colorScheme.primary, size: 28),
+        const SizedBox(height: WawAppSpacing.xs),
+        Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
+          ),
+        ),
+        const SizedBox(height: WawAppSpacing.xxs),
+        Text(
+          value,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _handleRequestOrder() async {
+    final l10n = AppLocalizations.of(context)!;
+    final quoteState = ref.read(quoteProvider);
+
+    try {
+      final repo = ref.read(ordersRepositoryProvider);
+      final routeState = ref.read(routePickerProvider);
+      final fromText = AddressUtils.friendly(
+        userInput: routeState.pickupAddress,
+        latLng: routeState.pickup,
+      );
+      final toText = AddressUtils.friendly(
+        userInput: routeState.dropoffAddress,
+        latLng: routeState.dropoff,
+      );
+
+      // Get selected shipment type, cargo weight, and compute price
+      final shipmentType = ref.read(selectedShipmentTypeProvider);
+      final cargoWeight = ref.read(selectedCargoWeightProvider);
+      final breakdown = Pricing.computeWithShipmentType(
+        quoteState.distanceKm!,
+        shipmentType,
+        cargoWeight: cargoWeight,
+      );
+
+      // Final price = rounded subtotal + weight cost
+      final finalPrice = breakdown.rounded + breakdown.weightCost;
+
+      final authState = ref.read(authProvider);
+      final user = authState.user;
+      if (user == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final orderId = await repo.createOrder(
+        ownerId: user.uid,
+        pickup: {
+          'lat': routeState.pickup!.latitude,
+          'lng': routeState.pickup!.longitude,
+          'label': fromText,
+        },
+        dropoff: {
+          'lat': routeState.dropoff!.latitude,
+          'lng': routeState.dropoff!.longitude,
+          'label': toText,
+        },
+        pickupAddress: fromText,
+        dropoffAddress: toText,
+        distanceKm: quoteState.distanceKm!,
+        price: finalPrice,
+        weightTons: cargoWeight.tons,
+      );
+
+      // Log analytics event
+      AnalyticsService.instance.logOrderCreated(
+        orderId: orderId,
+        priceAmount: finalPrice,
+        distanceKm: quoteState.distanceKm!,
+      );
+
+      if (!mounted) return;
+      final order = core.Order(
+        id: orderId,
+        ownerId: user.uid,
+        distanceKm: quoteState.distanceKm!,
+        price: finalPrice.toDouble(),
+        pickupAddress: fromText,
+        dropoffAddress: toText,
+        pickup: LocationPoint(
+          lat: routeState.pickup!.latitude,
+          lng: routeState.pickup!.longitude,
+          label: fromText,
+        ),
+        dropoff: LocationPoint(
+          lat: routeState.dropoff!.latitude,
+          lng: routeState.dropoff!.longitude,
+          label: toText,
+        ),
+        status: OrderStatus.assigning.toFirestore(),
+        weightTons: cargoWeight.tons,
+      );
+
+      _startOrderTracking(orderId);
+      if (!mounted) return;
+      context.push('/track', extra: order);
+    } catch (e, stackTrace) {
+      debugPrint('[OrdersClient] Failed to create order: $e');
+      debugPrint('[OrdersClient] Stack trace: $stackTrace');
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.error_create_order),
+          backgroundColor: context.errorColor,
+        ),
+      );
+    }
   }
 }

@@ -1,0 +1,91 @@
+name: Firestore Security Rules Tests
+
+on:
+  push:
+    branches: [main, develop, driver-auth-stable-work]
+    paths:
+      - 'firestore.rules'
+      - 'firestore-rules-tests/**'
+      - '.github/workflows/firestore-rules-test.yml'
+  pull_request:
+    paths:
+      - 'firestore.rules'
+      - 'firestore-rules-tests/**'
+      - '.github/workflows/firestore-rules-test.yml'
+  workflow_dispatch:
+
+jobs:
+  test-firestore-rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: firestore-rules-tests/package.json
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Install test dependencies
+        working-directory: firestore-rules-tests
+        run: npm ci
+
+      - name: Validate Firestore rules syntax
+        run: |
+          echo "🔍 Validating firestore.rules syntax..."
+          firebase deploy --only firestore:rules --dry-run --project wawapp-test || {
+            echo "❌ ERROR: firestore.rules has syntax errors!"
+            echo "Please fix syntax before deploying."
+            exit 1
+          }
+          echo "✅ Firestore rules syntax is valid"
+
+      - name: Run Firestore security rules tests
+        working-directory: firestore-rules-tests
+        run: |
+          echo "🧪 Running Firestore security rules tests..."
+          npm test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firestore-rules-test-results
+          path: firestore-rules-tests/test-results.xml
+          retention-days: 30
+
+      - name: Comment test results on PR
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ **Firestore Security Rules Tests Failed**\n\nPlease review the test failures and fix the security rules before merging.\n\nSee the [Actions tab](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
+            })
+
+      - name: Security rules test summary
+        if: success()
+        run: |
+          echo "## ✅ Firestore Security Rules Tests Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All 57 security test cases passed successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Verified Security Controls" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Phone enumeration attacks prevented" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Cross-user data access denied" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Admin-only fields protected" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Financial operations restricted to Cloud Functions" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ PIN integrity enforced (atomic hash + salt updates)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Order status transitions validated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "See [SECURITY_MODEL.md](SECURITY_MODEL.md) for complete documentation." >> $GITHUB_STEP_SUMMARY

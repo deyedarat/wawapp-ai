@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:core_shared/core_shared.dart';
 
 class OrderStatusTimeline extends StatelessWidget {
-  final String
-      status; // pending, matching, assigned, enRoute, pickedUp, delivering, delivered, canceled
+  final OrderStatus status;
   const OrderStatusTimeline({super.key, required this.status});
 
-  static const List<String> _steps = [
-    'pending',
-    'matching',
-    'assigned',
-    'enRoute',
-    'pickedUp',
-    'delivering',
-    'delivered'
+  static const List<OrderStatus> _steps = [
+    OrderStatus.requested,
+    OrderStatus.assigning,
+    OrderStatus.accepted,
+    OrderStatus.onRoute,
+    OrderStatus.completed,
   ];
 
-  int _indexOf(String s) => _steps.indexOf(s).clamp(0, _steps.length - 1);
+  int _indexOf(OrderStatus s) {
+    final index = _steps.indexOf(s);
+    return index == -1 ? 0 : index;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +48,7 @@ class OrderStatusTimeline extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        _label(_steps[i]),
+                        _steps[i].toArabicLabel(),
                         style: isSmallScreen
                             ? Theme.of(context).textTheme.labelSmall
                             : Theme.of(context).textTheme.labelSmall,
@@ -65,26 +66,5 @@ class OrderStatusTimeline extends StatelessWidget {
         const SizedBox(height: 8),
       ],
     );
-  }
-
-  String _label(String s) {
-    switch (s) {
-      case 'pending':
-        return 'قيد الإنشاء';
-      case 'matching':
-        return 'جارِ التعيين';
-      case 'assigned':
-        return 'تم التعيين';
-      case 'enRoute':
-        return 'في الطريق';
-      case 'pickedUp':
-        return 'تم الاستلام';
-      case 'delivering':
-        return 'جاري التوصيل';
-      case 'delivered':
-        return 'تم التسليم';
-      default:
-        return s;
-    }
   }
 }

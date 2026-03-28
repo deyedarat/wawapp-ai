@@ -1,0 +1,33 @@
+name: wawapp_client_ci
+
+on:
+  push:
+    paths:
+      - 'apps/wawapp_client/**'
+      - '.github/workflows/wawapp_client_ci.yml'
+  pull_request:
+    paths:
+      - 'apps/wawapp_client/**'
+      - '.github/workflows/wawapp_client_ci.yml'
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/wawapp_client
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Flutter analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings

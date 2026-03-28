@@ -1,0 +1,22 @@
+# Common heavy paths
+**/node_modules/**
+**/.dart_tool/**
+**/build/**
+**/android/.gradle/**
+**/android/build/**
+**/ios/Pods/**
+**/.git/**
+**/.firebase/**
+**/.cache/**
+**/.manus/**
+**/.spec-output/**
+
+# Binaries & archives
+**/*.log
+**/*.lock
+**/*.apk
+**/*.aab
+**/*.ipa
+**/*.zip
+**/*.gz
+**/*.tar
