@@ -133,9 +133,15 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                                                     ),
                                         children: [
                                                       TileLayer(
-                                                                      urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                                                      subdomains: const ['a', 'b', 'c'],
+                                                                      // Carto Voyager – clean, professional, no clutter
+                                                                      urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+                                                                      subdomains: const ['a', 'b', 'c', 'd'],
                                                                       userAgentPackageName: 'com.wawapp.admin',
+                                                                      maxZoom: 20,
+                                                                      minZoom: 2,
+                                                                      retinaMode: true,
+                                                                      keepBuffer: 4,
+                                                                      panBuffer: 2,
                                                                       errorTileCallback: (tile, error, stack) {},
                                                                     ),
                                                       PolylineLayer(
@@ -183,8 +189,10 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                                                                                       )).toList(),
                                                                     ),
                                                       RichAttributionWidget(
+                                                                      animationConfig: const ScaleRAWA(),
                                                                       attributions: [
-                                                                                        TextSourceAttribution('OpenStreetMap contributors', onTap: () {}),
+                                                                                        TextSourceAttribution('© Carto', onTap: () {}),
+                                                                                        TextSourceAttribution('© OpenStreetMap contributors', onTap: () {}),
                                                                                       ],
                                                                     ),
                                                     ],
