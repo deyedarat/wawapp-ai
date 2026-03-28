@@ -132,6 +132,9 @@ class AdminOrdersService {
     required double pickupLng,
     required double dropoffLat,
     required double dropoffLng,
+    double weightTons = 0.5,
+    String shipmentType = 'generalGoodsAndBoxes',
+    String? notes,
   }) async {
     try {
       final user = _auth.currentUser;
@@ -139,11 +142,14 @@ class AdminOrdersService {
 
       final docRef = await _firestore.collection('orders').add({
         'clientPhone': clientPhone,
-        'ownerId': 'manual_${DateTime.now().millisecondsSinceEpoch}', // Placeholder for manual orders
+        'ownerId': 'manual_${DateTime.now().millisecondsSinceEpoch}',
         'pickupAddress': pickupAddress,
         'dropoffAddress': dropoffAddress,
         'distanceKm': distanceKm,
         'price': price,
+        'weightTons': weightTons,
+        'shipmentType': shipmentType,
+        if (notes != null && notes.isNotEmpty) 'notes': notes,
         'pickup': {
           'lat': pickupLat,
           'lng': pickupLng,
