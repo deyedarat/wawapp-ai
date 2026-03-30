@@ -1,4 +1,3 @@
-import 'dart:developer' as dev;
 import 'dart:math';
 
 import 'package:core_shared/core_shared.dart';
@@ -36,7 +35,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
 
   Future<void> _initLocation() async {
     if (kDebugMode) {
-      dev.log('[Matching] NearbyScreen: Initializing location');
+      print('[NEARBY_SCREEN] 🚀 Initializing location');
     }
 
     // Clear previous error
@@ -49,17 +48,19 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     try {
       _currentPosition = await _locationService.getCurrentPosition();
       if (kDebugMode) {
-        dev.log(
-            '[Matching] NearbyScreen: Location obtained: lat=${_currentPosition!.latitude.toStringAsFixed(4)}, lng=${_currentPosition!.longitude.toStringAsFixed(4)}');
+        print('[NEARBY_SCREEN] ✅ Location obtained: lat=${_currentPosition!.latitude.toStringAsFixed(4)}, lng=${_currentPosition!.longitude.toStringAsFixed(4)}');
       }
       if (mounted) {
         setState(() {
           _error = null; // Clear any previous errors
         });
       }
+      if (kDebugMode) {
+        print('[NEARBY_SCREEN] 🔄 setState called, should trigger rebuild');
+      }
     } on Object catch (e) {
       if (kDebugMode) {
-        dev.log('[Matching] NearbyScreen: Location error: $e');
+        print('[NEARBY_SCREEN] ❌ Location error: $e');
       }
 
       // Provide user-friendly error message
@@ -159,24 +160,30 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
 
   Widget _buildOrdersList() {
     if (kDebugMode) {
-      dev.log('[Matching] NearbyScreen: Subscribing to nearby orders stream');
-      dev.log(
-          '[Matching] NearbyScreen: Current position: lat=${_currentPosition!.latitude.toStringAsFixed(6)}, lng=${_currentPosition!.longitude.toStringAsFixed(6)}');
+      print('[NEARBY_SCREEN] 📋 Building orders list widget');
+      print('[NEARBY_SCREEN] 📍 Position: lat=${_currentPosition!.latitude.toStringAsFixed(6)}, lng=${_currentPosition!.longitude.toStringAsFixed(6)}');
     }
+
+    // Force invalidate the provider to ensure fresh data
+    ref.listen(nearbyOrdersProvider(_currentPosition!), (previous, next) {
+      if (kDebugMode) {
+        print('[NEARBY_SCREEN] 🔔 Provider state changed: $next');
+      }
+    });
 
     final ordersAsync = ref.watch(nearbyOrdersProvider(_currentPosition!));
 
     return ordersAsync.when(
       loading: () {
         if (kDebugMode) {
-          dev.log('[Matching] NearbyScreen: ⏳ Waiting for stream data...');
+          print('[NEARBY_SCREEN] ⏳ Provider loading...');
         }
         return const Center(child: CircularProgressIndicator());
       },
       error: (error, stack) {
         if (kDebugMode) {
-          dev.log('[Matching] NearbyScreen: ❌ Stream error: $error');
-          dev.log('[Matching] NearbyScreen: Stack trace: $stack');
+          print('[NEARBY_SCREEN] ❌ Provider error: $error');
+          print('[NEARBY_SCREEN] Stack: $stack');
         }
         final appError = AppError.from(error);
         return ErrorScreen(
@@ -186,19 +193,17 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       },
       data: (orders) {
         if (kDebugMode) {
-          dev.log('[Matching] NearbyScreen: ✅ Stream returned ${orders.length} orders');
+          print('[NEARBY_SCREEN] ✅ Provider returned ${orders.length} orders');
           if (orders.isEmpty) {
-            dev.log('[Matching] NearbyScreen: ℹ️ Possible reasons for empty list:');
-            dev.log('[Matching] NearbyScreen:   1. Driver is OFFLINE - check driver status');
-            dev.log(
-                '[Matching] NearbyScreen:   2. No orders in Firestore with status="matching" and assignedDriverId=null');
-            dev.log('[Matching] NearbyScreen:   3. All orders are >8km away from driver');
-            dev.log('[Matching] NearbyScreen:   4. Firestore composite index not created');
+            print('[NEARBY_SCREEN] ℹ️ Empty list - possible reasons:');
+            print('[NEARBY_SCREEN]   1. Driver OFFLINE');
+            print('[NEARBY_SCREEN]   2. No matching orders in DB');
+            print('[NEARBY_SCREEN]   3. All orders >8km away');
+            print('[NEARBY_SCREEN]   4. Index not created');
           } else {
             for (var i = 0; i < orders.length; i++) {
               final order = orders[i];
-              dev.log(
-                  '[Matching] NearbyScreen: Order #${i + 1}: id=${order.id}, price=${order.price}MRU, pickup=${order.pickup.label}');
+              print('[NEARBY_SCREEN] Order #${i + 1}: ${order.id}, ${order.price}MRU');
             }
           }
         }

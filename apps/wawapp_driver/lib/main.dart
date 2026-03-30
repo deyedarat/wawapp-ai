@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -14,6 +15,7 @@ import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'services/analytics_service.dart';
+import 'services/connectivity_service.dart';
 import 'services/notification_service.dart';
 
 void main() async {
@@ -63,6 +65,12 @@ void main() async {
 
     // Initialize Crashlytics
     await _initializeCrashlytics();
+
+    // Enable Firestore offline persistence
+    await _enableFirestoreOfflinePersistence();
+
+    // Initialize connectivity monitoring
+    await ConnectivityService().initialize();
 
     // Suppress reCAPTCHA error in debug mode
     if (!kReleaseMode) {
@@ -117,6 +125,26 @@ Future<void> _initializeCrashlytics() async {
     if (kDebugMode) {
       print('⚠️ Crashlytics initialization failed: $e');
       print('   App will continue without crash reporting.');
+    }
+  }
+}
+
+/// Enable Firestore offline persistence for better connectivity handling
+Future<void> _enableFirestoreOfflinePersistence() async {
+  try {
+    // Enable offline persistence with unlimited cache size
+    FirebaseFirestore.instance.settings = const Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+    );
+
+    if (kDebugMode) {
+      print('✅ Firestore offline persistence enabled');
+    }
+  } on FirebaseException catch (e) {
+    if (kDebugMode) {
+      print('⚠️ Failed to enable Firestore offline persistence: $e');
+      print('   App will continue without offline support.');
     }
   }
 }
