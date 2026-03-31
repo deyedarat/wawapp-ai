@@ -83,6 +83,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   }
 
   Future<void> _acceptOrder(String orderId) async {
+    print('[NEARBY_SCREEN] 🟡 _acceptOrder called for: $orderId');
     try {
       final ordersService = ref.read(ordersServiceProvider);
       await ordersService.acceptOrder(orderId);
@@ -328,7 +329,10 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                   DriverActionButton(
                     label: 'قبول الطلب',
                     icon: Icons.check_circle,
-                    onPressed: order.id != null ? () => _acceptOrder(order.id!) : null,
+                    onPressed: order.id != null ? () {
+                      print('[NEARBY_SCREEN] 🟢 Accept button pressed for order: ${order.id}');
+                      _acceptOrder(order.id!);
+                    } : null,
                     isFullWidth: true,
                   ),
                 ],

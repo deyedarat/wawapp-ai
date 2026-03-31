@@ -51,7 +51,6 @@ class NotificationService {
       'طلبات جديدة',
       description: 'إشعارات الطلبات الجديدة القريبة منك',
       importance: Importance.high,
-      sound: RawResourceAndroidNotificationSound('notification'),
       enableVibration: true,
       playSound: true,
     );
@@ -62,7 +61,6 @@ class NotificationService {
       'تحديثات الطلبات',
       description: 'تحديثات حالة الطلبات الحالية',
       importance: Importance.defaultImportance,
-      sound: RawResourceAndroidNotificationSound('notification'),
       enableVibration: true,
     );
 
@@ -111,7 +109,6 @@ class NotificationService {
             channelName,
             importance: importance,
             priority: notificationType == 'new_order' ? Priority.high : Priority.defaultPriority,
-            sound: const RawResourceAndroidNotificationSound('notification'),
             enableVibration: true,
             playSound: true,
           ),

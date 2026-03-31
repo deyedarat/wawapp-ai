@@ -17,6 +17,15 @@ final ordersServiceProvider = Provider<OrdersService>((ref) {
 class OrdersService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  /// Recursively cast Map<Object?, Object?> to Map<String, dynamic>
+  static Map<String, dynamic> _deepCastMap(Map map) {
+    return map.map((key, value) {
+      if (value is Map) return MapEntry(key.toString(), _deepCastMap(value));
+      if (value is List) return MapEntry(key.toString(), value.map((e) => e is Map ? _deepCastMap(e) : e).toList());
+      return MapEntry(key.toString(), value);
+    });
+  }
+
   Future<List<Order>> getNearbyOrders(Position driverPosition) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -41,15 +50,15 @@ class OrdersService {
         'lng': driverPosition.longitude,
       });
 
-      final data = result.data as Map<dynamic, dynamic>;
-      final rawOrders = data['orders'] as List<dynamic>;
+      final data = Map<String, dynamic>.from(result.data as Map);
+      final rawOrders = (data['orders'] as List<dynamic>?) ?? [];
 
       if (kDebugMode) {
         dev.log('[Matching] ✅ Cloud Function returned ${rawOrders.length} orders');
       }
 
       final orders = rawOrders.map((o) {
-        final orderMap = Map<String, dynamic>.from(o as Map);
+        final orderMap = _deepCastMap(o as Map);
 
         // Handle Timestamp conversion if necessary
         // Cloud Functions might return ISO strings or Maps for Timestamps
@@ -69,10 +78,12 @@ class OrdersService {
       }).toList();
 
       return orders;
-    } catch (e) {
+    } catch (e, stack) {
       if (kDebugMode) {
         dev.log('[Matching] ❌ Error calling Cloud Function: $e');
+        dev.log('[Matching] ❌ Stack: $stack');
       }
+      print('[NEARBY_PROVIDER] ❌ ERROR: $e');
       // Return empty list on error to avoid crashing UI
       return [];
     }
@@ -85,28 +96,16 @@ class OrdersService {
     }
 
     try {
-      await _firestore.runTransaction((transaction) async {
-        final orderRef = _firestore.collection('orders').doc(orderId);
-        final orderDoc = await transaction.get(orderRef);
-
-        if (!orderDoc.exists) {
-          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
-        }
-
-        final currentStatus = OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
-        if (currentStatus != OrderStatus.assigning) {
-          throw const AppError(type: AppErrorType.permissionDenied, message: 'Order was already taken');
-        }
-
-        final update = OrderStatus.accepted.createTransitionUpdate(
-          driverId: user.uid,
-        );
-
-        transaction.update(orderRef, update);
-      });
+      final callable = FirebaseFunctions.instance.httpsCallable('acceptOrder');
+      await callable.call({'orderId': orderId});
 
       // Log analytics event after successful acceptance
       AnalyticsService.instance.logOrderAcceptedByDriver(orderId: orderId);
+    } on FirebaseFunctionsException catch (e) {
+      if (e.code == 'failed-precondition') {
+        throw const AppError(type: AppErrorType.permissionDenied, message: 'Order was already taken');
+      }
+      throw AppError.from(e);
     } on Object catch (e) {
       if (e is AppError) rethrow;
       throw AppError.from(e);

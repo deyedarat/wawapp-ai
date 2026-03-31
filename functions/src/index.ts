@@ -11,6 +11,7 @@ import * as admin from 'firebase-admin';
 admin.initializeApp();
 
 // Export Cloud Functions
+export { acceptOrder } from './acceptOrder';
 export { aggregateDriverRating } from './aggregateDriverRating';
 export { approveTopupRequest, rejectTopupRequest } from './approveTopupRequest'; // Phase D: Admin top-up approval
 export { cleanStaleDriverLocations } from './cleanStaleDriverLocations';
