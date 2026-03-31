@@ -1,6 +1,6 @@
 param(
     [Parameter(Position=0)]
-    [ValidateSet('init','doctor','help','env:verify','fix:node-policy','format','analyze','flutter:refresh','build:driver','build:client','test:unit','test:analyze','env:verify-Firebase','fcm:verify','error:analyze')]
+    [ValidateSet('init','doctor','help','env:verify','fix:node-policy','format','analyze','flutter:refresh','build:driver','build:client','run:driver','run:client','test:unit','test:analyze','env:verify-Firebase','fcm:verify','error:analyze')]
     [string]$Command = 'help',
     
     [Parameter(Position=1)]
@@ -154,7 +154,7 @@ function Invoke-BuildDriver {
     Push-Location $appPath
     try {
         if ($mode -eq "Release") {
-            flutter build apk --release
+            flutter build appbundle --release
         } else {
             flutter build apk --debug
         }
@@ -173,10 +173,36 @@ function Invoke-BuildClient {
     Push-Location $appPath
     try {
         if ($mode -eq "Release") {
-            flutter build apk --release
+            flutter build appbundle --release
         } else {
             flutter build apk --debug
         }
+        $exitCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    exit $exitCode
+}
+
+function Invoke-RunDriver {
+    Write-Host "[RUN:DRIVER] Running driver app on connected device..."
+    $appPath = Join-Path $ScriptRoot "apps\wawapp_driver"
+    Push-Location $appPath
+    try {
+        flutter run
+        $exitCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    exit $exitCode
+}
+
+function Invoke-RunClient {
+    Write-Host "[RUN:CLIENT] Running client app on connected device..."
+    $appPath = Join-Path $ScriptRoot "apps\wawapp_client"
+    Push-Location $appPath
+    try {
+        flutter run
         $exitCode = $LASTEXITCODE
     } finally {
         Pop-Location
@@ -271,6 +297,8 @@ switch ($Command) {
     'flutter:refresh' { Invoke-FlutterRefresh }
     'build:driver' { Invoke-BuildDriver -Config $Config }
     'build:client' { Invoke-BuildClient -Config $Config }
+    'run:driver' { Invoke-RunDriver }
+    'run:client' { Invoke-RunClient }
     'test:unit' { Invoke-TestUnit }
     'test:analyze' { Invoke-TestAnalyze }
     'env:verify-Firebase' { Invoke-EnvVerifyFirebase }
