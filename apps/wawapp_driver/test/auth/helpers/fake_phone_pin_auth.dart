@@ -137,6 +137,4 @@ class FakePhonePinAuth implements PhonePinAuth {
     _lastPhone = null;
     _otpSent = false;
   }
-
-  String? get lastVerificationId => throw UnimplementedError();
 }

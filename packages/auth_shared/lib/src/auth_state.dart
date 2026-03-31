@@ -18,8 +18,6 @@ class AuthState {
   final String? error;
   final bool otpFlowActive;
   final OtpStage otpStage;
-  final String? verificationId;
-  final int? resendToken;
   final bool isPinResetFlow;
   final bool isPinCheckLoading;
   final bool isStreamsSafeToRun;
@@ -38,8 +36,6 @@ class AuthState {
     this.error,
     this.otpFlowActive = false,
     this.otpStage = OtpStage.idle,
-    this.verificationId,
-    this.resendToken,
     this.isPinResetFlow = false,
     this.isPinCheckLoading = false,
     this.isStreamsSafeToRun = true,
@@ -55,8 +51,6 @@ class AuthState {
     String? error,
     bool? otpFlowActive,
     OtpStage? otpStage,
-    String? verificationId,
-    int? resendToken,
     bool? isPinResetFlow,
     bool? isPinCheckLoading,
     bool? isStreamsSafeToRun,
@@ -71,8 +65,6 @@ class AuthState {
       error: error, // Error is typically nullable/resettable
       otpFlowActive: otpFlowActive ?? this.otpFlowActive,
       otpStage: otpStage ?? this.otpStage,
-      verificationId: verificationId ?? this.verificationId,
-      resendToken: resendToken ?? this.resendToken,
       isPinResetFlow: isPinResetFlow ?? this.isPinResetFlow,
       isPinCheckLoading: isPinCheckLoading ?? this.isPinCheckLoading,
       isStreamsSafeToRun: isStreamsSafeToRun ?? this.isStreamsSafeToRun,

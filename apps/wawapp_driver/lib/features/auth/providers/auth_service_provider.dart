@@ -1,4 +1,5 @@
 import 'package:auth_shared/auth_shared.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -200,7 +201,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
             '[AuthNotifier] DIAGNOSTIC: Send OTP error: ${e.runtimeType} - $e');
       state = state.copyWith(
         isLoading: false,
-        error: e.toString(),
+        error: AuthErrorMessages.getErrorMessage(e),
         otpFlowActive: false, // End flow on error
         otpStage: OtpStage.failed,
         isPinResetFlow: false, // Clear reset flag on error
@@ -228,6 +229,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
         // Keep isPinResetFlow for now - AuthGate/OtpScreen will handle navigation
       );
       // User will be updated via authStateChanges listener
+    } on FirebaseFunctionsException catch (e) {
+      if (kDebugMode) print('[AuthNotifier] Verify OTP Cloud Function error: ${e.code}');
+      state = state.copyWith(
+        isLoading: false,
+        error: AuthErrorMessages.getErrorMessage(e),
+      );
     } on Object catch (e) {
       if (kDebugMode) print('[AuthNotifier] Verify OTP error: $e');
       state = state.copyWith(

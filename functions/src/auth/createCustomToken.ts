@@ -5,7 +5,7 @@
  * for signing in to Firebase Auth without requiring OTP every time.
  */
 
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 import * as crypto from 'crypto';
 import { checkRateLimit, recordFailedAttempt, resetRateLimit } from './rateLimiting';

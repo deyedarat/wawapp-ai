@@ -106,14 +106,14 @@ class MockPhonePinAuth extends _i1.Mock implements _i4.PhonePinAuth {
       ) as String?);
 
   @override
-  _i6.Future<void> confirmOtp(String? smsCode) => (super.noSuchMethod(
+  _i6.Future<bool> confirmOtp(String? smsCode) => (super.noSuchMethod(
         Invocation.method(
           #confirmOtp,
           [smsCode],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
+        returnValue: _i6.Future<bool>.value(false),
+        returnValueForMissingStub: _i6.Future<bool>.value(false),
+      ) as _i6.Future<bool>);
 
   @override
   _i6.Future<void> setPin(String? pin) => (super.noSuchMethod(

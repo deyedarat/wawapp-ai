@@ -3,3 +3,11 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     - tools/**
+    - apps/**
+    - packages/**
+    - functions/**
+    - firestore-rules-tests/**
+    - backend/**
+    - admin_web/**
+    - '**/*.g.dart'
+    - '**/*.freezed.dart'

@@ -10,7 +10,7 @@
  * Created: 2025-11-30
  */
 
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 
 /**

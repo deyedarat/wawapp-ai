@@ -11,7 +11,7 @@
  * Last Updated: 2025-11-21
  */
 
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 import { writeAdminNotification } from './helpers/adminNotifications';
 

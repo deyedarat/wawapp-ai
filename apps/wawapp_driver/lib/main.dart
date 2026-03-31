@@ -72,11 +72,6 @@ void main() async {
     // Initialize connectivity monitoring
     await ConnectivityService().initialize();
 
-    // Suppress reCAPTCHA error in debug mode
-    if (!kReleaseMode) {
-      await FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
-    }
-
     if (kDebugMode) {
       print('✅ Firebase initialized, Crashlytics ready');
     }

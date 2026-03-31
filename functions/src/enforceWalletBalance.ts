@@ -12,7 +12,7 @@
  * Last Updated: 2025-12-28
  */
 
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 
 /**

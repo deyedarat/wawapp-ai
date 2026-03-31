@@ -36,7 +36,6 @@ void main() {
         otpFlowActive: true,
         isLoading: false,
         pinStatus: PinStatus.unknown,
-        verificationId: 'test-verification-id',
       );
 
       final isSending = authState.otpStage == OtpStage.sending;
@@ -44,7 +43,6 @@ void main() {
 
       expect(isSending, isFalse, reason: 'Should NOT be sending after code is sent');
       expect(canOtp, isTrue, reason: 'Should allow OTP navigation after codeSent');
-      expect(authState.verificationId, isNotNull, reason: 'Should have verification ID');
     });
 
     test('should redirect to /login when not authenticated', () {
@@ -166,7 +164,6 @@ void main() {
       const codeSent = AuthState(
         otpStage: OtpStage.codeSent,
         isLoading: false,
-        verificationId: 'test-id',
       );
 
       expect(idle.otpStage, OtpStage.idle);

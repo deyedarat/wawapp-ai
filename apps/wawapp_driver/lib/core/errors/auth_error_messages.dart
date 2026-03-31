@@ -88,6 +88,11 @@ class AuthErrorMessages {
       return rateLimitExceeded;
     }
 
+    // Twilio OTP errors (via Cloud Functions)
+    if (errorString.contains('invalid-argument')) {
+      return invalidOtp;
+    }
+
     return unknownError;
   }
 }

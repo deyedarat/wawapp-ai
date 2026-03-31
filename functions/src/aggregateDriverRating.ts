@@ -6,7 +6,7 @@
  * VALIDATION: Ensures rating is 1-5 and order is completed
  */
 
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 
 export const aggregateDriverRating = functions.firestore

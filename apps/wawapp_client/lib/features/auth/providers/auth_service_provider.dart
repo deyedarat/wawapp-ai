@@ -207,10 +207,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
           );
         },
       );
-      final verificationId = _authService.lastVerificationId;
-      if (kDebugMode) {
-        print('[ClientAuthNotifier] OTP sent successfully, verificationId=present');
-      }
+      if (kDebugMode) print('[ClientAuthNotifier] OTP sent successfully');
 
       // Update last sent time on success
       _lastOtpSentTime = DateTime.now();
@@ -219,14 +216,17 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         phoneE164: phone,
         otpStage: OtpStage.codeSent,
-        verificationId: verificationId,
       );
-    } on FirebaseAuthException catch (e) {
-      // Translate Firebase error codes to user-friendly Arabic messages
-      final arabicMessage = _translateFirebaseError(e);
-      // Determine if this error warrants a bug report offer
-      final isBugReportWorthy = e.code == 'unknown' || (e.message != null && e.message!.contains('Error code:39'));
-      if (kDebugMode) print('[ClientAuthNotifier] Firebase Auth error: code=${e.code}');
+    } on FirebaseFunctionsException catch (e) {
+      String arabicMessage;
+      if (e.code == 'resource-exhausted') {
+        arabicMessage = 'لقد تجاوزت الحد المسموح. يرجى الانتظار قبل المحاولة مجدداً';
+      } else if (e.code == 'invalid-argument') {
+        arabicMessage = 'رقم الهاتف غير صالح. يرجى التحقق منه والمحاولة مجدداً';
+      } else {
+        arabicMessage = 'حدث خطأ أثناء إرسال رمز التحقق. يرجى المحاولة مجدداً';
+      }
+      if (kDebugMode) print('[ClientAuthNotifier] Cloud Function error: code=${e.code}');
       LogService.instance.addLog(
         event: 'otp_send_failed',
         phone: phone,
@@ -239,7 +239,7 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         otpFlowActive: false,
         otpStage: OtpStage.failed,
         isPinResetFlow: false,
-        shouldOfferBugReport: isBugReportWorthy,
+        shouldOfferBugReport: false,
       );
     } on Object catch (e) {
       if (kDebugMode) print('[ClientAuthNotifier] Send OTP error: ${e.runtimeType}');
@@ -257,29 +257,6 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         isPinResetFlow: false,
         shouldOfferBugReport: true, // Unknown non-Firebase errors also warrant a report
       );
-    }
-  }
-
-  /// Translates Firebase Auth error codes into user-friendly Arabic messages.
-  /// Never exposes technical details to the user.
-  static String _translateFirebaseError(FirebaseAuthException e) {
-    switch (e.code) {
-      case 'too-many-requests':
-        return 'لقد تجاوزت الحد المسموح. يرجى الانتظار قبل المحاولة مجدداً';
-      case 'invalid-phone-number':
-        return 'رقم الهاتف غير صالح. يرجى التحقق منه والمحاولة مجدداً';
-      case 'network-request-failed':
-        return 'فشل الاتصال بالشبكة. يرجى التحقق من اتصالك بالإنترنت';
-      case 'session-expired':
-        return 'انتهت صلاحية الجلسة. يرجى المحاولة مجدداً';
-      case 'unknown':
-        // Check for Error code:39 in the message
-        if (e.message != null && e.message!.contains('Error code:39')) {
-          return 'حدث خطأ داخلي أثناء التحقق [كود: 39]. يرجى المحاولة مجدداً';
-        }
-        return 'حدث خطأ أثناء التحقق. يرجى المحاولة مجدداً';
-      default:
-        return 'حدث خطأ أثناء التحقق. يرجى المحاولة مجدداً';
     }
   }
 
@@ -301,6 +278,17 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         // Keep isPinResetFlow for now - router will handle navigation
       );
       // User will be updated via authStateChanges listener
+    } on FirebaseFunctionsException catch (e) {
+      String errorMessage;
+      if (e.code == 'invalid-argument') {
+        errorMessage = 'رمز التحقق غير صحيح، يرجى المحاولة مجدداً.';
+      } else if (e.code == 'resource-exhausted') {
+        errorMessage = 'تجاوزت عدد المحاولات المسموح بها، يرجى الانتظار.';
+      } else {
+        errorMessage = 'حدث خطأ أثناء التحقق، يرجى المحاولة مجدداً.';
+      }
+      if (kDebugMode) print('[ClientAuthNotifier] Verify OTP Cloud Function error: ${e.code}');
+      state = state.copyWith(isLoading: false, error: errorMessage);
     } on Object catch (e) {
       if (kDebugMode) print('[ClientAuthNotifier] Verify OTP error: $e');
       state = state.copyWith(

@@ -38,8 +38,9 @@ class FakePhonePinAuth implements PhonePinAuth {
   }
 
   @override
-  Future<void> confirmOtp(String smsCode) async {
+  Future<bool> confirmOtp(String smsCode) async {
     if (!_otpSent) throw Exception('No OTP session');
+    return false;
   }
 
   @override
@@ -63,8 +64,6 @@ class FakePhonePinAuth implements PhonePinAuth {
     _otpSent = false;
   }
 
-  @override
-  String? get lastVerificationId => 'fake-verification-id';
 
   @override
   String? get lastPhoneE164 => null;

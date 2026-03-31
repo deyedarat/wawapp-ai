@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,10 +86,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         phoneE164: phone,
         otpStage: OtpStage.codeSent,
         otpFlowActive: true,
-        verificationId: _authService.lastVerificationId,
       );
 
-      if (kDebugMode) print('[AuthNotifier] ensurePhoneSession() completed, verificationId isNull=${state.verificationId == null}');
+      if (kDebugMode) print('[AuthNotifier] ensurePhoneSession() completed');
     } catch (e, stackTrace) {
       if (kDebugMode) {
         print('[AuthNotifier] ensurePhoneSession() FAILED: ${e.runtimeType} - $e');
@@ -121,12 +121,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) print('[AuthNotifier] verifyOtp FAILED: ${e.runtimeType} - $e');
 
       String errorMessage = e.toString();
-      if (errorMessage.contains('invalid-verification-code')) {
-        errorMessage = 'رمز التحقق غير صحيح، يرجى المحاولة مجدداً.';
-      } else if (errorMessage.contains('session-expired')) {
-        errorMessage = 'انتهت صلاحية الجلسة، يرجى طلب رمز جديد.';
-      } else if (errorMessage.contains('No verification id')) {
-        errorMessage = 'لم يتم العثور على جلسة تحقق، يرجى طلب رمز جديد.';
+      if (e is FirebaseFunctionsException) {
+        if (e.code == 'invalid-argument') {
+          errorMessage = 'رمز التحقق غير صحيح، يرجى المحاولة مجدداً.';
+        } else if (e.code == 'resource-exhausted') {
+          errorMessage = 'تجاوزت عدد المحاولات المسموح بها، يرجى الانتظار.';
+        } else {
+          errorMessage = 'حدث خطأ أثناء التحقق، يرجى المحاولة مجدداً.';
+        }
       }
 
       state = state.copyWith(isLoading: false, error: errorMessage);
