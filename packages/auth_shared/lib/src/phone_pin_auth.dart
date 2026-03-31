@@ -43,7 +43,7 @@ class PhonePinAuth {
     );
     _authInitialized = true;
     if (kDebugMode) {
-      print('[PhonePinAuth] Initialized with forceRecaptchaFlow=true');
+      print('[PhonePinAuth] Auth initialized (reCAPTCHA as fallback only)');
     }
   }
 
