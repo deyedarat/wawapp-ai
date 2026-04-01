@@ -145,12 +145,14 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                 final filteredOrders = _searchQuery.isEmpty
                     ? orders
                     : orders.where((order) {
-                        final searchLower = _searchQuery.toLowerCase();
-                        return (order.id ?? '').toLowerCase().contains(searchLower) ||
-                            (order.ownerId ?? '').toLowerCase().contains(searchLower) ||
-                            order.pickupAddress.toLowerCase().contains(searchLower) ||
-                            order.dropoffAddress.toLowerCase().contains(searchLower) ||
-                            (order.status ?? '').toLowerCase().contains(searchLower);
+                        final q = _searchQuery.toLowerCase();
+                        return (order.id ?? '').toLowerCase().contains(q) ||
+                            (order.ownerId ?? '').toLowerCase().contains(q) ||
+                            order.pickupAddress.toLowerCase().contains(q) ||
+                            order.dropoffAddress.toLowerCase().contains(q) ||
+                            order.pickup.label.toLowerCase().contains(q) ||
+                            order.dropoff.label.toLowerCase().contains(q) ||
+                            (order.status ?? '').toLowerCase().contains(q);
                       }).toList();
 
                 if (filteredOrders.isEmpty) {
