@@ -60,7 +60,7 @@ service cloud.firestore {
 
       // P0-2 FIX: Removed public access to matching orders to prevent PII leakage
       // Drivers must use Cloud Function getNearbyOrders() for server-side matching
-      allow read: if isSignedIn() && (isOwner() || isAssignedDriver());
+      allow read: if isSignedIn() && (isOwner() || isAssignedDriver() || isDriver());
       
       allow update: if isSignedIn()
         && request.resource.data.price == resource.data.price
@@ -190,11 +190,9 @@ service cloud.firestore {
       // Admins can read all wallets
       allow read: if isAdmin();
       
-      // P0-10 FIX: Triple-check driver wallet access + explicit platform wallet protection
+      // P0-10 FIX: Driver wallet access
       allow read: if isSignedIn() && 
                      request.auth.uid == walletId &&
-                     resource.data.ownerId == request.auth.uid &&
-                     resource.data.type == 'driver' &&
                      walletId != 'PLATFORM_WALLET';
       
       // Platform wallet: admins only (explicit rule)

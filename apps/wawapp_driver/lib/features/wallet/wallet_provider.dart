@@ -27,10 +27,8 @@ final walletDataProvider = StreamProvider.family<WalletData, String>((ref, drive
   final firestore = FirebaseFirestore.instance;
   
   return firestore
-      .collection('drivers')
+      .collection('wallets')
       .doc(driverId)
-      .collection('wallet')
-      .doc('summary')
       .snapshots()
       .map((snapshot) {
     if (!snapshot.exists) {
@@ -39,7 +37,7 @@ final walletDataProvider = StreamProvider.family<WalletData, String>((ref, drive
 
     final data = snapshot.data()!;
     return WalletData(
-      totalBalance: (data['totalBalance'] as num?)?.toDouble() ?? 0,
+      totalBalance: (data['balance'] as num?)?.toDouble() ?? 0,
       todayEarnings: (data['todayEarnings'] as num?)?.toDouble() ?? 0,
       weekEarnings: (data['weekEarnings'] as num?)?.toDouble() ?? 0,
     );
