@@ -2,7 +2,7 @@ workflows:
   android_debug:
     name: Android Debug APK
     max_build_duration: 60
-    environment:
+    environment:h
       flutter: stable
     triggering:
       events:
@@ -153,7 +153,7 @@ workflows:
       - name: Set up code signing settings on Xcode project
         script: xcode-project use-profiles
       - name: Build IPA (release)
-        script: flutter build ipa --release
+        script: flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
       - name: Publish to TestFlight
         script: |
           echo "$APP_STORE_CONNECT_PRIVATE_KEY" > /tmp/private_key.p8
