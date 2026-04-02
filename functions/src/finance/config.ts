@@ -4,12 +4,10 @@
  */
 
 export const FINANCE_CONFIG = {
-  // Commission rates (Bug #1 Fix: Split into two-phase structure)
-  // Total platform commission = TRIP_START_FEE_RATE + COMPLETION_FEE_RATE = 20%
-  PLATFORM_COMMISSION_RATE: 0.20, // 20% total platform fee
+  // Commission rate: 10% total, deducted ONCE at trip start (status → onRoute)
+  PLATFORM_COMMISSION_RATE: 0.10, // 10% total platform fee
   TRIP_START_FEE_RATE: 0.10, // 10% deducted when trip starts (status → onRoute)
-  COMPLETION_FEE_RATE: 0.10, // 10% deducted at order completion (status → completed)
-  DRIVER_COMMISSION_RATE: 0.80, // 80% driver earning
+  COMPLETION_FEE_RATE: 0.10, // LEGACY: kept for migration scripts only, no longer deducted
 
   // Currency
   DEFAULT_CURRENCY: 'MRU',
