@@ -37,7 +37,8 @@ final ordersStreamProvider = StreamProvider.family<List<Order>, String?>((ref, s
 
 /// All orders (no filter)
 final allOrdersProvider = StreamProvider<List<Order>>((ref) {
-  return ref.watch(ordersStreamProvider(null).stream);
+  final service = ref.watch(adminOrdersServiceProvider);
+  return service.getOrdersStream();
 });
 
 /// Order statistics
@@ -58,7 +59,8 @@ final driversStreamProvider = StreamProvider.family<List<DriverProfile>, bool?>(
 
 /// All drivers (no filter)
 final allDriversProvider = StreamProvider<List<DriverProfile>>((ref) {
-  return ref.watch(driversStreamProvider(null).stream);
+  final service = ref.watch(adminDriversServiceProvider);
+  return service.getDriversStream();
 });
 
 /// Driver statistics
@@ -79,7 +81,8 @@ final clientsStreamProvider = StreamProvider.family<List<ClientProfile>, bool?>(
 
 /// All clients (no filter)
 final allClientsProvider = StreamProvider<List<ClientProfile>>((ref) {
-  return ref.watch(clientsStreamProvider(null).stream);
+  final service = ref.watch(adminClientsServiceProvider);
+  return service.getClientsStream();
 });
 
 /// Client statistics

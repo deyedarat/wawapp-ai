@@ -22,7 +22,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
   @override
   Widget build(BuildContext context) {
     final clientsAsync = ref.watch(
-      clientsStreamProvider(_verifiedFilter).stream,
+      clientsStreamProvider(_verifiedFilter),
     );
     final statsAsync = ref.watch(clientStatsProvider);
 
@@ -198,33 +198,24 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
           // Clients table
           SizedBox(
             height: ResponsiveHelper.getTableHeight(context),
-            child: StreamBuilder<List<ClientProfile>>(
-              stream: clientsAsync,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                        const SizedBox(height: 16),
-                        Text('خطأ في تحميل العملاء: ${snapshot.error}'),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () => setState(() {}),
-                          child: const Text('إعادة المحاولة'),
-                        ),
-                      ],
+            child: clientsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const SizedBox(height: 16),
+                    Text('خطأ في تحميل العملاء: $error'),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => ref.refresh(clientsStreamProvider(_verifiedFilter)),
+                      child: const Text('إعادة المحاولة'),
                     ),
-                  );
-                }
-
-                final clients = snapshot.data ?? [];
-
+                  ],
+                ),
+              ),
+              data: (clients) {
                 if (clients.isEmpty) {
                   return Center(
                     child: Column(
@@ -244,7 +235,6 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                     ),
                   );
                 }
-
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -560,7 +550,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('تأكيد التوثيق'),
-        content: Text('هل أنت متأكد من توثيق العميل ${client.name}؟'),
+        content: Text('هل أنت متأكد من توثيق العميل \${client.name}؟'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -569,8 +559,8 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
+              final messenger = ScaffoldMessenger.of(context);
+              messenger.showSnackBar(
                 const SnackBar(content: Text('جارٍ توثيق العميل...')),
               );
 
@@ -578,11 +568,11 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
               final success = await service.setClientVerification(client.id, true);
 
               if (mounted) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.hideCurrentSnackBar();
+                messenger.showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? 'تم توثيق العميل ${client.name}' : 'فشل توثيق العميل',
+                      success ? 'تم توثيق العميل \${client.name}' : 'فشل توثيق العميل',
                     ),
                     backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
@@ -604,7 +594,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('تأكيد إلغاء التوثيق'),
-        content: Text('هل أنت متأكد من إلغاء توثيق العميل ${client.name}؟'),
+        content: Text('هل أنت متأكد من إلغاء توثيق العميل \${client.name}؟'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -613,8 +603,8 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
+              final messenger = ScaffoldMessenger.of(context);
+              messenger.showSnackBar(
                 const SnackBar(content: Text('جارٍ إلغاء التوثيق...')),
               );
 
@@ -622,11 +612,11 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
               final success = await service.setClientVerification(client.id, false);
 
               if (mounted) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.hideCurrentSnackBar();
+                messenger.showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? 'تم إلغاء توثيق العميل ${client.name}' : 'فشل إلغاء التوثيق',
+                      success ? 'تم إلغاء توثيق العميل \${client.name}' : 'فشل إلغاء التوثيق',
                     ),
                     backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
@@ -654,7 +644,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('هل أنت متأكد من حظر العميل ${client.name}؟'),
+            Text('هل أنت متأكد من حظر العميل \${client.name}؟'),
             const SizedBox(height: AdminSpacing.md),
             TextField(
               controller: reasonController,
@@ -674,8 +664,8 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
+              final messenger = ScaffoldMessenger.of(context);
+              messenger.showSnackBar(
                 const SnackBar(content: Text('جارٍ حظر العميل...')),
               );
 
@@ -686,11 +676,11 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
               );
 
               if (mounted) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.hideCurrentSnackBar();
+                messenger.showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? 'تم حظر العميل ${client.name}' : 'فشل حظر العميل',
+                      success ? 'تم حظر العميل \${client.name}' : 'فشل حظر العميل',
                     ),
                     backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
@@ -712,7 +702,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('تأكيد إلغاء الحظر'),
-        content: Text('هل أنت متأكد من إلغاء حظر العميل ${client.name}؟'),
+        content: Text('هل أنت متأكد من إلغاء حظر العميل \${client.name}؟'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -721,8 +711,8 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
+              final messenger = ScaffoldMessenger.of(context);
+              messenger.showSnackBar(
                 const SnackBar(content: Text('جارٍ إلغاء الحظر...')),
               );
 
@@ -730,11 +720,11 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
               final success = await service.unblockClient(client.id);
 
               if (mounted) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.hideCurrentSnackBar();
+                messenger.showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? 'تم إلغاء حظر العميل ${client.name}' : 'فشل إلغاء الحظر',
+                      success ? 'تم إلغاء حظر العميل \${client.name}' : 'فشل إلغاء الحظر',
                     ),
                     backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),

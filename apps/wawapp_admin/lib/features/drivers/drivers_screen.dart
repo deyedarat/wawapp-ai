@@ -572,7 +572,7 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('هل أنت متأكد من حظر السائق ${driver.name}؟'),
+            Text('هل أنت متأكد من حظر السائق \${driver.name}؟'),
             const SizedBox(height: AdminSpacing.md),
             TextField(
               controller: reasonController,
@@ -592,8 +592,8 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
+              final messenger = ScaffoldMessenger.of(context);
+              messenger.showSnackBar(
                 const SnackBar(content: Text('جارٍ حظر السائق...')),
               );
 
@@ -604,11 +604,11 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
               );
 
               if (mounted) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.hideCurrentSnackBar();
+                messenger.showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? 'تم حظر السائق ${driver.name}' : 'فشل حظر السائق',
+                      success ? 'تم حظر السائق \${driver.name}' : 'فشل حظر السائق',
                     ),
                     backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
@@ -630,7 +630,7 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('تأكيد إلغاء الحظر'),
-        content: Text('هل أنت متأكد من إلغاء حظر السائق ${driver.name}؟'),
+        content: Text('هل أنت متأكد من إلغاء حظر السائق \${driver.name}؟'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -639,8 +639,8 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
+              final messenger = ScaffoldMessenger.of(context);
+              messenger.showSnackBar(
                 const SnackBar(content: Text('جارٍ إلغاء الحظر...')),
               );
 
@@ -648,11 +648,11 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
               final success = await service.unblockDriver(driver.id);
 
               if (mounted) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.hideCurrentSnackBar();
+                messenger.showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? 'تم إلغاء حظر السائق ${driver.name}' : 'فشل إلغاء الحظر',
+                      success ? 'تم إلغاء حظر السائق \${driver.name}' : 'فشل إلغاء الحظر',
                     ),
                     backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
