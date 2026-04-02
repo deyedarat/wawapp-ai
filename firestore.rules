@@ -77,6 +77,8 @@ service cloud.firestore {
     }
 
     match /driver_locations/{driverId} {
+      // Admin can read all driver locations (Live Ops map)
+      allow read: if isAdmin();
       // P0-3 FIX: Only owner can read/write to prevent stalking
       // Clients get driver location via Cloud Function that validates order ownership
       allow read: if isSignedIn() && request.auth.uid == driverId;
