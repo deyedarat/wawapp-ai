@@ -8,6 +8,8 @@ import '../../core/utils/responsive_helper.dart';
 import '../../core/widgets/admin_scaffold.dart';
 import '../../core/widgets/status_badge.dart';
 import '../../providers/admin_data_providers.dart';
+import '../../services/admin_drivers_service.dart';
+import '../../services/admin_clients_service.dart';
 import 'create_order_screen.dart';
 
 class OrdersScreen extends ConsumerStatefulWidget {
@@ -270,18 +272,37 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                       ),
                                     ),
                                     DataCell(
-                                      Text((order.ownerId ?? 'N/A').substring(0, 8)),
-                                    ),
-                                    DataCell(
-                                      Text(
-                                        order.assignedDriverId != null
-                                            ? order.assignedDriverId!.substring(0, 8)
-                                            : 'غير معيّن',
-                                        style: TextStyle(
-                                          color:
-                                              order.assignedDriverId == null ? AdminAppColors.textSecondaryLight : null,
+                                      InkWell(
+                                        onTap: order.ownerId != null
+                                            ? () => _showClientQuickInfo(context, order.ownerId!)
+                                            : null,
+                                        child: Text(
+                                          (order.ownerId ?? 'N/A').substring(0, 8),
+                                          style: const TextStyle(
+                                            decoration: TextDecoration.underline,
+                                            color: AdminAppColors.activeBlue,
+                                            fontFamily: 'monospace',
+                                          ),
                                         ),
                                       ),
+                                    ),
+                                    DataCell(
+                                      order.assignedDriverId != null
+                                          ? InkWell(
+                                              onTap: () => _showDriverQuickInfo(context, order.assignedDriverId!),
+                                              child: Text(
+                                                order.assignedDriverId!.substring(0, 8),
+                                                style: const TextStyle(
+                                                  decoration: TextDecoration.underline,
+                                                  color: AdminAppColors.activeBlue,
+                                                  fontFamily: 'monospace',
+                                                ),
+                                              ),
+                                            )
+                                          : const Text(
+                                              'غير معيّن',
+                                              style: TextStyle(color: AdminAppColors.textSecondaryLight),
+                                            ),
                                     ),
                                     DataCell(_buildStatusBadge(order.status ?? 'unknown')),
                                     DataCell(
@@ -536,5 +557,83 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
     if (result == true && mounted) {
       setState(() {});
     }
+  }
+
+  void _showDriverQuickInfo(BuildContext context, String driverId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('معلومات السائق'),
+        content: FutureBuilder(
+          future: AdminDriversService().getDriverById(driverId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SizedBox(
+                height: 80,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            final driver = snapshot.data;
+            if (driver == null) {
+              return const Text('تعذّر تحميل بيانات السائق');
+            }
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailRow('الاسم:', driver.name),
+                _buildDetailRow('الهاتف:', driver.phone),
+                _buildDetailRow('رقم اللوحة:', driver.vehiclePlate ?? '-'),
+                _buildDetailRow('نوع السيارة:', driver.vehicleType ?? '-'),
+              ],
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إغلاق'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showClientQuickInfo(BuildContext context, String clientId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('معلومات العميل'),
+        content: FutureBuilder(
+          future: AdminClientsService().getClientById(clientId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SizedBox(
+                height: 80,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            final client = snapshot.data;
+            if (client == null) {
+              return const Text('تعذّر تحميل بيانات العميل');
+            }
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailRow('الاسم:', client.name),
+                _buildDetailRow('الهاتف:', client.phone),
+              ],
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إغلاق'),
+          ),
+        ],
+      ),
+    );
   }
 }

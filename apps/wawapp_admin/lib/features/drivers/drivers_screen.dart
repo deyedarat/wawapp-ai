@@ -443,6 +443,21 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                                             tooltip: 'عرض التفاصيل',
                                             color: AdminAppColors.infoLight,
                                           ),
+                                          // Approve button (only for unverified drivers)
+                                          if (!driver.isVerified)
+                                            IconButton(
+                                              icon: const Icon(Icons.verified_user),
+                                              onPressed: () => _showApproveDialog(context, driver),
+                                              tooltip: 'قبول السائق',
+                                              color: AdminAppColors.successLight,
+                                            ),
+                                          // Add wallet balance button (always visible)
+                                          IconButton(
+                                            icon: const Icon(Icons.account_balance_wallet),
+                                            onPressed: () => _showAddBalanceDialog(context, driver),
+                                            tooltip: 'إضافة رصيد',
+                                            color: AdminAppColors.activeBlue,
+                                          ),
                                           if (!isBlocked)
                                             IconButton(
                                               icon: const Icon(Icons.block),
@@ -513,6 +528,8 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                 _buildDetailRow('الاسم:', driver.name),
                 _buildDetailRow('الهاتف:', driver.phone),
                 _buildDetailRow('نوع المركبة:', driver.vehicleType ?? '-'),
+                _buildDetailRow('رقم اللوحة:', driver.vehiclePlate ?? '-'),
+                _buildDetailRow('لون السيارة:', driver.vehicleColor ?? '-'),
                 _buildDetailRow('الحالة:', driver.isOnline ? 'متصل' : 'غير متصل'),
                 _buildDetailRow('موثّق:', driver.isVerified ? 'نعم' : 'لا'),
                 _buildDetailRow(
@@ -663,6 +680,106 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
               backgroundColor: AdminAppColors.successLight,
             ),
             child: const Text('نعم، إلغاء الحظر'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showApproveDialog(BuildContext context, DriverProfile driver) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تأكيد قبول السائق'),
+        content: Text('هل أنت متأكد من قبول وتوثيق السائق ${driver.name}؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('لا'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('جارٍ قبول السائق...')),
+              );
+              final service = ref.read(adminDriversServiceProvider);
+              final success = await service.verifyDriver(driver.id);
+              if (mounted) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      success ? 'تم قبول السائق ${driver.name}' : 'فشل قبول السائق',
+                    ),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.successLight),
+            child: const Text('نعم، قبول'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddBalanceDialog(BuildContext context, DriverProfile driver) {
+    final amountController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('إضافة رصيد للسائق ${driver.name}'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: amountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'المبلغ (MRU)',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final amount = int.tryParse(amountController.text.trim());
+              if (amount == null || amount <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('أدخل مبلغاً صحيحاً')),
+                );
+                return;
+              }
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('جارٍ إضافة الرصيد...')),
+              );
+              final service = ref.read(adminDriversServiceProvider);
+              final success = await service.addWalletBalance(driver.id, amount);
+              if (mounted) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      success ? 'تمت إضافة $amount MRU للسائق ${driver.name}' : 'فشل إضافة الرصيد',
+                    ),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.activeBlue),
+            child: const Text('إضافة'),
           ),
         ],
       ),

@@ -116,6 +116,38 @@ class AdminDriversService {
     }
   }
 
+  /// Add balance to driver's wallet
+  Future<bool> addWalletBalance(String driverId, int amount) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw Exception('Not authenticated');
+
+      await _firestore.collection('wallets').doc(driverId).set({
+        'balance': FieldValue.increment(amount),
+        'totalCredited': FieldValue.increment(amount),
+        'ownerId': driverId,
+        'type': 'driver',
+        'currency': 'MRU',
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      await _firestore.collection('transactions').add({
+        'walletId': driverId,
+        'ownerId': driverId,
+        'type': 'credit',
+        'amount': amount,
+        'note': 'Admin credit',
+        'createdBy': user.uid,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return true;
+    } catch (e) {
+      if (kDebugMode) print('Error adding wallet balance: $e');
+      return false;
+    }
+  }
+
   /// Get driver statistics
   Future<Map<String, int>> getDriverStats() async {
     try {

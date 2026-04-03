@@ -1,6 +1,6 @@
 param(
     [Parameter(Position=0)]
-    [ValidateSet('init','doctor','help','env:verify','fix:node-policy','format','analyze','flutter:refresh','build:driver','build:client','run:driver','run:client','test:unit','test:analyze','env:verify-Firebase','fcm:verify','error:analyze')]
+    [ValidateSet('init','doctor','help','env:verify','fix:node-policy','format','analyze','flutter:refresh','build:driver','build:client','build:admin','run:driver','run:client','run:admin','deploy:admin','test:unit','test:analyze','env:verify-Firebase','fcm:verify','error:analyze')]
     [string]$Command = 'help',
     
     [Parameter(Position=1)]
@@ -28,6 +28,9 @@ Spec tasks:
   .\spec.ps1 flutter:refresh
   .\spec.ps1 build:driver           [Debug|Release]
   .\spec.ps1 build:client           [Debug|Release]
+  .\spec.ps1 build:admin
+  .\spec.ps1 run:admin
+  .\spec.ps1 deploy:admin
   .\spec.ps1 test:unit
   .\spec.ps1 test:analyze
   .\spec.ps1 env:verify-Firebase
@@ -39,6 +42,8 @@ Examples:
   .\spec.ps1 build:driver Debug
   .\spec.ps1 build:client Release
   .\spec.ps1 error:analyze build_log.txt
+  .\spec.ps1 build:admin
+  .\spec.ps1 deploy:admin
 "@
 }
 
@@ -119,7 +124,7 @@ function Invoke-Analyze {
 
 function Invoke-FlutterRefresh {
     Write-Host "[FLUTTER:REFRESH] Refreshing Flutter projects..."
-    $apps = @('apps\wawapp_client', 'apps\wawapp_driver')
+    $apps = @('apps\wawapp_client', 'apps\wawapp_driver', 'apps\wawapp_admin')
     foreach ($app in $apps) {
         $appPath = Join-Path $ScriptRoot $app
         $pubspecPath = Join-Path $appPath "pubspec.yaml"
@@ -203,6 +208,51 @@ function Invoke-RunClient {
     Push-Location $appPath
     try {
         flutter run
+        $exitCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    exit $exitCode
+}
+
+function Invoke-BuildAdmin {
+    Write-Host "[BUILD:ADMIN] Building admin web (release)..."
+    $appPath = Join-Path $ScriptRoot "apps\wawapp_admin"
+    Push-Location $appPath
+    try {
+        flutter build web --release
+        $exitCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    if ($exitCode -ne 0) { exit $exitCode }
+    Write-Host "[BUILD:ADMIN] SUCCESS - output: apps/wawapp_admin/build/web"
+}
+
+function Invoke-DeployAdmin {
+    Write-Host "[DEPLOY:ADMIN] Building and deploying admin to Firebase Hosting..."
+    Invoke-BuildAdmin
+    Write-Host "[DEPLOY:ADMIN] Deploying to Firebase Hosting..."
+    Push-Location $ScriptRoot
+    try {
+        firebase deploy --only hosting
+        $exitCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    if ($exitCode -ne 0) {
+        Write-Error "[DEPLOY:ADMIN] Firebase deploy failed"
+        exit $exitCode
+    }
+    Write-Host "[DEPLOY:ADMIN] SUCCESS"
+}
+
+function Invoke-RunAdmin {
+    Write-Host "[RUN:ADMIN] Running admin app on Chrome..."
+    $appPath = Join-Path $ScriptRoot "apps\wawapp_admin"
+    Push-Location $appPath
+    try {
+        flutter run -d chrome
         $exitCode = $LASTEXITCODE
     } finally {
         Pop-Location
@@ -299,6 +349,9 @@ switch ($Command) {
     'build:client' { Invoke-BuildClient -Config $Config }
     'run:driver' { Invoke-RunDriver }
     'run:client' { Invoke-RunClient }
+    'build:admin' { Invoke-BuildAdmin }
+    'run:admin' { Invoke-RunAdmin }
+    'deploy:admin' { Invoke-DeployAdmin }
     'test:unit' { Invoke-TestUnit }
     'test:analyze' { Invoke-TestAnalyze }
     'env:verify-Firebase' { Invoke-EnvVerifyFirebase }
