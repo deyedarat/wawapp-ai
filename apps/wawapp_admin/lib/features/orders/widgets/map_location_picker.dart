@@ -1,6 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:math' show Point;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' hide Path;
@@ -53,6 +59,14 @@ class _Poi {
   final Color color;
 
   const _Poi(this.nameAr, this.nameFr, this.position, this.icon, this.color);
+}
+
+class _SearchResult {
+  final String displayName;
+  final LatLng position;
+  final String type;
+
+  const _SearchResult(this.displayName, this.position, this.type);
 }
 
 // ============================================================================
@@ -153,8 +167,15 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
   LatLng? _selectedPosition;
   String _selectedAddress = 'اضغط على الخريطة لتحديد الموقع';
   bool _isLoadingAddress = false;
+  bool _isGettingLocation = false;
+  bool _isDragging = false;
   bool _showPois = true;
   bool _showDistricts = true;
+  bool _isSearching = false;
+  List<_SearchResult> _searchResults = [];
+  List<Map<String, dynamic>> _savedLocations = [];
+  final List<LocationData> _recentLocations = [];
+  Timer? _searchDebounce;
   final _searchController = TextEditingController();
 
   static const LatLng _defaultCenter = LatLng(18.0832, -15.9741);
@@ -170,13 +191,187 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       );
       _selectedAddress = widget.initialLocation!.address;
     }
+    _loadSavedLocations();
   }
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _mapController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadSavedLocations() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+      final doc = await FirebaseFirestore.instance
+          .collection('admin_saved_locations')
+          .doc(user.uid)
+          .get();
+      if (doc.exists && doc.data()?['locations'] != null) {
+        setState(() {
+          _savedLocations = List<Map<String, dynamic>>.from(doc.data()!['locations']);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading saved locations: $e');
+    }
+  }
+
+  Future<void> _saveCurrentLocation() async {
+    if (_selectedPosition == null) return;
+    final nameController = TextEditingController(text: '\u0645\u0648\u0642\u0639 ${_savedLocations.length + 1}');
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('\u062d\u0641\u0638 \u0627\u0644\u0645\u0648\u0642\u0639'),
+        content: TextField(
+          controller: nameController,
+          decoration: const InputDecoration(labelText: '\u0627\u0633\u0645 \u0627\u0644\u0645\u0648\u0642\u0639', hintText: '\u0645\u062b\u0627\u0644: \u0645\u0643\u062a\u0628 \u0627\u0644\u0645\u0628\u064a\u0639\u0627\u062a'),
+          textDirection: TextDirection.rtl,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('\u0625\u0644\u063a\u0627\u0621')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(backgroundColor: _kGreen),
+            child: const Text('\u062d\u0641\u0638'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) throw 'User not authenticated';
+      final newLoc = {
+        'name': nameController.text.trim(),
+        'address': _selectedAddress,
+        'latitude': _selectedPosition!.latitude,
+        'longitude': _selectedPosition!.longitude,
+        'savedAt': FieldValue.serverTimestamp(),
+      };
+      final updated = [..._savedLocations, newLoc];
+      if (updated.length > 10) updated.removeAt(0);
+      await FirebaseFirestore.instance
+          .collection('admin_saved_locations')
+          .doc(user.uid)
+          .set({'locations': updated}, SetOptions(merge: true));
+      setState(() => _savedLocations = updated);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('\u062a\u0645 \u062d\u0641\u0638 \u0627\u0644\u0645\u0648\u0642\u0639 \u0628\u0646\u062c\u0627\u062d'), backgroundColor: _kGreen),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('\u062e\u0637\u0623 \u0641\u064a \u062d\u0641\u0638 \u0627\u0644\u0645\u0648\u0642\u0639: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  void _showSavedLocations() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text('\u0627\u0644\u0645\u0648\u0627\u0642\u0639 \u0627\u0644\u0645\u062d\u0641\u0648\u0638\u0629', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+            const Divider(),
+            if (_savedLocations.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(32),
+                child: Text('\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0648\u0627\u0642\u0639 \u0645\u062d\u0641\u0648\u0638\u0629', style: TextStyle(color: Colors.grey), textAlign: TextAlign.center),
+              )
+            else
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _savedLocations.length,
+                  itemBuilder: (_, index) {
+                    final loc = _savedLocations[index];
+                    return ListTile(
+                      leading: const CircleAvatar(backgroundColor: _kGreen, child: Icon(Icons.bookmark, color: Colors.white, size: 20)),
+                      title: Text(loc['name'] as String),
+                      subtitle: Text(loc['address'] as String, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _deleteSavedLocation(index),
+                      ),
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        final pos = LatLng(loc['latitude'] as double, loc['longitude'] as double);
+                        _mapController.move(pos, 16);
+                        setState(() {
+                          _selectedPosition = pos;
+                          _selectedAddress = loc['address'] as String;
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _deleteSavedLocation(int index) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+      final updated = List<Map<String, dynamic>>.from(_savedLocations)..removeAt(index);
+      await FirebaseFirestore.instance
+          .collection('admin_saved_locations')
+          .doc(user.uid)
+          .set({'locations': updated}, SetOptions(merge: true));
+      setState(() => _savedLocations = updated);
+      if (mounted) {
+        Navigator.pop(context);
+        _showSavedLocations();
+      }
+    } catch (e) {
+      debugPrint('Error deleting location: $e');
+    }
+  }
+
+  Future<bool> _checkLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    return permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always;
+  }
+
+  Future<void> _goToMyLocation() async {
+    setState(() => _isGettingLocation = true);
+    try {
+      if (!await _checkLocationPermission()) {
+        throw 'Location permission denied';
+      }
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 10),
+      );
+      _mapController.move(LatLng(position.latitude, position.longitude), 16);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطأ في تحديد الموقع: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isGettingLocation = false);
+    }
   }
 
   Future<String> _getAddressFromLatLng(double lat, double lng) async {
@@ -196,9 +391,10 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
   }
 
   Future<void> _onMapTap(TapPosition tapPosition, LatLng position) async {
+    HapticFeedback.mediumImpact();
     setState(() {
       _selectedPosition = position;
-      _selectedAddress = 'جار تحديد العنوان...';
+      _selectedAddress = '\u062c\u0627\u0631 \u062a\u062d\u062f\u064a\u062f \u0627\u0644\u0639\u0646\u0648\u0627\u0646...';
       _isLoadingAddress = true;
     });
     _mapController.move(position, _mapController.camera.zoom);
@@ -207,6 +403,8 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       setState(() {
         _selectedAddress = address;
         _isLoadingAddress = false;
+        _recentLocations.insert(0, LocationData(address: address, latitude: position.latitude, longitude: position.longitude));
+        if (_recentLocations.length > 5) _recentLocations.removeLast();
       });
     }
   }
@@ -225,31 +423,71 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     ));
   }
 
-  void _searchPlace(String query) {
-    if (query.isEmpty) return;
+  Future<List<_SearchResult>> _searchNominatim(String query) async {
+    try {
+      final url = Uri.parse(
+        'https://nominatim.openstreetmap.org/search?'
+        'q=${Uri.encodeComponent(query)}&'
+        'format=json&limit=5&countrycodes=mr&accept-language=ar&'
+        'bounded=1&viewbox=-16.05,18.15,-15.85,18.00',
+      );
+      final response = await http.get(url, headers: {'User-Agent': 'WawApp-Admin/1.0'});
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((item) => _SearchResult(
+          item['display_name'] as String,
+          LatLng(double.parse(item['lat'] as String), double.parse(item['lon'] as String)),
+          'nominatim',
+        )).toList();
+      }
+    } catch (e) {
+      debugPrint('Nominatim search error: $e');
+    }
+    return [];
+  }
+
+  Future<void> _performSearch(String query) async {
+    if (query.isEmpty) {
+      setState(() => _searchResults = []);
+      return;
+    }
+    setState(() => _isSearching = true);
+    final results = <_SearchResult>[];
     final q = query.toLowerCase();
-    // Search districts
+
     for (final d in _districts) {
       if (d.nameAr.contains(query) || d.nameFr.toLowerCase().contains(q)) {
-        _mapController.move(d.center, 14);
-        return;
+        results.add(_SearchResult('\u0645\u0642\u0627\u0637\u0639\u0629 ${d.nameAr}', d.center, 'district'));
       }
     }
-    // Search POIs
     for (final p in _pois) {
       if (p.nameAr.contains(query) || p.nameFr.toLowerCase().contains(q)) {
-        _mapController.move(p.position, 16);
-        return;
+        results.add(_SearchResult('${p.icon} ${p.nameAr}', p.position, 'poi'));
       }
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('لم يتم العثور على "$query"'), duration: const Duration(seconds: 2)),
-    );
+    if (results.length < 3) {
+      results.addAll(await _searchNominatim(query));
+    }
+    if (mounted) {
+      setState(() {
+        _searchResults = results;
+        _isSearching = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showSavedLocations,
+        backgroundColor: _kGreen,
+        child: Badge(
+          label: Text('${_savedLocations.length}'),
+          isLabelVisible: _savedLocations.isNotEmpty,
+          child: const Icon(Icons.bookmarks, color: Colors.white),
+        ),
+      ),
       appBar: AppBar(
         title: Text(widget.title),
         backgroundColor: _kGreen,
@@ -278,6 +516,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               minZoom: 3.0,
               maxZoom: 19.0,
               onTap: _onMapTap,
+              onLongPress: (tapPosition, point) {
+                _onMapTap(tapPosition, point);
+              },
               interactionOptions: const InteractionOptions(
                 flags: InteractiveFlag.all,
                 enableMultiFingerGestureRace: true,
@@ -350,7 +591,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     ),
                   )).toList(),
                 ),
-              // Selected position marker
+              // Selected position marker (draggable)
               if (_selectedPosition != null)
                 MarkerLayer(
                   markers: [
@@ -359,25 +600,69 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       width: 60,
                       height: 70,
                       alignment: Alignment.topCenter,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _kGreen,
-                              border: Border.all(color: Colors.white, width: 3),
-                              boxShadow: [BoxShadow(color: _kGreen.withOpacity(0.5), blurRadius: 12, spreadRadius: 2, offset: const Offset(0, 4))],
-                            ),
-                            child: const Icon(Icons.location_on, color: Colors.white, size: 24),
+                      child: GestureDetector(
+                        onPanStart: (_) => setState(() {
+                          _isDragging = true;
+                          _selectedAddress = '\u062c\u0627\u0631 \u062a\u062d\u062f\u064a\u062f \u0627\u0644\u0639\u0646\u0648\u0627\u0646...';
+                        }),
+                        onPanUpdate: (details) {
+                          final camera = _mapController.camera;
+                          final pt = camera.latLngToScreenPoint(_selectedPosition!);
+                          final newPt = Point<double>(pt.x + details.delta.dx, pt.y + details.delta.dy);
+                          final newLatLng = camera.pointToLatLng(newPt);
+                          setState(() {
+                            _selectedPosition = newLatLng;
+                            _selectedAddress = '\u0627\u0644\u0625\u062d\u062f\u0627\u062b\u064a\u0627\u062a: ${newLatLng.latitude.toStringAsFixed(5)}, ${newLatLng.longitude.toStringAsFixed(5)}';
+                          });
+                        },
+                        onPanEnd: (_) async {
+                          setState(() {
+                            _isDragging = false;
+                            _isLoadingAddress = true;
+                            _selectedAddress = '\u062c\u0627\u0631 \u062a\u062d\u062f\u064a\u062f \u0627\u0644\u0639\u0646\u0648\u0627\u0646...';
+                          });
+                          final address = await _getAddressFromLatLng(
+                            _selectedPosition!.latitude,
+                            _selectedPosition!.longitude,
+                          );
+                          if (mounted) {
+                            setState(() {
+                              _selectedAddress = address;
+                              _isLoadingAddress = false;
+                            });
+                          }
+                        },
+                        child: AnimatedScale(
+                          scale: _isDragging ? 1.2 : 1.0,
+                          duration: const Duration(milliseconds: 150),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 42,
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _kGreen,
+                                  border: Border.all(color: Colors.white, width: 3),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: _kGreen.withOpacity(_isDragging ? 0.8 : 0.5),
+                                      blurRadius: _isDragging ? 20 : 12,
+                                      spreadRadius: _isDragging ? 4 : 2,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(Icons.location_on, color: Colors.white, size: 24),
+                              ),
+                              CustomPaint(
+                                size: const Size(14, 10),
+                                painter: _MarkerTrianglePainter(_kGreen),
+                              ),
+                            ],
                           ),
-                          CustomPaint(
-                            size: const Size(14, 10),
-                            painter: _MarkerTrianglePainter(_kGreen),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ],
@@ -396,28 +681,89 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             top: 12,
             left: 60,
             right: 60,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 2))],
-              ),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: '🔍 ابحث عن حي أو مكان...',
-                  hintStyle: const TextStyle(fontSize: 13),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  border: InputBorder.none,
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search, color: _kGreen),
-                    onPressed: () => _searchPlace(_searchController.text),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 2))],
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: '\uD83D\uDD0D ابحث عن حي، مكان، أو عنوان...',
+                      hintStyle: const TextStyle(fontSize: 13),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      border: InputBorder.none,
+                      suffixIcon: _isSearching
+                          ? const Padding(
+                              padding: EdgeInsets.all(12),
+                              child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                            )
+                          : IconButton(
+                              icon: const Icon(Icons.search, color: _kGreen),
+                              onPressed: () => _performSearch(_searchController.text),
+                            ),
+                    ),
+                    textDirection: TextDirection.rtl,
+                    style: const TextStyle(fontSize: 13),
+                    onChanged: (value) {
+                      _searchDebounce?.cancel();
+                      _searchDebounce = Timer(const Duration(milliseconds: 500), () {
+                        _performSearch(value);
+                      });
+                    },
+                    onSubmitted: _performSearch,
                   ),
                 ),
-                textDirection: TextDirection.rtl,
-                style: const TextStyle(fontSize: 13),
-                onSubmitted: _searchPlace,
-              ),
+                if (_searchResults.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8)],
+                    ),
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      itemCount: _searchResults.length,
+                      itemBuilder: (context, index) {
+                        final r = _searchResults[index];
+                        return ListTile(
+                          dense: true,
+                          leading: Icon(
+                            r.type == 'district' ? Icons.map
+                                : r.type == 'poi' ? Icons.place
+                                : Icons.location_on,
+                            color: _kGreen, size: 20,
+                          ),
+                          title: Text(r.displayName, style: const TextStyle(fontSize: 12), maxLines: 2, overflow: TextOverflow.ellipsis),
+                          onTap: () async {
+                            _mapController.move(r.position, r.type == 'district' ? 14.0 : 16.0);
+                            setState(() {
+                              _selectedPosition = r.position;
+                              _selectedAddress = 'جار تحديد العنوان...';
+                              _isLoadingAddress = true;
+                              _searchResults = [];
+                            });
+                            _searchController.clear();
+                            final address = await _getAddressFromLatLng(r.position.latitude, r.position.longitude);
+                            if (mounted) {
+                              setState(() {
+                                _selectedAddress = address;
+                                _isLoadingAddress = false;
+                              });
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  ),
+              ],
             ),
           ),
 
@@ -460,14 +806,79 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                 _zoomButton(Icons.my_location, 'الموقع المحدد', () {
                   if (_selectedPosition != null) _mapController.move(_selectedPosition!, 16);
                 }, color: _kGreen, iconColor: Colors.white),
+                const SizedBox(height: 6),
+                _zoomButton(
+                  _isGettingLocation ? Icons.hourglass_empty : Icons.gps_fixed,
+                  'موقعي الحالي',
+                  _goToMyLocation,
+                  color: _kGreen,
+                  iconColor: Colors.white,
+                ),
               ],
             ),
           ),
 
+          // ── Coordinate tooltip during drag ──
+          if (_isDragging && _selectedPosition != null)
+            Positioned(
+              top: 100,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${_selectedPosition!.latitude.toStringAsFixed(5)}, ${_selectedPosition!.longitude.toStringAsFixed(5)}',
+                    style: const TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'monospace'),
+                  ),
+                ),
+              ),
+            ),
+
+          // ── Recent locations chips ──
+          if (_recentLocations.isNotEmpty)
+            Positioned(
+              bottom: 200,
+              left: 8,
+              right: 8,
+              child: SizedBox(
+                height: 40,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _recentLocations.length,
+                  itemBuilder: (context, index) {
+                    final loc = _recentLocations[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ActionChip(
+                        avatar: const Icon(Icons.history, size: 16),
+                        label: Text(
+                          loc.address.length > 30 ? '${loc.address.substring(0, 27)}...' : loc.address,
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                        onPressed: () {
+                          final pos = LatLng(loc.latitude, loc.longitude);
+                          _mapController.move(pos, 16);
+                          setState(() {
+                            _selectedPosition = pos;
+                            _selectedAddress = loc.address;
+                          });
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+
           // ── Legend ──
           Positioned(
             left: 8,
-            bottom: 180,
+            bottom: 245,
             child: _buildLegend(),
           ),
 
@@ -497,12 +908,14 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                           children: [
                             Text('الموقع المحدد', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
                             const SizedBox(height: 4),
-                            Text(
-                              _selectedAddress,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            _isLoadingAddress
+                                ? _buildAddressShimmer()
+                                : Text(
+                                    _selectedAddress,
+                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                           ],
                         ),
                       ),
@@ -528,6 +941,19 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     ),
                     child: const Text('تأكيد الموقع', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
+                  if (_selectedPosition != null) ...[
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: _saveCurrentLocation,
+                      icon: const Icon(Icons.bookmark_add),
+                      label: const Text('حفظ هذا الموقع'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: _kGreen,
+                        side: const BorderSide(color: _kGreen),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -538,6 +964,24 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
   }
 
   // ── Helpers ──
+
+  Widget _buildAddressShimmer() {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.3, end: 1.0),
+      duration: const Duration(milliseconds: 800),
+      builder: (context, value, _) => Opacity(
+        opacity: value,
+        child: Container(
+          height: 16,
+          width: double.infinity,
+          decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(4)),
+        ),
+      ),
+      onEnd: () {
+        if (_isLoadingAddress) setState(() {});
+      },
+    );
+  }
 
   Widget _zoomButton(IconData icon, String tooltip, VoidCallback onPressed, {Color color = Colors.white, Color iconColor = Colors.black87}) {
     return Container(
