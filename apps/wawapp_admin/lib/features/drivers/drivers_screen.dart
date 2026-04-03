@@ -443,6 +443,26 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                                             tooltip: 'عرض التفاصيل',
                                             color: AdminAppColors.infoLight,
                                           ),
+                                          if (!driver.isVerified)
+                                            IconButton(
+                                              icon: const Icon(Icons.verified),
+                                              onPressed: () => _showVerifyDialog(context, driver),
+                                              tooltip: 'توثيق السائق',
+                                              color: AdminAppColors.successLight,
+                                            )
+                                          else
+                                            IconButton(
+                                              icon: const Icon(Icons.remove_circle_outline),
+                                              onPressed: () => _showUnverifyDialog(context, driver),
+                                              tooltip: 'إلغاء التوثيق',
+                                              color: AdminAppColors.warningLight,
+                                            ),
+                                          IconButton(
+                                            icon: const Icon(Icons.account_balance_wallet),
+                                            onPressed: () => _showAddBalanceDialog(context, driver),
+                                            tooltip: 'إضافة رصيد',
+                                            color: AdminAppColors.primaryGreen,
+                                          ),
                                           if (!isBlocked)
                                             IconButton(
                                               icon: const Icon(Icons.block),
@@ -630,7 +650,7 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('تأكيد إلغاء الحظر'),
-        content: Text('هل أنت متأكد من إلغاء حظر السائق \${driver.name}؟'),
+        content: Text('هل أنت متأكد من إلغاء حظر السائق ${driver.name}؟'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -640,29 +660,148 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
             onPressed: () async {
               Navigator.pop(context);
               final messenger = ScaffoldMessenger.of(context);
-              messenger.showSnackBar(
-                const SnackBar(content: Text('جارٍ إلغاء الحظر...')),
-              );
-
               final service = ref.read(adminDriversServiceProvider);
               final success = await service.unblockDriver(driver.id);
-
               if (mounted) {
-                messenger.hideCurrentSnackBar();
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      success ? 'تم إلغاء حظر السائق \${driver.name}' : 'فشل إلغاء الحظر',
-                    ),
-                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
-                  ),
-                );
+                messenger.showSnackBar(SnackBar(
+                  content: Text(success ? 'تم إلغاء حظر ${driver.name}' : 'فشل إلغاء الحظر'),
+                  backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                ));
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AdminAppColors.successLight,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.successLight),
             child: const Text('نعم، إلغاء الحظر'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showVerifyDialog(BuildContext context, DriverProfile driver) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('توثيق السائق'),
+        content: Text('هل تريد توثيق السائق ${driver.name}؟\nسيتمكن من رؤية الطلبات وقبولها.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final messenger = ScaffoldMessenger.of(context);
+              final service = ref.read(adminDriversServiceProvider);
+              final success = await service.verifyDriver(driver.id);
+              if (mounted) {
+                messenger.showSnackBar(SnackBar(
+                  content: Text(success ? 'تم توثيق ${driver.name}' : 'فشل التوثيق'),
+                  backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                ));
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.successLight),
+            child: const Text('توثيق'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showUnverifyDialog(BuildContext context, DriverProfile driver) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('إلغاء التوثيق'),
+        content: Text('هل تريد إلغاء توثيق السائق ${driver.name}؟\nلن يتمكن من رؤية الطلبات أو قبولها.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final messenger = ScaffoldMessenger.of(context);
+              final service = ref.read(adminDriversServiceProvider);
+              final success = await service.unverifyDriver(driver.id);
+              if (mounted) {
+                messenger.showSnackBar(SnackBar(
+                  content: Text(success ? 'تم إلغاء توثيق ${driver.name}' : 'فشل إلغاء التوثيق'),
+                  backgroundColor: success ? AdminAppColors.warningLight : AdminAppColors.errorLight,
+                ));
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.warningLight),
+            child: const Text('إلغاء التوثيق'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddBalanceDialog(BuildContext context, DriverProfile driver) {
+    final amountController = TextEditingController();
+    final noteController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('إضافة رصيد لـ ${driver.name}'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: amountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'المبلغ (MRU)',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.attach_money),
+              ),
+            ),
+            const SizedBox(height: AdminSpacing.md),
+            TextField(
+              controller: noteController,
+              decoration: const InputDecoration(
+                labelText: 'ملاحظة (اختياري)',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final amount = int.tryParse(amountController.text);
+              if (amount == null || amount <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('أدخل مبلغاً صحيحاً')),
+                );
+                return;
+              }
+              Navigator.pop(context);
+              final messenger = ScaffoldMessenger.of(context);
+              final service = ref.read(adminDriversServiceProvider);
+              final success = await service.addBalance(
+                driver.id,
+                amount,
+                note: noteController.text.isNotEmpty ? noteController.text : null,
+              );
+              if (mounted) {
+                messenger.showSnackBar(SnackBar(
+                  content: Text(success ? 'تم إضافة $amount MRU لـ ${driver.name}' : 'فشل إضافة الرصيد'),
+                  backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                ));
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.primaryGreen),
+            child: const Text('إضافة'),
           ),
         ],
       ),

@@ -93,6 +93,15 @@ export const getNearbyOrders = functions.https.onCall(async (data, context) => {
     }
 
     const driverData = driverDoc.data();
+
+    if (!driverData?.isVerified) {
+      console.log('[getNearbyOrders] Driver not verified', { driver_id: driverId });
+      throw new functions.https.HttpsError(
+        'permission-denied',
+        'Driver account is not verified'
+      );
+    }
+
     if (!driverData?.isOnline) {
       console.log('[getNearbyOrders] Driver is offline', { driver_id: driverId });
       return { orders: [] };

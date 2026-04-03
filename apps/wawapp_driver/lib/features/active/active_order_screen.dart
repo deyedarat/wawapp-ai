@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/theme/colors.dart';
@@ -153,9 +154,14 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
 
     final ordersAsync = ref.watch(activeOrdersProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('الطلب النشط')),
-      body: ordersAsync.when(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) context.go('/');
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('الطلب النشط')),
+        body: ordersAsync.when(
         loading: () {
           if (kDebugMode) {
             dev.log('[Matching] ActiveOrderScreen: Waiting for stream data');
@@ -383,6 +389,7 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
             ],
           );
         },
+      ),
       ),
     );
   }

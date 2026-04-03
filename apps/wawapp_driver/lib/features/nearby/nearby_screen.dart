@@ -90,7 +90,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       if (!mounted) {
         return;
       }
-      context.go('/active-order');
+      context.push('/active-order');
     } on Object catch (e) {
       if (!mounted) {
         return;

@@ -58,19 +58,31 @@ export const verifyOtp = functions
 
       if (!snapshot.empty) {
         uid = snapshot.docs[0].id;
-        console.log(`[verifyOtp] Existing user found: ${uid}`);
+        console.log(`[verifyOtp] Existing user found in ${collection}: ${uid}`);
       } else {
-        const newUser = await admin.auth().createUser({ phoneNumber: phone });
-        uid = newUser.uid;
-        isNewUser = true;
+        // Check if user exists in Firebase Auth (may have registered via other app)
+        try {
+          const existingAuthUser = await admin.auth().getUserByPhoneNumber(phone);
+          uid = existingAuthUser.uid;
+          console.log(`[verifyOtp] User exists in Auth but not in ${collection}: ${uid}`);
+        } catch (authError: any) {
+          if (authError.code === 'auth/user-not-found') {
+            const newUser = await admin.auth().createUser({ phoneNumber: phone });
+            uid = newUser.uid;
+            console.log(`[verifyOtp] New Auth user created: ${uid}`);
+          } else {
+            throw authError;
+          }
+        }
 
+        isNewUser = true;
         await admin.firestore().collection(collection).doc(uid).set({
           phone,
           createdAt: admin.firestore.Timestamp.now(),
           authMethod: 'otp',
         });
 
-        console.log(`[verifyOtp] New user created: ${uid}`);
+        console.log(`[verifyOtp] ${collection} doc created for: ${uid}`);
       }
 
       const customToken = await admin.auth().createCustomToken(uid, {
