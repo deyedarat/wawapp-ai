@@ -116,34 +116,83 @@ class AdminDriversService {
     }
   }
 
-  /// Add balance to driver's wallet
-  Future<bool> addWalletBalance(String driverId, int amount) async {
+  /// Add balance to driver wallet
+  Future<bool> addBalance(String driverId, int amount, {String? note}) async {
     try {
       final user = _auth.currentUser;
       if (user == null) throw Exception('Not authenticated');
 
-      await _firestore.collection('wallets').doc(driverId).set({
-        'balance': FieldValue.increment(amount),
-        'totalCredited': FieldValue.increment(amount),
-        'ownerId': driverId,
-        'type': 'driver',
-        'currency': 'MRU',
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      final walletId = driverId;
+      final walletRef = _firestore.collection('wallets').doc(walletId);
 
-      await _firestore.collection('transactions').add({
-        'walletId': driverId,
-        'ownerId': driverId,
-        'type': 'credit',
-        'amount': amount,
-        'note': 'Admin credit',
-        'createdBy': user.uid,
-        'createdAt': FieldValue.serverTimestamp(),
+      await _firestore.runTransaction((transaction) async {
+        final walletDoc = await transaction.get(walletRef);
+
+        if (!walletDoc.exists) {
+          // Create wallet if it doesn't exist
+          transaction.set(walletRef, {
+            'type': 'driver',
+            'ownerId': driverId,
+            'balance': amount,
+            'totalCredited': amount,
+            'totalDebited': 0,
+            'pendingPayout': 0,
+            'currency': 'MRU',
+            'createdAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        } else {
+          final data = walletDoc.data()!;
+          final currentBalance = data['balance'] as int? ?? 0;
+          final totalCredited = data['totalCredited'] as int? ?? 0;
+          transaction.update(walletRef, {
+            'balance': currentBalance + amount,
+            'totalCredited': totalCredited + amount,
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        }
+
+        // Record transaction in top-level collection
+        final txnRef = _firestore.collection('transactions').doc();
+        transaction.set(txnRef, {
+          'walletId': walletId,
+          'type': 'credit',
+          'source': 'manual_adjustment',
+          'amount': amount,
+          'currency': 'MRU',
+          'adminId': user.uid,
+          'note': note ?? 'إضافة رصيد بواسطة المسؤول',
+          'createdAt': FieldValue.serverTimestamp(),
+        });
       });
 
       return true;
     } catch (e) {
-      if (kDebugMode) print('Error adding wallet balance: $e');
+      if (kDebugMode) {
+        print('Error adding balance: $e');
+      }
+      return false;
+    }
+  }
+
+  /// Unverify a driver
+  Future<bool> unverifyDriver(String driverId) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw Exception('Not authenticated');
+
+      await _firestore.collection('drivers').doc(driverId).update({
+        'isVerified': false,
+        'unverifiedAt': FieldValue.serverTimestamp(),
+        'unverifiedBy': user.uid,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      return true;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error unverifying driver: $e');
+      }
       return false;
     }
   }

@@ -4,16 +4,12 @@ import { FINANCE_CONFIG } from './config';
 import { atomicWalletUpdate } from './walletOperations';
 
 /**
- * Firestore Trigger: Settle completed orders into wallets
+ * Firestore Trigger: Settle completed orders
  *
  * Triggers when an order status changes to 'completed'
  *
- * Bug #1 FIX: Platform commission is split into TWO phases:
- * - Phase 1 (Trip Start): 10% deducted when status becomes 'onRoute' (processTripStartFee.ts)
- * - Phase 2 (Completion): 10% deducted at completion (this function)
- * Total: 20% platform commission as per PLATFORM_COMMISSION_RATE
- *
- * Bug #2 FIX: Uses atomicWalletUpdate for race-condition-free ledger recording
+ * Commission model: 10% total, deducted ONCE at trip start (processTripStartFee.ts)
+ * This function only: verifies trip start fee, credits platform wallet, marks order settled.
  *
  * IDEMPOTENT: Safe to retry, checks settledAt field
  */
@@ -61,31 +57,23 @@ export const onOrderCompleted = functions.firestore
   });
 
 /**
- * Settle an order into driver and platform wallets
+ * Settle a completed order
  *
- * P0-1 FIX: Idempotency check moved INSIDE transaction to prevent race condition
- * Bug #1 FIX: Deduct only COMPLETION_FEE_RATE (10%), not full 20%
- * Bug #2 FIX: Use atomicWalletUpdate instead of manual transaction logic
+ * The 10% commission was already deducted from driver at trip start (processTripStartFee.ts).
+ * This function: verifies that deduction, credits platform wallet, marks order settled.
  */
 async function settleOrder(orderId: string, orderData: any): Promise<void> {
   const db = admin.firestore();
   const orderPrice = orderData.price;
   const driverId = orderData.driverId;
-
-  // Bug #1 FIX: Platform commission is split into two phases (10% + 10% = 20% total)
-  // First 10% was already deducted at trip start (processTripStartFee.ts)
-  // This function deducts the remaining 10% at completion
-  const completionFee = Math.round(orderPrice * FINANCE_CONFIG.COMPLETION_FEE_RATE);
-  const driverEarning = Math.round(orderPrice * FINANCE_CONFIG.DRIVER_COMMISSION_RATE);
+  const tripStartFee = Math.round(orderPrice * FINANCE_CONFIG.TRIP_START_FEE_RATE);
 
   console.log(`[OrderSettlement] Order ${orderId}: Settling ${orderPrice} MRU`, {
     orderPrice,
-    completionFee: completionFee,
-    driverGross: driverEarning,
     driverId,
   });
 
-  // CRITICAL VALIDATION: Verify trip start fee was deducted
+  // Verify trip start fee was deducted
   const tripStartFeeQuery = await db
     .collection('transactions')
     .where('orderId', '==', orderId)
@@ -104,10 +92,9 @@ async function settleOrder(orderId: string, orderData: any): Promise<void> {
   console.log(`[OrderSettlement] Trip start fee verified:`, {
     orderId,
     tripStartFee: tripStartFeeDoc.amount,
-    deductedAt: tripStartFeeDoc.createdAt,
   });
 
-  // Check idempotency before settlement
+  // Check idempotency
   const orderRef = db.collection('orders').doc(orderId);
   const orderSnap = await orderRef.get();
 
@@ -117,69 +104,18 @@ async function settleOrder(orderId: string, orderData: any): Promise<void> {
   }
 
   try {
-    // Bug #2 FIX: Use atomic wallet operations instead of manual transaction logic
-    // Step 1: Deduct completion fee from driver (10% of order price)
-    const completionFeeResult = await atomicWalletUpdate(
-      db,
-      driverId,
-      -completionFee,
-      {
-        orderId,
-        type: 'completion_fee',
-        description: `Completion fee (10%) for order #${orderId}`,
-        metadata: {
-          orderPrice,
-          feeRate: FINANCE_CONFIG.COMPLETION_FEE_RATE,
-        },
-      }
-    );
-
-    console.log(`[OrderSettlement] Completion fee deducted:`, {
-      orderId,
-      driverId,
-      completionFee,
-      transactionId: completionFeeResult.transactionId,
-      balanceBefore: completionFeeResult.balanceBefore,
-      balanceAfter: completionFeeResult.balanceAfter,
-    });
-
-    // Step 2: Credit driver with gross earning (80% of order price)
-    const driverPaymentResult = await atomicWalletUpdate(
-      db,
-      driverId,
-      driverEarning,
-      {
-        orderId,
-        type: 'driver_payout',
-        description: `Driver payment for order #${orderId}`,
-        metadata: {
-          orderPrice,
-          driverShare: FINANCE_CONFIG.DRIVER_COMMISSION_RATE,
-        },
-      }
-    );
-
-    console.log(`[OrderSettlement] Driver payment credited:`, {
-      orderId,
-      driverId,
-      driverEarning,
-      transactionId: driverPaymentResult.transactionId,
-      balanceBefore: driverPaymentResult.balanceBefore,
-      balanceAfter: driverPaymentResult.balanceAfter,
-    });
-
-    // Step 3: Credit platform with completion fee
+    // Credit platform wallet with the commission (already deducted from driver at trip start)
     const platformPaymentResult = await atomicWalletUpdate(
       db,
       FINANCE_CONFIG.PLATFORM_WALLET_ID,
-      completionFee,
+      tripStartFee,
       {
         orderId,
         type: 'completion_fee',
-        description: `Platform completion fee from order #${orderId}`,
+        description: `Platform commission (10%) from order #${orderId}`,
         metadata: {
           orderPrice,
-          completionFeeRate: FINANCE_CONFIG.COMPLETION_FEE_RATE,
+          feeRate: FINANCE_CONFIG.TRIP_START_FEE_RATE,
         },
       }
     );
@@ -187,24 +123,19 @@ async function settleOrder(orderId: string, orderData: any): Promise<void> {
     console.log(`[OrderSettlement] Platform fee credited:`, {
       orderId,
       platformWalletId: FINANCE_CONFIG.PLATFORM_WALLET_ID,
-      completionFee,
+      tripStartFee,
       transactionId: platformPaymentResult.transactionId,
-      balanceBefore: platformPaymentResult.balanceBefore,
-      balanceAfter: platformPaymentResult.balanceAfter,
     });
 
-    // Step 4: Mark order as settled
+    // Mark order as settled
     await orderRef.update({
       settledAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    console.log(`[OrderSettlement] Order ${orderId}: Settlement completed successfully`, {
+    console.log(`[OrderSettlement] Order ${orderId}: Settlement completed`, {
       orderPrice,
-      completionFee,
-      driverEarning,
-      tripStartFee: tripStartFeeDoc.amount,
-      totalPlatformCommission: Math.abs(tripStartFeeDoc.amount) + completionFee,
+      totalPlatformCommission: tripStartFee,
     });
   } catch (error: any) {
     console.error(`[OrderSettlement] Settlement failed for order ${orderId}:`, error);

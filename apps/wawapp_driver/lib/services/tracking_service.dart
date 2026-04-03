@@ -19,7 +19,7 @@ class TrackingService {
 
   StreamSubscription? _orderSubscription;
   StreamSubscription? _onlineStatusSubscription;
-  // Removed _updateTimer - redundant timer was removed in Memory Optimization Phase 1
+  Timer? _keepAliveTimer; // Periodic write to prevent stale location
   Position? _lastPosition;
   bool _isTracking = false;
   int _updateIntervalSeconds = 10; // Default 10 seconds
@@ -27,7 +27,10 @@ class TrackingService {
   int _positionUpdatesCount = 0; // Count position updates for debugging
   DateTime? _firstFixTimestamp; // Track first location fix timestamp
 
+  DateTime? _lastWriteTime; // Track last Firestore write time
+
   static const String _logTag = '[TRACKING_SERVICE]';
+  static const int _maxStaleSeconds = 180; // Force write every 3 minutes even if stationary
 
   Future<void> startTracking() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -135,6 +138,28 @@ class TrackingService {
       throw Exception('Failed to get initial location: $e');
     }
 
+    // Start keep-alive timer: write last known position every 3 min
+    // even if driver is stationary (distanceFilter blocks stream updates)
+    _keepAliveTimer?.cancel();
+    _keepAliveTimer = Timer.periodic(
+      const Duration(seconds: _maxStaleSeconds),
+      (_) async {
+        if (_lastPosition != null) {
+          if (kDebugMode) {
+            debugPrint('$_logTag Keep-alive: writing last known position');
+          }
+          try {
+            await _writeLocationToFirestore(driverId, _lastPosition!);
+            _lastWriteTime = DateTime.now();
+          } catch (e) {
+            if (kDebugMode) {
+              debugPrint('$_logTag Keep-alive write failed: $e');
+            }
+          }
+        }
+      },
+    );
+
     // Start position stream for continuous updates
     if (kDebugMode) {
       debugPrint('$_logTag Starting position stream for continuous updates...');
@@ -168,12 +193,20 @@ class TrackingService {
                   '$_logTag Small movement detected ($_consecutiveSmallMoves consecutive)');
             }
 
-            // Skip write if barely moving
-            if (_consecutiveSmallMoves > 3) {
+            // Skip write if barely moving, BUT force write if stale
+            final timeSinceLastWrite = _lastWriteTime != null
+                ? DateTime.now().difference(_lastWriteTime!).inSeconds
+                : _maxStaleSeconds;
+
+            if (_consecutiveSmallMoves > 3 && timeSinceLastWrite < _maxStaleSeconds) {
               if (kDebugMode) {
-                debugPrint('$_logTag Skipping write due to minimal movement');
+                debugPrint('$_logTag Skipping write due to minimal movement (last write ${timeSinceLastWrite}s ago)');
               }
               return;
+            }
+
+            if (timeSinceLastWrite >= _maxStaleSeconds && kDebugMode) {
+              debugPrint('$_logTag Force writing stale location (${timeSinceLastWrite}s since last write)');
             }
           } else {
             _consecutiveSmallMoves = 0; // Reset on significant movement
@@ -183,6 +216,7 @@ class TrackingService {
         // Write to Firestore
         _writeLocationToFirestore(driverId, position).then((_) {
           _lastPosition = position;
+          _lastWriteTime = DateTime.now();
         }).catchError((Object error) {
           if (kDebugMode) {
             debugPrint('$_logTag ❌ Error writing location: $error');
@@ -272,8 +306,10 @@ class TrackingService {
     if (kDebugMode) {
       debugPrint('$_logTag Stopping location updates');
     }
-    // Removed _updateTimer cleanup - redundant timer was removed in Memory Optimization Phase 1
+    _keepAliveTimer?.cancel();
+    _keepAliveTimer = null;
     _lastPosition = null;
+    _lastWriteTime = null;
     _positionUpdatesCount = 0;
     _firstFixTimestamp = null;
     _consecutiveSmallMoves = 0;

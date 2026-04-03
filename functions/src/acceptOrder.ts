@@ -15,6 +15,12 @@ export const acceptOrder = functions.https.onCall(async (data, context) => {
 
   const db = admin.firestore();
 
+  // Verify driver is verified
+  const driverDoc = await db.collection('drivers').doc(driverId).get();
+  if (!driverDoc.exists || !driverDoc.data()?.isVerified) {
+    throw new functions.https.HttpsError('permission-denied', 'Driver account is not verified');
+  }
+
   try {
     await db.runTransaction(async (transaction) => {
       const orderRef = db.collection('orders').doc(orderId);

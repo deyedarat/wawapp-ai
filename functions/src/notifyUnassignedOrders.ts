@@ -129,11 +129,12 @@ async function findEligibleDrivers(
 
       const driverData = driverDoc.data();
 
-      // Check if driver is online
+      // Check if driver is online and verified
       const isOnline = driverData?.isOnline === true;
+      const isVerified = driverData?.isVerified === true;
 
-      // Only notify online drivers
-      if (!isOnline) {
+      // Only notify online AND verified drivers
+      if (!isOnline || !isVerified) {
         continue;
       }
 

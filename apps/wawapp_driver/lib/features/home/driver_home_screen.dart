@@ -29,11 +29,37 @@ class DriverHomeScreen extends ConsumerStatefulWidget {
 class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   bool _isTogglingStatus = false;
 
+  bool _trackingResumed = false;
+
   @override
   void initState() {
     super.initState();
     if (kDebugMode) {
       dev.log('[DriverHome] Screen initialized');
+    }
+    // Resume tracking if driver was already online from a previous session
+    _resumeTrackingIfOnline();
+  }
+
+  Future<void> _resumeTrackingIfOnline() async {
+    if (_trackingResumed) return;
+    final authState = ref.read(authProvider);
+    final uid = authState.user?.uid;
+    if (uid == null) return;
+
+    final isOnline = await DriverStatusService.instance.getOnlineStatus(uid);
+    if (isOnline && mounted) {
+      _trackingResumed = true;
+      if (kDebugMode) {
+        dev.log('[DriverHome] Driver was online, resuming tracking');
+      }
+      try {
+        await TrackingService.instance.startTracking();
+      } catch (e) {
+        if (kDebugMode) {
+          dev.log('[DriverHome] Failed to resume tracking: $e');
+        }
+      }
     }
   }
 

@@ -37,11 +37,12 @@ class LiveOrderMarker {
   /// Get status color
   String get statusColor {
     switch (status) {
+      case 'matching':
       case 'assigning':
         return '#F5A623'; // Golden Yellow
       case 'accepted':
         return '#0D6EFD'; // Blue
-      case 'on_route':
+      case 'onRoute':
         return '#00704A'; // Green
       case 'completed':
         return '#28A745'; // Success Green
@@ -58,11 +59,12 @@ class LiveOrderMarker {
   /// Get status label in Arabic
   String get statusLabel {
     switch (status) {
+      case 'matching':
       case 'assigning':
         return 'قيد التعيين';
       case 'accepted':
         return 'مقبول';
-      case 'on_route':
+      case 'onRoute':
         return 'في الطريق';
       case 'completed':
         return 'مكتمل';
@@ -78,9 +80,10 @@ class LiveOrderMarker {
 
   /// Check if order is active (ongoing)
   bool get isActive {
-    return status == 'assigning' || 
+    return status == 'matching' ||
+           status == 'assigning' ||
            status == 'accepted' || 
-           status == 'on_route';
+           status == 'onRoute';
   }
 
   /// Get order age in minutes
@@ -90,7 +93,7 @@ class LiveOrderMarker {
 
   /// Check if order is anomalous (stuck in assigning for too long)
   bool isAnomalous({int thresholdMinutes = 10}) {
-    return status == 'assigning' && ageMinutes > thresholdMinutes;
+    return (status == 'matching' || status == 'assigning') && ageMinutes > thresholdMinutes;
   }
 
   /// Get assignment time in minutes (if assigned)

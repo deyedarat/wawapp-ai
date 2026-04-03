@@ -28,53 +28,60 @@ class StatCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
         child: Padding(
-          padding: EdgeInsets.all(AdminSpacing.lg),
+          padding: const EdgeInsets.all(AdminSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(AdminSpacing.sm),
+                    padding: const EdgeInsets.all(AdminSpacing.xs),
                     decoration: BoxDecoration(
-                      color: cardColor.withOpacity(0.1),
+                      color: cardColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
                     ),
                     child: Icon(
                       icon,
                       color: cardColor,
-                      size: 28,
+                      size: 22,
                     ),
                   ),
                   if (onTap != null)
                     Icon(
                       Icons.arrow_forward_ios,
-                      size: 16,
+                      size: 14,
                       color: AdminAppColors.textSecondaryLight,
                     ),
                 ],
               ),
-              SizedBox(height: AdminSpacing.md),
+              const SizedBox(height: AdminSpacing.xs),
               Text(
                 title,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AdminAppColors.textSecondaryLight,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(height: AdminSpacing.xs),
+              const SizedBox(height: AdminSpacing.xxs),
               Text(
                 value,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: cardColor,
                 ),
               ),
               if (subtitle != null) ...[
-                SizedBox(height: AdminSpacing.xs),
+                const SizedBox(height: AdminSpacing.xxs),
                 Text(
                   subtitle!,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AdminAppColors.textSecondaryLight,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ],

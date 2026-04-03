@@ -57,20 +57,17 @@ final liveDriversStreamProvider =
                         for (final doc in snapshot.docs) {
                                   try {
                                               final data = doc.data();
-                                              if (data['location'] == null) continue;
 
-                                              LatLng? location;
-                                              final locationData = data['location'];
-                                              if (locationData is GeoPoint) {
-                                                            location = LatLng(locationData.latitude, locationData.longitude);
-                                              } else if (locationData is Map) {
-                                                            final lat = locationData['lat'] ?? locationData['latitude'];
-                                                            final lng = locationData['lng'] ?? locationData['longitude'];
-                                                            if (lat != null && lng != null) {
-                                                                            location = LatLng(lat.toDouble(), lng.toDouble());
-                                                            }
-                                              }
+                                              // Fetch location from driver_locations collection
+                                              final locationDoc = await db
+                                                  .collection('driver_locations')
+                                                  .doc(doc.id)
+                                                  .get();
+                                              if (!locationDoc.exists) continue;
+                                              final locData = locationDoc.data();
+                                              if (locData == null || locData['location'] == null) continue;
 
+                                              final location = _parseLocation(locData['location']);
                                               if (location == null) continue;
 
                                               final isOnline = data['isOnline'] as bool? ?? false;
@@ -144,13 +141,14 @@ final liveOrdersStreamProvider =
                         String? statusValue;
                         switch (filters.orderStatus) {
                           case OrderStatusFilter.assigning:
-                                      statusValue = 'assigning';
+                                      // Admin orders use 'assigning', client orders use 'matching'
+                                      query = query.where('status', whereIn: ['matching', 'assigning']);
                                       break;
                           case OrderStatusFilter.accepted:
                                       statusValue = 'accepted';
                                       break;
                           case OrderStatusFilter.onRoute:
-                                      statusValue = 'on_route';
+                                      statusValue = 'onRoute';
                                       break;
                           case OrderStatusFilter.completed:
                                       statusValue = 'completed';
@@ -161,6 +159,10 @@ final liveOrdersStreamProvider =
                         if (statusValue != null) {
                                   query = query.where('status', isEqualTo: statusValue);
                         }
+                } else {
+                        // Default: only fetch active orders at Firestore level
+                        // Note: 'assigning' is used by admin-created orders, 'matching' by client app
+                        query = query.where('status', whereIn: ['matching', 'assigning', 'accepted', 'onRoute']);
                 }
 
                 query = query.orderBy('createdAt', descending: true).limit(100);
@@ -320,3 +322,20 @@ final anomalousOrdersProvider = Provider<List<LiveOrderMarker>>((ref) {
 
     return orders.where((o) => o.isActive && o.isAnomalous()).toList();
 });
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+LatLng? _parseLocation(dynamic locationData) {
+    if (locationData is GeoPoint) {
+          return LatLng(locationData.latitude, locationData.longitude);
+    } else if (locationData is Map) {
+          final lat = locationData['lat'] ?? locationData['latitude'];
+          final lng = locationData['lng'] ?? locationData['longitude'];
+          if (lat != null && lng != null) {
+                return LatLng((lat as num).toDouble(), (lng as num).toDouble());
+          }
+    }
+    return null;
+}

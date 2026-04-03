@@ -277,45 +277,52 @@ class DashboardScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Summary stats grid
-              GridView.count(
-                crossAxisCount: 4,
-                crossAxisSpacing: AdminSpacing.md,
-                mainAxisSpacing: AdminSpacing.md,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                childAspectRatio: 1.5,
-                children: [
-                  StatCard(
-                    title: 'السائقون النشطون',
-                    value: '$onlineDrivers',
-                    icon: Icons.drive_eta,
-                    color: AdminAppColors.onlineGreen,
-                    subtitle: '$onlinePercent٪ متصلون',
-                    onTap: () => context.go('/drivers'),
-                  ),
-                  StatCard(
-                    title: 'الطلبات الجارية',
-                    value: '$activeOrders',
-                    icon: Icons.local_shipping,
-                    color: AdminAppColors.activeBlue,
-                    subtitle: 'قيد التوصيل',
-                    onTap: () => context.go('/orders'),
-                  ),
-                  StatCard(
-                    title: 'طلبات اليوم',
-                    value: '$completedToday',
-                    icon: Icons.check_circle,
-                    color: AdminAppColors.successLight,
-                    subtitle: 'مكتملة',
-                  ),
-                  StatCard(
-                    title: 'طلبات ملغاة',
-                    value: '$cancelledToday',
-                    icon: Icons.cancel,
-                    color: AdminAppColors.errorLight,
-                    subtitle: 'اليوم',
-                  ),
-                ],
+              IntrinsicHeight(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: StatCard(
+                        title: 'السائقون النشطون',
+                        value: '$onlineDrivers',
+                        icon: Icons.drive_eta,
+                        color: AdminAppColors.onlineGreen,
+                        subtitle: '$onlinePercent٪ متصلون',
+                        onTap: () => context.go('/drivers'),
+                      ),
+                    ),
+                    const SizedBox(width: AdminSpacing.md),
+                    Expanded(
+                      child: StatCard(
+                        title: 'الطلبات الجارية',
+                        value: '$activeOrders',
+                        icon: Icons.local_shipping,
+                        color: AdminAppColors.activeBlue,
+                        subtitle: 'قيد التوصيل',
+                        onTap: () => context.go('/orders'),
+                      ),
+                    ),
+                    const SizedBox(width: AdminSpacing.md),
+                    Expanded(
+                      child: StatCard(
+                        title: 'طلبات اليوم',
+                        value: '$completedToday',
+                        icon: Icons.check_circle,
+                        color: AdminAppColors.successLight,
+                        subtitle: 'مكتملة',
+                      ),
+                    ),
+                    const SizedBox(width: AdminSpacing.md),
+                    Expanded(
+                      child: StatCard(
+                        title: 'طلبات ملغاة',
+                        value: '$cancelledToday',
+                        icon: Icons.cancel,
+                        color: AdminAppColors.errorLight,
+                        subtitle: 'اليوم',
+                      ),
+                    ),
+                  ],
+                ),
               ),
 
               SizedBox(height: AdminSpacing.xl),

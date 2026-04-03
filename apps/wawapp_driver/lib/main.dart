@@ -5,8 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,6 +19,43 @@ import 'l10n/app_localizations.dart';
 import 'services/analytics_service.dart';
 import 'services/connectivity_service.dart';
 import 'services/notification_service.dart';
+
+/// Top-level background message handler for data-only FCM messages.
+/// Must be a top-level function (not a class method).
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  final type = message.data['notificationType'] ?? message.data['type'];
+
+  // Only show local notification for new order data-only messages
+  if (type == 'new_order' || type == 'new_order_nearby') {
+    final plugin = FlutterLocalNotificationsPlugin();
+    await plugin.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      ),
+    );
+
+    final orderId = message.data['orderId'] ?? '';
+    await plugin.show(
+      orderId.hashCode,
+      message.data['title'] ?? 'طلب جديد قريب منك',
+      message.data['body'] ?? '${message.data['pickupLabel']} → ${message.data['dropoffLabel']}',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'new_orders',
+          'طلبات جديدة',
+          importance: Importance.high,
+          priority: Priority.high,
+          enableVibration: true,
+          playSound: true,
+        ),
+      ),
+      payload: '${message.data}',
+    );
+  }
+}
 
 void main() async {
   // Run app initialization in error zone to catch all errors
@@ -75,6 +114,9 @@ void main() async {
     if (kDebugMode) {
       print('✅ Firebase initialized, Crashlytics ready');
     }
+
+    // Register background message handler for data-only FCM messages
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     runApp(const ProviderScope(child: MyApp()));
   }, (error, stack) {
@@ -163,10 +205,12 @@ class _MyAppState extends ConsumerState<MyApp> {
       AnalyticsService.instance.setUserType();
     });
 
-    // Delay notification service init by 1 second
-    // This allows app to render smoothly first
-    Future.delayed(const Duration(seconds: 1), () {
+    // Initialize notification service immediately after first frame
+    // Must not delay — onMessage listener needs to be registered ASAP
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
+        final container = ProviderScope.containerOf(context);
+        NotificationService().setProviderContainer(container);
         NotificationService().initialize();
       }
     });

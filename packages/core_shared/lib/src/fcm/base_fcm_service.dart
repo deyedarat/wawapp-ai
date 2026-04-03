@@ -266,7 +266,10 @@ abstract class BaseFCMService {
   /// Handles notifications when app is:
   /// - Background: App is running but not in foreground
   /// - Terminated: App was completely closed
-  /// - Foreground: App is active and visible
+  ///
+  /// NOTE: Foreground messages are handled by NotificationService
+  /// (flutter_local_notifications) to show proper system notifications.
+  /// Do NOT add onMessage listener here to avoid duplicate handling.
   void setupNotificationHandlers(BuildContext context) {
     // Handle notification taps when app is in BACKGROUND
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -291,56 +294,6 @@ abstract class BaseFCMService {
         }
       }
     });
-
-    // Handle messages when app is in FOREGROUND
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (kDebugMode) {
-        debugPrint(
-            '[FCM] Foreground notification: ${message.notification?.title}');
-      }
-
-      // Show in-app snackbar
-      if (message.notification != null && context.mounted) {
-        _showForegroundNotification(context, message);
-      }
-    });
-  }
-
-  /// Show in-app notification when app is in foreground.
-  ///
-  /// Displays a SnackBar with notification title, body, and action button.
-  void _showForegroundNotification(
-      BuildContext context, RemoteMessage message) {
-    final title = message.notification?.title;
-    final body = message.notification?.body;
-
-    if (title == null || body == null) return;
-    if (!context.mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(body),
-          ],
-        ),
-        duration: const Duration(seconds: 4),
-        behavior: SnackBarBehavior.floating,
-        action: SnackBarAction(
-          label: 'عرض',
-          onPressed: () {
-            handleNotificationTap(context, message, 'foreground');
-          },
-        ),
-      ),
-    );
   }
 
   /// Initialize Firebase Dynamic Links.

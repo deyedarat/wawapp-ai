@@ -119,11 +119,12 @@ async function findEligibleDrivers(
 
       const driverData = driverDoc.data();
 
-      // Check if driver is online
+      // Check if driver is online and verified
       const isOnline = driverData?.isOnline === true;
+      const isVerified = driverData?.isVerified === true;
 
-      // Only notify online drivers
-      if (!isOnline) {
+      // Only notify online AND verified drivers
+      if (!isOnline || !isVerified) {
         continue;
       }
 
@@ -164,34 +165,36 @@ async function sendDriverNotification(
   }
 
   try {
-    // Prepare notification data payload (for deep-link reliability)
+    // Resolve pickup/dropoff fields — support both formats:
+    // New: pickup.label, pickup.lat | Legacy: pickupAddress.label, pickupAddress.latitude
+    const pickupLabel = orderData.pickup?.label || orderData.pickupAddress?.label || 'موقع الانطلاق';
+    const dropoffLabel = orderData.dropoff?.label || orderData.dropoffAddress?.label || 'الوجهة';
+    const pLat = orderData.pickup?.lat || orderData.pickupAddress?.latitude || 0;
+    const pLng = orderData.pickup?.lng || orderData.pickupAddress?.longitude || 0;
+    const dLat = orderData.dropoff?.lat || orderData.dropoffAddress?.latitude || 0;
+    const dLng = orderData.dropoff?.lng || orderData.dropoffAddress?.longitude || 0;
+
     const message: admin.messaging.Message = {
       token: driver.fcmToken,
-      notification: {
-        title: 'طلب جديد قريب منك',
-        body: `${orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${
-          orderData.dropoffAddress?.label || 'الوجهة'
-        }`,
-      },
       data: {
         notificationType: 'new_order',
+        type: 'new_order',
+        title: 'طلب جديد قريب منك',
+        body: `${pickupLabel} → ${dropoffLabel}`,
         orderId: orderId,
-        pickupLat: String(orderData.pickupAddress?.latitude || 0),
-        pickupLng: String(orderData.pickupAddress?.longitude || 0),
-        dropoffLat: String(orderData.dropoffAddress?.latitude || 0),
-        dropoffLng: String(orderData.dropoffAddress?.longitude || 0),
+        pickupLat: String(pLat),
+        pickupLng: String(pLng),
+        dropoffLat: String(dLat),
+        dropoffLng: String(dLng),
+        pickupLabel: pickupLabel,
+        dropoffLabel: dropoffLabel,
+        price: String(orderData.price || 0),
         clientName: orderData.clientName || 'عميل',
         createdAt: String(orderData.createdAt?.toMillis() || Date.now()),
         distance: String(driver.distance.toFixed(2)),
       },
       android: {
         priority: 'high',
-        notification: {
-          sound: 'default',
-          channelId: 'new_orders', // Must match Android channel in driver app
-          priority: 'high',
-          visibility: 'public',
-        },
         ttl: 300000, // 5 minutes TTL
       },
       apns: {
@@ -283,8 +286,8 @@ export const notifyNewOrder = functions.firestore
     }
 
     // Validate pickup location - support both formats
-    const pickupLat = orderData.pickupAddress?.latitude || orderData.pickup?.lat;
-    const pickupLng = orderData.pickupAddress?.longitude || orderData.pickup?.lng;
+    const pickupLat = orderData.pickup?.lat || orderData.pickupAddress?.latitude;
+    const pickupLng = orderData.pickup?.lng || orderData.pickupAddress?.longitude;
     
     if (!pickupLat || !pickupLng) {
       console.warn('[NotifyNewOrder] Order missing pickup coordinates', {
@@ -308,7 +311,7 @@ export const notifyNewOrder = functions.firestore
       await writeAdminNotification({
         type: 'new_order',
         title: 'طلب جديد',
-        body: `طلب جديد #${orderId.substring(0, 6)} — ${orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${orderData.dropoffAddress?.label || 'الوجهة'}`,
+        body: `طلب جديد #${orderId.substring(0, 6)} — ${orderData.pickup?.label || orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${orderData.dropoff?.label || orderData.dropoffAddress?.label || 'الوجهة'}`,
         data: {
           orderId,
           clientName: orderData.clientName || '',
@@ -373,7 +376,7 @@ export const notifyNewOrder = functions.firestore
     await writeAdminNotification({
       type: 'new_order',
       title: 'طلب جديد',
-      body: `طلب جديد #${orderId.substring(0, 6)} — ${orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${orderData.dropoffAddress?.label || 'الوجهة'}`,
+      body: `طلب جديد #${orderId.substring(0, 6)} — ${orderData.pickup?.label || orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${orderData.dropoff?.label || orderData.dropoffAddress?.label || 'الوجهة'}`,
       data: {
         orderId,
         clientName: orderData.clientName || '',
