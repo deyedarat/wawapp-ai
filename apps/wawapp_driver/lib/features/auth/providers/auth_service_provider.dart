@@ -71,10 +71,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final user = state.user; // Use state.user or _firebaseAuth.currentUser
     if (user == null) return;
 
-    // Prevent duplicate checks if we already have a definitive result or are loading
-    // Exception: If error, we allow retry (implicit in avoiding this return)
-    if (state.pinStatus == PinStatus.loading ||
-        state.pinStatus == PinStatus.hasPin ||
+    // Prevent duplicate checks if we already have a definitive result
+    if (state.pinStatus == PinStatus.hasPin ||
         state.pinStatus == PinStatus.noPin) {
       return;
     }

@@ -133,13 +133,10 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                                                     ),
                                         children: [
                                                       TileLayer(
-                                                                      // Carto Voyager – clean, professional, no clutter
-                                                                      urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-                                                                      subdomains: const ['a', 'b', 'c', 'd'],
+                                                                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                                                                       userAgentPackageName: 'com.wawapp.admin',
-                                                                      maxZoom: 20,
+                                                                      maxZoom: 19,
                                                                       minZoom: 2,
-                                                                      retinaMode: true,
                                                                       keepBuffer: 4,
                                                                       panBuffer: 2,
                                                                       errorTileCallback: (tile, error, stack) {},

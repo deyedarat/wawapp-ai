@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +19,13 @@ class PayoutsScreen extends ConsumerStatefulWidget {
 
 class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
   String _statusFilter = 'all';
+  final ScrollController _tableHorizontalController = ScrollController();
+
+  @override
+  void dispose() {
+    _tableHorizontalController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +46,9 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
       ],
       body: Column(
         children: [
+          // Driver topup requests section
+          _buildTopupRequestsSection(),
+
           // Filter bar
           _buildFilterBar(),
 
@@ -120,8 +132,14 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
       );
     }
 
-    return SingleChildScrollView(
-      child: Container(
+    return Scrollbar(
+      controller: _tableHorizontalController,
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        controller: _tableHorizontalController,
+        scrollDirection: Axis.horizontal,
+        child: SingleChildScrollView(
+        child: Container(
         margin: const EdgeInsets.all(AdminSpacing.md),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
@@ -191,6 +209,8 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
             );
           }).toList(),
         ),
+        ),
+      ),
       ),
     );
   }
@@ -456,5 +476,139 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
         SnackBar(content: Text('تم تصدير ${payouts.length} دفعة بنجاح')),
       );
     });
+  }
+
+  Widget _buildTopupRequestsSection() {
+    final topupAsync = ref.watch(driverTopupRequestsProvider);
+    return topupAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (requests) {
+        if (requests.isEmpty) return const SizedBox.shrink();
+        return Card(
+          margin: const EdgeInsets.all(AdminSpacing.md),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(AdminSpacing.md),
+                child: Row(
+                  children: [
+                    const Icon(Icons.request_page, color: AdminAppColors.primaryGreen),
+                    const SizedBox(width: AdminSpacing.sm),
+                    Text(
+                      'طلبات السحب من السائقين',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text('${requests.length} طلب'),
+                  ],
+                ),
+              ),
+              const Divider(height: 1),
+              ...requests.map((req) => ListTile(
+                leading: const Icon(Icons.request_page),
+                title: Text('سائق: ${req.driverId.length >= 8 ? req.driverId.substring(0, 8) : req.driverId}'),
+                subtitle: Text('${req.requestedAt.day}/${req.requestedAt.month}/${req.requestedAt.year}'),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '${req.amount.toStringAsFixed(0)} MRU',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Chip(
+                          label: Text(
+                            _topupStatusLabel(req.status),
+                            style: const TextStyle(fontSize: 11, color: Colors.white),
+                          ),
+                          backgroundColor: _topupStatusColor(req.status),
+                          padding: EdgeInsets.zero,
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ],
+                    ),
+                    if (req.status == 'pending')
+                      PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_vert),
+                        onSelected: (value) {
+                          if (value == 'approve') _approveTopupRequest(req.id);
+                          if (value == 'reject') _rejectTopupRequest(req.id);
+                        },
+                        itemBuilder: (context) => const [
+                          PopupMenuItem(value: 'approve', child: Text('موافقة')),
+                          PopupMenuItem(value: 'reject', child: Text('رفض')),
+                        ],
+                      ),
+                  ],
+                ),
+              )),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Color _topupStatusColor(String status) {
+    switch (status) {
+      case 'pending': return Colors.orange;
+      case 'approved': return Colors.green;
+      case 'rejected': return Colors.red;
+      default: return Colors.grey;
+    }
+  }
+
+  String _topupStatusLabel(String status) {
+    switch (status) {
+      case 'pending': return 'قيد الانتظار';
+      case 'approved': return 'موافق';
+      case 'rejected': return 'مرفوض';
+      default: return status;
+    }
+  }
+
+  Future<void> _approveTopupRequest(String requestId) async {
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('approveTopupRequest');
+      await callable.call<Map<String, dynamic>>({'requestId': requestId});
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تمت الموافقة على الطلب بنجاح')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطأ في الموافقة: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _rejectTopupRequest(String requestId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('topup_requests')
+          .doc(requestId)
+          .update({'status': 'rejected', 'processedAt': FieldValue.serverTimestamp()});
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تم رفض الطلب')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطأ في الرفض: $e')),
+        );
+      }
+    }
   }
 }

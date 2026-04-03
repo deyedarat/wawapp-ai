@@ -18,6 +18,13 @@ class ClientsScreen extends ConsumerStatefulWidget {
 
 class _ClientsScreenState extends ConsumerState<ClientsScreen> {
   bool? _verifiedFilter;
+  final ScrollController _tableHorizontalController = ScrollController();
+
+  @override
+  void dispose() {
+    _tableHorizontalController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -240,9 +247,13 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                   children: [
                     Expanded(
                       child: Card(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
+                        child: Scrollbar(
+                          controller: _tableHorizontalController,
+                          thumbVisibility: true,
                           child: SingleChildScrollView(
+                            controller: _tableHorizontalController,
+                            scrollDirection: Axis.horizontal,
+                            child: SingleChildScrollView(
                             child: DataTable(
                               headingRowColor: WidgetStateProperty.all(
                                 AdminAppColors.backgroundLight,
@@ -431,6 +442,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                                 );
                               }).toList(),
                             ),
+                            ),
                           ),
                         ),
                       ),
@@ -467,7 +479,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
 
   String _formatDate(DateTime? date) {
     if (date == null) return '-';
-    final formatter = DateFormat('yyyy-MM-dd', 'ar');
+    final formatter = DateFormat('yyyy-MM-dd', 'en');
     return formatter.format(date);
   }
 

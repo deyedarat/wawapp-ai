@@ -449,9 +449,9 @@ class _NotificationCard extends StatelessWidget {
     if (diff.inDays == 0) {
       return DateFormat('HH:mm').format(dt);
     } else if (diff.inDays < 7) {
-      return DateFormat('EEE HH:mm', 'ar').format(dt);
+      return DateFormat('EEE HH:mm', 'en').format(dt);
     } else {
-      return DateFormat('dd/MM/yyyy', 'ar').format(dt);
+      return DateFormat('dd/MM/yyyy', 'en').format(dt);
     }
   }
 }

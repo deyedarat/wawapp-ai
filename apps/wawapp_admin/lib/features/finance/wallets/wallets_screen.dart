@@ -17,6 +17,13 @@ class WalletsScreen extends ConsumerStatefulWidget {
 
 class _WalletsScreenState extends ConsumerState<WalletsScreen> {
   String _searchQuery = '';
+  final ScrollController _tableHorizontalController = ScrollController();
+
+  @override
+  void dispose() {
+    _tableHorizontalController.dispose();
+    super.dispose();
+  }
 
   @override
   @override
@@ -171,8 +178,14 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
       );
     }
 
-    return SingleChildScrollView(
-      child: Container(
+    return Scrollbar(
+      controller: _tableHorizontalController,
+      thumbVisibility: true,
+      child: SingleChildScrollView(
+        controller: _tableHorizontalController,
+        scrollDirection: Axis.horizontal,
+        child: SingleChildScrollView(
+        child: Container(
         margin: const EdgeInsets.all(AdminSpacing.md),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
@@ -223,6 +236,8 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
             );
           }).toList(),
         ),
+      ),
+      ),
       ),
     );
   }

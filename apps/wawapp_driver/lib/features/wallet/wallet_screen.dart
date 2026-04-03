@@ -27,6 +27,10 @@ class WalletScreen extends ConsumerWidget {
         ? ref.watch(walletDataProvider(driverId))
         : null;
 
+    final transactionsAsync = driverId != null
+        ? ref.watch(driverTransactionsProvider(driverId))
+        : null;
+
     // Listen for success/error messages
     ref.listen<TopupRequestState>(topupRequestProvider, (previous, next) {
       if (next.successMessage != null) {
@@ -79,9 +83,6 @@ class WalletScreen extends ConsumerWidget {
                           // Main Balance Card
                           _buildBalanceCard(context, theme, walletData.totalBalance),
                           SizedBox(height: DriverAppSpacing.lg),
-                          // Quick Stats
-                          _buildQuickStats(context, theme, l10n, walletData),
-                          SizedBox(height: DriverAppSpacing.lg),
 
                           // Top-up Request Button
                           _buildTopupButton(context, ref, topupState),
@@ -95,10 +96,24 @@ class WalletScreen extends ConsumerWidget {
                             ),
                           ),
                           SizedBox(height: DriverAppSpacing.md),
-                          const DriverEmptyState(
-                            icon: Icons.receipt_long,
-                            message: 'لا توجد معاملات حتى الآن',
-                          ),
+                          if (transactionsAsync == null)
+                            const DriverEmptyState(icon: Icons.receipt_long, message: 'لا توجد معاملات')
+                          else
+                            transactionsAsync.when(
+                              loading: () => const Center(child: CircularProgressIndicator()),
+                              error: (_, __) => const DriverEmptyState(
+                                  icon: Icons.receipt_long,
+                                  message: 'لا توجد معاملات حتى الآن'),
+                              data: (transactions) => transactions.isEmpty
+                                  ? const DriverEmptyState(
+                                      icon: Icons.receipt_long,
+                                      message: 'لا توجد معاملات حتى الآن')
+                                  : Column(
+                                      children: transactions
+                                          .map((tx) => _buildTransactionItem(context, theme, tx))
+                                          .toList(),
+                                    ),
+                            ),
                         ],
                       ),
                     ),
@@ -136,7 +151,7 @@ class WalletScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'إجمالي الأرباح',
+                  'إجمالي الرصيد',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: Colors.white.withOpacity(0.9),
                   ),
@@ -177,83 +192,47 @@ class WalletScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuickStats(BuildContext context, ThemeData theme, AppLocalizations l10n, WalletData walletData) {
-    return Row(
-      children: [
-        Expanded(
-          child: DriverCard(
-            child: Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(DriverAppSpacing.sm),
-                  decoration: BoxDecoration(
-                    color: DriverAppColors.successLight.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.today,
-                    size: 24,
-                    color: DriverAppColors.successLight,
-                  ),
-                ),
-                SizedBox(height: DriverAppSpacing.sm),
-                Text(
-                  '${walletData.todayEarnings.toStringAsFixed(2)} MRU',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: DriverAppColors.successLight,
-                  ),
-                ),
-                SizedBox(height: DriverAppSpacing.xxs),
-                Text(
-                  l10n.today_earnings,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: DriverAppColors.textSecondaryLight,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
+  Widget _buildTransactionItem(
+      BuildContext context, ThemeData theme, WalletTransaction tx) {
+    final isCredit = tx.type == 'credit';
+    final color =
+        isCredit ? DriverAppColors.successLight : DriverAppColors.errorLight;
+    final sign = isCredit ? '+' : '-';
+    return Card(
+      margin: EdgeInsets.only(bottom: DriverAppSpacing.sm),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color.withOpacity(0.1),
+          child: Icon(
+            isCredit ? Icons.arrow_downward : Icons.arrow_upward,
+            color: color,
+            size: 20,
           ),
         ),
-        SizedBox(width: DriverAppSpacing.md),
-        Expanded(
-          child: DriverCard(
-            child: Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(DriverAppSpacing.sm),
-                  decoration: BoxDecoration(
-                    color: DriverAppColors.infoLight.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.calendar_month,
-                    size: 24,
-                    color: DriverAppColors.infoLight,
-                  ),
-                ),
-                SizedBox(height: DriverAppSpacing.sm),
-                Text(
-                  '${walletData.weekEarnings.toStringAsFixed(2)} MRU',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: DriverAppColors.infoLight,
-                  ),
-                ),
-                SizedBox(height: DriverAppSpacing.xxs),
-                Text(
-                  'هذا الأسبوع',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: DriverAppColors.textSecondaryLight,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+        title: Text(tx.source, style: theme.textTheme.bodyMedium),
+        subtitle: tx.note != null
+            ? Text(tx.note!, style: theme.textTheme.bodySmall)
+            : null,
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              '$sign${tx.amount.toStringAsFixed(2)} MRU',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
+            Text(
+              '${tx.createdAt.day}/${tx.createdAt.month}/${tx.createdAt.year}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: DriverAppColors.textSecondaryLight,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 

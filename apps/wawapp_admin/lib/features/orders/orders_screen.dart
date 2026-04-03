@@ -22,6 +22,13 @@ class OrdersScreen extends ConsumerStatefulWidget {
 class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   String? _selectedStatusFilter;
   String _searchQuery = '';
+  final ScrollController _tableHorizontalController = ScrollController();
+
+  @override
+  void dispose() {
+    _tableHorizontalController.dispose();
+    super.dispose();
+  }
 
   final Map<String, String> _statusFilterMap = {
     'الكل': '',
@@ -196,9 +203,13 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                     // Orders table
                     Expanded(
                       child: Card(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
+                        child: Scrollbar(
+                          controller: _tableHorizontalController,
+                          thumbVisibility: true,
                           child: SingleChildScrollView(
+                            controller: _tableHorizontalController,
+                            scrollDirection: Axis.horizontal,
+                            child: SingleChildScrollView(
                             child: DataTable(
                               headingRowColor: WidgetStateProperty.all(
                                 AdminAppColors.backgroundLight,
@@ -368,6 +379,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                 );
                               }).toList(),
                             ),
+                            ),
                           ),
                         ),
                       ),
@@ -414,7 +426,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
   String _formatDate(DateTime? date) {
     if (date == null) return '-';
-    final formatter = DateFormat('yyyy-MM-dd HH:mm', 'ar');
+    final formatter = DateFormat('yyyy-MM-dd HH:mm', 'en');
     return formatter.format(date);
   }
 

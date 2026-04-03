@@ -176,9 +176,11 @@ class FinancialReportTab extends ConsumerWidget {
               borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
               border: Border.all(color: AdminAppColors.borderLight),
             ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
+            child: Scrollbar(
+              thumbVisibility: true,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
                 headingRowColor: MaterialStateProperty.all(
                   AdminAppColors.backgroundLight,
                 ),
@@ -202,6 +204,7 @@ class FinancialReportTab extends ConsumerWidget {
                   ]);
                 }).toList(),
               ),
+            ),
             ),
           ),
         ],

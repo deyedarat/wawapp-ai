@@ -18,6 +18,13 @@ class DriversScreen extends ConsumerStatefulWidget {
 
 class _DriversScreenState extends ConsumerState<DriversScreen> {
   bool? _onlineFilter;
+  final ScrollController _tableHorizontalController = ScrollController();
+
+  @override
+  void dispose() {
+    _tableHorizontalController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -289,9 +296,13 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                   children: [
                     Expanded(
                       child: Card(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
+                        child: Scrollbar(
+                          controller: _tableHorizontalController,
+                          thumbVisibility: true,
                           child: SingleChildScrollView(
+                            controller: _tableHorizontalController,
+                            scrollDirection: Axis.horizontal,
+                            child: SingleChildScrollView(
                             child: DataTable(
                               headingRowColor: WidgetStateProperty.all(
                                 AdminAppColors.backgroundLight,
@@ -488,6 +499,7 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                                 );
                               }).toList(),
                             ),
+                            ),
                           ),
                         ),
                       ),
@@ -511,7 +523,7 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
 
   String _formatDate(DateTime? date) {
     if (date == null) return '-';
-    final formatter = DateFormat('yyyy-MM-dd', 'ar');
+    final formatter = DateFormat('yyyy-MM-dd', 'en');
     return formatter.format(date);
   }
 

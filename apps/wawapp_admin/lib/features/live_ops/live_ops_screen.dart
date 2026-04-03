@@ -506,6 +506,6 @@ class _LiveOpsScreenState extends ConsumerState<LiveOpsScreen> {
     }
 
     String _formatTime(DateTime time) {
-          return DateFormat('HH:mm:ss', 'ar').format(time);
+          return DateFormat('HH:mm:ss', 'en').format(time);
     }
 }

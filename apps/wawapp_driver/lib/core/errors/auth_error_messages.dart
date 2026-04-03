@@ -68,7 +68,8 @@ class AuthErrorMessages {
 
     // Account-related errors
     if (errorString.contains('user-not-found') ||
-        errorString.contains('account-not-found')) {
+        errorString.contains('account-not-found') ||
+        errorString.contains('not-found')) {
       return accountNotFound;
     }
 

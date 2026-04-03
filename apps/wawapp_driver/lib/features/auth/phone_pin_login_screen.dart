@@ -85,7 +85,6 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
         final remaining = newState.remainingAttempts;
         setState(() => _err = 'رمز PIN غير صحيح. المحاولات المتبقية: $remaining');
       }
-      rethrow;
     }
   }
 
@@ -147,15 +146,6 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     } on Object catch (e) {
       if (kDebugMode) {
         print('[PhonePinLogin] OTP send failed: ${e.runtimeType} - $e');
-      }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('فشل إرسال OTP: ${e.toString()}'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-          ),
-        );
       }
     }
   }

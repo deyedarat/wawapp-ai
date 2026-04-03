@@ -65,9 +65,9 @@ final liveDriversStreamProvider =
                                                   .get();
                                               if (!locationDoc.exists) continue;
                                               final locData = locationDoc.data();
-                                              if (locData == null || locData['location'] == null) continue;
+                                              if (locData == null) continue;
 
-                                              final location = _parseLocation(locData['location']);
+                                              final location = _parseLocation(locData) ?? _parseLocation(locData['location']);
                                               if (location == null) continue;
 
                                               final isOnline = data['isOnline'] as bool? ?? false;
