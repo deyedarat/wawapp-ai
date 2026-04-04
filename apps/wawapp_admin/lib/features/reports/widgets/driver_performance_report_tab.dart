@@ -147,6 +147,8 @@ class DriverPerformanceReportTab extends ConsumerWidget {
               thumbVisibility: true,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 1200),
                 child: DataTable(
                 headingRowColor: MaterialStateProperty.all(
                   AdminAppColors.backgroundLight,
@@ -251,6 +253,7 @@ class DriverPerformanceReportTab extends ConsumerWidget {
                     ],
                   );
                 }).toList(),
+              ),
               ),
             ),
             ),

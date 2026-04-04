@@ -180,6 +180,8 @@ class FinancialReportTab extends ConsumerWidget {
               thumbVisibility: true,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 900),
                 child: DataTable(
                 headingRowColor: MaterialStateProperty.all(
                   AdminAppColors.backgroundLight,
@@ -203,6 +205,7 @@ class FinancialReportTab extends ConsumerWidget {
                     DataCell(Text('${_formatCurrency(day.platformCommission)} MRU')),
                   ]);
                 }).toList(),
+              ),
               ),
             ),
             ),

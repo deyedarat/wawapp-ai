@@ -209,7 +209,8 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                           child: SingleChildScrollView(
                             controller: _tableHorizontalController,
                             scrollDirection: Axis.horizontal,
-                            child: SingleChildScrollView(
+                            child: ConstrainedBox(
+                            constraints: const BoxConstraints(minWidth: 1400),
                             child: DataTable(
                               headingRowColor: WidgetStateProperty.all(
                                 AdminAppColors.backgroundLight,

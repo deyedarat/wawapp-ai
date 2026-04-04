@@ -302,7 +302,8 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                           child: SingleChildScrollView(
                             controller: _tableHorizontalController,
                             scrollDirection: Axis.horizontal,
-                            child: SingleChildScrollView(
+                            child: ConstrainedBox(
+                            constraints: const BoxConstraints(minWidth: 1200),
                             child: DataTable(
                               headingRowColor: WidgetStateProperty.all(
                                 AdminAppColors.backgroundLight,

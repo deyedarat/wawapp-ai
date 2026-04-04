@@ -14,6 +14,7 @@ import '../../features/auth/create_pin_screen.dart';
 import '../../features/auth/otp_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
 import '../../features/auth/providers/auth_service_provider.dart';
+import '../../features/auth/screens/driver_blocked_screen.dart';
 import '../../features/auth/screens/pin_gate_screen.dart';
 import '../../features/earnings/driver_earnings_screen.dart';
 import '../../features/history/driver_history_screen.dart';
@@ -22,16 +23,18 @@ import '../../features/home/driver_home_screen.dart';
 import '../../features/nearby/nearby_screen.dart';
 import '../../features/profile/driver_profile_edit_screen.dart';
 import '../../features/profile/driver_profile_screen.dart';
+import '../../features/profile/providers/driver_profile_providers.dart';
 import '../../features/wallet/wallet_screen.dart';
 import 'navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
+  final driverProfile = ref.watch(driverProfileStreamProvider).valueOrNull;
 
   return GoRouter(
     navigatorKey: appNavigatorKey,
     initialLocation: '/',
-    redirect: (context, state) => _redirect(state, authState),
+    redirect: (context, state) => _redirect(state, authState, driverProfile),
     refreshListenable: _GoRouterRefreshStream(ref.read(authProvider.notifier).stream),
     observers: [
       FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
@@ -71,6 +74,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/pin-gate',
         name: 'pinGate',
         builder: (context, state) => const PinGateScreen(),
+      ),
+      GoRoute(
+        path: '/blocked',
+        name: 'blocked',
+        builder: (context, state) => const DriverBlockedScreen(),
       ),
       GoRoute(
         path: '/active-order',
@@ -114,7 +122,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-String? _redirect(GoRouterState s, AuthState st) {
+String? _redirect(GoRouterState s, AuthState st, DriverProfile? profile) {
   final loggedIn = st.user != null;
   final canOtp = st.otpFlowActive || st.otpStage == OtpStage.sending || st.otpStage == OtpStage.codeSent;
 
@@ -186,13 +194,25 @@ String? _redirect(GoRouterState s, AuthState st) {
     return null;
   }
 
-  // 5. FULLY AUTHENTICATED: User has account + PIN (PinStatus.hasPin)
+  // 5. BLOCKED CHECK: Driver is blocked by admin
+  if (profile != null && profile.isBlocked) {
+    if (s.matchedLocation != '/blocked') {
+      if (kDebugMode) {
+        debugPrint('[ROUTER] → Redirect to /blocked (driver is blocked)');
+      }
+      return '/blocked';
+    }
+    return null;
+  }
+
+  // 6. FULLY AUTHENTICATED: User has account + PIN (PinStatus.hasPin)
   if (st.pinStatus == PinStatus.hasPin) {
     // Redirect away from auth screens to home
     if (s.matchedLocation == '/login' ||
         s.matchedLocation == '/otp' ||
         s.matchedLocation == '/create-pin' ||
-        s.matchedLocation == '/pin-gate') {
+        s.matchedLocation == '/pin-gate' ||
+        s.matchedLocation == '/blocked') {
       if (kDebugMode) {
         debugPrint('[ROUTER] → Redirect to / (authenticated with PIN, leaving ${s.matchedLocation})');
       }

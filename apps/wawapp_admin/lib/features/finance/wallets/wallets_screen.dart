@@ -184,7 +184,8 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
       child: SingleChildScrollView(
         controller: _tableHorizontalController,
         scrollDirection: Axis.horizontal,
-        child: SingleChildScrollView(
+        child: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 1000),
         child: Container(
         margin: const EdgeInsets.all(AdminSpacing.md),
         decoration: BoxDecoration(
