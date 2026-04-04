@@ -309,6 +309,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Admin saved locations (map picker)
+    match /admin_saved_locations/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
     // Bug reports: write-only, no auth required (OTP errors happen before login).
     // Abuse prevention: require minimal schema + strict size/type validation.
     match /bug_reports/{docId} {

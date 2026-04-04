@@ -14,6 +14,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../core/theme/colors.dart';
 import '../models/live_driver_marker.dart';
@@ -39,6 +40,10 @@ class LiveMap extends StatefulWidget {
 
 class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
     final MapController _mapController = MapController();
+    bool _legendExpanded = false;
+    String? _selectedDriverId;
+    String? _selectedOrderId;
+    double _currentZoom = _defaultZoom;
 
     static const LatLng _defaultCenter = LatLng(18.0735, -15.9582);
     static const double _defaultZoom = 12.0;
@@ -56,6 +61,11 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
           _pulseAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
                   CurvedAnimation(parent: _pulseController, curve: Curves.easeOut),
                 );
+          _mapController.mapEventStream.listen((event) {
+                  if (event is MapEventMove || event is MapEventRotate) {
+                          setState(() => _currentZoom = _mapController.camera.zoom);
+                  }
+                });
           WidgetsBinding.instance.addPostFrameCallback((_) => _fitMarkers());
     }
 
@@ -116,6 +126,24 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
 
     void _resetToDefault() => _mapController.move(_defaultCenter, _defaultZoom);
 
+    List<LiveDriverMarker> _getVisibleDrivers() {
+          if (_currentZoom < 10) {
+                  return widget.drivers.where((d) => d.isOnline && !d.isBlocked).toList();
+          } else if (_currentZoom < 12) {
+                  return widget.drivers.where((d) =>
+                            (d.isOnline && !d.isBlocked) || d.activeOrderId != null
+                          ).toList();
+          }
+          return widget.drivers;
+    }
+
+    List<LiveOrderMarker> _getVisibleOrders() {
+          if (_currentZoom < 11) {
+                  return widget.orders.where((o) => o.isActive).toList();
+          }
+          return widget.orders;
+    }
+
     @override
     Widget build(BuildContext context) {
           return Stack(
@@ -154,36 +182,98 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                                                                       }).toList(),
                                                                     ),
                                                       MarkerLayer(
-                                                                      markers: widget.orders.map((order) => Marker(
+                                                                      markers: _getVisibleOrders().map((order) => Marker(
                                                                                         point: order.dropoffLocation,
                                                                                         width: 28,
                                                                                         height: 28,
                                                                                         child: _buildDropoffMarker(order),
                                                                                       )).toList(),
                                                                     ),
-                                                      MarkerLayer(
-                                                                      markers: widget.orders.map((order) => Marker(
-                                                                                        point: order.pickupLocation,
-                                                                                        width: 34,
-                                                                                        height: 34,
-                                                                                        child: GestureDetector(
-                                                                                                            onTap: () => widget.onOrderTap?.call(order),
-                                                                                                            child: _buildPickupMarker(order),
-                                                                                                          ),
-                                                                                      )).toList(),
+                                                      MarkerClusterLayerWidget(
+                                                                      options: MarkerClusterLayerOptions(
+                                                                                        maxClusterRadius: 60,
+                                                                                        size: const Size(45, 45),
+                                                                                        markers: _getVisibleOrders().map((order) => Marker(
+                                                                                                            point: order.pickupLocation,
+                                                                                                            width: 34,
+                                                                                                            height: 34,
+                                                                                                            child: GestureDetector(
+                                                                                                                          onTap: () {
+                                                                                                                                        setState(() {
+                                                                                                                                                      _selectedOrderId = order.orderId;
+                                                                                                                                                      _selectedDriverId = null;
+                                                                                                                                                    });
+                                                                                                                                        widget.onOrderTap?.call(order);
+                                                                                                                                      },
+                                                                                                                          child: _HoverScaleMarker(
+                                                                                                                                        child: _buildPickupMarker(order),
+                                                                                                                                      ),
+                                                                                                                        ),
+                                                                                                          )).toList(),
+                                                                                        builder: (context, markers) {
+                                                                                                      return Container(
+                                                                                                                    decoration: BoxDecoration(
+                                                                                                                                  color: Colors.blue.withOpacity(0.9),
+                                                                                                                                  shape: BoxShape.circle,
+                                                                                                                                  border: Border.all(color: Colors.white, width: 2),
+                                                                                                                                ),
+                                                                                                                    child: Center(
+                                                                                                                                  child: Text(
+                                                                                                                                                '${markers.length}',
+                                                                                                                                                style: const TextStyle(
+                                                                                                                                                              color: Colors.white,
+                                                                                                                                                              fontWeight: FontWeight.bold,
+                                                                                                                                                              fontSize: 12,
+                                                                                                                                                            ),
+                                                                                                                                              ),
+                                                                                                                                ),
+                                                                                                                  );
+                                                                                        },
+                                                                                      ),
                                                                     ),
-                                                      MarkerLayer(
-                                                                      markers: widget.drivers.map((driver) => Marker(
-                                                                                        point: driver.location,
-                                                                                        width: 48,
-                                                                                        height: 48,
-                                                                                        child: GestureDetector(
-                                                                                                            onTap: () => widget.onDriverTap?.call(driver),
-                                                                                                            child: driver.isOnline && !driver.isBlocked
-                                                                                                                ? _buildOnlineDriverMarker(driver)
-                                                                                                                : _buildDriverMarkerCore(driver),
-                                                                                                          ),
-                                                                                      )).toList(),
+                                                      MarkerClusterLayerWidget(
+                                                                      options: MarkerClusterLayerOptions(
+                                                                                        maxClusterRadius: 80,
+                                                                                        size: const Size(50, 50),
+                                                                                        markers: _getVisibleDrivers().map((driver) => Marker(
+                                                                                                            point: driver.location,
+                                                                                                            width: 48,
+                                                                                                            height: 48,
+                                                                                                            child: GestureDetector(
+                                                                                                                          onTap: () {
+                                                                                                                                        setState(() {
+                                                                                                                                                      _selectedDriverId = driver.driverId;
+                                                                                                                                                      _selectedOrderId = null;
+                                                                                                                                                    });
+                                                                                                                                        widget.onDriverTap?.call(driver);
+                                                                                                                                      },
+                                                                                                                          child: _HoverScaleMarker(
+                                                                                                                                        child: driver.isOnline && !driver.isBlocked
+                                                                                                                                            ? _buildOnlineDriverMarker(driver)
+                                                                                                                                            : _buildDriverMarkerCore(driver),
+                                                                                                                                      ),
+                                                                                                                        ),
+                                                                                                          )).toList(),
+                                                                                        builder: (context, markers) {
+                                                                                                      return Container(
+                                                                                                                    decoration: BoxDecoration(
+                                                                                                                                  color: AdminAppColors.primaryLight.withOpacity(0.9),
+                                                                                                                                  shape: BoxShape.circle,
+                                                                                                                                  border: Border.all(color: Colors.white, width: 2),
+                                                                                                                                ),
+                                                                                                                    child: Center(
+                                                                                                                                  child: Text(
+                                                                                                                                                '${markers.length}',
+                                                                                                                                                style: const TextStyle(
+                                                                                                                                                              color: Colors.white,
+                                                                                                                                                              fontWeight: FontWeight.bold,
+                                                                                                                                                              fontSize: 14,
+                                                                                                                                                            ),
+                                                                                                                                              ),
+                                                                                                                                ),
+                                                                                                                  );
+                                                                                        },
+                                                                                      ),
                                                                     ),
                                                       RichAttributionWidget(
                                                                       animationConfig: const ScaleRAWA(),
@@ -194,6 +284,18 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                                                                     ),
                                                     ],
                                       ),
+                            if (_selectedDriverId != null || _selectedOrderId != null)
+                              Positioned.fill(
+                                            child: GestureDetector(
+                                                            onTap: () => setState(() {
+                                                                              _selectedDriverId = null;
+                                                                              _selectedOrderId = null;
+                                                                            }),
+                                                            child: Container(
+                                                                              color: Colors.black.withOpacity(0.3),
+                                                                            ),
+                                                          ),
+                                          ),
                             Positioned(
                                         top: 12,
                                         right: 12,
@@ -212,7 +314,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                             Positioned(
                                         bottom: 12,
                                         right: 12,
-                                        child: _buildLegend(context),
+                                        child: _buildCollapsibleLegend(context),
                                       ),
                             if (widget.drivers.isEmpty && widget.orders.isEmpty)
                               Positioned(
@@ -273,26 +375,30 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
 
     Widget _buildDriverMarkerCore(LiveDriverMarker driver) {
           final color = _parseColor(driver.statusColor);
+          final isSelected = _selectedDriverId == driver.driverId;
           return Stack(
                   alignment: Alignment.center,
                   children: [
                             Container(
-                                        width: 30,
-                                        height: 30,
+                                        width: isSelected ? 36 : 30,
+                                        height: isSelected ? 36 : 30,
                                         decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
                                                       color: color,
-                                                      border: Border.all(color: Colors.white, width: 2.5),
+                                                      border: Border.all(
+                                                                      color: isSelected ? Colors.yellow : Colors.white,
+                                                                      width: isSelected ? 3.5 : 2.5,
+                                                                    ),
                                                       boxShadow: [
                                                                       BoxShadow(
-                                                                                        color: color.withOpacity(0.5),
-                                                                                        blurRadius: 6,
-                                                                                        spreadRadius: 1,
+                                                                                        color: color.withOpacity(isSelected ? 0.8 : 0.5),
+                                                                                        blurRadius: isSelected ? 12 : 6,
+                                                                                        spreadRadius: isSelected ? 3 : 1,
                                                                                         offset: const Offset(0, 2),
                                                                                       ),
                                                                     ],
                                                     ),
-                                        child: const Icon(Icons.directions_car, size: 16, color: Colors.white),
+                                        child: Icon(Icons.directions_car, size: isSelected ? 20 : 16, color: Colors.white),
                                       ),
                             if (driver.activeOrderId != null)
                               Positioned(
@@ -393,34 +499,64 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                 );
     }
 
-    Widget _buildLegend(BuildContext context) {
-          return Material(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(10),
-                  elevation: 3,
-                  child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                                      Text(
-                                                                      'دليل الرموز',
-                                                                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                                                                        fontWeight: FontWeight.bold,
-                                                                                        color: Colors.grey[700],
-                                                                                      ),
-                                                                    ),
-                                                      const SizedBox(height: 6),
-                                                      _legendRow(color: const Color(0xFF00704A), icon: Icons.directions_car, label: 'سائق متصل'),
-                                                      _legendRow(color: const Color(0xFF6C757D), icon: Icons.directions_car, label: 'سائق غير متصل'),
-                                                      _legendRow(color: const Color(0xFFC1272D), icon: Icons.directions_car, label: 'سائق محظور'),
-                                                      const Divider(height: 10),
-                                                      _legendRow(color: Colors.blue, icon: Icons.place, label: 'نقطة الاستلام'),
-                                                      _legendRow(color: Colors.orange, icon: Icons.flag, label: 'نقطة التسليم'),
-                                                    ],
-                                      ),
-                          ),
+    Widget _buildCollapsibleLegend(BuildContext context) {
+          return Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                            if (!_legendExpanded)
+                              Material(
+                                            color: Colors.white.withOpacity(0.9),
+                                            borderRadius: BorderRadius.circular(8),
+                                            elevation: 3,
+                                            child: IconButton(
+                                                            icon: const Icon(Icons.info_outline, size: 20),
+                                                            tooltip: 'إظهار دليل الرموز',
+                                                            onPressed: () => setState(() => _legendExpanded = true),
+                                                          ),
+                                          ),
+                            if (_legendExpanded)
+                              Material(
+                                            color: Colors.white.withOpacity(0.95),
+                                            borderRadius: BorderRadius.circular(10),
+                                            elevation: 3,
+                                            child: Container(
+                                                            constraints: const BoxConstraints(maxWidth: 200),
+                                                            padding: const EdgeInsets.all(12),
+                                                            child: Column(
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              mainAxisSize: MainAxisSize.min,
+                                                                              children: [
+                                                                                                  Row(
+                                                                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                                                    children: [
+                                                                                                                                  Text(
+                                                                                                                                                'دليل الرموز',
+                                                                                                                                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                                                                                                                                              fontWeight: FontWeight.bold,
+                                                                                                                                                              color: Colors.grey[700],
+                                                                                                                                                            ),
+                                                                                                                                              ),
+                                                                                                                                  IconButton(
+                                                                                                                                                icon: const Icon(Icons.close, size: 18),
+                                                                                                                                                padding: EdgeInsets.zero,
+                                                                                                                                                constraints: const BoxConstraints(),
+                                                                                                                                                onPressed: () => setState(() => _legendExpanded = false),
+                                                                                                                                              ),
+                                                                                                                                ],
+                                                                                                                  ),
+                                                                                                  const SizedBox(height: 6),
+                                                                                                  _legendRow(color: const Color(0xFF00704A), icon: Icons.directions_car, label: 'سائق متصل'),
+                                                                                                  _legendRow(color: const Color(0xFF6C757D), icon: Icons.directions_car, label: 'سائق غير متصل'),
+                                                                                                  _legendRow(color: const Color(0xFFC1272D), icon: Icons.directions_car, label: 'سائق محظور'),
+                                                                                                  const Divider(height: 10),
+                                                                                                  _legendRow(color: Colors.blue, icon: Icons.place, label: 'نقطة الاستلام'),
+                                                                                                  _legendRow(color: Colors.orange, icon: Icons.flag, label: 'نقطة التسليم'),
+                                                                                                ],
+                                                                            ),
+                                                          ),
+                                          ),
+                          ],
                 );
     }
 
@@ -444,5 +580,31 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
           } catch (_) {
                   return Colors.grey;
           }
+    }
+}
+
+class _HoverScaleMarker extends StatefulWidget {
+    final Widget child;
+    const _HoverScaleMarker({required this.child});
+
+    @override
+    State<_HoverScaleMarker> createState() => _HoverScaleMarkerState();
+}
+
+class _HoverScaleMarkerState extends State<_HoverScaleMarker> {
+    bool _isHovering = false;
+
+    @override
+    Widget build(BuildContext context) {
+          return MouseRegion(
+                  onEnter: (_) => setState(() => _isHovering = true),
+                  onExit: (_) => setState(() => _isHovering = false),
+                  child: AnimatedScale(
+                            scale: _isHovering ? 1.15 : 1.0,
+                            duration: const Duration(milliseconds: 150),
+                            curve: Curves.easeOut,
+                            child: widget.child,
+                          ),
+                );
     }
 }
