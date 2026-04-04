@@ -69,11 +69,54 @@ class _SearchResult {
   const _SearchResult(this.displayName, this.position, this.type);
 }
 
+class _HotSpot {
+  final String nameAr;
+  final String nameFr;
+  final LatLng position;
+  final String category;
+  final String icon;
+
+  const _HotSpot(this.nameAr, this.nameFr, this.position, this.category, this.icon);
+}
+
 // ============================================================================
 // Static Data
 // ============================================================================
 
 const _kGreen = Color(0xFF00C853);
+
+// مواقف المشاكل والنقاط الساخنة
+const _hotSpots = <_HotSpot>[
+  // مواقف المشاكل (أماكن انتظار السائقين)
+  _HotSpot('موقف المشاكل - السوق الخماسي', 'Station Marché 5',
+    LatLng(18.0845, -15.9815), 'موقف', '🚖'),
+  _HotSpot('موقف المشاكل - السوق المركزي', 'Station Marché Central',
+    LatLng(18.0800, -15.9755), 'موقف', '🚖'),
+  _HotSpot('موقف المشاكل - المطار', 'Station Aéroport',
+    LatLng(18.125, -15.960), 'موقف', '🚖'),
+  _HotSpot('موقف المشاكل - الميناء', 'Station Port',
+    LatLng(18.130, -15.970), 'موقف', '🚖'),
+  _HotSpot('موقف المشاكل - الجامعة', 'Station Université',
+    LatLng(18.0860, -15.9700), 'موقف', '🚖'),
+  _HotSpot('موقف المشاكل - المستشفى الوطني', 'Station Hôpital',
+    LatLng(18.0885, -15.9750), 'موقف', '🚖'),
+  _HotSpot('موقف المشاكل - محطة الحافلات', 'Station Gare Routière',
+    LatLng(18.082, -15.978), 'موقف', '🚖'),
+  _HotSpot('موقف المشاكل - السوق الكبير', 'Station Grand Marché',
+    LatLng(18.085, -15.980), 'موقف', '🚖'),
+
+  // النقاط الساخنة (مناطق ذروة الطلب)
+  _HotSpot('نقطة ساخنة - تفرغ زينة', 'Hot Spot Tevragh-Zeina',
+    LatLng(18.105, -15.972), 'نقطة ساخنة', '🔥'),
+  _HotSpot('نقطة ساخنة - الميناء', 'Hot Spot El-Mina',
+    LatLng(18.075, -15.975), 'نقطة ساخنة', '🔥'),
+  _HotSpot('نقطة ساخنة - السبخة', 'Hot Spot Sebkha',
+    LatLng(18.045, -15.975), 'نقطة ساخنة', '🔥'),
+  _HotSpot('نقطة ساخنة - عرفات', 'Hot Spot Arafat',
+    LatLng(18.020, -15.957), 'نقطة ساخنة', '🔥'),
+  _HotSpot('نقطة ساخنة - الرياض', 'Hot Spot Riadh',
+    LatLng(18.055, -15.950), 'نقطة ساخنة', '🔥'),
+];
 
 const _districts = <_District>[
   _District('تفرغ زينة', 'Tevragh-Zeina', Color(0xFFFF6B6B), [
@@ -172,6 +215,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
   bool _showPois = true;
   bool _showDistricts = true;
   bool _isSearching = false;
+  bool _legendExpanded = false;
   List<_SearchResult> _searchResults = [];
   List<Map<String, dynamic>> _savedLocations = [];
   final List<LocationData> _recentLocations = [];
@@ -454,20 +498,53 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     setState(() => _isSearching = true);
     final results = <_SearchResult>[];
     final q = query.toLowerCase();
+    final qAr = query; // للبحث بالعربية
 
-    for (final d in _districts) {
-      if (d.nameAr.contains(query) || d.nameFr.toLowerCase().contains(q)) {
-        results.add(_SearchResult('\u0645\u0642\u0627\u0637\u0639\u0629 ${d.nameAr}', d.center, 'district'));
+    // 1. البحث في مواقف المشاكل والنقاط الساخنة (أولوية عالية)
+    for (final h in _hotSpots) {
+      if (h.nameAr.contains(qAr) ||
+          h.nameFr.toLowerCase().contains(q) ||
+          h.category.contains(qAr)) {
+        results.add(_SearchResult(
+          '${h.icon} ${h.nameAr} (${h.category})',
+          h.position,
+          'hotspot'
+        ));
       }
     }
+
+    // 2. البحث في المقاطعات
+    for (final d in _districts) {
+      if (d.nameAr.contains(qAr) || d.nameFr.toLowerCase().contains(q)) {
+        results.add(_SearchResult('مقاطعة ${d.nameAr}', d.center, 'district'));
+      }
+    }
+
+    // 3. البحث في نقاط الاهتمام
     for (final p in _pois) {
-      if (p.nameAr.contains(query) || p.nameFr.toLowerCase().contains(q)) {
+      if (p.nameAr.contains(qAr) || p.nameFr.toLowerCase().contains(q)) {
         results.add(_SearchResult('${p.icon} ${p.nameAr}', p.position, 'poi'));
       }
     }
+
+    // 4. البحث في المواقع المحفوظة
+    for (final saved in _savedLocations) {
+      final name = saved['name'] as String;
+      final address = saved['address'] as String;
+      if (name.contains(qAr) || address.contains(qAr)) {
+        results.add(_SearchResult(
+          '📌 $name',
+          LatLng(saved['latitude'] as double, saved['longitude'] as double),
+          'saved'
+        ));
+      }
+    }
+
+    // 5. إذا لم نجد نتائج كافية، استخدم Nominatim
     if (results.length < 3) {
       results.addAll(await _searchNominatim(query));
     }
+
     if (mounted) {
       setState(() {
         _searchResults = results;
@@ -536,9 +613,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                 PolygonLayer(
                   polygons: _districts.map((d) => Polygon(
                     points: d.coords,
-                    color: d.color.withOpacity(0.25),
-                    borderColor: d.color,
-                    borderStrokeWidth: 2,
+                    color: d.color.withOpacity(0.08),
+                    borderColor: d.color.withOpacity(0.5),
+                    borderStrokeWidth: 1.5,
                     isFilled: true,
                   )).toList(),
                 ),
@@ -552,17 +629,17 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: d.color.withOpacity(0.85),
+                        color: Colors.white.withOpacity(0.75),
                         borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: d.color, width: 1),
+                        border: Border.all(color: d.color.withOpacity(0.6), width: 1),
                       ),
                       child: Text(
                         '${d.nameAr}\n${d.nameFr}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1a1a1a),
+                          color: d.color.withOpacity(0.9),
                           height: 1.2,
                         ),
                       ),
@@ -687,28 +764,26 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 2))],
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 6, offset: const Offset(0, 2))],
                   ),
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: '\uD83D\uDD0D ابحث عن حي، مكان، أو عنوان...',
-                      hintStyle: const TextStyle(fontSize: 13),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      hintText: 'ابحث عن موقع...',
+                      hintStyle: const TextStyle(fontSize: 12),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       border: InputBorder.none,
+                      prefixIcon: const Icon(Icons.search, size: 20, color: _kGreen),
                       suffixIcon: _isSearching
                           ? const Padding(
-                              padding: EdgeInsets.all(12),
-                              child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                              padding: EdgeInsets.all(10),
+                              child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
                             )
-                          : IconButton(
-                              icon: const Icon(Icons.search, color: _kGreen),
-                              onPressed: () => _performSearch(_searchController.text),
-                            ),
+                          : null,
                     ),
                     textDirection: TextDirection.rtl,
-                    style: const TextStyle(fontSize: 13),
+                    style: const TextStyle(fontSize: 12),
                     onChanged: (value) {
                       _searchDebounce?.cancel();
                       _searchDebounce = Timer(const Duration(milliseconds: 500), () {
@@ -718,6 +793,23 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     onSubmitted: _performSearch,
                   ),
                 ),
+                // Quick search shortcuts
+                if (_searchResults.isEmpty && _searchController.text.isEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(top: 6, left: 8, right: 8),
+                    height: 32,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        _quickSearchChip('🚖 مواقف', 'موقف المشاكل'),
+                        _quickSearchChip('🔥 نقاط ساخنة', 'نقطة ساخنة'),
+                        _quickSearchChip('🍽️ مطاعم', 'مطعم'),
+                        _quickSearchChip('🏨 فنادق', 'فندق'),
+                        _quickSearchChip('⛽ وقود', 'محطة وقود'),
+                        _quickSearchChip('🏥 مستشفيات', 'مستشفى'),
+                      ],
+                    ),
+                  ),
                 if (_searchResults.isNotEmpty)
                   Container(
                     margin: const EdgeInsets.only(top: 4),
@@ -736,14 +828,32 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                         return ListTile(
                           dense: true,
                           leading: Icon(
-                            r.type == 'district' ? Icons.map
+                            r.type == 'hotspot' ? Icons.local_taxi
+                                : r.type == 'district' ? Icons.map
                                 : r.type == 'poi' ? Icons.place
+                                : r.type == 'saved' ? Icons.bookmark
                                 : Icons.location_on,
-                            color: _kGreen, size: 20,
+                            color: r.type == 'hotspot' ? Colors.orange
+                                : r.type == 'saved' ? _kGreen
+                                : _kGreen,
+                            size: 20,
                           ),
-                          title: Text(r.displayName, style: const TextStyle(fontSize: 12), maxLines: 2, overflow: TextOverflow.ellipsis),
+                          title: Text(
+                            r.displayName,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: r.type == 'hotspot' ? FontWeight.bold : FontWeight.normal
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis
+                          ),
                           onTap: () async {
-                            _mapController.move(r.position, r.type == 'district' ? 14.0 : 16.0);
+                            // تكبير أكبر للنقاط الساخنة
+                            final zoom = r.type == 'hotspot' ? 17.0
+                                : r.type == 'district' ? 14.0
+                                : 16.0;
+
+                            _mapController.move(r.position, zoom);
                             setState(() {
                               _selectedPosition = r.position;
                               _selectedAddress = 'جار تحديد العنوان...';
@@ -751,7 +861,12 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                               _searchResults = [];
                             });
                             _searchController.clear();
-                            final address = await _getAddressFromLatLng(r.position.latitude, r.position.longitude);
+
+                            final address = await _getAddressFromLatLng(
+                              r.position.latitude,
+                              r.position.longitude
+                            );
+
                             if (mounted) {
                               setState(() {
                                 _selectedAddress = address;
@@ -882,7 +997,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             child: _buildLegend(),
           ),
 
-          // ── Bottom info card ──
+          // ── Bottom info card (compact version) ──
           Positioned(
             bottom: 0,
             left: 0,
@@ -890,29 +1005,29 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -2))],
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 8, offset: const Offset(0, -2))],
               ),
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.location_on, color: _kGreen, size: 24),
-                      const SizedBox(width: 12),
+                      const Icon(Icons.location_on, color: _kGreen, size: 20),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('الموقع المحدد', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-                            const SizedBox(height: 4),
+                            Text('الموقع المحدد', style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+                            const SizedBox(height: 2),
                             _isLoadingAddress
                                 ? _buildAddressShimmer()
                                 : Text(
                                     _selectedAddress,
-                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -920,37 +1035,37 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                         ),
                       ),
                       if (_isLoadingAddress)
-                        const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                        const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
                     ],
                   ),
                   if (_selectedPosition != null) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       'الإحداثيات: ${_selectedPosition!.latitude.toStringAsFixed(5)}, ${_selectedPosition!.longitude.toStringAsFixed(5)}',
-                      style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                      style: TextStyle(fontSize: 10, color: Colors.grey[500]),
                     ),
                   ],
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: _isLoadingAddress ? null : _confirmSelection,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _kGreen,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text('تأكيد الموقع', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: const Text('تأكيد الموقع', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                   ),
                   if (_selectedPosition != null) ...[
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: _saveCurrentLocation,
-                      icon: const Icon(Icons.bookmark_add),
-                      label: const Text('حفظ هذا الموقع'),
+                      icon: const Icon(Icons.bookmark_add, size: 18),
+                      label: const Text('حفظ هذا الموقع', style: TextStyle(fontSize: 13)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: _kGreen,
                         side: const BorderSide(color: _kGreen),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                     ),
                   ],
@@ -964,6 +1079,22 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
   }
 
   // ── Helpers ──
+
+  Widget _quickSearchChip(String label, String searchTerm) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 6),
+      child: ActionChip(
+        label: Text(label, style: const TextStyle(fontSize: 11)),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        onPressed: () {
+          _searchController.text = searchTerm;
+          _performSearch(searchTerm);
+        },
+        backgroundColor: Colors.white,
+        side: BorderSide(color: _kGreen.withOpacity(0.3)),
+      ),
+    );
+  }
 
   Widget _buildAddressShimmer() {
     return TweenAnimationBuilder<double>(
@@ -1005,42 +1136,90 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
   }
 
   Widget _buildLegend() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.95),
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 6)],
-      ),
-      constraints: const BoxConstraints(maxWidth: 160),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('🗺️ دليل الخريطة', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
-          const Divider(height: 8),
-          const Text('المقاطعات:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-          const SizedBox(height: 2),
-          ..._districts.map((d) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 1),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(width: 10, height: 10, decoration: BoxDecoration(color: d.color, borderRadius: BorderRadius.circular(2))),
-                const SizedBox(width: 4),
-                Text(d.nameAr, style: const TextStyle(fontSize: 9)),
-              ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Collapsed state - just icon button
+        if (!_legendExpanded)
+          Material(
+            color: Colors.white.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(8),
+            elevation: 3,
+            child: IconButton(
+              icon: const Icon(Icons.map, size: 22, color: _kGreen),
+              tooltip: 'إظهار دليل الخريطة',
+              onPressed: () => setState(() => _legendExpanded = true),
             ),
-          )),
-          const SizedBox(height: 4),
-          const Text('نقاط الاهتمام:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-          const SizedBox(height: 2),
-          const Text('🍽️ مطاعم  🏨 فنادق', style: TextStyle(fontSize: 9)),
-          const Text('🛒 أسواق  ⛽ وقود', style: TextStyle(fontSize: 9)),
-          const Text('🏥 مستشفيات  🎓 تعليم', style: TextStyle(fontSize: 9)),
-          const Text('🏦 بنوك  🕌 مساجد', style: TextStyle(fontSize: 9)),
-        ],
-      ),
+          ),
+
+        // Expanded state - full legend
+        if (_legendExpanded)
+          Material(
+            color: Colors.white.withOpacity(0.95),
+            borderRadius: BorderRadius.circular(10),
+            elevation: 3,
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 180),
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header with close button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('🗺️ دليل الخريطة',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 16),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        onPressed: () => setState(() => _legendExpanded = false),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 8),
+
+                  // Districts
+                  const Text('المقاطعات:',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                  const SizedBox(height: 2),
+                  ..._districts.map((d) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 1),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: d.color,
+                            borderRadius: BorderRadius.circular(2)
+                          )
+                        ),
+                        const SizedBox(width: 4),
+                        Text(d.nameAr, style: const TextStyle(fontSize: 9)),
+                      ],
+                    ),
+                  )),
+
+                  const SizedBox(height: 4),
+
+                  // POIs
+                  const Text('نقاط الاهتمام:',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                  const SizedBox(height: 2),
+                  const Text('🍽️ مطاعم  🏨 فنادق', style: TextStyle(fontSize: 9)),
+                  const Text('🛒 أسواق  ⛽ وقود', style: TextStyle(fontSize: 9)),
+                  const Text('🏥 مستشفيات  🎓 تعليم', style: TextStyle(fontSize: 9)),
+                  const Text('🏦 بنوك  🕌 مساجد', style: TextStyle(fontSize: 9)),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
