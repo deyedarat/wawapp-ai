@@ -41,10 +41,15 @@ class DriverEarningsRepository {
     }).toList();
   }
 
+  static const double commissionRate = 0.10;
+
+  /// Net earnings after platform commission (10%)
+  double _netPrice(Order order) => order.price * (1 - commissionRate);
+
   int totalForToday(List<Order> orders) {
     final todayOrders = getDailyEarnings(orders);
     final total =
-        todayOrders.fold<int>(0, (acc, order) => acc + order.price.toInt());
+        todayOrders.fold<double>(0, (acc, order) => acc + _netPrice(order)).toInt();
     debugPrint(
         '[EARNINGS] Today total: $total MRU from ${todayOrders.length} orders');
     return total;
@@ -65,7 +70,7 @@ class DriverEarningsRepository {
   int totalForCurrentWeek(List<Order> orders) {
     final weekOrders = getWeeklyEarnings(orders);
     final total =
-        weekOrders.fold<int>(0, (acc, order) => acc + order.price.toInt());
+        weekOrders.fold<double>(0, (acc, order) => acc + _netPrice(order)).toInt();
     debugPrint(
         '[EARNINGS] Week total: $total MRU from ${weekOrders.length} orders');
     return total;
@@ -81,7 +86,7 @@ class DriverEarningsRepository {
     }).toList();
 
     final total =
-        monthOrders.fold<int>(0, (acc, order) => acc + order.price.toInt());
+        monthOrders.fold<double>(0, (acc, order) => acc + _netPrice(order)).toInt();
     debugPrint(
         '[EARNINGS] Month total: $total MRU from ${monthOrders.length} orders');
     return total;

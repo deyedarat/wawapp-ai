@@ -224,9 +224,9 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
               if (order.orderStatus == OrderStatus.accepted)
                 const AcceptedCountdownBanner(),
 
-              // Map View
-              Expanded(
-                flex: 3,
+              // Map View — fixed height to ensure visibility
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.35,
                 child: GoogleMap(
                   initialCameraPosition: CameraPosition(
                     target: pickupLatLng,
@@ -278,7 +278,6 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
 
               // Order Details Card
               Expanded(
-                flex: 2,
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Column(

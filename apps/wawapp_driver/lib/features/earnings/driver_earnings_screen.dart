@@ -244,7 +244,7 @@ class _DriverEarningsScreenState extends ConsumerState<DriverEarningsScreen>
                   ),
                 ),
                 Text(
-                  '${order.price} MRU',
+                  '${(order.price * 0.9).toInt()} MRU',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
