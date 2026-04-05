@@ -124,7 +124,7 @@ async function processAcceptedOrder(
 
   const elapsedMs = nowMs - acceptedAtMs;
   const elapsedMinutes = elapsedMs / 60000;
-  const extensions: number = orderData.extensionsGranted || 0;
+  const extensions: number = orderData.extensionRequestCount || 0;
   const totalTimeoutMinutes =
     ACCEPTED_TIMEOUT_MINUTES + Math.min(extensions, MAX_EXTENSIONS_ALLOWED) * EXTENSION_DURATION_MINUTES;
   const remainingMinutes = Math.max(0, Math.ceil(totalTimeoutMinutes - elapsedMinutes));
