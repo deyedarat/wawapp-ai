@@ -60,24 +60,54 @@ class NotificationService {
   }
 
   void _handleForegroundMessage(RemoteMessage message) {
+    final data = message.data;
+    final type = data['type'] as String? ?? data['notificationType'] as String?;
     final notification = message.notification;
-    if (notification != null) {
-      final payload = jsonEncode(message.data);
-      _localNotifications.show(
-        notification.hashCode,
-        notification.title,
-        notification.body,
-        const NotificationDetails(
-          android: AndroidNotificationDetails('default', 'Default'),
-          iOS: DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-          ),
-        ),
-        payload: payload,
-      );
+
+    // Determine channel based on type
+    String channelId = 'default';
+    String channelName = 'Default';
+    Importance importance = Importance.defaultImportance;
+
+    if (type == 'order_reassigned') {
+      channelId = 'order_updates';
+      channelName = 'تحديثات الطلبات';
+      importance = Importance.high;
+    } else if (type == 'driver_accepted' || type == 'driver_on_route') {
+      channelId = 'order_updates';
+      channelName = 'تحديثات الطلبات';
+      importance = Importance.high;
     }
+
+    final title = notification?.title ?? data['title'] as String?;
+    final body = notification?.body ?? data['body'] as String?;
+    if (title == null && body == null) return;
+
+    final payload = jsonEncode(data);
+    final orderId = data['orderId'] as String?;
+    final notificationId = orderId?.hashCode ?? title.hashCode;
+
+    _localNotifications.show(
+      notificationId,
+      title,
+      body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channelId,
+          channelName,
+          importance: importance,
+          priority: importance == Importance.high ? Priority.high : Priority.defaultPriority,
+          enableVibration: true,
+          playSound: true,
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+      payload: payload,
+    );
   }
 
   void _handleBackgroundMessage(RemoteMessage message) {

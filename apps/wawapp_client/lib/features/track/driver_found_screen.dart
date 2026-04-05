@@ -38,6 +38,15 @@ class DriverFoundScreen extends ConsumerWidget {
           final data = snapshot.data() as Map<String, dynamic>;
           final driverId = data['driverId'] as String?;
           final status = data['status'] as String?;
+          final reassignedAt = data['reassignedAt'];
+
+          // ── Reassignment state: order went back to matching ──
+          if (status == 'matching' || (status == 'requested' && reassignedAt != null)) {
+            return _ReassignmentView(
+              orderId: orderId,
+              previousDriverId: data['previousDriverId'] as String?,
+            );
+          }
 
           return FutureBuilder<DocumentSnapshot>(
             future: driverId != null ? FirebaseFirestore.instance.collection('drivers').doc(driverId).get() : null,
@@ -146,6 +155,59 @@ class DriverFoundScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Shown when the order is reassigned back to matching after driver timeout.
+class _ReassignmentView extends StatelessWidget {
+  const _ReassignmentView({required this.orderId, this.previousDriverId});
+
+  final String orderId;
+  final String? previousDriverId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.refresh_rounded, size: 80, color: Color(0xFFF5A623)),
+          const SizedBox(height: 24),
+          const Text(
+            'جارِ البحث عن سائق آخر',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'نعتذر عن التأخير. جارِ إيجاد سائق جديد لك.',
+            style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          const SizedBox(
+            width: 48,
+            height: 48,
+            child: CircularProgressIndicator(strokeWidth: 3),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'سيتم إيجاد سائق في غضون دقائق قليلة',
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+          ),
+          const SizedBox(height: 32),
+          OutlinedButton(
+            onPressed: () => context.go('/'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.red,
+              side: const BorderSide(color: Colors.red),
+            ),
+            child: const Text('إلغاء الطلب'),
+          ),
+        ],
       ),
     );
   }
