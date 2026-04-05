@@ -4,12 +4,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/router/navigator.dart';
-import '../features/notifications/new_order_alert_dialog.dart';
-import '../features/notifications/providers/snooze_provider.dart';
+import '../features/notifications/full_screen_notification_screen.dart';
 import 'notification_helper.dart';
 
 class NotificationService {
@@ -17,19 +15,15 @@ class NotificationService {
   factory NotificationService() => _instance;
   NotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
 
-  // Use GlobalKey for router instead of storing BuildContext
   GlobalKey<NavigatorState>? _navigatorKey;
   String? _pendingRoute;
-  ProviderContainer? _providerContainer;
+  Map<String, dynamic>? _pendingNotificationData;
 
-  void setProviderContainer(ProviderContainer container) {
-    _providerContainer = container;
-  }
 
   Future<void> initialize() async {
-    // navigatorKey is now globally imported
     _navigatorKey = appNavigatorKey;
 
     await _initializeLocalNotifications();
@@ -37,7 +31,8 @@ class NotificationService {
   }
 
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings();
 
     await _localNotifications.initialize(
@@ -45,33 +40,35 @@ class NotificationService {
       onDidReceiveNotificationResponse: _onNotificationTap,
     );
 
-    // Create notification channels for Android
     await _createNotificationChannels();
   }
 
+  /// Custom sound for order notifications (references res/raw/new_order.mp3)
+  static const _orderSound =
+      RawResourceAndroidNotificationSound('new_order');
+
   /// Create Android notification channels
   Future<void> _createNotificationChannels() async {
-    // Channel for new order notifications (high priority)
     const newOrdersChannel = AndroidNotificationChannel(
       'new_orders',
       'طلبات جديدة',
       description: 'إشعارات الطلبات الجديدة القريبة منك',
-      importance: Importance.high,
+      importance: Importance.max,
       enableVibration: true,
       playSound: true,
+      sound: _orderSound,
     );
 
-    // Channel for unassigned order reminders (high priority)
     const unassignedOrdersChannel = AndroidNotificationChannel(
       'unassigned_orders',
       'تذكير بطلبات متاحة',
       description: 'تذكيرات بالطلبات المتاحة القريبة منك',
-      importance: Importance.high,
+      importance: Importance.max,
       enableVibration: true,
       playSound: true,
+      sound: _orderSound,
     );
 
-    // Channel for order updates (default priority)
     const orderUpdatesChannel = AndroidNotificationChannel(
       'order_updates',
       'تحديثات الطلبات',
@@ -80,7 +77,6 @@ class NotificationService {
       enableVibration: true,
     );
 
-    // Channel for acceptance confirmations
     const acceptanceChannel = AndroidNotificationChannel(
       'acceptance_confirmations',
       'تأكيد القبول',
@@ -91,7 +87,8 @@ class NotificationService {
     );
 
     final android = _localNotifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
 
     await android?.createNotificationChannel(newOrdersChannel);
     await android?.createNotificationChannel(unassignedOrdersChannel);
@@ -100,71 +97,55 @@ class NotificationService {
   }
 
   Future<void> _setupFirebaseMessaging() async {
-    // Foreground messages — show local notification
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-
-    // NOTE: onMessageOpenedApp and getInitialMessage are handled by
-    // BaseFCMService.setupNotificationHandlers (via FCMService in auth_gate).
-    // Do NOT add duplicate listeners here.
   }
 
+  // ---------------------------------------------------------------------------
+  // Foreground message handler
+  // ---------------------------------------------------------------------------
 
   void _handleForegroundMessage(RemoteMessage message) {
     if (kDebugMode) {
-      debugPrint('[NotificationService] 🔔 onMessage received: ${message.data}');
+      debugPrint(
+          '[NotificationService] 🔔 onMessage received: ${message.data}');
     }
 
-    final notificationType = NotificationHelper.resolveType(message.data);
-    final orderId = message.data['orderId'] as String?;
+    final data = message.data;
+    final notificationType = NotificationHelper.resolveType(data);
+    final orderId = data['orderId'] as String?;
 
     if (kDebugMode) {
-      debugPrint('[NotificationService] type=$notificationType, orderId=$orderId');
+      debugPrint(
+          '[NotificationService] type=$notificationType, orderId=$orderId');
     }
 
-    // Skip repeated reminders in foreground — driver already sees the orders list
-    if (notificationType == 'unassigned_order_reminder') {
-      if (kDebugMode) {
-        debugPrint('[NotificationService] Skipping reminder in foreground');
+    // ── Order notifications → full-screen intent ──
+    if (NotificationHelper.isFullScreenType(notificationType)) {
+      // Don't interrupt driver on active trip
+      if (_isOnActiveOrder()) {
+        if (kDebugMode) {
+          debugPrint('[NotificationService] Driver is busy, skipping');
+        }
+        return;
       }
+
+      _showFullScreenNotification(data);
       return;
     }
 
-    // Show in-app dialog for new order notifications (data-only message, no notification field)
-    if (notificationType == 'new_order' || notificationType == 'new_order_nearby') {
-      final data = message.data;
-      _showNewOrderAlertDialog(
-        orderId: data['orderId'] ?? '',
-        pickupLabel: data['pickupLabel'] ?? '${data['pickupLat']}, ${data['pickupLng']}',
-        dropoffLabel: data['dropoffLabel'] ?? '${data['dropoffLat']}, ${data['dropoffLng']}',
-        price: double.tryParse(data['price'] ?? '0') ?? 0,
-        distance: double.tryParse(data['distance'] ?? '0') ?? 0,
-      );
-      return;
-    }
-
-    // For other notification types, require notification payload
+    // ── Other notification types → standard notification ──
     final notification = message.notification;
     if (notification == null) return;
 
-    final payload = jsonEncode(message.data);
-
-    // Use stable ID per order so repeated notifications update instead of stacking
+    final payload = jsonEncode(data);
     final notificationId = orderId?.hashCode ?? notification.hashCode;
 
-    // Determine channel
     String channelId;
     String channelName;
     Importance importance;
     Priority priority;
 
     switch (notificationType) {
-      case 'new_order':
-      case 'new_order_nearby':
-        channelId = 'new_orders';
-        channelName = 'طلبات جديدة';
-        importance = Importance.high;
-        priority = Priority.high;
-        break;
       case 'acceptance_confirmation':
         channelId = 'acceptance_confirmations';
         channelName = 'تأكيد القبول';
@@ -190,32 +171,138 @@ class NotificationService {
           priority: priority,
           enableVibration: true,
           playSound: true,
-          onlyAlertOnce: true, // Don't vibrate/sound on updates
+          onlyAlertOnce: true,
         ),
       ),
       payload: payload,
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Full-screen notification (new_order / unassigned_order_reminder)
+  // ---------------------------------------------------------------------------
+
+  void _showFullScreenNotification(Map<String, dynamic> data) {
+    final notificationData = FullScreenNotificationData.tryParse(data);
+    if (notificationData == null) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationService] ❌ Invalid notification data: $data');
+      }
+      return;
+    }
+
+    if (kDebugMode) {
+      debugPrint(
+          '[NotificationService] 🚀 Full-screen notification for order: ${notificationData.orderId}');
+    }
+
+    final type = NotificationHelper.resolveType(data);
+    final isReminder = type == 'unassigned_order_reminder';
+    final channelId = isReminder ? 'unassigned_orders' : 'new_orders';
+    final channelName = isReminder ? 'تذكير بطلبات متاحة' : 'طلبات جديدة';
+
+    final payload = jsonEncode(data);
+    final notificationId = notificationData.orderId.hashCode;
+
+    // Show system notification with full-screen intent.
+    // On lock screen / screen off → launches FullScreenNotificationScreen.
+    // On foreground → shows heads-up notification; we also navigate directly.
+    _localNotifications.show(
+      notificationId,
+      'طلب جديد قريب منك',
+      '${notificationData.pickupLabel} → ${notificationData.dropoffLabel}',
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channelId,
+          channelName,
+          importance: Importance.max,
+          priority: Priority.max,
+          enableVibration: true,
+          playSound: true,
+          sound: _orderSound,
+          fullScreenIntent: true,
+          category: AndroidNotificationCategory.call,
+          visibility: NotificationVisibility.public,
+          onlyAlertOnce: false,
+        ),
+      ),
+      payload: payload,
+    );
+
+    // In foreground: navigate directly to full-screen route
+    _navigateToFullScreen(notificationData);
+  }
+
+  /// Navigate to the full-screen notification screen via GoRouter.
+  void _navigateToFullScreen(FullScreenNotificationData data) {
+    final ctx = _navigatorKey?.currentContext;
+    if (ctx == null) {
+      // App not ready yet — store for later
+      _pendingRoute = '/full-screen-notification';
+      _pendingNotificationData = {
+        'orderId': data.orderId,
+        'pickupLabel': data.pickupLabel,
+        'dropoffLabel': data.dropoffLabel,
+        'price': data.price,
+        'distance': data.distance,
+        'createdAt': data.createdAtMs,
+      };
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationService] Context not ready, queued pending route');
+      }
+      return;
+    }
+
+    if (kDebugMode) {
+      debugPrint(
+          '[NotificationService] ✅ Navigating to /full-screen-notification');
+    }
+
+    try {
+      ctx.push('/full-screen-notification', extra: data);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[NotificationService] ❌ Navigation error: $e');
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Notification tap handler (background / terminated → user taps notification)
+  // ---------------------------------------------------------------------------
 
   void _onNotificationTap(NotificationResponse response) {
     final payload = response.payload;
-    if (payload != null) {
-      try {
-        final data = jsonDecode(payload) as Map<String, dynamic>;
-        _navigateFromMessage(data);
-      } on Object catch (e) {
-        debugPrint('Error parsing notification payload: $e');
-      }
+    if (payload == null) return;
+
+    try {
+      final data = jsonDecode(payload) as Map<String, dynamic>;
+      _navigateFromMessage(data);
+    } on Object catch (e) {
+      debugPrint('Error parsing notification payload: $e');
     }
   }
 
   void _navigateFromMessage(Map<String, dynamic> data) {
     if (kDebugMode) {
-      debugPrint('[NotificationService] _navigateFromMessage called with data: $data');
+      debugPrint(
+          '[NotificationService] _navigateFromMessage called with data: $data');
     }
 
     final type = NotificationHelper.resolveType(data);
+
+    // Full-screen types → navigate to full-screen notification screen
+    if (NotificationHelper.isFullScreenType(type)) {
+      final notificationData = FullScreenNotificationData.tryParse(data);
+      if (notificationData != null) {
+        _navigateToFullScreen(notificationData);
+        return;
+      }
+    }
+
+    // Other types → use standard route mapping
     final route = NotificationHelper.getRouteFromNotification(type: type);
 
     if (kDebugMode) {
@@ -223,9 +310,6 @@ class NotificationService {
     }
 
     if (route != null && _navigatorKey?.currentContext != null) {
-      if (kDebugMode) {
-        debugPrint('[NotificationService] ✅ Navigating to: $route');
-      }
       try {
         _navigatorKey!.currentContext!.go(route);
         if (kDebugMode) {
@@ -236,82 +320,44 @@ class NotificationService {
           debugPrint('[NotificationService] ❌ Navigation error: $e');
         }
       }
-    } else {
-      if (kDebugMode) {
-        if (route == null) {
-          debugPrint('[NotificationService] ❌ Route is null, cannot navigate');
-        }
-        if (_navigatorKey?.currentContext == null) {
-          debugPrint('[NotificationService] ❌ Navigator context is null, cannot navigate');
-        }
-      }
     }
   }
 
-  void _showNewOrderAlertDialog({
-    required String orderId,
-    required String pickupLabel,
-    required String dropoffLabel,
-    required double price,
-    required double distance,
-  }) {
-    debugPrint('[NotificationService] 🚀 _showNewOrderAlertDialog called for: $orderId');
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
 
-    if (_navigatorKey?.currentContext == null) {
-      debugPrint('[NotificationService] ❌ Cannot show dialog: no context');
-      return;
-    }
-
-    final context = _navigatorKey!.currentContext!;
-
-    // Don't show if driver is on active order screen (busy)
+  /// Check if driver is currently on the active order screen.
+  bool _isOnActiveOrder() {
+    final ctx = _navigatorKey?.currentContext;
+    if (ctx == null) return false;
     try {
-      final currentRoute = GoRouterState.of(context).uri.path;
-      if (currentRoute == '/active-order') {
-        debugPrint('[NotificationService] Driver is busy, skipping alert');
-        return;
-      }
+      return GoRouterState.of(ctx).uri.path == '/active-order';
     } on Object catch (_) {
-      // GoRouterState not available from this context — safe to proceed
+      return false;
     }
-
-    showNewOrderAlertDialog(
-      context,
-      orderId: orderId,
-      pickupLabel: pickupLabel,
-      dropoffLabel: dropoffLabel,
-      price: price,
-      distance: distance,
-      onSnooze: () {
-        if (_providerContainer == null) {
-          debugPrint('[NotificationService] Cannot snooze: ProviderContainer not set');
-          return;
-        }
-
-        debugPrint('[NotificationService] Scheduling snooze for order: $orderId');
-
-        _providerContainer!.read(snoozeProvider.notifier).scheduleReminder(
-          orderId,
-          () {
-            _showNewOrderAlertDialog(
-              orderId: orderId,
-              pickupLabel: pickupLabel,
-              dropoffLabel: dropoffLabel,
-              price: price,
-              distance: distance,
-            );
-          },
-        );
-      },
-    );
   }
 
   void updateContext(BuildContext context) {
-    // We don't need to extract navigatorKey from context anymore since we have appNavigatorKey
     _navigatorKey = appNavigatorKey;
+
+    // Flush any pending navigation from notifications received before context was ready
     if (_pendingRoute != null && _navigatorKey?.currentContext != null) {
-      _navigatorKey!.currentContext!.go(_pendingRoute!);
+      final route = _pendingRoute!;
       _pendingRoute = null;
+
+      if (route == '/full-screen-notification' &&
+          _pendingNotificationData != null) {
+        final data =
+            FullScreenNotificationData.tryParse(_pendingNotificationData!);
+        _pendingNotificationData = null;
+        if (data != null) {
+          _navigateToFullScreen(data);
+          return;
+        }
+      }
+
+      _navigatorKey!.currentContext!.go(route);
     }
   }
 }

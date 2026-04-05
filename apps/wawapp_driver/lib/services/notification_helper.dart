@@ -7,6 +7,13 @@ class NotificationHelper {
     return data['notificationType'] as String? ?? data['type'] as String?;
   }
 
+  /// Whether this notification type should trigger a full-screen intent.
+  static bool isFullScreenType(String? type) {
+    return type == 'new_order' ||
+        type == 'new_order_nearby' ||
+        type == 'unassigned_order_reminder';
+  }
+
   static String? getRouteFromNotification({
     required String? type,
     String? role,
@@ -27,7 +34,8 @@ class NotificationHelper {
       case 'new_order':
       case 'new_order_nearby':
       case 'unassigned_order_reminder':
-        route = '/nearby';
+        // Full-screen notification route — data passed via GoRouter extra
+        route = '/full-screen-notification';
         break;
       case 'order_cancelled':
       case 'order_cancelled_by_client':

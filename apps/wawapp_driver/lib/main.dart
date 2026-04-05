@@ -209,8 +209,6 @@ class _MyAppState extends ConsumerState<MyApp> {
     // Must not delay — onMessage listener needs to be registered ASAP
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        final container = ProviderScope.containerOf(context);
-        NotificationService().setProviderContainer(container);
         NotificationService().initialize();
       }
     });

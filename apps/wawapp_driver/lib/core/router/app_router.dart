@@ -10,7 +10,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/active/active_order_screen.dart';
 import '../../features/auth/auth_gate.dart';
-import '../../features/blocked/blocked_screen.dart';
 import '../../features/auth/create_pin_screen.dart';
 import '../../features/auth/otp_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
@@ -23,6 +22,7 @@ import '../../features/history/order_details_screen.dart';
 import '../../features/home/driver_home_screen.dart';
 import '../../features/nearby/nearby_screen.dart';
 import '../../features/profile/driver_profile_edit_screen.dart';
+import '../../features/notifications/full_screen_notification_screen.dart';
 import '../../features/profile/driver_profile_screen.dart';
 import '../../features/profile/providers/driver_profile_providers.dart';
 import '../../features/wallet/wallet_screen.dart';
@@ -115,9 +115,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const DriverProfileEditScreen(),
       ),
       GoRoute(
-        path: '/blocked',
-        name: 'blocked',
-        builder: (context, state) => const BlockedScreen(),
+        path: '/full-screen-notification',
+        name: 'fullScreenNotification',
+        builder: (context, state) {
+          // 1. Try GoRouter extra (in-app navigation)
+          final extra = state.extra;
+          if (extra is FullScreenNotificationData) {
+            return FullScreenNotificationScreen(data: extra);
+          }
+
+          // 2. Try query parameters (deep links / notification tap)
+          final params = state.uri.queryParameters;
+          final data = FullScreenNotificationData.tryParse(params);
+          if (data != null) {
+            return FullScreenNotificationScreen(data: data);
+          }
+
+          // 3. Fallback — missing or invalid data
+          if (kDebugMode) {
+            debugPrint('[ROUTER] ❌ /full-screen-notification: invalid params, '
+                'extra=$extra, query=$params');
+          }
+          return const NearbyScreen();
+        },
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
@@ -217,8 +237,7 @@ String? _redirect(GoRouterState s, AuthState st, DriverProfile? profile) {
     if (s.matchedLocation == '/login' ||
         s.matchedLocation == '/otp' ||
         s.matchedLocation == '/create-pin' ||
-        s.matchedLocation == '/pin-gate' ||
-        s.matchedLocation == '/blocked') {
+        s.matchedLocation == '/pin-gate') {
       if (kDebugMode) {
         debugPrint('[ROUTER] → Redirect to / (authenticated with PIN, leaving ${s.matchedLocation})');
       }

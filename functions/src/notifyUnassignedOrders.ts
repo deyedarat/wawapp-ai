@@ -31,6 +31,7 @@ const MAX_DRIVERS_TO_NOTIFY = 20; // Limit concurrent notifications
 const MIN_DRIVER_ACCURACY_METERS = 100; // Filter out inaccurate location data
 const MAX_NOTIFICATIONS_PER_DRIVER_ORDER = 10; // Max notifications per (driver, order) pair
 const BATCH_LIMIT = 100; // Max unassigned orders to process per run
+const MAX_ORDER_AGE_HOURS = 6; // Stop reminders for orders older than this
 
 /**
  * Haversine distance calculation (in kilometers)
@@ -244,19 +245,17 @@ async function sendDriverNotification(
     // Prepare notification data payload
     const message: admin.messaging.Message = {
       token: driver.fcmToken,
-      notification: {
-        title: 'طلب متاح قريب منك',
-        body: `${orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${
-          orderData.dropoffAddress?.label || 'الوجهة'
-        }`,
-      },
+      // Data-only message — let Flutter app handle display via full-screen intent
       data: {
         notificationType: 'unassigned_order_reminder',
         orderId: orderId,
+        pickupLabel: orderData.pickupAddress?.label || 'موقع الانطلاق',
+        dropoffLabel: orderData.dropoffAddress?.label || 'الوجهة',
         pickupLat: String(orderData.pickupAddress?.latitude || 0),
         pickupLng: String(orderData.pickupAddress?.longitude || 0),
         dropoffLat: String(orderData.dropoffAddress?.latitude || 0),
         dropoffLng: String(orderData.dropoffAddress?.longitude || 0),
+        price: String(orderData.price || 0),
         clientName: orderData.clientName || 'عميل',
         createdAt: String(orderData.createdAt?.toMillis() || Date.now()),
         distance: String(driver.distance.toFixed(2)),
@@ -264,9 +263,13 @@ async function sendDriverNotification(
       android: {
         priority: 'high',
         notification: {
-          sound: 'default',
-          channelId: 'unassigned_orders', // Must match Android channel in driver app
-          priority: 'high',
+          title: 'طلب متاح قريب منك',
+          body: `${orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${
+            orderData.dropoffAddress?.label || 'الوجهة'
+          }`,
+          sound: 'new_order',
+          channelId: 'unassigned_orders',
+          priority: 'max',
           visibility: 'public',
         },
         ttl: 300000, // 5 minutes TTL
@@ -532,6 +535,21 @@ async function processAcceptanceConfirmations(): Promise<void> {
   }
 }
 async function processUnassignedOrder(orderId: string, orderData: any): Promise<void> {
+  // Skip orders older than MAX_ORDER_AGE_HOURS
+  const now = Date.now();
+  const createdAtMs = orderData.createdAt?.toMillis?.() || now;
+  const orderAgeHours = (now - createdAtMs) / (1000 * 60 * 60);
+
+  if (orderAgeHours > MAX_ORDER_AGE_HOURS) {
+    console.log('[NotifyUnassignedOrders] Order too old for reminders (age > 6 hours)', {
+      order_id: orderId,
+      age_hours: orderAgeHours.toFixed(1),
+      max_age_hours: MAX_ORDER_AGE_HOURS,
+      created_at: orderData.createdAt?.toDate?.()?.toISOString() || 'unknown',
+    });
+    return;
+  }
+
   // Validate pickup location - support both formats
   const pickupLat = orderData.pickupAddress?.latitude || orderData.pickup?.lat;
   const pickupLng = orderData.pickupAddress?.longitude || orderData.pickup?.lng;
