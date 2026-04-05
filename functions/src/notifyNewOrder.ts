@@ -195,6 +195,14 @@ async function sendDriverNotification(
       },
       android: {
         priority: 'high',
+        notification: {
+          title: 'طلب جديد قريب منك',
+          body: `${pickupLabel} → ${dropoffLabel}`,
+          sound: 'new_order',
+          channelId: 'new_orders',
+          priority: 'max',
+          visibility: 'public',
+        },
         ttl: 300000, // 5 minutes TTL
       },
       apns: {
