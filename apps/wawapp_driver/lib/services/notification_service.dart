@@ -94,6 +94,19 @@ class NotificationService {
     await android?.createNotificationChannel(unassignedOrdersChannel);
     await android?.createNotificationChannel(orderUpdatesChannel);
     await android?.createNotificationChannel(acceptanceChannel);
+
+    // Channel for trip start reminders — high priority
+    const tripRemindersChannel = AndroidNotificationChannel(
+      'trip_reminders',
+      'تذكيرات بدء الرحلة',
+      description: 'تذكيرات للسائق لبدء الرحلة بعد القبول',
+      importance: Importance.max,
+      enableVibration: true,
+      playSound: true,
+      sound: _orderSound,
+    );
+
+    await android?.createNotificationChannel(tripRemindersChannel);
   }
 
   Future<void> _setupFirebaseMessaging() async {
@@ -121,7 +134,13 @@ class NotificationService {
 
     // ── Order notifications → full-screen intent ──
     if (NotificationHelper.isFullScreenType(notificationType)) {
-      // Don't interrupt driver on active trip
+      // trip_start_reminder: show notification but navigate to /active-order
+      if (notificationType == 'trip_start_reminder') {
+        _showTripReminderNotification(data);
+        return;
+      }
+
+      // Don't interrupt driver on active trip with new order alerts
       if (_isOnActiveOrder()) {
         if (kDebugMode) {
           debugPrint('[NotificationService] Driver is busy, skipping');
@@ -130,6 +149,16 @@ class NotificationService {
       }
 
       _showFullScreenNotification(data);
+      return;
+    }
+
+    // ── timeout_expired → clear reminders + navigate to /nearby ──
+    if (notificationType == 'timeout_expired') {
+      final oid = data['orderId'] as String?;
+      if (oid != null) {
+        _localNotifications.cancel(oid.hashCode);
+      }
+      _navigateTo('/nearby');
       return;
     }
 
@@ -176,6 +205,66 @@ class NotificationService {
       ),
       payload: payload,
     );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Trip start reminder (driver accepted but hasn't started trip)
+  // ---------------------------------------------------------------------------
+
+  void _showTripReminderNotification(Map<String, dynamic> data) {
+    final orderId = data['orderId'] as String? ?? '';
+    final remaining = data['remainingMinutes'] as String? ?? '?';
+    final pickupLabel = data['pickupLabel'] as String? ?? 'موقع الاستلام';
+    final payload = jsonEncode(data);
+
+    if (kDebugMode) {
+      debugPrint(
+          '[NotificationService] 🔔 Trip reminder: order=$orderId, remaining=$remaining min');
+    }
+
+    // Show/update system notification (same ID → updates in place)
+    _localNotifications.show(
+      orderId.hashCode,
+      'هل وصلت للعميل؟',
+      'لديك $remaining دقائق لبدء الرحلة — $pickupLabel',
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'trip_reminders',
+          'تذكيرات بدء الرحلة',
+          importance: Importance.max,
+          priority: Priority.max,
+          enableVibration: true,
+          playSound: true,
+          sound: _orderSound,
+          fullScreenIntent: true,
+          category: AndroidNotificationCategory.reminder,
+          visibility: NotificationVisibility.public,
+          onlyAlertOnce: false,
+        ),
+      ),
+      payload: payload,
+    );
+
+    // Navigate to active order if not already there
+    if (!_isOnActiveOrder()) {
+      _navigateTo('/active-order');
+    }
+  }
+
+  /// Simple navigation helper.
+  void _navigateTo(String route) {
+    final ctx = _navigatorKey?.currentContext;
+    if (ctx == null) {
+      _pendingRoute = route;
+      return;
+    }
+    try {
+      ctx.go(route);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[NotificationService] ❌ Navigation error: $e');
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------

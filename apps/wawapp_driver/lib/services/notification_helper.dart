@@ -11,7 +11,8 @@ class NotificationHelper {
   static bool isFullScreenType(String? type) {
     return type == 'new_order' ||
         type == 'new_order_nearby' ||
-        type == 'unassigned_order_reminder';
+        type == 'unassigned_order_reminder' ||
+        type == 'trip_start_reminder';
   }
 
   static String? getRouteFromNotification({
@@ -36,6 +37,12 @@ class NotificationHelper {
       case 'unassigned_order_reminder':
         // Full-screen notification route — data passed via GoRouter extra
         route = '/full-screen-notification';
+        break;
+      case 'trip_start_reminder':
+        route = '/active-order';
+        break;
+      case 'timeout_expired':
+        route = '/nearby';
         break;
       case 'order_cancelled':
       case 'order_cancelled_by_client':
