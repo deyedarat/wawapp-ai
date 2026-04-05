@@ -15,6 +15,7 @@ import '../../services/tracking_service.dart';
 import '../../widgets/error_screen.dart';
 import '../auth/providers/auth_service_provider.dart';
 import 'providers/active_order_provider.dart';
+import 'widgets/accepted_countdown_banner.dart';
 
 class ActiveOrderScreen extends ConsumerStatefulWidget {
   const ActiveOrderScreen({super.key});
@@ -219,6 +220,10 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
 
           return Column(
             children: [
+              // Countdown banner for accepted orders
+              if (order.orderStatus == OrderStatus.accepted)
+                const AcceptedCountdownBanner(),
+
               // Map View
               Expanded(
                 flex: 3,
