@@ -1,0 +1,103 @@
+\--- com.google.android.gms:play-services-auth:21.2.0
+     +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+     +--- com.google.android.gms:play-services-auth-base:18.0.10
++--- com.google.android.gms:play-services-auth:21.2.0
+|    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    +--- com.google.android.gms:play-services-auth-base:18.0.10
++--- com.google.android.gms:play-services-auth:{strictly 21.2.0} -> 21.2.0 (c)
++--- com.google.android.gms:play-services-auth-api-phone:{strictly 18.0.2} -> 18.0.2 (c)
++--- com.google.android.gms:play-services-auth-base:{strictly 18.0.10} -> 18.0.10 (c)
+|    \--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|         \--- com.google.android.gms:play-services-safetynet:18.0.0
+|    |    |    \--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01 (c)
+|    |    +--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01
+|    |    |    +--- com.google.android.gms:play-services-auth:20.7.0 -> 21.2.0
+|    |    |    |    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    |    |    |    +--- com.google.android.gms:play-services-auth-base:18.0.10
+|    |    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2 (*)
+|    \--- com.google.android.gms:play-services-auth:21.0.0 -> 21.2.0 (*)
+\--- com.google.android.gms:play-services-auth:21.2.0 (*)
++--- com.google.android.gms:play-services-auth:21.2.0
+|    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    +--- com.google.android.gms:play-services-auth-base:18.0.10
++--- com.google.android.gms:play-services-auth:{strictly 21.2.0} -> 21.2.0 (c)
++--- com.google.android.gms:play-services-auth-api-phone:{strictly 18.0.2} -> 18.0.2 (c)
++--- com.google.android.gms:play-services-auth-base:{strictly 18.0.10} -> 18.0.10 (c)
+|    \--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|         \--- com.google.android.gms:play-services-safetynet:18.0.0
+|    |    |    \--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01 (c)
+|    |    +--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01
+|    |    |    +--- com.google.android.gms:play-services-auth:20.7.0 -> 21.2.0
+|    |    |    |    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    |    |    |    +--- com.google.android.gms:play-services-auth-base:18.0.10
+|    |    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2 (*)
+|    \--- com.google.android.gms:play-services-auth:21.0.0 -> 21.2.0 (*)
+\--- com.google.android.gms:play-services-auth:21.2.0 (*)
+\--- com.google.android.gms:play-services-auth:21.2.0 (n)
+\--- com.google.android.gms:play-services-auth:21.2.0
+     +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+     +--- com.google.android.gms:play-services-auth-base:18.0.10
++--- com.google.android.gms:play-services-auth:21.2.0
+|    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    +--- com.google.android.gms:play-services-auth-base:18.0.10
++--- com.google.android.gms:play-services-auth:{strictly 21.2.0} -> 21.2.0 (c)
++--- com.google.android.gms:play-services-auth-api-phone:{strictly 18.0.2} -> 18.0.2 (c)
++--- com.google.android.gms:play-services-auth-base:{strictly 18.0.10} -> 18.0.10 (c)
++--- com.google.android.gms:play-services-auth:21.2.0
+|    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    +--- com.google.android.gms:play-services-auth-base:18.0.10
+|    +--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|    |    \--- com.google.android.gms:play-services-safetynet:18.0.0
+|    |    |    \--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01 (c)
+|    |    +--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01
+|    |    |    +--- com.google.android.gms:play-services-auth:20.7.0 -> 21.2.0 (*)
+|    |    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2 (*)
+|    +--- com.google.android.gms:play-services-auth:21.0.0 -> 21.2.0 (*)
++--- com.google.android.gms:play-services-auth:21.2.0
+|    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    +--- com.google.android.gms:play-services-auth-base:18.0.10
++--- com.google.android.gms:play-services-auth:{strictly 21.2.0} -> 21.2.0 (c)
++--- com.google.android.gms:play-services-auth-api-phone:{strictly 18.0.2} -> 18.0.2 (c)
++--- com.google.android.gms:play-services-auth-base:{strictly 18.0.10} -> 18.0.10 (c)
++--- com.google.android.gms:play-services-auth:21.2.0
+|    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    +--- com.google.android.gms:play-services-auth-base:18.0.10
+|    +--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|    |    \--- com.google.android.gms:play-services-safetynet:18.0.0
+|    |    |    \--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01 (c)
+|    |    +--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01
+|    |    |    +--- com.google.android.gms:play-services-auth:20.7.0 -> 21.2.0 (*)
+|    |    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2 (*)
+|    +--- com.google.android.gms:play-services-auth:21.0.0 -> 21.2.0 (*)
++--- com.google.android.gms:play-services-auth:21.2.0
+|    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    +--- com.google.android.gms:play-services-auth-base:18.0.10
++--- com.google.android.gms:play-services-auth:{strictly 21.2.0} -> 21.2.0 (c)
++--- com.google.android.gms:play-services-auth-api-phone:{strictly 18.0.2} -> 18.0.2 (c)
++--- com.google.android.gms:play-services-auth-base:{strictly 18.0.10} -> 18.0.10 (c)
++--- com.google.android.gms:play-services-auth:21.2.0
+|    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    +--- com.google.android.gms:play-services-auth-base:18.0.10
+|    +--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|    |    \--- com.google.android.gms:play-services-safetynet:18.0.0
+|    |    |    \--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01 (c)
+|    |    +--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01
+|    |    |    +--- com.google.android.gms:play-services-auth:20.7.0 -> 21.2.0 (*)
+|    |    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2 (*)
+|    +--- com.google.android.gms:play-services-auth:21.0.0 -> 21.2.0 (*)
++--- com.google.android.gms:play-services-auth:21.2.0
+|    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    +--- com.google.android.gms:play-services-auth-base:18.0.10
++--- com.google.android.gms:play-services-auth:{strictly 21.2.0} -> 21.2.0 (c)
++--- com.google.android.gms:play-services-auth-api-phone:{strictly 18.0.2} -> 18.0.2 (c)
++--- com.google.android.gms:play-services-auth-base:{strictly 18.0.10} -> 18.0.10 (c)
++--- com.google.android.gms:play-services-auth:21.2.0
+|    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2
+|    +--- com.google.android.gms:play-services-auth-base:18.0.10
+|    +--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|    |    \--- com.google.android.gms:play-services-safetynet:18.0.0
+|    |    |    \--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01 (c)
+|    |    +--- androidx.credentials:credentials-play-services-auth:1.2.0-rc01
+|    |    |    +--- com.google.android.gms:play-services-auth:20.7.0 -> 21.2.0 (*)
+|    |    +--- com.google.android.gms:play-services-auth-api-phone:18.0.2 (*)
+|    +--- com.google.android.gms:play-services-auth:21.0.0 -> 21.2.0 (*)

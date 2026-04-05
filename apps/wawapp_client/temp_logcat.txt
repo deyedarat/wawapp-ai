@@ -1,0 +1,100 @@
+03-12 14:46:53.584 I/Layer   (  849): id=2011 addToCurrentState Background for SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0#2011 (139)
+03-12 14:46:53.584 I/Layer   (  849): id=2010 addToCurrentState SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010 (139)
+03-12 14:46:53.588 D/CoreBackPreview( 1380): Window{b22d65e u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity}: Setting back callback null
+03-12 14:46:53.591 D/SurfaceFlinger(  849):      DEVICE | 0xb400007522bf0300 | 0102 | RGBA_8888    |    0.0    0.0  720.0 1510.0 |    0    0  720 1510 | SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010
+03-12 14:46:53.591 D/SurfaceFlinger(  849):      DEVICE | 0xb4000074fbce8600 | 0100 | RGBA_8888    |    0.0    0.0  720.0 1600.0 |    0    0  720 1600 | com.wawapp.client/com.wawapp.client.MainActivity$_3739#2007
+03-12 14:46:53.592 D/ScreenCurtainController( 1380): onForegroundActivitiesChanged: com.wawapp.client
+03-12 14:46:53.597 E/keystore2(  579): system/security/keystore2/src/error.rs:182 - Rc(r#KEY_NOT_FOUND), "system/security/keystore2/src/service.rs:172: In get_key_entry, while trying to load key info. 10206, Some(\"unstable.c7202ece89390c490b1b94d5b71225e1.B-2012210724586160828\")"
+03-12 14:46:53.597 E/keystore2(  579): system/security/keystore2/src/error.rs:182 - Rc(r#KEY_NOT_FOUND), "system/security/keystore2/src/service.rs:172: In get_key_entry, while trying to load key info. 10206, Some(\"unstable.c7202ece89390c490b1b94d5b71225e1.A-2012210724586160828\")"
+03-12 14:46:53.597 W/InputManager-JNI( 1380): Input channel object 'b22d65e com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity (client)' was disposed without first being removed with the input manager!
+03-12 14:46:53.598 V/WindowManager( 1380): Remove Window{b22d65e u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity}: mSurfaceController=Surface(name=com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_3739)/@0xe088e27 mAnimatingExit=false mRemoveOnExit=false mHasSurface=true surfaceShowing=false animating=false app-animation=false mDisplayFrozen=false callers=com.android.server.wm.WindowManagerService.removeWindow:2148 com.android.server.wm.Session.remove:257 android.view.IWindowSession$Stub.onTransact:747 com.android.server.wm.Session.onTransact:204 android.os.Binder.execTransactInternal:1375 android.os.Binder.execTransact:1311 
+03-12 14:46:53.598 I/WindowManager( 1380): Destroying surface Surface(name=com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_3739)/@0xe088e27 called by com.android.server.wm.WindowStateAnimator.destroySurface:799 com.android.server.wm.WindowStateAnimator.destroySurfaceLocked:472 com.android.server.wm.WindowState.removeImmediately:2936 com.android.server.wm.WindowState.removeIfPossible:3213 com.android.server.wm.WindowManagerService.removeWindow:2148 com.android.server.wm.Session.remove:257 android.view.IWindowSession$Stub.onTransact:747 com.android.server.wm.Session.onTransact:204 
+03-12 14:46:53.610 I/SurfaceFlinger(  849): id=1973 Removed dd15996 ActivityRecordInputSink com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#1973 (137)
+03-12 14:46:53.619 I/Layer   (  849): id=2012 removeFromCurrentState com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_3739#2012 (138)
+03-12 14:46:53.619 I/Layer   (  849): id=1969 removeFromCurrentState b22d65e com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#1969 (138)
+03-12 14:46:53.619 I/Layer   (  849): id=1968 removeFromCurrentState ActivityRecord{a417922 u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t366}#1968 (138)
+03-12 14:46:53.619 I/Layer   (  849): id=1973 removeFromCurrentState dd15996 ActivityRecordInputSink com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#1973 (138)
+03-12 14:46:53.620 I/SurfaceFlinger(  849): id=1968 Removed ActivityRecord{a417922 u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t366}#1968 (138)
+03-12 14:46:53.621 I/SurfaceFlinger(  849): id=1969 Removed b22d65e com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#1969 (138)
+03-12 14:46:53.621 I/SurfaceFlinger(  849): id=2012 Removed com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_3739#2012 (138)
+03-12 14:46:53.629 W/samsung_keystore_utils(  579): ExceptionLoggingCase unstable.c7202ece89390c490b1b94d5b71225e1.A-20122107245861608281
+03-12 14:46:53.636 I/BufferQueueDebug(  849): [com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_3739#2012](this:0xb4000074fb373790,id:-1,api:0,p:-1,c:849) onDestructor()
+03-12 14:46:53.636 I/Layer   (  849): id=2012 Destroyed com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_3739#2012
+03-12 14:46:53.637 I/BufferQueueDebug(  849): [b22d65e com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#1969](this:0xb4000074fb7ad790,id:-1,api:0,p:-1,c:849) onDestructor()
+03-12 14:46:53.637 I/Layer   (  849): id=1969 Destroyed b22d65e com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#1969
+03-12 14:46:53.637 I/BufferQueueDebug(  849): [ActivityRecord{a417922 u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t366}#1968](this:0xb4000074fc05f790,id:-1,api:0,p:-1,c:849) onDestructor()
+03-12 14:46:53.637 I/Layer   (  849): id=1968 Destroyed ActivityRecord{a417922 u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t366}#1968
+03-12 14:46:53.637 I/BufferQueueDebug(  849): [dd15996 ActivityRecordInputSink com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#1973](this:0xb4000074fb806790,id:-1,api:0,p:-1,c:849) onDestructor()
+03-12 14:46:53.637 I/Layer   (  849): id=1973 Destroyed dd15996 ActivityRecordInputSink com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#1973
+03-12 14:46:53.670 E/keystore2(  579): system/security/keystore2/src/error.rs:182 - Rc(r#KEY_NOT_FOUND), "system/security/keystore2/src/service.rs:375: In delete_key: Trying to unbind the key. 10206, Some(\"unstable.c7202ece89390c490b1b94d5b71225e1.B-2012210724586160828\")"
+03-12 14:46:53.702 I/flutter ( 3739): [LoginScreen] Post-CAPTCHA resume: otpStage=OtpStage.sending
+03-12 14:46:53.739 D/MdnieScenarioControlService( 1380):  packageName : com.wawapp.client    className : com.wawapp.client.MainActivity
+03-12 14:46:54.163 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=5.60 dur=1071.70 max=421.34 min=27.42
+03-12 14:46:54.997 I/Finsky  ( 3064): [65] requestIntegrityToken() finished for com.wawapp.client.
+03-12 14:46:55.378 W/LocalRequestInterceptor( 3739): Error getting App Check token; using placeholder token instead. Error: J1.j: Error returned from API. code: 403 body: App attestation failed.
+03-12 14:46:55.657 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=2.68 dur=1493.56 max=508.66 min=123.67
+03-12 14:46:55.684 I/flutter ( 3739): [LoginScreen] Auth state changed: otpStage=OtpStage.failed, otpFlowActive=false, user=null, error=حدث خطأ أثناء التحقق. يرجى المحاولة مجدداً
+03-12 14:46:55.684 I/flutter ( 3739): [LoginScreen] sendOtp() returned successfully
+03-12 14:46:55.685 I/flutter ( 3739): [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.failed
+03-12 14:46:55.685 I/flutter ( 3739): [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=false | otpStage=OtpStage.failed | isLoading=false
+03-12 14:46:55.685 I/flutter ( 3739): [Router] ✓ Already on /login
+03-12 14:46:56.658 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=4.00 dur=1001.05 max=509.35 min=69.94
+03-12 14:46:57.014 D/FreecessController( 1380): com.wawapp.client(10270) is important[12]
+03-12 14:46:57.659 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.00 dur=1001.14 max=509.39 min=122.66
+03-12 14:46:58.660 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.00 dur=1001.22 max=509.43 min=123.06
+03-12 14:46:59.661 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.00 dur=1000.95 max=509.08 min=122.97
+03-12 14:47:00.662 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.00 dur=1000.68 max=509.18 min=122.67
+03-12 14:47:01.663 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.00 dur=1001.03 max=509.25 min=122.74
+03-12 14:47:01.815 W/BatteryExternalStatsWorker( 1380): error reading Bluetooth stats: 11
+03-12 14:47:02.016 D/FreecessController( 1380): com.wawapp.client(10270) is important[12]
+03-12 14:47:02.664 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.00 dur=1001.22 max=509.47 min=122.56
+03-12 14:47:03.665 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.00 dur=1000.87 max=509.11 min=123.07
+03-12 14:47:05.035 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=2.92 dur=1370.01 max=491.80 min=122.99
+03-12 14:47:06.036 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.00 dur=1001.16 max=491.86 min=122.86
+03-12 14:47:07.017 D/FreecessController( 1380): com.wawapp.client(10270) is important[12]
+03-12 14:47:07.160 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.56 dur=1124.09 max=491.52 min=123.36
+03-12 14:47:08.161 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.00 dur=1001.23 max=492.20 min=140.44
+03-12 14:47:09.162 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.00 dur=1000.59 max=491.38 min=140.39
+03-12 14:47:10.163 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=3.00 dur=1001.10 max=491.75 min=140.58
+03-12 14:47:11.657 I/BufferQueueProducer(  849): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010](this:0xb4000074fb529790,id:-1,api:0,p:-1,c:849) queueBuffer: fps=2.68 dur=1493.83 max=509.90 min=125.47
+03-12 14:47:12.018 D/FreecessController( 1380): com.wawapp.client(10270) is important[12]
+03-12 14:47:12.407 D/ActivityTaskManager( 1380): scheduleTopResumedActivityChanged, onTop=false, r=ActivityRecord{a86632a u0 com.wawapp.client/.MainActivity t364}, caller=com.android.server.wm.ActivityTaskSupervisor.updateTopResumedActivityIfNeeded:2861 com.android.server.wm.TaskFragment.setResumedActivity:579 com.android.server.wm.TaskFragment.onActivityStateChanged:888 com.android.server.wm.ActivityRecord.setState:6811 com.android.server.wm.TaskFragment.startPausing:2004 com.android.server.wm.TaskFragment.startPausing:1948 
+03-12 14:47:12.415 W/System.err( 1380): java.io.FileNotFoundException: /sys/class/lcd/panel/lux: open failed: ENOENT (No such file or directory)
+03-12 14:47:12.416 V/WindowManager( 1380): Changing focus from Window{9c58724 u0 com.wawapp.client/com.wawapp.client.MainActivity} to null displayId=0 Callers=com.android.server.wm.RootWindowContainer.updateFocusedWindowLocked:578 com.android.server.wm.WindowManagerService.updateFocusedWindowLocked:6881 com.android.server.wm.ActivityRecord.commitVisibility:6621 com.android.server.wm.ActivityRecord.commitVisibility:6632 
+03-12 14:47:12.420 W/System.err( 1380): Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+03-12 14:47:12.421 D/SGM:FgCheckThread( 1380): notePauseComponent(), received pkgName: com.wawapp.client, userId: 0
+03-12 14:47:12.427 V/WindowManager( 1380): Setting visibility of Window{9c58724 u0 com.wawapp.client/com.wawapp.client.MainActivity}: false, caller=com.android.server.wm.WindowContainer.sendAppVisibilityToClients:1301 com.android.server.wm.WindowToken.setClientVisible:446 com.android.server.wm.ActivityRecord.setClientVisible:8121 com.android.server.wm.ActivityRecord.postApplyAnimation:6685 com.android.server.wm.ActivityRecord.commitVisibility:6628 
+03-12 14:47:12.466 D/BLASTBufferQueue( 3739): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0#6](f:0,a:1) destructor()
+03-12 14:47:12.466 D/BufferQueueConsumer( 3739): [SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0#6(BLAST Consumer)6](id:e9b00000006,api:0,p:-1,c:3739) disconnect
+03-12 14:47:12.469 V/WindowManager( 1380): Relayout Window{9c58724 u0 com.wawapp.client/com.wawapp.client.MainActivity}: viewVisibility=8 req=720x1600 ty=1 d0
+03-12 14:47:12.486 D/ViewRootImpl@651c2a0[MainActivity]( 3739): WindowStopped on com.wawapp.client/com.wawapp.client.MainActivity set to true
+03-12 14:47:12.494 E/WindowManager( 1380): win=Window{9c58724 u0 com.wawapp.client/com.wawapp.client.MainActivity} destroySurfaces: appStopped=true cleanupOnResume=false win.mWindowRemovalAllowed=false win.mRemoveOnExit=false win.mViewVisibility=8 caller=com.android.server.wm.ActivityRecord.destroySurfaces:6952 com.android.server.wm.ActivityRecord.destroySurfaces:6933 com.android.server.wm.ActivityRecord.activityStopped:7633 com.android.server.wm.ActivityClientController.activityStopped:321 android.app.IActivityClientController$Stub.onTransact:702 com.android.server.wm.ActivityClientController.onTransact:186 android.os.Binder.execTransactInternal:1380 
+03-12 14:47:12.494 I/WindowManager( 1380): Destroying surface Surface(name=com.wawapp.client/com.wawapp.client.MainActivity$_3739)/@0xcb8ddcf called by com.android.server.wm.WindowStateAnimator.destroySurface:799 com.android.server.wm.WindowStateAnimator.destroySurfaceLocked:472 com.android.server.wm.WindowState.destroySurfaceUnchecked:4206 com.android.server.wm.WindowState.destroySurface:4180 com.android.server.wm.ActivityRecord.destroySurfaces:6952 com.android.server.wm.ActivityRecord.destroySurfaces:6933 com.android.server.wm.ActivityRecord.activityStopped:7633 com.android.server.wm.ActivityClientController.activityStopped:321 
+03-12 14:47:12.645 I/Layer   (  849): id=2008 removeFromCurrentState Bounds for - com.wawapp.client/com.wawapp.client.MainActivity@2#2008 (122)
+03-12 14:47:12.645 I/Layer   (  849): id=2009 removeFromCurrentState SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0#2009 (122)
+03-12 14:47:12.645 I/Layer   (  849): id=2011 removeFromCurrentState Background for SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0#2011 (122)
+03-12 14:47:12.645 I/Layer   (  849): id=2010 removeFromCurrentState SurfaceView[com.wawapp.client/com.wawapp.client.MainActivity]@0(BLAST)#2010 (122)
+03-12 14:47:12.646 I/Layer   (  849): Layer [com.wawapp.client/com.wawapp.client.MainActivity$_3739#2007] hidden!! flag(1)
+03-12 14:47:12.646 I/Layer   (  849): id=2007 removeFromCurrentState com.wawapp.client/com.wawapp.client.MainActivity$_3739#2007 (122)
+03-12 14:47:12.648 I/SurfaceFlinger(  849): id=2007 Removed com.wawapp.client/com.wawapp.client.MainActivity$_3739#2007 (122)
+03-12 14:47:12.648 I/SurfaceFlinger(  849): id=2008 Removed Bounds for - com.wawapp.client/com.wawapp.client.MainActivity@2#2008 (122)
+03-12 14:47:12.652 D/InputDispatcher( 1380): Focus left window (0): 9c58724 com.wawapp.client/com.wawapp.client.MainActivity
+03-12 14:47:12.659 I/BufferQueueDebug(  849): [com.wawapp.client/com.wawapp.client.MainActivity$_3739#2007](this:0xb4000074fb320790,id:-1,api:0,p:-1,c:849) onDestructor()
+03-12 14:47:12.659 I/Layer   (  849): id=2007 Destroyed com.wawapp.client/com.wawapp.client.MainActivity$_3739#2007
+03-12 14:47:12.659 I/BufferQueueDebug(  849): [Bounds for - com.wawapp.client/com.wawapp.client.MainActivity@2#2008](this:0xb4000074fb8b0790,id:-1,api:0,p:-1,c:849) onDestructor()
+03-12 14:47:12.659 I/Layer   (  849): id=2008 Destroyed Bounds for - com.wawapp.client/com.wawapp.client.MainActivity@2#2008
+03-12 14:47:12.770 D/UsbHostRestrictor( 1380): IOException : java.io.FileNotFoundException: /sys/class/usb_notify/usb_control/usb_sl: open failed: EACCES (Permission denied)
+03-12 14:47:12.777 I/System.out( 1880): test static void android.appwidget.AppWidgetHostView.-$$Nest$mapplyContent(android.appwidget.AppWidgetHostView,android.view.View,boolean,java.lang.Exception)
+03-12 14:47:12.777 I/System.out( 1880): test private void android.appwidget.AppWidgetHostView.applyContent(android.view.View,boolean,java.lang.Exception)
+03-12 14:47:12.779 I/System.out( 1880): test protected android.view.View android.appwidget.AppWidgetHostView.getErrorView()
+03-12 14:47:12.779 I/System.out( 1880): test private void android.appwidget.AppWidgetHostView.handleViewError()
+03-12 14:47:13.043 E/LoadedApk( 1540): Exception : java.lang.NullPointerException: Attempt to invoke virtual method 'boolean android.os.Looper.isPerfLogEnable()' on a null object reference
+03-12 14:47:13.070 E/LoadedApk( 1540): Exception : java.lang.NullPointerException: Attempt to invoke virtual method 'boolean android.os.Looper.isPerfLogEnable()' on a null object reference
+03-12 14:47:13.077 E/LoadedApk( 1540): Exception : java.lang.NullPointerException: Attempt to invoke virtual method 'boolean android.os.Looper.isPerfLogEnable()' on a null object reference
+03-12 14:47:13.128 W/Bundle  ( 1880): Attempt to cast generated internal exception:
+03-12 14:47:13.128 W/Bundle  ( 1880): java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
+03-12 14:47:16.984 D/UsbHostRestrictor( 1380): IOException : java.io.FileNotFoundException: /sys/class/usb_notify/usb_control/usb_sl: open failed: EACCES (Permission denied)
+03-12 14:47:17.020 E/engmode_client_aidl( 1880): Client error
+03-12 14:47:17.033 E/engmode_aidl_service(  581): error to server(0xd0060012)
+03-12 14:47:18.486 E/SQLiteLog( 2982): (10) POSIX Error : 11 SQLite Error : 3850
+Binary file (standard input) matches

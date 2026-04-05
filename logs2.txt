@@ -1,0 +1,521 @@
+03-19 10:16:28.808   581  6479 I keystore2: system/security/keystore2/src/security_level.rs:703 - In generate_key. 10205, Some("integrity.api.key.alias")
+03-19 10:16:28.833   581  6479 I keystore2: system/security/keystore2/src/database.rs:2347 - In store_new_key "integrity.api.key.alias", uid=10205, cert=true, cert_chain=true rebound=true
+03-19 10:16:28.846   581  2281 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 10:16:29.462   581  2281 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 10:16:40.939   581  6479 I keystore2: system/security/keystore2/src/security_level.rs:703 - In generate_key. 10205, Some("integrity.api.key.alias")
+03-19 10:16:40.949   581  6479 I keystore2: system/security/keystore2/src/database.rs:2347 - In store_new_key "integrity.api.key.alias", uid=10205, cert=true, cert_chain=true rebound=true
+03-19 10:16:40.965   581  2281 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 10:16:44.405   581  6479 I keystore2: system/security/keystore2/src/security_level.rs:703 - In generate_key. 10205, Some("integrity.api.key.alias")
+03-19 10:16:44.414   581  6479 I keystore2: system/security/keystore2/src/database.rs:2347 - In store_new_key "integrity.api.key.alias", uid=10205, cert=true, cert_chain=true rebound=true
+03-19 10:16:44.422   581  2281 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 10:16:44.525   581  2281 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 10:16:58.601  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.003137257, initBrt=0.043137256, rcmdBrt=0.043137256, preBrt=NaN, lux=6.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic [ dim ], autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-19 10:17:08.645  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.043137256, initBrt=0.003137257, rcmdBrt=0.043137256, preBrt=NaN, lux=6.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-19 10:17:09.040  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from InvalidBrightnessStrategy toScreenOffBrightnessStrategy for display 0
+03-19 10:32:32.334  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from ScreenOffBrightnessStrategy toInvalidBrightnessStrategy for display 0
+03-19 10:32:32.351  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.011764706, initBrt=0.011764706, rcmdBrt=NaN, preBrt=NaN, lux=NaN, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=invalid_lux , reason=last_target, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-19 10:32:32.571  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.078431375, initBrt=0.011764706, rcmdBrt=0.078431375, preBrt=NaN, lux=27.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-19 10:32:37.763  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from InvalidBrightnessStrategy toScreenOffBrightnessStrategy for display 0
+03-19 11:09:49.984  1722  1722 W Looper  : Slow delivery took 250ms main h=android.app.PropertyInvalidatedCache$AutoCorker$1 c=null m=0
+03-19 11:34:33.798  1722  2260 E SyncManager: SYNC_OP_STATE_INVALID: disallowed by settings/network
+03-19 11:34:33.820  1722  2260 E SyncManager: SYNC_OP_STATE_INVALID: disallowed by settings/network
+03-19 11:34:33.835  1722  2260 E SyncManager: SYNC_OP_STATE_INVALID: disallowed by settings/network
+03-19 12:58:44.086   581  6532 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 13:46:17.526   581  6954 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:48.195   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:49.333  1722  2405 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.play.integrity.api.service.IntegrityApiPersistentService in 170982ms for start-requested
+03-19 14:18:52.644   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:52.669   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:52.682   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:52.810   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:52.990   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.304   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.409   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.451   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.481   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.526   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.541   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.566   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.601   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.628   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.671   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.672   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.673   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:18:53.673   581  8231 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:28:54.452   581  8658 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:28:59.428   581  8658 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 14:51:10.797   581  9121 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 16:37:27.206  1722  1722 W Looper  : Slow delivery took 251ms main h=android.app.PropertyInvalidatedCache$AutoCorker$1 c=null m=0
+03-19 18:56:45.060   581 10548 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-19 21:57:32.728   581 10970 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 00:00:19.688  1722  4063 E ShortcutService: Invalid icon type in shortcut 103986141085914@lid. Bitmaps are not allowed in long-lived shortcuts. Use Resource icons, or Uri-based icons instead.
+03-20 01:58:02.888  1722 11361 I HERMES#Service: sendToHQM data : "GAK":"com.android.vending/integrity.api.key.aliasel�퉠/EC_RKP/0"
+03-20 01:58:02.888  1722 11361 I HERMES#Service: sendToHQM data : "GAK":"com.android.vending/integrity.api.key.aliasel>쨄�/EC_RKP/0"
+03-20 01:58:02.889  1722 11361 I HERMES#Service: sendToHQM data : "GAK":"com.android.vending/integrity.api.key.aliasel-녧�/EC_RKP/0"
+03-20 01:58:02.889  1722 11361 I HERMES#Service: sendToHQM data : "GAK":"com.android.vending/integrity.api.key.aliasel�퉠/EC_RKP/0"
+03-20 01:58:02.889  1722 11361 I HERMES#Service: sendToHQM data : "GAK":"com.android.vending/integrity.api.key.aliasel>쨄�/EC_RKP/0"
+03-20 01:58:02.889  1722 11361 I HERMES#Service: sendToHQM data : "GAK":"com.android.vending/integrity.api.key.aliasel-녧�/EC_RKP/0"
+03-20 01:58:04.172   581 11468 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 02:00:18.658  1722  1737 E ShortcutService: Invalid icon type in shortcut 103986141085914@lid. Bitmaps are not allowed in long-lived shortcuts. Use Resource icons, or Uri-based icons instead.
+03-20 02:00:19.059  1722  2406 E ShortcutService: Invalid icon type in shortcut 103986141085914@lid. Bitmaps are not allowed in long-lived shortcuts. Use Resource icons, or Uri-based icons instead.
+03-20 02:00:21.589  1722  4272 E ShortcutService: Invalid icon type in shortcut 103986141085914@lid. Bitmaps are not allowed in long-lived shortcuts. Use Resource icons, or Uri-based icons instead.
+03-20 07:29:54.817   581 12540 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 10:27:08.712   581 13890 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 10:27:14.010   581 13890 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 12:09:22.770  1722  2260 E SyncManager: SYNC_OP_STATE_INVALID: disallowed by settings/network
+03-20 12:09:22.796  1722  2260 E SyncManager: SYNC_OP_STATE_INVALID: disallowed by settings/network
+03-20 12:09:22.845  1722  2260 E SyncManager: SYNC_OP_STATE_INVALID: disallowed by settings/network
+03-20 12:09:29.623   581 14932 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 12:09:29.647   581 14932 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 12:09:36.652   581 14932 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 12:32:37.527   581 15166 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 14:09:55.827  5268  5268 D WM-WorkerWrapper: Starting work for com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker
+03-20 14:09:55.908  5268  6259 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=690006af-70a6-43ba-9b04-5956ffc4133e, tags={ com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker } ]
+03-20 14:09:56.264   581 15670 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 14:10:00.158 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-20 14:10:00.432 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-20 14:10:00.607  2756 12889 I SearchableManager: invalidate: com.google.android.youtube/
+03-20 14:10:00.802  2756 13780 I SearchableManager: invalidate: com.google.android.apps.maps
+03-20 14:10:01.438  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-20 14:10:02.024  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 14:10:02.274 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-20 14:10:02.526 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-20 14:10:02.591  2756 13775 I SearchableManager: invalidate: com.google.android.youtube/
+03-20 14:10:02.752  2756 12890 I SearchableManager: invalidate: com.google.android.apps.maps
+03-20 14:10:03.434  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-20 14:10:08.807 17355 17355 I Finsky  : [2] Invalid Phonesky build variant. Don't start ArchivePrefetchService.
+03-20 14:10:08.829  7158  7158 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-20 14:10:08.829  7158  7158 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-20 14:10:12.027 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-20 14:10:12.101  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-20 14:10:12.102  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 14:10:12.132 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-20 14:10:12.404  2756 16011 I SearchableManager: invalidate: com.google.android.youtube/
+03-20 14:10:12.542  2756 14031 I SearchableManager: invalidate: com.google.android.apps.maps
+03-20 14:10:13.293  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-20 14:10:15.054   581 15670 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 14:10:15.618 17355 17390 I Finsky  : [69] Running play integrity cleaner.
+03-20 14:10:17.580 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-20 14:10:17.940 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-20 14:10:17.941  2756 12889 I SearchableManager: invalidate: com.google.android.youtube/
+03-20 14:10:18.084  2756 12890 I SearchableManager: invalidate: com.google.android.apps.maps
+03-20 14:10:18.855  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-20 14:10:36.926  7158  7158 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-20 16:42:35.439  4172  4790 W TopContactSynclet: Invalid account, skip syncing.
+03-20 16:43:56.792  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 16:48:27.488  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-20 16:48:27.489  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 18:12:41.946  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 18:12:42.395  4172  4661 W NgaEligibility: Invalid OAuth token. Skipping initial downloader.
+03-20 18:12:43.019   581 16788 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 18:12:46.883 17131 17201 I Utilities: [#CMH#] cleanUpInvalidIsCloud Start:  0
+03-20 18:12:49.809  9640 16761 E PersephoneDownloadWorke: Persephone sync failed: DownloadBlob request failed: INVALID_ARGUMENT: Request contains an invalid argument.
+03-20 18:12:50.383 17469 17550 I StoryHideRuleHelper: [StoryService]  In updateInvalidPeopleHideRuleInfo begin ...  
+03-20 18:12:50.383 17469 17550 I StoryHideRuleHelper: [StoryService]  updateInvalidPeopleHideRuleInfo is already completed , ignore ...  
+03-20 18:12:50.396 17469 17564 I AutoAlbumRuleHelper: [StoryService]  In updateInvalidAlbumRuleInfo begin  ...  
+03-20 18:12:50.590  7158  7158 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-20 18:12:50.590  7158  7158 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-20 18:12:51.178 17605 17698 E SEMS:Common_13.6.12: [CommonLog][RxCachedThreadScheduler-1][SaServiceUtil] getRegionMCC : invalid sa info
+03-20 18:12:51.178 17605 17698 I SEMS:Common_13.6.12: [CommonLog][RxCachedThreadScheduler-1][SaServiceUtil] Current region mcc cached value is invalid. Returns mcc value as SimUtil
+03-20 18:12:51.190 17605 17605 I SEMS:Registration_13.6.12: [AuthLog][main][CoreAppsFeature] CoreAppsFeature init start init flag : false, invalidate : false
+03-20 18:12:51.740 17605 17747 E SEMS:Common_13.6.12: [CommonLog][androidx.work-1][SaServiceUtil] getRegionMCC : invalid sa info
+03-20 18:12:51.740 17605 17747 I SEMS:Common_13.6.12: [CommonLog][androidx.work-1][SaServiceUtil] Current region mcc cached value is invalid. Returns mcc value as SimUtil
+03-20 18:12:51.745  5268  6088 E msys    : E[I wam]_WAMTransportPrivateLogUploadMessageWithDefaultLevel(55)=>privatestats/wameta/transport/token/auth token invalid
+03-20 18:12:51.783 17605 17747 E SEMS:Common_13.6.12: [CommonLog][androidx.work-1][SaServiceUtil] getRegionMCC : invalid sa info
+03-20 18:12:51.783 17605 17747 I SEMS:Common_13.6.12: [CommonLog][androidx.work-1][SaServiceUtil] Current region mcc cached value is invalid. Returns mcc value as SimUtil
+03-20 18:12:51.784  5268  6088 E msys    : E[I wam]_WAMTransportPrivateLogUploadMessageWithDefaultLevel(55)=>privatestats/wameta/transport/token/auth token invalid
+03-20 18:12:51.852 17605 17747 E SEMS:Common_13.6.12: [CommonLog][androidx.work-1][SaServiceUtil] getRegionMCC : invalid sa info
+03-20 18:12:51.852 17605 17747 I SEMS:Common_13.6.12: [CommonLog][androidx.work-1][SaServiceUtil] Current region mcc cached value is invalid. Returns mcc value as SimUtil
+03-20 18:12:51.862  5268  5268 D WM-WorkerWrapper: Starting work for com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker
+03-20 18:12:52.010  5268  6259 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=690006af-70a6-43ba-9b04-5956ffc4133e, tags={ com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker } ]
+03-20 18:12:52.008  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-20 18:12:52.017  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 18:12:52.372  5268  6088 E msys    : E[I wam]_WAMTransportPrivateLogUploadMessageWithDefaultLevel(55)=>privatestats/wameta/transport/token/auth token invalid
+03-20 18:12:53.622 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-20 18:12:54.160 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-20 18:12:54.374   581 16788 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 18:12:54.952  1722  2407 E ShortcutService: Invalid icon type in shortcut 103986141085914@lid. Bitmaps are not allowed in long-lived shortcuts. Use Resource icons, or Uri-based icons instead.
+03-20 18:12:54.964  2756 14031 I SearchableManager: invalidate: com.google.android.youtube/
+03-20 18:12:55.201  2756 12890 I SearchableManager: invalidate: com.google.android.apps.maps
+03-20 18:12:55.282  8255 16749 I HeterodyneSyncer: (REDACTED) Removed %d invalid users
+03-20 18:12:55.698  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-20 18:13:00.698   581 16788 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 18:13:00.774  7158  7158 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.safetynet.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+03-20 18:13:00.775  7158  7158 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.safetynet.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+03-20 18:13:01.154  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 18:13:06.465 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-20 18:13:06.588 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-20 18:13:06.803  7158  7158 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-20 18:13:06.841  2756 13775 I SearchableManager: invalidate: com.google.android.youtube/
+03-20 18:13:06.973  2756 12890 I SearchableManager: invalidate: com.google.android.apps.maps
+03-20 18:13:07.766  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-20 18:13:11.192  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-20 18:13:11.193  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 18:13:15.812  7158  7158 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.safetynet.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+03-20 18:16:43.489   581 18209 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-20 19:34:53.408  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 19:39:25.119  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-20 19:39:25.120  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 21:42:26.526  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 21:47:58.023  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-20 21:47:58.024  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 23:48:38.905  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-20 23:54:20.401  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-20 23:54:20.402  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 00:00:07.690  5268  6237 I PlayCore: UID: [10258]  PID: [5268] IntegrityService : requestIntegrityToken(IntegrityTokenRequest{nonce=AeFzD9sIj3TXbyDyGnuSjiX7XareCshxTem3qbfEzHh0NzIPfsSrbNGGl-Sw5ryQ9g, cloudProjectNumber=null, network=null})
+03-21 00:00:07.698  5268 18387 I PlayCore: UID: [10258]  PID: [5268] IntegrityService : Initiate binding to the service.
+03-21 00:00:07.719  5268  5268 I PlayCore: UID: [10258]  PID: [5268] IntegrityService : ServiceConnectionImpl.onServiceConnected(ComponentInfo{com.android.vending/com.google.android.finsky.integrityservice.IntegrityService})
+03-21 00:00:07.719  1722  4270 E ShortcutService: Invalid icon type in shortcut 103986141085914@lid. Bitmaps are not allowed in long-lived shortcuts. Use Resource icons, or Uri-based icons instead.
+03-21 00:00:07.720  5268 18387 I PlayCore: UID: [10258]  PID: [5268] IntegrityService : linkToDeath
+03-21 00:00:07.846   581  6467 I keystore2: system/security/keystore2/src/security_level.rs:703 - In generate_key. 10205, Some("integrity.api.key.alias")
+03-21 00:00:07.906   581  6467 I keystore2: system/security/keystore2/src/database.rs:2347 - In store_new_key "integrity.api.key.alias", uid=10205, cert=true, cert_chain=true rebound=true
+03-21 00:00:07.916  5268  5268 D WM-WorkerWrapper: Starting work for com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker
+03-21 00:00:07.918   581 18411 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-21 00:00:07.922 17355 18392 I Finsky  : [858] Integrity key attestation record generated successfully.
+03-21 00:00:08.045  8255  8255 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.play.integrity.api.service.IntegrityApiDisplayListenerApiService.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiServiceNoInstantApps }
+03-21 00:00:08.045  8255  8255 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.play.integrity.api.service.IntegrityApiDisplayListenerApiService.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiServiceNoInstantApps }
+03-21 00:00:08.250  1722  4255 E ShortcutService: Invalid icon type in shortcut 103986141085914@lid. Bitmaps are not allowed in long-lived shortcuts. Use Resource icons, or Uri-based icons instead.
+03-21 00:00:08.307  5268  6366 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=690006af-70a6-43ba-9b04-5956ffc4133e, tags={ com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker } ]
+03-21 00:00:13.602   581 18411 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-21 00:00:15.876 17355 17386 I Finsky  : [65] requestIntegrityToken() finished for com.whatsapp.
+03-21 00:00:15.882  5268 12883 I PlayCore: UID: [10258]  PID: [5268] OnRequestIntegrityTokenCallback : onRequestIntegrityToken
+03-21 00:00:15.884  5268 18387 I PlayCore: UID: [10258]  PID: [5268] IntegrityService : Unbind from service.
+03-21 00:00:23.103  8255  8255 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.play.integrity.api.service.IntegrityApiDisplayListenerApiService.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiServiceNoInstantApps }
+03-21 00:13:13.841  1722 18483 I HERMES#Service: sendToHQM data : "GAK":"com.android.vending/integrity.api.key.aliaselstable/EC_RKP/0"
+03-21 00:13:13.844  1722 18483 I HERMES#Service: sendToHQM data : "GAK":"com.android.vending/integrity.api.key.aliaselstable/EC_RKP/0"
+03-21 00:13:14.212   581 18521 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-21 00:13:14.988  3455  3464 I DMASA[D][423-399-545555]: [DiagmonProvider]INVALID SERVICE ID (AUTH_FAILED) [423-399-545555]
+03-21 00:13:14.990  3455  3464 I DMASA[D]: [b][423-399-545555] Failed : invalid service id (auth failed)
+03-21 00:13:14.992 18499 18591 I DIAGMON_SDK[605068][423-399-545555] : Results : Failed, Cause : invalid service id (auth failed)
+03-21 00:13:16.041 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.072 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.098 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.108 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.132 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.141 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.150 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.180 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.185 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.190 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.217 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.264 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.281 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.306 18639 18681 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:16.793  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 00:13:16.895 18639 18722 W BDClientLib: [HttpClient] file path is invalid
+03-21 00:13:18.550 18733 18790 D StrictMode: 	at android.app.PropertyInvalidatedCache.query(PropertyInvalidatedCache.java:999)
+03-21 00:13:18.974   581 18521 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-21 00:13:21.524 18468 18710 E PersephoneDownloadWorke: Persephone sync failed: DownloadBlob request failed: INVALID_ARGUMENT: Request contains an invalid argument.
+03-21 00:13:21.880  1722  4271 W system_server: Long monitor contention with owner binder:1722_C (2408) at void com.android.server.accounts.AccountManagerService.setUserdataInternal(com.android.server.accounts.AccountManagerService$UserAccounts, android.accounts.Account, java.lang.String, java.lang.String)(AccountManagerService.java:3104) waiters=1 in void com.android.server.accounts.AccountManagerService.invalidateAuthToken(java.lang.String, java.lang.String) for 150ms
+03-21 00:13:23.534 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-21 00:13:23.875 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-21 00:13:24.255  2756 16011 I SearchableManager: invalidate: com.google.android.youtube/
+03-21 00:13:24.481  2756 19341 I SearchableManager: invalidate: com.google.android.apps.maps
+03-21 00:13:24.803  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 00:13:26.852  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 00:13:26.853  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 00:13:29.555 18468 18583 W Bugle   : BuglePhoneNumberUtils: canonicalizeMccMnc: invalid mccmnc. mcc: null, mnc: null
+03-21 00:13:32.434 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-21 00:13:32.532 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-21 00:13:32.660  2756 16012 I SearchableManager: invalidate: com.google.android.youtube/
+03-21 00:13:32.713  2756 16011 I SearchableManager: invalidate: com.google.android.apps.maps
+03-21 00:13:33.593  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 00:14:06.305 18639 19399 W BDClientLib: [HttpClient] file path is invalid
+03-21 01:03:52.716 18468 19431 W Bugle   : Active sub has invalid slotIndex: slotIndex=-1 [CONTEXT sub_id=1 ]
+03-21 01:03:52.743 18468 19431 W Bugle   : Active sub has invalid slotIndex: slotIndex=-1 [CONTEXT sub_id=2 ]
+03-21 01:03:52.768 18468 19431 W Bugle   : Active sub has invalid slotIndex: slotIndex=-1 [CONTEXT sub_id=3 ]
+03-21 01:16:00.515  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 01:21:42.977  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 01:21:42.978  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 02:00:05.402  5268  5268 D WM-WorkerWrapper: Starting work for com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker
+03-21 02:00:05.408  5268  6259 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=690006af-70a6-43ba-9b04-5956ffc4133e, tags={ com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker } ]
+03-21 03:05:16.698  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 03:09:39.428  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 03:09:39.429  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 04:04:17.098  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 04:04:17.207  1184  7981 V APM_AudioPolicyManager: getOutputForAttrInt() attributes={ Content type: AUDIO_CONTENT_TYPE_SONIFICATION Usage: AUDIO_USAGE_ASSISTANCE_SONIFICATION Source: AUDIO_SOURCE_INVALID Flags: 0x800 Tags: stv_low_battery } stream=AUDIO_STREAM_SYSTEM session 793 selectedDeviceId 0
+03-21 05:04:53.218  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 05:08:56.003  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 05:08:56.004  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 05:08:56.004  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 05:19:01.818  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 06:13:46.119  5268  5268 D WM-WorkerWrapper: Starting work for com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker
+03-21 06:13:46.124  5268  6259 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=690006af-70a6-43ba-9b04-5956ffc4133e, tags={ com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker } ]
+03-21 06:13:46.892   581 19836 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-21 06:13:48.593 18468 19799 E PersephoneDownloadWorke: Persephone sync failed: DownloadBlob request failed: INVALID_ARGUMENT: Request contains an invalid argument.
+03-21 06:13:49.360 19885 19980 E SEMS:Common_13.6.12: [CommonLog][RxCachedThreadScheduler-1][SaServiceUtil] getRegionMCC : invalid sa info
+03-21 06:13:49.360 19885 19980 I SEMS:Common_13.6.12: [CommonLog][RxCachedThreadScheduler-1][SaServiceUtil] Current region mcc cached value is invalid. Returns mcc value as SimUtil
+03-21 06:13:49.368 19885 19885 I SEMS:Registration_13.6.12: [AuthLog][main][CoreAppsFeature] CoreAppsFeature init start init flag : false, invalidate : false
+03-21 06:13:50.154  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 06:13:50.909 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-21 06:13:51.197 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-21 06:13:51.645  2756 16011 I SearchableManager: invalidate: com.google.android.youtube/
+03-21 06:13:51.812  7158  7158 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-21 06:13:51.812  7158  7158 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-21 06:13:51.914  2756 20334 I SearchableManager: invalidate: com.google.android.apps.maps
+03-21 06:13:52.353  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 06:13:56.177 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-21 06:13:56.277 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-21 06:13:56.498  2756 14031 I SearchableManager: invalidate: com.google.android.youtube/
+03-21 06:13:56.565  2756 16012 I SearchableManager: invalidate: com.google.android.apps.maps
+03-21 06:13:57.377  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 06:14:00.173  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 06:14:00.173  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 06:14:00.173  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 06:14:07.544  7158  7158 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-21 06:14:09.933 19885 20689 E SEMS:Common_13.6.12: [CommonLog][androidx.work-2][SaServiceUtil] getRegionMCC : invalid sa info
+03-21 06:14:09.933 19885 20689 I SEMS:Common_13.6.12: [CommonLog][androidx.work-2][SaServiceUtil] Current region mcc cached value is invalid. Returns mcc value as SimUtil
+03-21 06:14:09.950 19885 20689 E SEMS:Common_13.6.12: [CommonLog][androidx.work-2][SaServiceUtil] getRegionMCC : invalid sa info
+03-21 06:14:09.950 19885 20689 I SEMS:Common_13.6.12: [CommonLog][androidx.work-2][SaServiceUtil] Current region mcc cached value is invalid. Returns mcc value as SimUtil
+03-21 06:14:09.963 19885 20689 E SEMS:Common_13.6.12: [CommonLog][androidx.work-2][SaServiceUtil] getRegionMCC : invalid sa info
+03-21 06:14:09.963 19885 20689 I SEMS:Common_13.6.12: [CommonLog][androidx.work-2][SaServiceUtil] Current region mcc cached value is invalid. Returns mcc value as SimUtil
+03-21 06:24:12.230  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 06:45:08.874   581 20984 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-21 07:20:03.895  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 07:21:08.922  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 07:21:08.923  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 07:21:08.923  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 07:26:14.837 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-21 07:26:14.958 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-21 07:26:15.242  2756 16012 I SearchableManager: invalidate: com.google.android.youtube/
+03-21 07:26:15.326  2756 21141 I SearchableManager: invalidate: com.google.android.apps.maps
+03-21 07:26:16.031  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 07:26:18.991 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-21 07:26:19.107  2756 21142 I SearchableManager: invalidate: com.google.android.youtube/
+03-21 07:26:19.119 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-21 07:26:19.230  2756 16011 I SearchableManager: invalidate: com.google.android.apps.maps
+03-21 07:26:19.991  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 07:29:41.830  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 07:30:46.682  5268  5268 D WM-WorkerWrapper: Starting work for com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker
+03-21 07:30:46.686  5268  6321 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=690006af-70a6-43ba-9b04-5956ffc4133e, tags={ com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker } ]
+03-21 08:03:27.639  1361  1471 D qepo    : qepo_file_update_impl: Request time interval with first invalid: 1774080225
+03-21 08:03:28.291  1361  1471 D qepo    : qepo_bd_file_update_impl: qepo_bd_valid is 0, has epo:1, file time correct:1, file size correct:1, invalid download cnt:0
+03-21 08:03:28.487  1361  1471 D qepo    : qepo_ga_file_update_impl: qepo_ga_valid is 0, has epo:1, file time correct:1, file size correct:1, invalid downlaod cnt:0
+03-21 08:39:50.881  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 09:03:34.944  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 09:03:38.833 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-21 09:03:38.899 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-21 09:03:39.088  2756 20336 I SearchableManager: invalidate: com.google.android.youtube/
+03-21 09:03:39.154  2756 21360 I SearchableManager: invalidate: com.google.android.apps.maps
+03-21 09:03:39.942  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 09:03:45.002  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 09:03:45.003  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 09:03:45.003  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 09:03:46.546 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-21 09:03:46.599  2756 20599 I SearchableManager: invalidate: com.google.android.youtube/
+03-21 09:03:46.747 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-21 09:03:46.824  2756 21140 I SearchableManager: invalidate: com.google.android.apps.maps
+03-21 09:03:47.528  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 09:21:55.906  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 09:25:50.278  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 09:25:50.279  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 09:25:50.279  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 09:31:47.696  7158  7158 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.potokens.service.IntegrityTokenRefreshTaskService.ACTION_TASK_READY dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+03-21 09:31:47.696  7158  7158 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.potokens.service.IntegrityTokenRefreshTaskService.ACTION_TASK_READY dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+03-21 09:31:47.730  7158  7158 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.potokens.service.IntegrityTokenRefreshTaskService.ACTION_TASK_READY dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsInternalBoundBrokerService }
+03-21 09:48:26.656  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 10:16:09.879  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:16:13.792 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-21 10:16:13.854 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-21 10:16:14.064  5268  5268 D WM-WorkerWrapper: Starting work for com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker
+03-21 10:16:14.072  5268  6259 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=690006af-70a6-43ba-9b04-5956ffc4133e, tags={ com.whatsapp.bizintegrity.logger.receiver.scheduler.ReceiverLoggingWorker } ]
+03-21 10:16:14.095  2756 21361 I SearchableManager: invalidate: com.google.android.youtube/
+03-21 10:16:14.216  2756 16011 I SearchableManager: invalidate: com.google.android.apps.maps
+03-21 10:16:14.997  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 10:16:19.934  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 10:16:19.935  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 10:16:19.935  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:16:22.841 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.youtube]
+03-21 10:16:22.986 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.apps.maps]
+03-21 10:16:23.108  2756 21142 I SearchableManager: invalidate: com.google.android.youtube/
+03-21 10:16:23.194  2756 16011 I SearchableManager: invalidate: com.google.android.apps.maps
+03-21 10:16:23.998  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 10:16:42.924  1722  1722 W Looper  : Slow delivery took 227ms main h=android.app.PropertyInvalidatedCache$AutoCorker$1 c=null m=0
+03-21 10:47:10.760  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from ScreenOffBrightnessStrategy toInvalidBrightnessStrategy for display 0
+03-21 10:47:10.799  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.011764706, initBrt=0.011764706, rcmdBrt=NaN, preBrt=NaN, lux=NaN, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=invalid_lux , reason=last_target, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:47:10.986  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:47:11.023  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.12156863, initBrt=0.011764706, rcmdBrt=0.12156863, preBrt=NaN, lux=51.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:47:12.813  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from InvalidBrightnessStrategy toScreenOffBrightnessStrategy for display 0
+03-21 10:47:12.840  1722  1748 W SurfaceControl: Invalid layer stack -1
+03-21 10:47:13.010  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from ScreenOffBrightnessStrategy toInvalidBrightnessStrategy for display 0
+03-21 10:47:13.016  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.011764706, initBrt=0.011764706, rcmdBrt=NaN, preBrt=NaN, lux=NaN, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=invalid_lux , reason=last_target, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:47:13.249  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.14117648, initBrt=0.011764706, rcmdBrt=0.14117648, preBrt=NaN, lux=62.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:47:20.991  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:47:30.998  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:47:37.254  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 10:47:40.936  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.05, initBrt=0.14117648, rcmdBrt=0.14117648, preBrt=NaN, lux=62.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic [ dim ], autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:47:51.001  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:47:51.022  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.14117648, initBrt=0.05, rcmdBrt=0.14117648, preBrt=NaN, lux=62.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:47:51.434  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from InvalidBrightnessStrategy toScreenOffBrightnessStrategy for display 0
+03-21 10:47:51.481  1722  1748 W SurfaceControl: Invalid layer stack -1
+03-21 10:47:53.121  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:47:53.904  1184  1266 V APM_AudioPolicyManager: getOutputForAttrInt() attributes={ Content type: AUDIO_CONTENT_TYPE_SONIFICATION Usage: AUDIO_USAGE_ASSISTANCE_SONIFICATION Source: AUDIO_SOURCE_INVALID Flags: 0x900 Tags: FAST_PRE_OPEN } stream=AUDIO_STREAM_SYSTEM session 801 selectedDeviceId 0
+03-21 10:47:54.046  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.011764706, initBrt=0.011764706, rcmdBrt=NaN, preBrt=NaN, lux=NaN, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=invalid_lux doze_scale , reason=last_target, autoBrightness=true, strategy=DozeBrightnessStrategy
+03-21 10:47:54.117  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 10:47:54.244  1184  3254 V APM_AudioPolicyManager: getOutputForAttrInt() attributes={ Content type: AUDIO_CONTENT_TYPE_SONIFICATION Usage: AUDIO_USAGE_ASSISTANCE_SONIFICATION Source: AUDIO_SOURCE_INVALID Flags: 0x800 Tags: FAST_TRACK;stv_charger_connection } stream=AUDIO_STREAM_SYSTEM session 809 selectedDeviceId 0
+03-21 10:47:56.855  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from DozeBrightnessStrategy toInvalidBrightnessStrategy for display 0
+03-21 10:47:56.856  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.14117648, initBrt=0.14117648, rcmdBrt=0.14117648, preBrt=NaN, lux=62.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:47:59.129  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 10:48:01.005  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:48:06.079  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.gm UserHandle{0}: isGroup=true, isMissing=false
+03-21 10:48:06.664  1184  3253 V APM_AudioPolicyManager: getOutputForAttrInt() attributes={ Content type: AUDIO_CONTENT_TYPE_SONIFICATION Usage: AUDIO_USAGE_NOTIFICATION Source: AUDIO_SOURCE_INVALID Flags: 0x800 Tags:  } stream=AUDIO_STREAM_NOTIFICATION session 817 selectedDeviceId 0
+03-21 10:48:09.143 22210 22231 W BDClientLib: [HttpClient] file path is invalid
+03-21 10:48:11.008  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:48:13.324 22248 22261 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+03-21 10:48:13.467  2756  2756 I HoneySpace.BaseRecentsView: INVALID_TASK_POSITION 410
+03-21 10:48:13.467  2756  2756 I HoneySpace.BaseRecentsView: INVALID_TASK_POSITION 410
+03-21 10:48:14.348  2756  2756 I HoneySpace.BaseRecentsView: INVALID_TASK_POSITION 409
+03-21 10:48:14.349  2756  2756 I HoneySpace.BaseRecentsView: INVALID_TASK_POSITION 409
+03-21 10:48:14.549  2756  2756 I HoneySpace.BaseRecentsView: INVALID_TASK_POSITION 411
+03-21 10:48:14.550  2756  2756 I HoneySpace.BaseRecentsView: INVALID_TASK_POSITION 411
+03-21 10:48:14.664  1722  1722 W Looper  : Slow delivery took 202ms main h=android.app.PropertyInvalidatedCache$AutoCorker$1 c=null m=0
+03-21 10:48:14.852 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.wawapp.client]
+03-21 10:48:14.929  7158  7158 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-21 10:48:14.929  7158  7158 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-21 10:48:15.644  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:48:15.942  7158 22433 W Blockstore: ikrn: Protocol message contained an invalid tag (zero).
+03-21 10:48:16.189  2756 21563 I SearchableManager: invalidate: com.wawapp.client
+03-21 10:48:16.519 22441 22524 I GWP-ProfilesProvisioner: ProfilesInfo for subId 4: carrierId=1616, source=INVALID, version=-1
+03-21 10:48:16.520 22441 22524 I GWP-ProfilesProvisioner: ProvisionerStore for subId 4: oldCarrierId=-1, oldSource=INVALID, oldVersion=-1
+03-21 10:48:17.083  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 10:48:17.348  2756  2756 I InputMethodManager: invalidateInput
+03-21 10:48:17.349  2756  2756 I InputMethodManager: invalidateInput
+03-21 10:48:17.364  2756  2756 I InputMethodManager: invalidateInput
+03-21 10:48:18.539 20735 22628 I InputMethodManager: invalidateInput
+03-21 10:48:18.540 20735 22628 I InputMethodManager: invalidateInput
+03-21 10:48:18.541 20735 22628 I InputMethodManager: invalidateInput
+03-21 10:48:18.546 20735 22628 I InputMethodManager: invalidateInput
+03-21 10:48:18.614 20735 22614 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+03-21 10:48:18.716 20735 20735 E ogle.android.gm: Invalid resource ID 0x00000000.
+03-21 10:48:19.002 20735 20735 E ogle.android.gm: Invalid resource ID 0x00000000.
+03-21 10:48:22.305 22370 22370 I InputMethodManager: invalidateInput
+03-21 10:48:22.308 22370 22370 I InputMethodManager: invalidateInput
+03-21 10:48:22.310 22370 22370 I InputMethodManager: invalidateInput
+03-21 10:48:22.817 22370 22370 E chromium: [ERROR:account_info_fetcher.cc(62)] OnGetTokenFailure: Invalid credentials (credentials rejected by server).
+03-21 10:48:23.441 22370 22370 I InputMethodManager: invalidateInput
+03-21 10:48:23.978 22370 22952 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+03-21 10:48:24.226 22370 22370 I InputMethodManager: invalidateInput
+03-21 10:48:24.492 22827 22918 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+03-21 10:48:25.647  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 10:48:25.647  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:48:25.647  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:48:25.647  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 10:48:26.074 22370 22370 I InputMethodManager: invalidateInput
+03-21 10:48:26.080 22370 22370 I InputMethodManager: invalidateInput
+03-21 10:48:27.937  7158 22470 I VideoPreferenceCleanupW: doWork cleanup invalid [CONTEXT service_id=5 ]
+03-21 10:48:27.937  7158 22470 I VideoPreferenceCleanupW: cleanupInvalid start [CONTEXT service_id=5 ]
+03-21 10:48:30.144   581 22288 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-21 10:48:30.157   581 22288 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-21 10:48:30.602 22370 22829 W chromium: [WARNING:spdy_session.cc(2979)] Received HEADERS for invalid stream 5
+03-21 10:48:31.010  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:48:37.426   581 22288 I keystore2: system/security/keystore2/src/gc.rs:144 - In process_one_key: Success remove invalidate_key.
+03-21 10:48:51.269  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:48:55.456  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:48:57.539  1722  1795 I PackageManager: Integrity check passed for file:///data/app/vmdl1702278763.tmp
+03-21 10:48:59.136 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.wawapp.client]
+03-21 10:48:59.315 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.wawapp.client]
+03-21 10:49:00.685  2756 16011 I SearchableManager: invalidate: com.wawapp.client
+03-21 10:49:01.290  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 10:49:01.574  2756 23586 I SearchableManager: invalidate: com.wawapp.client
+03-21 10:49:02.746 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.wawapp.client]
+03-21 10:49:02.938  7158 23532 W Blockstore: ikrn: Protocol message contained an invalid tag (zero).
+03-21 10:49:03.269  2756 23588 I SearchableManager: invalidate: com.wawapp.client
+03-21 10:49:03.802  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:49:03.845 22441 22524 I GWP-ProfilesProvisioner: ProfilesInfo for subId 4: carrierId=1616, source=INVALID, version=-1
+03-21 10:49:03.845 22441 22524 I GWP-ProfilesProvisioner: ProvisionerStore for subId 4: oldCarrierId=-1, oldSource=INVALID, oldVersion=-1
+03-21 10:49:04.000  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 10:49:05.411  4893  4893 I HBD     : b updateConfigForInvalidate:  [EditorEnterActionItem] 0x3* / 
+03-21 10:49:05.487  2336  2336 D Navbar.Store: ----apply(0) NavBarStoreAction$InvalidateRemoteView
+03-21 10:49:05.533  2336  2336 D Navbar.Store: ----apply(0) NavBarStoreAction$InvalidateRemoteView
+03-21 10:49:06.237  2336  2336 D Navbar.Store: ----apply(0) NavBarStoreAction$InvalidateRemoteView
+03-21 10:49:11.017  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:49:13.473  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 10:49:13.474  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:49:13.474  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:49:13.474  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 10:49:16.024  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 10:49:16.025  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:49:16.025  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:49:16.025  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 10:49:20.215  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:49:24.411  1722  1795 I PackageManager: Integrity check passed for file:///data/app/vmdl369003397.tmp
+03-21 10:49:25.379  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:49:25.866 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.wawapp.client]
+03-21 10:49:25.984 17355 17355 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.wawapp.client]
+03-21 10:49:26.617  2756 21362 I SearchableManager: invalidate: com.wawapp.client
+03-21 10:49:27.179  1722  2124 W SearchableInfo: Invalid searchable metadata for com.samsung.android.messaging/.ui.view.main.picker.contact.ContactPickerActivity: Search label must be a resource reference.
+03-21 10:49:27.406  2756 23898 I SearchableManager: invalidate: com.wawapp.client
+03-21 10:49:28.337 20644 20681 W SCS@AiSearch user 0: (AppInformationManager) resId is invalid(0)!
+03-21 10:49:29.498 23936 23987 D nativeloader: Load /data/app/~~XhunvHI6l6_TG4jZ2V6Lkg==/com.wawapp.client--xVGWuYGKVvHRKVNr3t2ZA==/lib/arm64/libflutter.so using class loader ns clns-5 (caller=/data/app/~~XhunvHI6l6_TG4jZ2V6Lkg==/com.wawapp.client--xVGWuYGKVvHRKVNr3t2ZA==/base.apk): ok
+03-21 10:49:29.591 23936 23996 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+03-21 10:49:29.734 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:49:29.736  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:49:29.736 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:49:29.736  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:49:29.736 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:49:29.736  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:49:29.736 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:49:29.736  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:49:29.740 23936 23996 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+03-21 10:49:29.836 23936 23936 D FlutterGeolocator: Creating service.
+03-21 10:49:29.836 23936 23936 D FlutterGeolocator: Binding to location service.
+03-21 10:49:29.845 23936 23936 D FlutterGeolocator: Flutter engine connected. Connected engine count 1
+03-21 10:49:30.604 20289 24039 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+03-21 10:49:33.340 23936 23936 D PhoneWindow: forceLight changed to false [com.wawapp.client/com.wawapp.client.MainActivity] from com.android.internal.policy.PhoneWindow.updateForceLightNavigationBar:4373 com.android.internal.policy.PhoneWindow.setNavigationBarColor:4064 io.flutter.plugin.platform.f.b:147 I3.h.t:505 I3.h.onMethodCall:918 
+03-21 10:49:33.844 23936 23936 I flutter : [Router] NAVIGATION_CHECK | location=/ | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=false | otpStage=OtpStage.idle | isLoading=false
+03-21 10:49:33.844 23936 23936 I flutter : [Router] → Redirecting to /login (not authenticated)
+03-21 10:49:33.844 23936 23936 I flutter : [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=false | otpStage=OtpStage.idle | isLoading=false
+03-21 10:49:33.844 23936 23936 I flutter : [Router] ✓ Already on /login
+03-21 10:49:33.931 23936 23936 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.idle
+03-21 10:49:33.931 23936 23936 I flutter : [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=false | otpStage=OtpStage.idle | isLoading=false
+03-21 10:49:33.931 23936 23936 I flutter : [Router] ✓ Already on /login
+03-21 10:49:36.574  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 10:49:36.576  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:49:36.576  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:49:36.576  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 10:49:46.402  4893  4893 I HBD     : b updateConfigForInvalidate:  [EditorEnterActionItem] 0x6* / 
+03-21 10:49:46.500  2336  2336 D Navbar.Store: ----apply(0) NavBarStoreAction$InvalidateRemoteView
+03-21 10:49:46.514  2336  2336 D Navbar.Store: ----apply(0) NavBarStoreAction$InvalidateRemoteView
+03-21 10:50:05.205  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:50:10.845  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.05, initBrt=0.14117648, rcmdBrt=0.14117648, preBrt=NaN, lux=62.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic [ dim ], autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:50:15.256  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.google.android.apps.messaging UserHandle{0}: isGroup=true, isMissing=false
+03-21 10:50:15.256  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:50:15.256  2756  2756 I HoneySpace.NotificationListener: invalid notification: android UserHandle{-1}: canShowBadge is false
+03-21 10:50:15.256  2756  2756 I HoneySpace.NotificationListener: invalid notification: com.android.systemui UserHandle{-1}: canShowBadge is false
+03-21 10:50:20.974  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.14117648, initBrt=0.05, rcmdBrt=0.14117648, preBrt=NaN, lux=62.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:50:21.059  2336  2336 D Navbar.Store: ----apply(0) NavBarStoreAction$InvalidateRemoteView
+03-21 10:50:21.412  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from InvalidBrightnessStrategy toScreenOffBrightnessStrategy for display 0
+03-21 10:50:21.464  1722  1748 W SurfaceControl: Invalid layer stack -1
+03-21 10:50:28.155  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from ScreenOffBrightnessStrategy toInvalidBrightnessStrategy for display 0
+03-21 10:50:28.163  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.011764706, initBrt=0.011764706, rcmdBrt=NaN, preBrt=NaN, lux=NaN, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=invalid_lux , reason=last_target, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:50:28.366  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:50:28.413  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.1254902, initBrt=0.011764706, rcmdBrt=0.1254902, preBrt=NaN, lux=53.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:50:30.116 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:50:30.116  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:50:30.117 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:50:30.117  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:50:30.117 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:50:30.118  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:50:30.121 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:50:30.121  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:50:36.490  7158  7158 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+03-21 10:50:38.369  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:50:50.177  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.05, initBrt=0.1254902, rcmdBrt=0.1254902, preBrt=NaN, lux=53.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic [ dim ], autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:50:58.385  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:51:00.229  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.1254902, initBrt=0.05, rcmdBrt=0.1254902, preBrt=NaN, lux=53.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:51:00.631  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from InvalidBrightnessStrategy toScreenOffBrightnessStrategy for display 0
+03-21 10:51:00.670  1722  1748 W SurfaceControl: Invalid layer stack -1
+03-21 10:51:02.363  1722  1777 I DisplayBrightnessStrategySelector: Changing the DisplayBrightnessStrategy from ScreenOffBrightnessStrategy toInvalidBrightnessStrategy for display 0
+03-21 10:51:02.373  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.011764706, initBrt=0.011764706, rcmdBrt=NaN, preBrt=NaN, lux=NaN, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=invalid_lux , reason=last_target, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:51:02.468 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:51:02.468  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:51:02.469 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:51:02.469  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:51:02.469 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:51:02.469  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x38, type = 0x0
+03-21 10:51:02.469 23936 23996 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:51:02.470  1141  1185 E gralloc4: Invalid base format! req_base_format = 0x0, req_format = 0x3b, type = 0x0
+03-21 10:51:02.607  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.11764706, initBrt=0.011764706, rcmdBrt=0.11764706, preBrt=NaN, lux=48.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic, autoBrightness=true, strategy=InvalidBrightnessStrategy
+03-21 10:51:08.388  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:51:18.398  1722  2084 E WifiScoringParams: Invalid frequency(-1), using 5G as default rssi array
+03-21 10:51:22.562  1722  1777 I DisplayPowerController2[0]: BrightnessEvent: disp=0, physDisp=local:0, brt=0.05, initBrt=0.11764706, rcmdBrt=0.11764706, preBrt=NaN, lux=48.0, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=-1, thrmMax=1.0, powerFactor=1.0, wasShortTermModelActive=false, flags=, reason=automatic [ dim ], autoBrightness=true, strategy=InvalidBrightnessStrategy

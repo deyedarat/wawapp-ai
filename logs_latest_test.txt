@@ -1,0 +1,37 @@
+03-10 10:36:20.801 28015 28015 I flutter : [LoginScreen] _createAccount() called for phone=+222******203
+03-10 10:36:20.802 28015 28015 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.sending, otpFlowActive=true, user=null, error=null
+03-10 10:36:20.837 28015 28015 I flutter : [Router] NAVIGATION_CHECK | location=/ | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=true | otpStage=OtpStage.sending | isLoading=true
+03-10 10:36:20.837 28015 28015 I flutter : [Router] ⏳ OTP sending (CAPTCHA in progress) – staying on /login
+03-10 10:36:20.837 28015 28015 I flutter : [Router] → Redirecting to /login (CAPTCHA in progress)
+03-10 10:36:20.837 28015 28015 I flutter : [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=true | otpStage=OtpStage.sending | isLoading=true
+03-10 10:36:20.837 28015 28015 I flutter : [Router] ⏳ OTP sending (CAPTCHA in progress) – staying on /login
+03-10 10:36:21.403 28015 28015 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.sending
+03-10 10:36:21.403 28015 28015 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.sending
+03-10 10:37:02.398 28015 28015 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.failed, otpFlowActive=false, user=null, error=حدث خطأ أثناء التحقق. يرجى المحاولة مجدداً
+03-10 10:37:02.398 28015 28015 I flutter : [LoginScreen] sendOtp() returned successfully
+03-10 10:37:03.000 28015 28015 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.failed
+03-10 10:37:03.001 28015 28015 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.failed
+03-10 10:37:03.001 28015 28015 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.failed
+03-10 10:37:03.002 28015 28015 I flutter : [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=true | otpStage=OtpStage.sending | isLoading=true
+03-10 10:37:03.002 28015 28015 I flutter : [Router] ⏳ OTP sending (CAPTCHA in progress) – staying on /login
+03-10 10:52:44.683 30157 30157 I flutter : [Router] NAVIGATION_CHECK | location=/ | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=false | otpStage=OtpStage.idle | isLoading=false
+03-10 10:52:44.683 30157 30157 I flutter : [Router] → Redirecting to /login (not authenticated)
+03-10 10:52:44.683 30157 30157 I flutter : [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=false | otpStage=OtpStage.idle | isLoading=false
+03-10 10:52:44.683 30157 30157 I flutter : [Router] ✓ Already on /login
+03-10 10:52:44.720 30157 30157 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.idle
+03-10 10:53:21.603 30157 30157 I flutter : [LoginScreen] _createAccount() called for phone=+222******203
+03-10 10:53:21.603 30157 30157 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.sending, otpFlowActive=true, user=null, error=null
+03-10 10:53:21.645 30157 30157 I flutter : [Router] NAVIGATION_CHECK | location=/ | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=true | otpStage=OtpStage.sending | isLoading=true
+03-10 10:53:21.646 30157 30157 I flutter : [Router] ⏳ OTP sending (CAPTCHA in progress) – staying on /login
+03-10 10:53:21.646 30157 30157 I flutter : [Router] → Redirecting to /login (CAPTCHA in progress)
+03-10 10:53:21.646 30157 30157 I flutter : [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=true | otpStage=OtpStage.sending | isLoading=true
+03-10 10:53:21.646 30157 30157 I flutter : [Router] ⏳ OTP sending (CAPTCHA in progress) – staying on /login
+03-10 10:53:22.205 30157 30157 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.sending
+03-10 10:53:22.206 30157 30157 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.sending
+03-10 10:54:49.459 30157 30157 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.failed, otpFlowActive=false, user=null, error=حدث خطأ أثناء التحقق. يرجى المحاولة مجدداً
+03-10 10:54:49.459 30157 30157 I flutter : [LoginScreen] sendOtp() returned successfully
+03-10 10:54:49.459 30157 30157 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.failed
+03-10 10:54:49.459 30157 30157 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.failed
+03-10 10:54:49.459 30157 30157 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.failed
+03-10 10:54:49.460 30157 30157 I flutter : [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=true | otpStage=OtpStage.sending | isLoading=true
+03-10 10:54:49.460 30157 30157 I flutter : [Router] ⏳ OTP sending (CAPTCHA in progress) – staying on /login

@@ -1,0 +1,16 @@
+Compiling lib\main.dart for the Web...                          
+Wasm dry run findings:
+Found incompatibilities with WebAssembly.
+
+package:wawapp_admin/features/reports/widgets/overview_report_tab.dart 4:1 - dart:html unsupported (0)
+package:wawapp_admin/features/reports/widgets/financial_report_tab.dart 5:1 - dart:html unsupported (0)
+package:wawapp_admin/features/reports/widgets/driver_performance_report_tab.dart 5:1 - dart:html unsupported (0)
+package:wawapp_admin/features/reports/utils/csv_export.dart 3:1 - dart:html unsupported (0)
+
+Consider addressing these issues to enable wasm builds. See docs for more info: https://docs.flutter.dev/platform-integration/web/wasm
+
+Use --no-wasm-dry-run to disable these warnings.
+Expected to find fonts for (MaterialIcons, packages/cupertino_icons/CupertinoIcons), but found (MaterialIcons). This usually means you are referring to font families in an IconData class but not including them in the assets section of your pubspec.yaml, are missing the package that would include them, or are missing "uses-material-design: true".
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 21016 bytes (98.7% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Compiling lib\main.dart for the Web...                            130.6s
+√ Built build\web

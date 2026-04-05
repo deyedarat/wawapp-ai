@@ -1,0 +1,163 @@
+03-12 17:14:08.057 26889 26889 D FlutterGeolocator: Flutter engine disconnected. Connected engine count 0
+03-12 17:14:10.104 18535 18586 D nativeloader: Load /data/app/~~_gQDBANyVIxF3BKP0LSZrA==/com.wawapp.client-EWWE3VnkQN2mN8sSMlusww==/base.apk!/lib/arm64-v8a/libflutter.so using class loader ns clns-5 (caller=/data/app/~~_gQDBANyVIxF3BKP0LSZrA==/com.wawapp.client-EWWE3VnkQN2mN8sSMlusww==/base.apk): ok
+03-12 17:14:10.661 18535 18593 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+03-12 17:14:10.696 18535 18593 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(104)] Using the Impeller rendering backend (OpenGLES).
+03-12 17:14:10.768 18535 18535 D FlutterGeolocator: Creating service.
+03-12 17:14:10.768 18535 18535 D FlutterGeolocator: Binding to location service.
+03-12 17:14:10.779 18535 18535 D FlutterGeolocator: Flutter engine connected. Connected engine count 1
+03-12 17:14:10.882 18535 18535 D PhoneWindow: forceLight changed to false [com.wawapp.client/com.wawapp.client.MainActivity] from com.android.internal.policy.PhoneWindow.updateForceLightNavigationBar:4319 com.android.internal.policy.PhoneWindow.setNavigationBarColor:4011 io.flutter.plugin.platform.f.b:147 I3.h.t:505 I3.h.onMethodCall:918 
+03-12 17:14:11.473 18535 18535 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.idle
+03-12 17:14:20.877 18535 18535 I flutter : ⚠️ Config fetch failed: ConfigException: Failed to fetch config: TimeoutException after 0:00:10.000000: Future not completed
+03-12 17:14:20.877 18535 18535 I flutter :    Allowing app to continue...
+03-12 17:14:20.879 18535 18535 I flutter : [Router] NAVIGATION_CHECK | location=/ | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=false | otpStage=OtpStage.idle | isLoading=false
+03-12 17:14:20.879 18535 18535 I flutter : [Router] → Redirecting to /login (not authenticated)
+03-12 17:14:20.881 18535 18535 I flutter : [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=false | otpStage=OtpStage.idle | isLoading=false
+03-12 17:14:20.881 18535 18535 I flutter : [Router] ✓ Already on /login
+03-12 17:14:26.835 18535 18852 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : requestIntegrityToken(IntegrityTokenRequest{nonce=AaCP6G1VOmySNz9QOg7Z9BdmywIYN4J_eE-8Ho7p1elsTglv2kGkX31nn3RiuXJWB7M4_R7GZgnbq6exyxm8JtH174ChqSEq-4B14bnH32K0_EeHURHSSpP5nhnpsAwUv3JvQorAue1ptTUq9xnv6NEN6fOPqolkEJS_Z9pAQYinoAk=, cloudProjectNumber=363341993641, network=null})
+03-12 17:14:26.838 18535 18853 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : Initiate binding to the service.
+03-12 17:14:26.865  1255  1315 I ActivityManager: Start proc 18854:com.android.vending/u0a196 for service {com.android.vending/com.google.android.finsky.integrityservice.IntegrityService}
+03-12 17:14:27.726 18535 18535 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : ServiceConnectionImpl.onServiceConnected(ComponentInfo{com.android.vending/com.google.android.finsky.integrityservice.IntegrityService})
+03-12 17:14:27.729 18535 18853 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : linkToDeath
+03-12 17:14:27.752 28745 28745 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.play.integrity.api.service.IntegrityApiDisplayListenerApiService.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiServiceNoInstantApps }
+03-12 17:14:27.752 28745 28745 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.play.integrity.api.service.IntegrityApiDisplayListenerApiService.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiServiceNoInstantApps }
+03-12 17:14:32.170 18854 18890 I Finsky  : [113] requestIntegrityToken() finished for com.wawapp.client.
+03-12 17:14:32.176 18535 18544 I PlayCore: UID: [10287]  PID: [18535] OnRequestIntegrityTokenCallback : onRequestIntegrityToken
+03-12 17:14:32.176 18535 18853 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : Unbind from service.
+03-12 17:14:39.791 18535 18535 I flutter : [LoginScreen] Starting PIN reset flow for phone: +222******643
+03-12 17:14:39.792 18535 18535 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.idle, otpFlowActive=true, user=null, error=null
+03-12 17:14:39.792 18535 18535 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.sending, otpFlowActive=true, user=null, error=null
+03-12 17:14:39.801 18535 18535 I flutter : ⚠️ Config fetch failed: ConfigException: Failed to fetch config: TimeoutException after 0:00:10.000000: Future not completed
+03-12 17:14:39.801 18535 18535 I flutter :    Allowing app to continue...
+03-12 17:14:39.801 18535 18535 I flutter : [Router] NAVIGATION_CHECK | location=/ | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=true | otpStage=OtpStage.sending | isLoading=true
+03-12 17:14:39.801 18535 18535 I flutter : [Router] ⏳ OTP sending (CAPTCHA in progress) – staying on /login
+03-12 17:14:39.801 18535 18535 I flutter : [Router] → Redirecting to /login (CAPTCHA in progress)
+03-12 17:14:39.802 18535 18535 I flutter : [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=true | otpStage=OtpStage.sending | isLoading=true
+03-12 17:14:39.802 18535 18535 I flutter : [Router] ⏳ OTP sending (CAPTCHA in progress) – staying on /login
+03-12 17:14:39.817 18535 18535 I p       : ForceRecaptchaV2Flow from phoneAuthOptions = false, ForceRecaptchav2Flow from firebaseSettings = true
+03-12 17:14:39.826  1255  5818 I ActivityTaskManager: START u0 {act=com.google.firebase.auth.internal.ACTION_SHOW_RECAPTCHA pkg=com.wawapp.client cmp=com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity (has extras)} from uid 10287
+03-12 17:14:39.827  1255  5818 D ActivityTaskManager: TaskLaunchParamsModifier:task=null activity=ActivityRecord{15d3bbd u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity display-area-from-source=DefaultTaskDisplayArea@116456676 display-id=0 display-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@116456676
+03-12 17:14:39.828  1255  5818 D ActivityTaskManager: TaskLaunchParamsModifier:task=null activity=ActivityRecord{15d3bbd u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t-1} display-area-from-source=DefaultTaskDisplayArea@116456676 display-id=0 display-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@116456676 inherit-from-source=fullscreen activity-options-fullscreen=Rect(0, 0 - 0, 0) non-freeform-display display-area=DefaultTaskDisplayArea@116456676 maximized-bounds
+03-12 17:14:39.834  1255  5818 D ActivityTaskManager: TaskLaunchParamsModifier:task=Task{a34903 #40830 type=standard A=10287:com.wawapp.client U=0 visible=false mode=fullscreen translucent=true sz=0} activity=ActivityRecord{15d3bbd u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t-1} display-area-from-source=DefaultTaskDisplayArea@116456676 display-id=0 display-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@116456676 inherit-from-source=fullscreen activity-options-fullscreen=Rect(0, 0 - 0, 0) non-freeform-display display-area=DefaultTaskDisplayArea@116456676 maximized-bounds
+03-12 17:14:39.835   750   795 I SurfaceFlinger: id=143990 createSurf (0x0),-1 flag=80004, ActivityRecord{15d3bbd u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t40830}#0
+03-12 17:14:40.181   750   795 I SurfaceFlinger: id=143991 createSurf (0x0),-1 flag=80004, cfed4ac com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#0
+03-12 17:14:40.184 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: setView = com.android.internal.policy.DecorView@98bb1f TM=true
+03-12 17:14:40.199  1255  1272 V WindowManager: Relayout Window{cfed4ac u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity}: viewVisibility=0 req=720x1600 d0
+03-12 17:14:40.200   750   795 E BufferQueueDebug: [com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0](this:0xb400007526a7e948,id:-1,api:0,p:-1,c:-1) id info cannot be read from 'com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0'
+03-12 17:14:40.200   750   795 I BufferQueueDebug: [com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0](this:0xb400007526a7e948,id:-1,api:0,p:-1,c:-1) BufferQueue core=(750:/system/bin/surfaceflinger)
+03-12 17:14:40.201   750   795 I SurfaceFlinger: id=143992 createSurf (1x1),-3 flag=40004, com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0
+03-12 17:14:40.202  1255  1272 D WindowManager: makeSurface duration=3 name=com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535
+03-12 17:14:40.207  1255  1272 V WindowManager: Changing focus from null to Window{cfed4ac u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity} displayId=0 Callers=com.android.server.wm.RootWindowContainer.updateFocusedWindowLocked:583 com.android.server.wm.WindowManagerService.updateFocusedWindowLocked:6476 com.android.server.wm.WindowManagerService.relayoutWindow:2749 com.android.server.wm.Session.relayout:242 
+03-12 17:14:40.214 18535 18535 I BLASTBufferQueue: [ViewRootImpl@6a50bd9[RecaptchaActivity]#2] constructor()
+03-12 17:14:40.214 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: Relayout returned: old=(0,0,720,1600) new=(0,0,720,1600) req=(720,1600)0 dur=14 res=0x7 s={true -5476376629782106112} ch=true fn=-1
+03-12 17:14:40.215 18535 18584 I BufferQueueProducer: [ViewRootImpl@6a50bd9[RecaptchaActivity]#2(BLAST Consumer)2](id:486700000002,api:1,p:18535,c:18535) connect: api=1 producerControlledByApp=true
+03-12 17:14:40.217 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: [DP] dp(1) 1 android.view.ViewRootImpl.reportNextDraw:11420 android.view.ViewRootImpl.performTraversals:4193 android.view.ViewRootImpl.doTraversal:2919 
+03-12 17:14:40.217 18535 18535 D ViewRootImpl@6a50bd9[RecaptchaActivity]: Creating frameDrawingCallback nextDrawUseBlastSync=false reportNextDraw=true hasBlurUpdates=false
+03-12 17:14:40.218 18535 18535 D ViewRootImpl@6a50bd9[RecaptchaActivity]: Creating frameCompleteCallback
+03-12 17:14:40.224 18535 18633 D ViewRootImpl@6a50bd9[RecaptchaActivity]: Received frameDrawingCallback frameNum=1. Creating transactionCompleteCallback=false
+03-12 17:14:40.228 18535 18584 D ViewRootImpl@6a50bd9[RecaptchaActivity]: Received frameCompleteCallback  lastAcquiredFrameNum=1 lastAttemptedDrawFrameNum=1
+03-12 17:14:40.230 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$addFrameCompleteCallbackIfNeeded$3$ViewRootImpl:4995 android.view.ViewRootImpl$$ExternalSyntheticLambda16.run:6 android.os.Handler.handleCallback:938 
+03-12 17:14:40.230 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: [DP] rdf()
+03-12 17:14:40.230 18535 18535 D ViewRootImpl@6a50bd9[RecaptchaActivity]: reportDrawFinished (fn: -1) 
+03-12 17:14:40.230  1255  1272 D WindowManager: finishDrawingWindow: Window{cfed4ac u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity} mDrawState=DRAW_PENDING
+03-12 17:14:40.233  1255  5818 D InputDispatcher: Focus request (0): cfed4ac com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity but waiting because NOT_VISIBLE
+03-12 17:14:40.237  1255  1299 I ActivityTaskManager: Displayed com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity: +410ms
+03-12 17:14:40.247 18535 18535 D InsetsSourceConsumer: ensureControlAlpha: for ITYPE_STATUS_BAR on com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity
+03-12 17:14:40.251  1255  1272 D InputDispatcher: Focus entered window (0): cfed4ac com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity
+03-12 17:14:40.255   750   750 D SurfaceFlinger:      DEVICE | 0xb4000074815208c0 | 0100 | RGBA_8888    |    0.0    0.0  720.0 1600.0 |    0    0  720 1600 | com.wawapp.client/com.google.firebas[...].internal.RecaptchaActivity$_18535#0
+03-12 17:14:40.258 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: MSG_WINDOW_FOCUS_CHANGED 1 1
+03-12 17:14:40.296 18535 18535 D InsetsSourceConsumer: ensureControlAlpha: for ITYPE_NAVIGATION_BAR on com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity
+03-12 17:14:40.313 18535 18852 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : requestIntegrityToken(IntegrityTokenRequest{nonce=AaCP6G2XjIZludImtbKcSfReZgsmnukQEuYVs0wCRnURH5wQb4fn6E1Mx-69lVuwJ5dtEjjP3x-8xf0oFDRcjXjjOgnJZb3xgB8V5gEqDqmlkqq-Eooac0BTOXCBHcY26Nu6Eg57by2xXRNjcc8BcpKLwQrPI6ysmvZm44Le1Nt3OHc=, cloudProjectNumber=363341993641, network=null})
+03-12 17:14:40.313 18535 18853 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : Initiate binding to the service.
+03-12 17:14:40.323   750   750 D SurfaceFlinger:      DEVICE | 0xb400007481521ea0 | 0100 | RGBA_8888    |    0.0    0.0  720.0 1600.0 |    0    0  720 1600 | com.wawapp.client/com.google.firebas[...].internal.RecaptchaActivity$_18535#0
+03-12 17:14:40.346 18535 18535 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : ServiceConnectionImpl.onServiceConnected(ComponentInfo{com.android.vending/com.google.android.finsky.integrityservice.IntegrityService})
+03-12 17:14:40.347 18535 18853 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : linkToDeath
+03-12 17:14:40.393 18535 18535 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.sending
+03-12 17:14:40.394 18535 18535 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.sending
+03-12 17:14:43.686 18854 18890 I Finsky  : [113] requestIntegrityToken() finished for com.wawapp.client.
+03-12 17:14:43.690 18535 18609 I PlayCore: UID: [10287]  PID: [18535] OnRequestIntegrityTokenCallback : onRequestIntegrityToken
+03-12 17:14:43.690 18535 18853 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : Unbind from service.
+03-12 17:14:44.769 18535 18535 W RecaptchaActivity: Error getting App Check token; using placeholder token instead. Error: J1.j: Too many attempts.
+03-12 17:14:44.852  1255  2983 V WindowManager: Changing focus from Window{cfed4ac u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity} to null displayId=0 Callers=com.android.server.wm.RootWindowContainer.updateFocusedWindowLocked:583 com.android.server.wm.WindowManagerService.updateFocusedWindowLocked:6476 com.android.server.wm.ActivityTaskManagerService.setResumedActivityUncheckLocked:5498 com.android.server.wm.Task.onActivityStateChanged:2888 
+03-12 17:14:45.203   750   750 I SurfaceFlinger: operator()(), mtkRenderCntDebug 6333, screenshot (com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0)
+03-12 17:14:45.233  1255  1272 D InputDispatcher: Focus left window (0): cfed4ac com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity
+03-12 17:14:45.234 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: MSG_WINDOW_FOCUS_CHANGED 0 1
+03-12 17:14:45.241   750   750 D SurfaceFlinger:      DEVICE | 0xb400007481521ea0 | 0100 | RGBA_8888    |    0.0   11.0  720.0 1600.0 |    0    0  720 1589 | com.wawapp.client/com.google.firebas[...].internal.RecaptchaActivity$_18535#0
+03-12 17:14:45.600  1255  1303 V WindowManager: Setting visibility of Window{cfed4ac u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity}: false, caller=com.android.server.wm.WindowContainer.sendAppVisibilityToClients:1110 com.android.server.wm.WindowToken.setClientVisible:448 com.android.server.wm.ActivityRecord.setClientVisible:7027 com.android.server.wm.ActivityRecord.onAnimationFinished:7914 com.android.server.wm.WindowContainer.doAnimationFinished:3107 
+03-12 17:14:45.632 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: handleAppVisibility mAppVisible=true visible=false
+03-12 17:14:45.650 18535 18584 I BufferQueueProducer: [ViewRootImpl@6a50bd9[RecaptchaActivity]#2(BLAST Consumer)2](id:486700000002,api:1,p:18535,c:18535) disconnect: api 1
+03-12 17:14:45.652  1255  2983 V WindowManager: Relayout Window{cfed4ac u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity}: viewVisibility=8 req=720x1600 d0
+03-12 17:14:45.657 18535 18535 I BLASTBufferQueue: [ViewRootImpl@6a50bd9[RecaptchaActivity]#2] destructor()
+03-12 17:14:45.657 18535 18535 I BufferQueueConsumer: [ViewRootImpl@6a50bd9[RecaptchaActivity]#2(BLAST Consumer)2](id:486700000002,api:0,p:-1,c:18535) disconnect
+03-12 17:14:45.658 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: Relayout returned: old=(0,0,720,1600) new=(0,0,720,1600) req=(720,1600)8 dur=5 res=0x5 s={false 0} ch=true fn=3
+03-12 17:14:46.347 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: stopped(true) old=false
+03-12 17:14:46.375  1255  2983 E WindowManager: win=Window{cfed4ac u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity} destroySurfaces: appStopped=true win.mWindowRemovalAllowed=false win.mRemoveOnExit=false win.mViewVisibility=8 caller=com.android.server.wm.ActivityRecord.destroySurfaces:5860 com.android.server.wm.ActivityRecord.destroySurfaces:5841 com.android.server.wm.ActivityRecord.notifyAppStopped:5905 com.android.server.wm.ActivityRecord.activityStopped:6547 com.android.server.wm.ActivityClientController.activityStopped:254 android.app.IActivityClientController$Stub.onTransact:596 com.android.server.wm.ActivityClientController.onTransact:130 
+03-12 17:14:46.375  1255  2983 I WindowManager: Destroying surface Surface(name=com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535)/@0x32c46de called by com.android.server.wm.WindowStateAnimator.destroySurface:987 com.android.server.wm.WindowStateAnimator.destroySurfaceLocked:518 com.android.server.wm.WindowState.destroySurfaceUnchecked:4236 com.android.server.wm.WindowState.destroySurface:4210 com.android.server.wm.ActivityRecord.destroySurfaces:5860 com.android.server.wm.ActivityRecord.destroySurfaces:5841 com.android.server.wm.ActivityRecord.notifyAppStopped:5905 com.android.server.wm.ActivityRecord.activityStopped:6547 
+03-12 17:14:46.383   750   750 I Layer   : id=143992 removedFromDrawingState com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0 (124)
+03-12 17:14:46.385   750   794 I SurfaceFlinger: id=143992 Removed com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0 (124)
+03-12 17:14:46.400   750   750 I BufferQueueDebug: [com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0](this:0xb400007526a7e948,id:-1,api:0,p:-1,c:750) onDestructor()
+03-12 17:14:46.400   750   750 I Layer   : id=143992 Destroyed com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0
+03-12 17:15:00.354  1255  1272 I ActivityTaskManager: START u0 {act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=recaptcha://firebase.auth/ flg=0x14000000 pkg=com.wawapp.client cmp=com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity (has extras)} from uid 10233
+03-12 17:15:00.356  1255  1272 D ActivityTaskManager: TaskLaunchParamsModifier:task=null activity=ActivityRecord{2568ec7 u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity display-area-from-source=DefaultTaskDisplayArea@116456676 display-id=0 display-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@116456676
+03-12 17:15:00.357  1255  1272 D ActivityTaskManager: TaskLaunchParamsModifier:task=Task{a34903 #40830 type=standard A=10287:com.wawapp.client U=0 visible=false mode=fullscreen translucent=true sz=1} activity=ActivityRecord{2568ec7 u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t-1} display-area-from-source=DefaultTaskDisplayArea@116456676 display-id=0 display-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@116456676 inherit-from-source=fullscreen activity-options-fullscreen=Rect(0, 0 - 0, 0) non-freeform-display display-area=DefaultTaskDisplayArea@116456676 maximized-bounds
+03-12 17:15:00.439  1255  1272 V WindowManager: Setting visibility of Window{cfed4ac u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity}: true, caller=com.android.server.wm.WindowContainer.sendAppVisibilityToClients:1110 com.android.server.wm.WindowToken.setClientVisible:448 com.android.server.wm.ActivityRecord.setClientVisible:7027 com.android.server.wm.ActivityRecord.setVisibility:5442 com.android.server.wm.ActivityRecord.setVisibility:5337 
+03-12 17:15:00.439 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: handleAppVisibility mAppVisible=false visible=true
+03-12 17:15:00.463  1255  2983 V WindowManager: Relayout Window{cfed4ac u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity}: viewVisibility=4 req=720x1600 d0
+03-12 17:15:00.467 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: Relayout returned: old=(0,0,720,1600) new=(0,0,720,1600) req=(720,1600)4 dur=13 res=0x1 s={false 0} ch=false fn=-1
+03-12 17:15:00.467 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: stopped(false) old=true
+03-12 17:15:00.469 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: stopped(false) old=false
+03-12 17:15:00.487  1255  1272 V WindowManager: Relayout Window{cfed4ac u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity}: viewVisibility=0 req=720x1600 d0
+03-12 17:15:00.488   750   795 E BufferQueueDebug: [com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0](this:0xb400007481501948,id:-1,api:0,p:-1,c:-1) id info cannot be read from 'com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0'
+03-12 17:15:00.488   750   795 I BufferQueueDebug: [com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0](this:0xb400007481501948,id:-1,api:0,p:-1,c:-1) BufferQueue core=(750:/system/bin/surfaceflinger)
+03-12 17:15:00.488   750   795 I SurfaceFlinger: id=144026 createSurf (720x1600),-3 flag=40004, com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0
+03-12 17:15:00.489  1255  1272 D WindowManager: makeSurface duration=1 name=com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535
+03-12 17:15:00.495 18535 18535 I BLASTBufferQueue: [ViewRootImpl@6a50bd9[RecaptchaActivity]#3] constructor()
+03-12 17:15:00.496 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: Relayout returned: old=(0,0,720,1600) new=(0,0,720,1600) req=(720,1600)0 dur=10 res=0x7 s={true -5476376629782106112} ch=true fn=-1
+03-12 17:15:00.496 18535 18584 I BufferQueueProducer: [ViewRootImpl@6a50bd9[RecaptchaActivity]#3(BLAST Consumer)3](id:486700000003,api:1,p:18535,c:18535) connect: api=1 producerControlledByApp=true
+03-12 17:15:00.496 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: [DP] dp(1) 1 android.view.ViewRootImpl.reportNextDraw:11420 android.view.ViewRootImpl.performTraversals:4193 android.view.ViewRootImpl.doTraversal:2919 
+03-12 17:15:00.496 18535 18535 D ViewRootImpl@6a50bd9[RecaptchaActivity]: Creating frameDrawingCallback nextDrawUseBlastSync=false reportNextDraw=true hasBlurUpdates=false
+03-12 17:15:00.496 18535 18535 D ViewRootImpl@6a50bd9[RecaptchaActivity]: Creating frameCompleteCallback
+03-12 17:15:00.506 18535 18633 D ViewRootImpl@6a50bd9[RecaptchaActivity]: Received frameDrawingCallback frameNum=1. Creating transactionCompleteCallback=false
+03-12 17:15:00.512 18535 18584 D ViewRootImpl@6a50bd9[RecaptchaActivity]: Received frameCompleteCallback  lastAcquiredFrameNum=1 lastAttemptedDrawFrameNum=1
+03-12 17:15:00.560 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: [DP] pdf(0) 1 android.view.ViewRootImpl.lambda$addFrameCompleteCallbackIfNeeded$3$ViewRootImpl:4995 android.view.ViewRootImpl$$ExternalSyntheticLambda16.run:6 android.os.Handler.handleCallback:938 
+03-12 17:15:00.560 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: [DP] rdf()
+03-12 17:15:00.560 18535 18535 D ViewRootImpl@6a50bd9[RecaptchaActivity]: reportDrawFinished (fn: -1) 
+03-12 17:15:00.560  1255  5818 D WindowManager: finishDrawingWindow: Window{cfed4ac u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity} mDrawState=DRAW_PENDING
+03-12 17:15:00.602 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: stopped(true) old=false
+03-12 17:15:00.606 18535 18584 I BufferQueueProducer: [ViewRootImpl@6a50bd9[RecaptchaActivity]#3(BLAST Consumer)3](id:486700000003,api:1,p:18535,c:18535) disconnect: api 1
+03-12 17:15:00.607 18535 18584 I BLASTBufferQueue: [ViewRootImpl@6a50bd9[RecaptchaActivity]#3] destructor()
+03-12 17:15:00.607 18535 18584 I BufferQueueConsumer: [ViewRootImpl@6a50bd9[RecaptchaActivity]#3(BLAST Consumer)3](id:486700000003,api:0,p:-1,c:18535) disconnect
+03-12 17:15:00.609 18535 18535 I ViewRootImpl@6a50bd9[RecaptchaActivity]: dispatchDetachedFromWindow
+03-12 17:15:00.610  1255  1272 W InputManager-JNI: Input channel object 'cfed4ac com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity (client)' was disposed without first being removed with the input manager!
+03-12 17:15:00.611  1255  1272 I WindowManager: Destroying surface Surface(name=com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535)/@0xdc64e8e called by com.android.server.wm.WindowStateAnimator.destroySurface:987 com.android.server.wm.WindowStateAnimator.destroySurfaceLocked:518 com.android.server.wm.WindowState.removeImmediately:2960 com.android.server.wm.WindowState.removeIfPossible:3151 com.android.server.wm.WindowState.removeIfPossible:2984 com.android.server.wm.WindowManagerService.removeWindow:2245 com.android.server.wm.Session.remove:225 android.view.IWindowSession$Stub.onTransact:746 
+03-12 17:15:00.615  1255  1272 I ActivityTaskManager: Removing activity ActivityRecord{15d3bbd u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t40830 f}}(activityDestroyed)  from stack callers=com.android.server.wm.ActivityRecord.destroyed:4099 com.android.server.wm.ActivityClientController.activityDestroyed:288 android.app.IActivityClientController$Stub.onTransact:604 com.android.server.wm.ActivityClientController.onTransact:130 android.os.Binder.execTransactInternal:1220 
+03-12 17:15:00.621   750   750 I Layer   : id=144026 removedFromDrawingState com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0 (133)
+03-12 17:15:00.621   750   750 I Layer   : id=143991 removedFromDrawingState cfed4ac com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#0 (133)
+03-12 17:15:00.621   750   750 I SurfaceFlinger: id=143991 Removed cfed4ac com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#0 (133)
+03-12 17:15:00.621   750   750 I SurfaceFlinger: id=144026 Removed com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0 (133)
+03-12 17:15:00.621   750   750 I Layer   : id=143991 Destroyed cfed4ac com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity#0
+03-12 17:15:00.621   750   750 I BufferQueueDebug: [com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0](this:0xb400007481501948,id:-1,api:0,p:-1,c:750) onDestructor()
+03-12 17:15:00.621   750   750 I Layer   : id=144026 Destroyed com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity$_18535#0
+03-12 17:15:00.637   750   750 I Layer   : id=143990 removedFromDrawingState ActivityRecord{15d3bbd u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t40830}#0 (134)
+03-12 17:15:00.638   750   750 I SurfaceFlinger: id=143990 Removed ActivityRecord{15d3bbd u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t40830}#0 (134)
+03-12 17:15:00.638   750   750 I Layer   : id=143990 Destroyed ActivityRecord{15d3bbd u0 com.wawapp.client/com.google.firebase.auth.internal.RecaptchaActivity t40830}#0
+03-12 17:15:00.675 18535 18535 I flutter : [LoginScreen] App resumed after reCAPTCHA – checking OTP stage
+03-12 17:15:00.772 18535 19062 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : requestIntegrityToken(IntegrityTokenRequest{nonce=AaCP6G28MEXYaetpNpdZntPJXyS1CN9bB4rWDeXR2IzJky0Kje1AZ6ZyDuQXLcP6TtTuWX2VzcC1gfaBLDoAyklCYxDLgpgw2gEWFPdlhtqOVWuRbNF_QAst_HtyZ01pSSSHbTkj4NXgN-80P4hv-Uj52V6LLiJLzpvQ4iP6EBcjcw==, cloudProjectNumber=363341993641, network=null})
+03-12 17:15:00.773 18535 18853 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : Initiate binding to the service.
+03-12 17:15:00.799 18535 18535 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : ServiceConnectionImpl.onServiceConnected(ComponentInfo{com.android.vending/com.google.android.finsky.integrityservice.IntegrityService})
+03-12 17:15:00.799 18535 18853 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : linkToDeath
+03-12 17:15:01.176 18535 18535 I flutter : [LoginScreen] Post-CAPTCHA resume: otpStage=OtpStage.sending
+03-12 17:15:03.881 18854 18889 I Finsky  : [112] requestIntegrityToken() finished for com.wawapp.client.
+03-12 17:15:03.885 18535 18543 I PlayCore: UID: [10287]  PID: [18535] OnRequestIntegrityTokenCallback : onRequestIntegrityToken
+03-12 17:15:03.886 18535 18853 I PlayCore: UID: [10287]  PID: [18535] IntegrityService : Unbind from service.
+03-12 17:15:04.458 18535 18575 E FirebaseAuth: [SmsRetrieverHelper] SMS verification code request failed: unknown status code: 17201 reCAPTCHA token is missing
+03-12 17:15:04.483 18535 18535 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.failed, otpFlowActive=false, user=null, error=حدث خطأ أثناء التحقق. يرجى المحاولة مجدداً
+03-12 17:15:04.483 18535 18535 I flutter : [LoginScreen] OTP sent for PIN reset
+03-12 17:15:04.491 18535 18535 I flutter : ⚠️ Config fetch failed: ConfigException: Failed to fetch config: TimeoutException after 0:00:10.000000: Future not completed
+03-12 17:15:04.491 18535 18535 I flutter :    Allowing app to continue...
+03-12 17:15:04.492 18535 18535 I flutter : [Router] NAVIGATION_CHECK | location=/ | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=false | otpStage=OtpStage.failed | isLoading=false
+03-12 17:15:04.492 18535 18535 I flutter : [Router] → Redirecting to /login (not authenticated)
+03-12 17:15:04.492 18535 18535 I flutter : [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=false | otpStage=OtpStage.failed | isLoading=false
+03-12 17:15:04.492 18535 18535 I flutter : [Router] ✓ Already on /login
+03-12 17:15:05.084 18535 18535 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.failed
+03-12 17:15:05.084 18535 18535 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.failed
+03-12 17:15:05.084 18535 18535 I flutter : [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.failed

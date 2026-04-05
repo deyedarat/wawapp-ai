@@ -1,0 +1,40 @@
+27bee41 fix(client): resolve reCAPTCHA navigation race condition and UI overflow
+aea3f51 feat(client): add firebase_app_check + bump version to 1.0.0+27
+546cb89 fix: Remove placeholder contact info from Terms of Service
+518db35 fix(critical): Secure driver tracking & Reliability bugs
+4514d70 test: add auth routing smoke integration tests for client and driver
+4da1e4c feat(auth): cache pin status for faster startup and offline resilience
+a69378f chore(auth): add low-noise PIN/router observability
+30fdd12 feat(client-auth): align PIN routing with PinStatus + PinGate
+7d835f8 chore: migrate config endpoint to config.wawappmr.com + build fixes
+81e32eb feat(auth): phone+PIN flow updates, l10n sync, logs
+37e2455 chore: save local changes and navigation fixes
+9706797 feat(client): R4 - add PIN change functionality
+9b633d8 chore: R3 - unified theme mode and code formatting
+cc177a6 feat: implement P0-AUTH-1 PIN brute-force protection & comprehensive documentation
+9d1b168 feat: add observability, navigation, and maps improvements
+132c5bd fix(client): wrap home with auth gate for pin enforcement
+4b130cb chore(client): add debug logs for pin gate investigation
+4b7867e fix(client): route to auth gate after otp
+cb67110 fix(client): enforce pin gate after otp
+ac93e12 chore: stabilization pack (auth flows, testlab mocks, ops docs)
+9bc6d4f feat: Phase 7-9 Production Readiness + Logout Implementation (WawApp Monorepo)
+b80529a feat: Apply Manus visual identity, fix map destination selection, and implement Mauritania phone validation
+9b9f64f Fix localization issue + UI updates
+763f84f chore: add production readiness reports and UI diagnostics
+f6d4a2d feat: FCM notifications, deep linking, and analytics integration
+13e1ce4 chore(amazonq): add supervisor agent config for WawApp
+bd90106 feat(tracking): public order tracking + driver/client status UI + otp logging
+cc379d1 feat(driver-auth): reactive PIN flow via drivers collection & Firestore rules
+b5d0deb feat(client-auth): adaptive OTP+PIN using shared auth pkg — client-only
+7ba76da feat(auth): shared auth package with adaptive register+login flow
+e28b943 feat(auth): defer OTP navigation via build-time ref.listen (+state: verificationId/resendToken) [no-format]
+53d881d chore(auth): finalize safe OTP navigation and verify-by-SMS linking
+9b95a5d chore: cleanup and formatting
+d70eae2 feat(auth): migrate auth_gate to Riverpod
+295b16b feat(auth): migrate phone_pin_login_screen to Riverpod
+de5a3bf feat(auth): migrate create_pin_screen to Riverpod
+a1f43a0 fix: resolve analysis issues and add AppLog utility
+b7299cf feat(auth): add Riverpod AuthNotifier + service providers (parallel to Bloc)
+de9cd08 chore(auth): bootstrap Riverpod (ProviderScope + deps + folders)
+51c2e40 feat(auth): phone + 4-digit PIN auth gate for client & driver

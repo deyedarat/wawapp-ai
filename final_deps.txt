@@ -1,0 +1,123 @@
+\--- com.google.firebase:firebase-appcheck-playintegrity FAILED
++--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0
++--- com.google.firebase:firebase-appcheck-playintegrity:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck-interop:{strictly 17.1.0} -> 17.1.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck-debug:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck-playintegrity:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (c)
+|         +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-debug -> 18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (*)
+|    \--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|         +--- com.google.firebase:firebase-appcheck:16.1.2 -> 18.0.0 (*)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0 (*)
+\--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0 (*)
++--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0
++--- com.google.firebase:firebase-appcheck-playintegrity:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck-interop:{strictly 17.1.0} -> 17.1.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck-debug:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck-playintegrity:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (c)
+|         +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-debug -> 18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (*)
+|    \--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|         +--- com.google.firebase:firebase-appcheck:16.1.2 -> 18.0.0 (*)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0 (*)
+\--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0 (*)
+\--- com.google.firebase:firebase-appcheck-playintegrity (n)
+\--- com.google.firebase:firebase-appcheck-playintegrity FAILED
++--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0
++--- com.google.firebase:firebase-appcheck-playintegrity:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck-interop:{strictly 17.1.0} -> 17.1.0 (c)
++--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0
+|    |    |    +--- com.google.firebase:firebase-appcheck-debug:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck-playintegrity:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (c)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0 (*)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-debug -> 18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|    |    +--- com.google.firebase:firebase-appcheck:16.1.2 -> 18.0.0 (*)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0 (*)
++--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0
++--- com.google.firebase:firebase-appcheck-playintegrity:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck-interop:{strictly 17.1.0} -> 17.1.0 (c)
++--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0
+|    |    |    +--- com.google.firebase:firebase-appcheck-debug:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck-playintegrity:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (c)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0 (*)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-debug -> 18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|    |    +--- com.google.firebase:firebase-appcheck:16.1.2 -> 18.0.0 (*)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0 (*)
++--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0
++--- com.google.firebase:firebase-appcheck-playintegrity:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck-interop:{strictly 17.1.0} -> 17.1.0 (c)
++--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0
+|    |    |    +--- com.google.firebase:firebase-appcheck-debug:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck-playintegrity:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (c)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0 (*)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-debug -> 18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|    |    +--- com.google.firebase:firebase-appcheck:16.1.2 -> 18.0.0 (*)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0 (*)
++--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0
++--- com.google.firebase:firebase-appcheck-playintegrity:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck:{strictly 18.0.0} -> 18.0.0 (c)
++--- com.google.firebase:firebase-appcheck-interop:{strictly 17.1.0} -> 17.1.0 (c)
++--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0
+|    +--- com.google.firebase:firebase-appcheck:18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0
+|    |    |    +--- com.google.firebase:firebase-appcheck-debug:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck-playintegrity:18.0.0 (c)
+|    |    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (c)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0 (*)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.1.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-debug -> 18.0.0
+|    |    +--- com.google.firebase:firebase-appcheck:18.0.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-playintegrity -> 18.0.0 (*)
+|    +--- com.google.firebase:firebase-appcheck-safetynet:16.1.2
+|    |    +--- com.google.firebase:firebase-appcheck:16.1.2 -> 18.0.0 (*)
+|    |    +--- com.google.firebase:firebase-appcheck-interop:17.0.0 -> 17.1.0 (*)

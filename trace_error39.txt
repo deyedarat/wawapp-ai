@@ -1,0 +1,4 @@
+03-15 12:16:09.228  2172  2224 E FirebaseAuth: [SmsRetrieverHelper] SMS verification code request failed: unknown status code: 17499 Error code:39
+03-15 12:16:09.230  2172  2172 D FirebaseAuth: Invoking original failure callbacks after reCAPTCHA Enterprise + phone verification failure for +22247351643, error - An internal error has occurred. [ Error code:39 ]
+03-16 07:26:54.559  8725  8764 E FirebaseAuth: [SmsRetrieverHelper] SMS verification code request failed: unknown status code: 17499 Error code:39
+03-16 07:26:54.560  8725  8725 D FirebaseAuth: Invoking original failure callbacks after reCAPTCHA Enterprise + phone verification failure for +22247351643, error - An internal error has occurred. [ Error code:39 ]

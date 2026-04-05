@@ -1,0 +1,12 @@
+03-15 12:15:59.504  2172  2172 I flutter : [LoginScreen] Starting PIN reset flow for phone: +222******643
+03-15 12:15:59.504  2172  2172 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.idle, otpFlowActive=true, user=null, error=null
+03-15 12:15:59.504  2172  2172 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.sending, otpFlowActive=true, user=null, error=null
+03-15 12:16:09.248  2172  2172 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.failed, otpFlowActive=false, user=null, error=حدث خطأ داخلي أثناء التحقق [كود: 39]. يرجى المحاولة مجدداً
+03-15 12:16:09.248  2172  2172 I flutter : [LoginScreen] OTP sent for PIN reset
+03-16 07:14:05.193  2172  2172 I flutter : [LoginScreen] App resumed after reCAPTCHA – checking OTP stage
+03-16 07:14:05.695  2172  2172 I flutter : [LoginScreen] Post-CAPTCHA resume: otpStage=OtpStage.failed
+03-16 07:26:44.062  8725  8725 I flutter : [LoginScreen] Starting PIN reset flow for phone: +222******643
+03-16 07:26:44.063  8725  8725 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.idle, otpFlowActive=true, user=null, error=null
+03-16 07:26:44.063  8725  8725 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.sending, otpFlowActive=true, user=null, error=null
+03-16 07:26:54.580  8725  8725 I flutter : [LoginScreen] Auth state changed: otpStage=OtpStage.failed, otpFlowActive=false, user=null, error=حدث خطأ داخلي أثناء التحقق [كود: 39]. يرجى المحاولة مجدداً
+03-16 07:26:54.580  8725  8725 I flutter : [LoginScreen] OTP sent for PIN reset

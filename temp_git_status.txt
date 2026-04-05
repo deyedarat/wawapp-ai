@@ -1,0 +1,46 @@
+On branch feature/r1-notifications
+Your branch is up to date with 'origin/feature/r1-notifications'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   apps/wawapp_admin/pubspec.lock
+	modified:   apps/wawapp_client/build_error.txt
+	modified:   apps/wawapp_driver/macos/Flutter/GeneratedPluginRegistrant.swift
+	modified:   spec.ps1
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.amazonq/mcp.json
+	LIVE_TEST_SESSION.md
+	MANUS_DOWNLOAD_GOOGLE_SERVICES.md
+	MANUS_FIREBASE_DIAGNOSTIC_PROMPT.md
+	app-logs.txt
+	apps/wawapp_client/build_log.txt
+	apps/wawapp_client/build_log_clean.txt
+	apps/wawapp_client/temp_appcheck_log.txt
+	apps/wawapp_client/temp_logcat.txt
+	"c\357\200\272UsershpMusicwawapp-aicurrent_logs.txt"
+	docs/PRE_LAUNCH_SAFETY_CHECK_2026-03-25.md
+	docs/firebase-otp-fix-prompt.md
+	filtered_log.txt
+	filtered_logs.txt
+	filtered_trace.txt
+	final_deps.txt
+	full_logs.txt
+	gradle_deps_result.txt
+	logcat-full.txt
+	logcat_dump.txt
+	logs.txt
+	logs2.txt
+	logs_latest_test.txt
+	recent_verification_logs.txt
+	temp_git_log.txt
+	temp_git_status.txt
+	temp_old_phone_pin.dart
+	trace.txt
+	trace2.txt
+	trace_auth.txt
+	trace_error39.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")

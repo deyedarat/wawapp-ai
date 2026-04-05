@@ -1,0 +1,8 @@
+--------- beginning of main
+03-31 16:15:39.967 I/flutter (13010): [LoginScreen] _createAccount() called for phone=+222******203
+03-31 16:15:39.967 I/flutter (13010): [LoginScreen] Auth state changed: otpStage=OtpStage.sending, otpFlowActive=true, user=null, error=null
+03-31 16:15:40.337 I/flutter (13010): [LoginScreen] Auth state changed: otpStage=OtpStage.failed, otpFlowActive=false, user=null, error=حدث خطأ أثناء إرسال رمز التحقق. يرجى المحاولة مجدداً
+03-31 16:15:40.337 I/flutter (13010): [LoginScreen] sendOtp() returned successfully
+03-31 16:15:40.338 I/flutter (13010): [Router] Auth state changed, triggering redirect check | user=null | pinStatus=PinStatus.unknown | otpStage=OtpStage.failed
+03-31 16:15:40.338 I/flutter (13010): [Router] NAVIGATION_CHECK | location=/login | user=null | pinStatus=PinStatus.unknown | canOtp=false | isSending=false | otpStage=OtpStage.failed | isLoading=false
+03-31 16:15:40.338 I/flutter (13010): [Router] ✓ Already on /login

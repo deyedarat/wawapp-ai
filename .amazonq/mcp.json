@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "wawapp-mcp-debug-server": {
+            "command": "node",
+            "args": [
+                "C:/Users/hp/Music/wawapp-mcp-debug-server/dist/index.js"
+            ],
+            "env": {}
+        }
+    }
+}
