@@ -43,10 +43,6 @@ class NotificationService {
     await _createNotificationChannels();
   }
 
-  /// Custom sound for order notifications (references res/raw/new_order.mp3)
-  static const _orderSound =
-      RawResourceAndroidNotificationSound('new_order');
-
   /// Create Android notification channels
   Future<void> _createNotificationChannels() async {
     const newOrdersChannel = AndroidNotificationChannel(
@@ -56,7 +52,6 @@ class NotificationService {
       importance: Importance.max,
       enableVibration: true,
       playSound: true,
-      sound: _orderSound,
     );
 
     const unassignedOrdersChannel = AndroidNotificationChannel(
@@ -66,7 +61,6 @@ class NotificationService {
       importance: Importance.max,
       enableVibration: true,
       playSound: true,
-      sound: _orderSound,
     );
 
     const orderUpdatesChannel = AndroidNotificationChannel(
@@ -103,7 +97,6 @@ class NotificationService {
       importance: Importance.max,
       enableVibration: true,
       playSound: true,
-      sound: _orderSound,
     );
 
     await android?.createNotificationChannel(tripRemindersChannel);
@@ -235,7 +228,6 @@ class NotificationService {
           priority: Priority.max,
           enableVibration: true,
           playSound: true,
-          sound: _orderSound,
           fullScreenIntent: true,
           category: AndroidNotificationCategory.reminder,
           visibility: NotificationVisibility.public,
@@ -309,7 +301,6 @@ class NotificationService {
           priority: Priority.max,
           enableVibration: true,
           playSound: true,
-          sound: _orderSound,
           fullScreenIntent: true,
           category: AndroidNotificationCategory.call,
           visibility: NotificationVisibility.public,

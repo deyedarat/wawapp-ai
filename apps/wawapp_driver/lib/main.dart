@@ -58,7 +58,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           priority: Priority.max,
           enableVibration: true,
           playSound: true,
-          sound: const RawResourceAndroidNotificationSound('new_order'),
           fullScreenIntent: true,
           category: AndroidNotificationCategory.call,
           visibility: NotificationVisibility.public,
