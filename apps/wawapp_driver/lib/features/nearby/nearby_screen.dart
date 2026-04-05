@@ -13,6 +13,7 @@ import '../../l10n/app_localizations.dart';
 import '../../services/location_service.dart';
 import '../../services/orders_service.dart';
 import '../../widgets/error_screen.dart';
+import '../blocked/blocked_provider.dart';
 import 'providers/nearby_orders_provider.dart';
 
 class NearbyScreen extends ConsumerStatefulWidget {
@@ -113,6 +114,17 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // BLOCKED CHECK: redirect away if blocked
+    final isBlocked = ref.watch(driverBlockedProvider);
+    if (isBlocked) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.go('/blocked');
+      });
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     final l10n = AppLocalizations.of(context)!;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
 

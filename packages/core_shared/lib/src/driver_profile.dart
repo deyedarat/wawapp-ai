@@ -14,6 +14,7 @@ class DriverProfile {
   final bool isVerified;
   final bool isOnline;
   final bool isBlocked;
+  final String? blockReason;
   final double rating;
   final int totalTrips;
   final DateTime createdAt;
@@ -32,6 +33,7 @@ class DriverProfile {
     this.isVerified = false,
     this.isOnline = false,
     this.isBlocked = false,
+    this.blockReason,
     this.rating = 0.0,
     this.totalTrips = 0,
     required this.createdAt,
@@ -68,6 +70,7 @@ class DriverProfile {
       isVerified: json['isVerified'] as bool? ?? false,
       isOnline: json['isOnline'] as bool? ?? false,
       isBlocked: json['isBlocked'] as bool? ?? false,
+      blockReason: json['blockReason'] as String?,
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       totalTrips: json['totalTrips'] as int? ?? 0,
       createdAt: _parseTimestamp(json['createdAt']),
@@ -89,6 +92,7 @@ class DriverProfile {
       'isVerified': isVerified,
       'isOnline': isOnline,
       'isBlocked': isBlocked,
+      'blockReason': blockReason,
       'rating': rating,
       'totalTrips': totalTrips,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -125,6 +129,7 @@ class DriverProfile {
     bool? isVerified,
     bool? isOnline,
     bool? isBlocked,
+    String? blockReason,
     double? rating,
     int? totalTrips,
     DateTime? createdAt,
@@ -143,6 +148,7 @@ class DriverProfile {
       isVerified: isVerified ?? this.isVerified,
       isOnline: isOnline ?? this.isOnline,
       isBlocked: isBlocked ?? this.isBlocked,
+      blockReason: blockReason ?? this.blockReason,
       rating: rating ?? this.rating,
       totalTrips: totalTrips ?? this.totalTrips,
       createdAt: createdAt ?? this.createdAt,
@@ -167,6 +173,7 @@ class DriverProfile {
           isVerified == other.isVerified &&
           isOnline == other.isOnline &&
           isBlocked == other.isBlocked &&
+          blockReason == other.blockReason &&
           rating == other.rating &&
           totalTrips == other.totalTrips;
 
@@ -184,6 +191,7 @@ class DriverProfile {
         isVerified,
         isOnline,
         isBlocked,
+        blockReason,
         rating,
         totalTrips,
       );

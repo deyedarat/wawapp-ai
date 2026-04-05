@@ -94,6 +94,14 @@ export const getNearbyOrders = functions.https.onCall(async (data, context) => {
 
     const driverData = driverDoc.data();
 
+    if (driverData?.isBlocked) {
+      console.log('[getNearbyOrders] Driver is blocked', { driver_id: driverId });
+      throw new functions.https.HttpsError(
+        'permission-denied',
+        'Driver account is blocked'
+      );
+    }
+
     if (!driverData?.isVerified) {
       console.log('[getNearbyOrders] Driver not verified', { driver_id: driverId });
       throw new functions.https.HttpsError(

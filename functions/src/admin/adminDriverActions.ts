@@ -67,8 +67,13 @@ export const adminBlockDriver = functions.https.onCall(async (data, context) => 
       performedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    // TODO: Optionally revoke driver's auth tokens
-    // await admin.auth().revokeRefreshTokens(driverId);
+    // Revoke auth tokens to force re-authentication
+    try {
+      await admin.auth().revokeRefreshTokens(driverId);
+      console.log(`[adminBlockDriver] Revoked refresh tokens for ${driverId}`);
+    } catch (revokeError) {
+      console.warn(`[adminBlockDriver] Failed to revoke tokens for ${driverId}:`, revokeError);
+    }
 
     return {
       success: true,

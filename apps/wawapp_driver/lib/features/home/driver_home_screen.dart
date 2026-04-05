@@ -15,6 +15,7 @@ import '../../services/driver_status_service.dart';
 import '../../services/location_service.dart';
 import '../../services/tracking_service.dart';
 import '../auth/providers/auth_service_provider.dart';
+import '../blocked/blocked_provider.dart';
 import '../profile/providers/driver_profile_providers.dart';
 import '../wallet/wallet_provider.dart';
 import 'providers/driver_status_provider.dart';
@@ -81,6 +82,20 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     });
 
     try {
+      // Check if driver is blocked before going online
+      if (value) {
+        final profileAsync = await ref.read(driverProfileStreamProvider.future);
+        if (profileAsync != null && profileAsync.isBlocked) {
+          if (mounted) {
+            context.go('/blocked');
+            setState(() {
+              _isTogglingStatus = false;
+            });
+          }
+          return;
+        }
+      }
+
       // Check location disclosure acceptance before any location checks
       if (value) {
         final disclosureAccepted = await _checkLocationDisclosure();
@@ -325,6 +340,17 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // BLOCKED CHECK: redirect to /blocked if driver is blocked
+    final isBlocked = ref.watch(driverBlockedProvider);
+    if (isBlocked) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.go('/blocked');
+      });
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     // Watch the online status stream (non-blocking, real-time)
     final onlineStatusAsync = ref.watch(driverOnlineStatusProvider);
 

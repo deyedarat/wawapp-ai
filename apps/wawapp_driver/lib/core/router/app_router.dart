@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/active/active_order_screen.dart';
 import '../../features/auth/auth_gate.dart';
+import '../../features/blocked/blocked_screen.dart';
 import '../../features/auth/create_pin_screen.dart';
 import '../../features/auth/otp_screen.dart';
 import '../../features/auth/phone_pin_login_screen.dart';
@@ -112,6 +113,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/profile/edit',
         name: 'profileEdit',
         builder: (context, state) => const DriverProfileEditScreen(),
+      ),
+      GoRoute(
+        path: '/blocked',
+        name: 'blocked',
+        builder: (context, state) => const BlockedScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
