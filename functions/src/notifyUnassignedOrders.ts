@@ -465,13 +465,13 @@ async function processAcceptanceConfirmations(): Promise<void> {
   );
 
   try {
-    // Query for accepted orders that need confirmation
+    // Query for accepted orders old enough for confirmation
+    // Filter acceptConfirmSentAt in code to avoid composite index requirement
     const acceptedOrdersSnapshot = await db
       .collection('orders')
       .where('status', '==', 'accepted')
       .where('acceptedAt', '<=', fiveMinutesAgo)
-      .where('acceptConfirmSentAt', '==', null)
-      .limit(50) // Process in batches
+      .limit(50)
       .get();
 
     if (acceptedOrdersSnapshot.empty) {
@@ -486,11 +486,11 @@ async function processAcceptanceConfirmations(): Promise<void> {
       const orderId = doc.id;
       const assignedDriverId = orderData.assignedDriverId;
 
-      // Safety checks
+      // Safety checks — skip if already sent or invalid
       if (
         orderData.status !== 'accepted' ||
         !assignedDriverId ||
-        orderData.acceptConfirmSentAt !== null
+        orderData.acceptConfirmSentAt != null
       ) {
         console.log('[NotifyAcceptConfirm] Skipping order (race condition avoided)', {
           order_id: orderId,
