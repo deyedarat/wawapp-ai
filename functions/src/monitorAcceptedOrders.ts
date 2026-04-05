@@ -246,7 +246,6 @@ export const monitorAcceptedOrders = functions
       const snapshot = await db
         .collection('orders')
         .where('status', '==', 'accepted')
-        .where('assignedDriverId', '!=', null)
         .limit(BATCH_LIMIT)
         .get();
 
