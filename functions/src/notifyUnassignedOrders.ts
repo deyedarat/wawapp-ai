@@ -262,16 +262,6 @@ async function sendDriverNotification(
       },
       android: {
         priority: 'high',
-        notification: {
-          title: 'طلب متاح قريب منك',
-          body: `${orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${
-            orderData.dropoffAddress?.label || 'الوجهة'
-          }`,
-          sound: 'new_order',
-          channelId: 'unassigned_orders',
-          priority: 'max',
-          visibility: 'public',
-        },
         ttl: 300000, // 5 minutes TTL
       },
       apns: {

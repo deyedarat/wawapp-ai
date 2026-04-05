@@ -28,8 +28,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   final type = message.data['notificationType'] ?? message.data['type'];
 
-  // Only show local notification for new order data-only messages
-  if (type == 'new_order' || type == 'new_order_nearby') {
+  // Show full-screen intent notification for order-related data-only messages
+  if (type == 'new_order' ||
+      type == 'new_order_nearby' ||
+      type == 'unassigned_order_reminder') {
     final plugin = FlutterLocalNotificationsPlugin();
     await plugin.initialize(
       const InitializationSettings(
@@ -38,21 +40,31 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     );
 
     final orderId = message.data['orderId'] ?? '';
+    final pickupLabel = message.data['pickupLabel'] ?? 'موقع الاستلام';
+    final dropoffLabel = message.data['dropoffLabel'] ?? 'الوجهة';
+    final channelId = type == 'unassigned_order_reminder'
+        ? 'unassigned_orders'
+        : 'new_orders';
+
     await plugin.show(
       orderId.hashCode,
       message.data['title'] ?? 'طلب جديد قريب منك',
-      message.data['body'] ?? '${message.data['pickupLabel']} → ${message.data['dropoffLabel']}',
-      const NotificationDetails(
+      '$pickupLabel → $dropoffLabel',
+      NotificationDetails(
         android: AndroidNotificationDetails(
-          'new_orders',
-          'طلبات جديدة',
-          importance: Importance.high,
-          priority: Priority.high,
+          channelId,
+          channelId == 'new_orders' ? 'طلبات جديدة' : 'تذكير بطلبات متاحة',
+          importance: Importance.max,
+          priority: Priority.max,
           enableVibration: true,
           playSound: true,
+          sound: const RawResourceAndroidNotificationSound('new_order'),
+          fullScreenIntent: true,
+          category: AndroidNotificationCategory.call,
+          visibility: NotificationVisibility.public,
         ),
       ),
-      payload: '${message.data}',
+      payload: orderId,
     );
   }
 }
