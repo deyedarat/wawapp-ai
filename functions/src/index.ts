@@ -23,6 +23,7 @@ export { getNearbyOrders } from './getNearbyOrders'; // FIX: Get nearby orders f
 export { notifyNewOrder } from './notifyNewOrder'; // FIX #1: Notify drivers on order creation
 export { notifyOrderEvents } from './notifyOrderEvents';
 export { notifyUnassignedOrders } from './notifyUnassignedOrders'; // Phase A: Repeated notifications for unassigned orders
+export { monitorAcceptedOrders } from './monitorAcceptedOrders'; // Phase D: Monitor accepted orders timeout & reminders
 export { processTripStartFee } from './processTripStartFee'; // Phase C: Trip start fee deduction
 export { trackOrderAcceptance } from './trackOrderAcceptance'; // Phase B: Track order acceptance timestamp
 export { updateOrderLocation } from './updateOrderLocation'; // P0-FATAL FIX: Secure driver tracking
