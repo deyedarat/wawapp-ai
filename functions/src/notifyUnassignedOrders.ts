@@ -139,6 +139,24 @@ async function findEligibleDrivers(
         continue;
       }
 
+      // Check profile completeness (name, vehicleType, vehiclePlate, city required)
+      const name = driverData?.name as string | undefined;
+      const vehicleType = driverData?.vehicleType as string | undefined;
+      const vehiclePlate = driverData?.vehiclePlate as string | undefined;
+      const city = driverData?.city as string | undefined;
+      if (!name || !vehicleType || !vehiclePlate || !city) {
+        console.log('[NotifyUnassignedOrders] Skipping driver with incomplete profile', {
+          driver_id: driverId,
+          missing: [
+            ...(!name ? ['name'] : []),
+            ...(!vehicleType ? ['vehicleType'] : []),
+            ...(!vehiclePlate ? ['vehiclePlate'] : []),
+            ...(!city ? ['city'] : []),
+          ],
+        });
+        continue;
+      }
+
       eligibleDrivers.push({
         driverId,
         distance,

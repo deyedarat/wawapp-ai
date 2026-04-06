@@ -17,7 +17,7 @@ class _DriverProfileEditScreenState
     extends ConsumerState<DriverProfileEditScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _vehicleTypeController = TextEditingController();
+
   final _vehiclePlateController = TextEditingController();
   final _vehicleColorController = TextEditingController();
   final _cityController = TextEditingController();
@@ -34,7 +34,7 @@ class _DriverProfileEditScreenState
     profileAsync.whenData((profile) {
       if (profile != null) {
         _nameController.text = profile.name;
-        _vehicleTypeController.text = profile.vehicleType ?? '';
+    
         _vehiclePlateController.text = profile.vehiclePlate ?? '';
         _vehicleColorController.text = profile.vehicleColor ?? '';
         _cityController.text = profile.city ?? '';
@@ -46,7 +46,7 @@ class _DriverProfileEditScreenState
   @override
   void dispose() {
     _nameController.dispose();
-    _vehicleTypeController.dispose();
+
     _vehiclePlateController.dispose();
     _vehicleColorController.dispose();
     _cityController.dispose();
@@ -76,9 +76,7 @@ class _DriverProfileEditScreenState
       name: _nameController.text.trim(),
       phone: authState.user!.phoneNumber ?? '',
       photoUrl: currentProfile?.photoUrl,
-      vehicleType: _vehicleTypeController.text.trim().isEmpty
-          ? null
-          : _vehicleTypeController.text.trim(),
+      vehicleType: 'واو',
       vehiclePlate: _vehiclePlateController.text.trim().isEmpty
           ? null
           : _vehiclePlateController.text.trim(),
@@ -241,18 +239,7 @@ class _DriverProfileEditScreenState
               ]),
               const SizedBox(height: 24),
               _buildSection('معلومات السيارة', [
-                _buildTextField(
-                  controller: _vehicleTypeController,
-                  label: 'نوع السيارة *',
-                  icon: Icons.directions_car,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'نوع السيارة مطلوب للاتصال';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
+
                 _buildTextField(
                   controller: _vehiclePlateController,
                   label: 'رقم اللوحة *',
