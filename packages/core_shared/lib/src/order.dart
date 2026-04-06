@@ -35,6 +35,9 @@ class Order {
   // Cargo weight in tons (0.5, 1.0, 1.5, 2.0)
   final double weightTons;
 
+  // Customer phone (populated on acceptance)
+  final String? customerPhone;
+
   const Order({
     this.id,
     this.ownerId,
@@ -53,6 +56,7 @@ class Order {
     this.driverRating,
     this.ratedAt,
     this.weightTons = 0.5,
+    this.customerPhone,
   });
 
   OrderStatus get orderStatus =>
@@ -86,6 +90,7 @@ class Order {
       driverRating: data['driverRating'] as int?,
       ratedAt: (data['ratedAt'] as Timestamp?)?.toDate(),
       weightTons: (data['weightTons'] as num?)?.toDouble() ?? 0.5,
+      customerPhone: data['customerPhone'] as String?,
     );
   }
 
@@ -117,6 +122,7 @@ class Order {
       driverRating: data['driverRating'] as int?,
       ratedAt: (data['ratedAt'] as Timestamp?)?.toDate(),
       weightTons: (data['weightTons'] as num?)?.toDouble() ?? 0.5,
+      customerPhone: data['customerPhone'] as String?,
     );
   }
 
@@ -139,6 +145,7 @@ class Order {
         'driverRating': driverRating,
         'ratedAt': ratedAt != null ? Timestamp.fromDate(ratedAt!) : null,
         'weightTons': weightTons,
+        'customerPhone': customerPhone,
       };
 
   Order copyWith({
@@ -159,6 +166,7 @@ class Order {
     int? driverRating,
     DateTime? ratedAt,
     double? weightTons,
+    String? customerPhone,
   }) {
     return Order(
       id: id ?? this.id,
@@ -178,6 +186,7 @@ class Order {
       driverRating: driverRating ?? this.driverRating,
       ratedAt: ratedAt ?? this.ratedAt,
       weightTons: weightTons ?? this.weightTons,
+      customerPhone: customerPhone ?? this.customerPhone,
     );
   }
 }

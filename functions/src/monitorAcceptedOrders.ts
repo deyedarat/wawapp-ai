@@ -5,7 +5,7 @@
  * Reassigns order back to matching pool if driver doesn't start within timeout.
  *
  * Rules:
- * - Reminder every 1 minute after acceptance
+ * - Reminder every 5 minutes after acceptance
  * - Timeout at 5 minutes (+ optional 2-min extension)
  * - On timeout: reset to matching, notify driver + client
  * - Idempotent: tracks reminderCount + lastReminderSentAt
@@ -19,7 +19,7 @@ import * as admin from 'firebase-admin';
 
 // Constants
 const ACCEPTED_TIMEOUT_MINUTES = 5;
-const REMINDER_INTERVAL_MINUTES = 1;
+const REMINDER_INTERVAL_MINUTES = 5;
 const MAX_EXTENSIONS_ALLOWED = 1;
 const EXTENSION_DURATION_MINUTES = 2;
 const BATCH_LIMIT = 50;
@@ -45,10 +45,14 @@ async function sendToDriver(
 
     await admin.messaging().send({
       token: fcmToken,
-      data: { ...data, notificationType: data.notificationType || data.type || '' },
+      data: {
+        ...data,
+        title,
+        body,
+        notificationType: data.notificationType || data.type || '',
+      },
       android: {
         priority: 'high',
-        notification: { title, body, sound: 'default', channelId, priority: 'high', visibility: 'public' },
         ttl: 120000,
       },
       apns: { payload: { aps: { sound: 'default', badge: 1, contentAvailable: true } } },

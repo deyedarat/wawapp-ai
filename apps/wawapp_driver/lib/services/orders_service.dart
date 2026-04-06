@@ -142,7 +142,7 @@ class OrdersService {
     }
   }
 
-  Future<void> cancelOrder(String orderId) async {
+  Future<void> cancelOrder(String orderId, {required CancelReason reason}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       throw const AppError(type: AppErrorType.permissionDenied, message: 'Driver not authenticated');
@@ -172,7 +172,10 @@ class OrdersService {
 
         transaction.update(
           orderRef,
-          OrderStatus.cancelledByDriver.createTransitionUpdate(),
+          {
+            ...OrderStatus.cancelledByDriver.createTransitionUpdate(),
+            'cancelReason': reason.firestoreValue,
+          },
         );
       });
 

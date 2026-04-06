@@ -16,6 +16,7 @@ import '../../widgets/error_screen.dart';
 import '../auth/providers/auth_service_provider.dart';
 import 'providers/active_order_provider.dart';
 import 'widgets/accepted_countdown_banner.dart';
+import 'widgets/cancel_order_dialog.dart';
 
 class ActiveOrderScreen extends ConsumerStatefulWidget {
   const ActiveOrderScreen({super.key});
@@ -27,6 +28,7 @@ class ActiveOrderScreen extends ConsumerStatefulWidget {
 class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
   bool _isTrackingStarted = false;
   bool _isCancelling = false;
+  bool _isStartingTrip = false;
   GoogleMapController? _mapController;
 
   @override
@@ -39,61 +41,84 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
   }
 
   Future<void> _transition(String orderId, OrderStatus to) async {
+    if (to == OrderStatus.onRoute) {
+      setState(() => _isStartingTrip = true);
+    }
+
     try {
       final ordersService = ref.read(ordersServiceProvider);
       await ordersService.transition(orderId, to);
-      if (!mounted) {
-        return;
+      if (!mounted) return;
+
+      if (to == OrderStatus.onRoute) {
+        setState(() => _isStartingTrip = false);
       }
+
+      final message = to == OrderStatus.onRoute
+          ? 'تم بدء الرحلة بنجاح ✓'
+          : to == OrderStatus.completed
+              ? 'تم إكمال الطلب بنجاح ✓'
+              : 'تم تحديث حالة الطلب';
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم تحديث حالة الطلب')),
+        SnackBar(content: Text(message), backgroundColor: Colors.green),
       );
-    } on Object catch (e) {
-      if (!mounted) {
-        return;
+
+      if (to == OrderStatus.completed) {
+        context.go('/nearby');
       }
+    } on Object catch (e) {
+      if (!mounted) return;
+
+      if (to == OrderStatus.onRoute) {
+        setState(() => _isStartingTrip = false);
+      }
+
+      final err = e.toString().toLowerCase();
+      String errorMessage;
+      Duration duration = const Duration(seconds: 4);
+
+      if (err.contains('insufficient') || err.contains('balance') || err.contains('رصيد')) {
+        errorMessage = '⚠️ رصيد محفظتك غير كافٍ لبدء الرحلة\n\nيرجى شحن المحفظة أولاً';
+        duration = const Duration(seconds: 6);
+      } else if (err.contains('status')) {
+        errorMessage = 'لا يمكن تحديث الطلب الآن، ربما تغيّرت حالته.';
+      } else if (err.contains('network') || err.contains('connection')) {
+        errorMessage = 'خطأ في الاتصال، تحقق من الإنترنت وحاول مرة أخرى';
+      } else {
+        errorMessage = 'تعذّر تحديث الطلب: ${e.toString()}';
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطأ: ${e.toString()}')),
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+          duration: duration,
+          action: SnackBarAction(label: 'حسناً', textColor: Colors.white, onPressed: () {}),
+        ),
       );
     }
   }
 
   Future<void> _showCancelDialog(String orderId) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('إلغاء الطلب'),
-        content: const Text('هل تريد إلغاء هذا الطلب؟'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('لا'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: DriverAppColors.accentRed),
-            child: const Text('نعم'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true && mounted) {
-      await _cancelOrder(orderId);
+    final reason = await showCancelOrderDialog(context);
+    if (reason != null && mounted) {
+      await _cancelOrder(orderId, reason);
     }
   }
 
-  Future<void> _cancelOrder(String orderId) async {
+  Future<void> _cancelOrder(String orderId, CancelReason reason) async {
     setState(() => _isCancelling = true);
 
     try {
       final ordersService = ref.read(ordersServiceProvider);
-      await ordersService.cancelOrder(orderId);
+      await ordersService.cancelOrder(orderId, reason: reason);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('تم إلغاء الطلب بواسطة السائق')),
         );
+        context.go('/nearby');
       }
     } on Object catch (e) {
       if (mounted) {
@@ -296,18 +321,6 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
                                     'طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
                                     style: Theme.of(context).textTheme.headlineSmall,
                                   ),
-                                  // Call customer button
-                                  if (order.ownerId != null)
-                                    IconButton(
-                                      icon: const Icon(Icons.phone, color: DriverAppColors.primaryLight),
-                                      onPressed: () {
-                                        // TODO: Get customer phone from Firestore and call
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('ميزة الاتصال بالعميل قيد التطوير')),
-                                        );
-                                      },
-                                      tooltip: 'اتصل بالعميل',
-                                    ),
                                 ],
                               ),
                               const SizedBox(height: 12),
@@ -355,12 +368,104 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
                           ),
                         ),
                       ),
+                      // Customer Phone Card - Prominent
+                      if (order.customerPhone != null && order.customerPhone!.isNotEmpty)
+                        Card(
+                          margin: const EdgeInsets.only(top: 16, bottom: 0),
+                          color: const Color(0xFFF1F8E9),
+                          elevation: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 56,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    color: DriverAppColors.primaryLight,
+                                    borderRadius: BorderRadius.circular(28),
+                                  ),
+                                  child: const Icon(Icons.phone, color: Colors.white, size: 28),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'رقم العميل',
+                                        style: TextStyle(fontSize: 12, color: Colors.grey[700], fontWeight: FontWeight.w500),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        order.customerPhone!,
+                                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: Colors.black87),
+                                        textDirection: TextDirection.ltr,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                ElevatedButton.icon(
+                                  onPressed: () => _makePhoneCall(order.customerPhone!),
+                                  icon: const Icon(Icons.call, size: 20),
+                                  label: const Text('اتصل'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       const SizedBox(height: 16),
+                      // Fee warning for trip start
+                      if (order.orderStatus.canDriverStartTrip)
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            border: Border.all(color: Colors.orange),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.info_outline, color: Colors.orange.shade700),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'سيتم اقتطاع ${(order.price * 0.1).toStringAsFixed(0)} أوقية عند بدء الرحلة',
+                                  style: TextStyle(fontSize: 12, color: Colors.orange.shade900),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ElevatedButton(
-                        onPressed: order.orderStatus.canDriverStartTrip && order.id != null
+                        onPressed: order.orderStatus.canDriverStartTrip && order.id != null && !_isStartingTrip
                             ? () => _transition(order.id!, OrderStatus.onRoute)
                             : null,
-                        child: const Text('بدء الرحلة'),
+                        child: _isStartingTrip
+                            ? const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Text('جارِ بدء الرحلة...'),
+                                ],
+                              )
+                            : const Text('بدء الرحلة'),
                       ),
                       const SizedBox(height: 8),
                       ElevatedButton(

@@ -22,6 +22,8 @@ export const acceptOrder = functions.https.onCall(async (data, context) => {
   }
 
   try {
+    let customerPhone: string | null = null;
+
     await db.runTransaction(async (transaction) => {
       const orderRef = db.collection('orders').doc(orderId);
       const orderDoc = await transaction.get(orderRef);
@@ -40,16 +42,40 @@ export const acceptOrder = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('failed-precondition', 'Order already assigned');
       }
 
+      // Fetch customer phone number
+      const ownerId = orderData.ownerId as string;
+
+      if (ownerId) {
+        try {
+          const userDoc = await transaction.get(db.collection('users').doc(ownerId));
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            customerPhone = (userData?.phone as string) || (userData?.phoneNumber as string) || null;
+          }
+        } catch (phoneErr) {
+          console.warn('[AcceptOrder] Failed to fetch customer phone', {
+            order_id: orderId,
+            owner_id: ownerId,
+            error: phoneErr,
+          });
+        }
+      }
+
       transaction.update(orderRef, {
         status: 'accepted',
         assignedDriverId: driverId,
         driverId: driverId,
         acceptedAt: admin.firestore.FieldValue.serverTimestamp(),
+        customerPhone: customerPhone,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     });
 
-    console.log(`[acceptOrder] Order ${orderId} accepted by driver ${driverId}`);
+    console.log('[AcceptOrder] Order accepted with customer phone', {
+      order_id: orderId,
+      driver_id: driverId,
+      has_phone: customerPhone !== null,
+    });
     return { success: true };
   } catch (error: any) {
     if (error instanceof functions.https.HttpsError) throw error;

@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -129,7 +132,22 @@ class _FullScreenNotificationScreenState
     }
   }
 
-  void _reject() {
+  void _reject() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      FirebaseFirestore.instance.collection('driver_rejected_orders').add({
+        'driverId': uid,
+        'orderId': widget.data.orderId,
+        'rejectedAt': FieldValue.serverTimestamp(),
+        'expiresAt': Timestamp.fromDate(
+          DateTime.now().add(const Duration(hours: 24)),
+        ),
+      });
+      if (kDebugMode) {
+        debugPrint('[FullScreenNotif] Order ${widget.data.orderId} rejected');
+      }
+    }
+    if (!mounted) return;
     context.go('/nearby');
   }
 
@@ -217,13 +235,13 @@ class _FullScreenNotificationScreenState
                           Expanded(
                             child: SizedBox(
                               height: 48,
-                              child: OutlinedButton.icon(
+                              child: ElevatedButton.icon(
                                 onPressed: _reject,
                                 icon: const Icon(Icons.close, size: 22),
-                                label: const Text('رفض', style: TextStyle(fontSize: 16)),
-                                style: OutlinedButton.styleFrom(
+                                label: const Text('رفض', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFE53935),
                                   foregroundColor: Colors.white,
-                                  side: const BorderSide(color: Colors.white54),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -235,13 +253,13 @@ class _FullScreenNotificationScreenState
                           Expanded(
                             child: SizedBox(
                               height: 48,
-                              child: OutlinedButton.icon(
+                              child: ElevatedButton.icon(
                                 onPressed: _snooze,
                                 icon: const Icon(Icons.schedule, size: 22),
-                                label: const Text('لاحقاً', style: TextStyle(fontSize: 16)),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.white70,
-                                  side: const BorderSide(color: Colors.white30),
+                                label: const Text('لاحقاً', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFF59E0B),
+                                  foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),

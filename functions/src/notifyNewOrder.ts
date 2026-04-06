@@ -167,8 +167,8 @@ async function sendDriverNotification(
   try {
     // Resolve pickup/dropoff fields — support both formats:
     // New: pickup.label, pickup.lat | Legacy: pickupAddress.label, pickupAddress.latitude
-    const pickupLabel = orderData.pickup?.label || orderData.pickupAddress?.label || 'موقع الانطلاق';
-    const dropoffLabel = orderData.dropoff?.label || orderData.dropoffAddress?.label || 'الوجهة';
+    const pickupLabel = orderData.pickup?.label || (typeof orderData.pickupAddress === 'string' ? orderData.pickupAddress : orderData.pickupAddress?.label) || 'موقع الانطلاق';
+    const dropoffLabel = orderData.dropoff?.label || (typeof orderData.dropoffAddress === 'string' ? orderData.dropoffAddress : orderData.dropoffAddress?.label) || 'الوجهة';
     const pLat = orderData.pickup?.lat || orderData.pickupAddress?.latitude || 0;
     const pLng = orderData.pickup?.lng || orderData.pickupAddress?.longitude || 0;
     const dLat = orderData.dropoff?.lat || orderData.dropoffAddress?.latitude || 0;
@@ -286,8 +286,8 @@ export const notifyNewOrder = functions.firestore
     }
 
     // Validate pickup location - support both formats
-    const pickupLat = orderData.pickup?.lat || orderData.pickupAddress?.latitude;
-    const pickupLng = orderData.pickup?.lng || orderData.pickupAddress?.longitude;
+    const pickupLat = orderData.pickup?.lat;
+    const pickupLng = orderData.pickup?.lng;
     
     if (!pickupLat || !pickupLng) {
       console.warn('[NotifyNewOrder] Order missing pickup coordinates', {
@@ -311,7 +311,7 @@ export const notifyNewOrder = functions.firestore
       await writeAdminNotification({
         type: 'new_order',
         title: 'طلب جديد',
-        body: `طلب جديد #${orderId.substring(0, 6)} — ${orderData.pickup?.label || orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${orderData.dropoff?.label || orderData.dropoffAddress?.label || 'الوجهة'}`,
+        body: `طلب جديد #${orderId.substring(0, 6)} — ${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'} → ${orderData.dropoff?.label || orderData.dropoffAddress || 'الوجهة'}`,
         data: {
           orderId,
           clientName: orderData.clientName || '',
@@ -376,7 +376,7 @@ export const notifyNewOrder = functions.firestore
     await writeAdminNotification({
       type: 'new_order',
       title: 'طلب جديد',
-      body: `طلب جديد #${orderId.substring(0, 6)} — ${orderData.pickup?.label || orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${orderData.dropoff?.label || orderData.dropoffAddress?.label || 'الوجهة'}`,
+      body: `طلب جديد #${orderId.substring(0, 6)} — ${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'} → ${orderData.dropoff?.label || orderData.dropoffAddress || 'الوجهة'}`,
       data: {
         orderId,
         clientName: orderData.clientName || '',

@@ -241,6 +241,22 @@ async function sendDriverNotification(
     };
   }
 
+  // Check if driver rejected this order
+  const rejectionSnapshot = await admin
+    .firestore()
+    .collection('driver_rejected_orders')
+    .where('driverId', '==', driver.driverId)
+    .where('orderId', '==', orderId)
+    .limit(1)
+    .get();
+
+  if (!rejectionSnapshot.empty) {
+    return {
+      success: false,
+      error: 'order_rejected_by_driver',
+    };
+  }
+
   try {
     // Prepare notification data payload
     const message: admin.messaging.Message = {
@@ -249,12 +265,12 @@ async function sendDriverNotification(
       data: {
         notificationType: 'unassigned_order_reminder',
         orderId: orderId,
-        pickupLabel: orderData.pickupAddress?.label || 'موقع الانطلاق',
-        dropoffLabel: orderData.dropoffAddress?.label || 'الوجهة',
-        pickupLat: String(orderData.pickupAddress?.latitude || 0),
-        pickupLng: String(orderData.pickupAddress?.longitude || 0),
-        dropoffLat: String(orderData.dropoffAddress?.latitude || 0),
-        dropoffLng: String(orderData.dropoffAddress?.longitude || 0),
+        pickupLabel: orderData.pickup?.label || (typeof orderData.pickupAddress === 'string' ? orderData.pickupAddress : orderData.pickupAddress?.label) || 'موقع الانطلاق',
+        dropoffLabel: orderData.dropoff?.label || (typeof orderData.dropoffAddress === 'string' ? orderData.dropoffAddress : orderData.dropoffAddress?.label) || 'الوجهة',
+        pickupLat: String(orderData.pickup?.lat || orderData.pickupAddress?.latitude || 0),
+        pickupLng: String(orderData.pickup?.lng || orderData.pickupAddress?.longitude || 0),
+        dropoffLat: String(orderData.dropoff?.lat || orderData.dropoffAddress?.latitude || 0),
+        dropoffLng: String(orderData.dropoff?.lng || orderData.dropoffAddress?.longitude || 0),
         price: String(orderData.price || 0),
         clientName: orderData.clientName || 'عميل',
         createdAt: String(orderData.createdAt?.toMillis() || Date.now()),
@@ -363,17 +379,17 @@ async function sendAcceptanceConfirmation(
       token: fcmToken,
       notification: {
         title: 'تأكيد قبول الطلب',
-        body: `تم قبول طلبك بنجاح. ${orderData.pickupAddress?.label || 'موقع الانطلاق'} → ${
-          orderData.dropoffAddress?.label || 'الوجهة'
+        body: `تم قبول طلبك بنجاح. ${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'} → ${
+          orderData.dropoff?.label || orderData.dropoffAddress || 'الوجهة'
         }`,
       },
       data: {
         notificationType: 'acceptance_confirmation',
         orderId: orderId,
-        pickupLat: String(orderData.pickupAddress?.latitude || 0),
-        pickupLng: String(orderData.pickupAddress?.longitude || 0),
-        dropoffLat: String(orderData.dropoffAddress?.latitude || 0),
-        dropoffLng: String(orderData.dropoffAddress?.longitude || 0),
+        pickupLat: String(orderData.pickup?.lat || 0),
+        pickupLng: String(orderData.pickup?.lng || 0),
+        dropoffLat: String(orderData.dropoff?.lat || 0),
+        dropoffLng: String(orderData.dropoff?.lng || 0),
         clientName: orderData.clientName || 'عميل',
         acceptedAt: String(orderData.acceptedAt?.toMillis() || Date.now()),
       },
@@ -541,8 +557,8 @@ async function processUnassignedOrder(orderId: string, orderData: any): Promise<
   }
 
   // Validate pickup location - support both formats
-  const pickupLat = orderData.pickupAddress?.latitude || orderData.pickup?.lat;
-  const pickupLng = orderData.pickupAddress?.longitude || orderData.pickup?.lng;
+  const pickupLat = orderData.pickup?.lat;
+  const pickupLng = orderData.pickup?.lng;
   
   if (!pickupLat || !pickupLng) {
     console.warn('[NotifyUnassignedOrders] Order missing pickup coordinates', {

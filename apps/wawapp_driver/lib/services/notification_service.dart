@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -106,11 +108,30 @@ class NotificationService {
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
   }
 
+  /// Determine notification color based on type
+  Color _getNotificationColor(String notificationType) {
+    switch (notificationType) {
+      case 'order_cancelled':
+      case 'order_cancelled_by_driver':
+      case 'timeout_expired':
+      case 'insufficient_balance':
+        return const Color(0xFFE53935); // Red
+      case 'new_order':
+      case 'unassigned_order_reminder':
+      case 'acceptance_confirmation':
+        return const Color(0xFFFDD835); // Yellow
+      case 'trip_start_reminder':
+      case 'order_update':
+      default:
+        return const Color(0xFF1976D2); // Blue
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Foreground message handler
   // ---------------------------------------------------------------------------
 
-  void _handleForegroundMessage(RemoteMessage message) {
+  void _handleForegroundMessage(RemoteMessage message) async {
     if (kDebugMode) {
       debugPrint(
           '[NotificationService] 🔔 onMessage received: ${message.data}');
@@ -134,9 +155,20 @@ class NotificationService {
       }
 
       // Don't interrupt driver on active trip with new order alerts
-      if (_isOnActiveOrder()) {
+      // Only block if driver has STARTED the trip (on_route status)
+      final isBusy = await _isDriverOnActiveTrip();
+      if (isBusy) {
         if (kDebugMode) {
-          debugPrint('[NotificationService] Driver is busy, skipping');
+          debugPrint('[NotificationService] Driver is on active trip (on_route), skipping new order notification');
+        }
+        return;
+      }
+
+      // Skip if driver already rejected this order
+      final oid = data['orderId'] as String?;
+      if (oid != null && await _isOrderRejected(oid)) {
+        if (kDebugMode) {
+          debugPrint('[NotificationService] Order $oid was rejected, skipping');
         }
         return;
       }
@@ -181,6 +213,8 @@ class NotificationService {
         priority = Priority.defaultPriority;
     }
 
+    final color = _getNotificationColor(notificationType ?? '');
+
     _localNotifications.show(
       notificationId,
       notification.title,
@@ -191,6 +225,8 @@ class NotificationService {
           channelName,
           importance: importance,
           priority: priority,
+          color: color,
+          colorized: true,
           enableVibration: true,
           playSound: true,
           onlyAlertOnce: true,
@@ -215,6 +251,8 @@ class NotificationService {
           '[NotificationService] 🔔 Trip reminder: order=$orderId, remaining=$remaining min');
     }
 
+    final color = _getNotificationColor('trip_start_reminder');
+
     // Show/update system notification (same ID → updates in place)
     _localNotifications.show(
       orderId.hashCode,
@@ -226,6 +264,8 @@ class NotificationService {
           'تذكيرات بدء الرحلة',
           importance: Importance.max,
           priority: Priority.max,
+          color: color,
+          colorized: true,
           enableVibration: true,
           playSound: true,
           fullScreenIntent: true,
@@ -283,6 +323,7 @@ class NotificationService {
     final channelId = isReminder ? 'unassigned_orders' : 'new_orders';
     final channelName = isReminder ? 'تذكير بطلبات متاحة' : 'طلبات جديدة';
 
+    final color = _getNotificationColor(type ?? '');
     final payload = jsonEncode(data);
     final notificationId = notificationData.orderId.hashCode;
 
@@ -299,6 +340,8 @@ class NotificationService {
           channelName,
           importance: Importance.max,
           priority: Priority.max,
+          color: color,
+          colorized: true,
           enableVibration: true,
           playSound: true,
           fullScreenIntent: true,
@@ -406,6 +449,53 @@ class NotificationService {
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
+
+  /// Check if driver rejected this order.
+  Future<bool> _isOrderRejected(String orderId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection('driver_rejected_orders')
+          .where('driverId', isEqualTo: user.uid)
+          .where('orderId', isEqualTo: orderId)
+          .limit(1)
+          .get();
+      return snap.docs.isNotEmpty;
+    } on Object catch (_) {
+      return false;
+    }
+  }
+
+  /// Check if driver has an active trip that has STARTED (on_route status).
+  /// Returns true only if driver is actively driving (status = on_route).
+  /// Returns false if driver accepted but hasn't started trip yet (status = accepted).
+  Future<bool> _isDriverOnActiveTrip() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
+
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('orders')
+          .where('driverId', isEqualTo: user.uid)
+          .where('status', isEqualTo: 'on_route')
+          .limit(1)
+          .get();
+
+      final hasActiveTrip = snapshot.docs.isNotEmpty;
+
+      if (kDebugMode && hasActiveTrip) {
+        debugPrint('[NotificationService] Driver has active trip in progress (on_route)');
+      }
+
+      return hasActiveTrip;
+    } on Object catch (e) {
+      if (kDebugMode) {
+        debugPrint('[NotificationService] Error checking active trip: $e');
+      }
+      return false;
+    }
+  }
 
   /// Check if driver is currently on the active order screen.
   bool _isOnActiveOrder() {

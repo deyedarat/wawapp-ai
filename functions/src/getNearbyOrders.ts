@@ -124,6 +124,18 @@ export const getNearbyOrders = functions.https.onCall(async (data, context) => {
       .limit(50)
       .get();
 
+    // Get rejected order IDs for this driver
+    const rejectedSnapshot = await admin
+      .firestore()
+      .collection('driver_rejected_orders')
+      .where('driverId', '==', driverId)
+      .where('expiresAt', '>', admin.firestore.Timestamp.now())
+      .get();
+
+    const rejectedOrderIds = new Set(
+      rejectedSnapshot.docs.map(doc => doc.data().orderId as string)
+    );
+
     console.log('[getNearbyOrders] Found orders in matching status', {
       count: ordersSnapshot.size,
     });
@@ -135,6 +147,11 @@ export const getNearbyOrders = functions.https.onCall(async (data, context) => {
 
       // Skip if already assigned
       if (orderData.assignedDriverId) {
+        continue;
+      }
+
+      // Skip if driver rejected this order
+      if (rejectedOrderIds.has(doc.id)) {
         continue;
       }
 

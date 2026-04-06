@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/colors.dart';
 import '../../services/orders_service.dart';
+import '../active/widgets/cancel_order_dialog.dart';
 
 /// Shows the trip-start reminder dialog as an overlay.
 /// Auto-dismisses when order status changes away from 'accepted'.
@@ -162,26 +163,12 @@ class _TripStartReminderDialogState
   }
 
   Future<void> _cancelOrder() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('إلغاء الطلب'),
-        content: const Text('هل تريد إلغاء هذا الطلب؟'),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('لا')),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            style: TextButton.styleFrom(foregroundColor: DriverAppColors.accentRed),
-            child: const Text('نعم'),
-          ),
-        ],
-      ),
-    );
+    final reason = await showCancelOrderDialog(context);
 
-    if (confirmed != true || !mounted) return;
+    if (reason == null || !mounted) return;
 
     try {
-      await ref.read(ordersServiceProvider).cancelOrder(widget.orderId);
+      await ref.read(ordersServiceProvider).cancelOrder(widget.orderId, reason: reason);
       if (mounted) {
         Navigator.of(context).pop();
         context.go('/nearby');

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,7 +64,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           visibility: NotificationVisibility.public,
         ),
       ),
-      payload: orderId,
+      payload: jsonEncode(message.data),
     );
   }
 }

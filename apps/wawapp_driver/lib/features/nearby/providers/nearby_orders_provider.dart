@@ -24,5 +24,12 @@ final nearbyOrdersProvider = FutureProvider.family.autoDispose<List<Order>, Posi
 
   print('[NEARBY_PROVIDER] ✅ Received ${orders.length} orders from Cloud Function');
 
-  return orders;
+  // Filter out orders already assigned to a driver
+  final availableOrders = orders.where((order) {
+    return order.assignedDriverId == null && order.status == 'matching';
+  }).toList();
+
+  print('[NEARBY_PROVIDER] 🔍 Filtered to ${availableOrders.length} available orders');
+
+  return availableOrders;
 });

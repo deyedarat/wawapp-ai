@@ -314,6 +314,19 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
+    // Driver rejected orders (order blocking after rejection)
+    match /driver_rejected_orders/{rejectionId} {
+      allow create: if isSignedIn()
+                    && request.resource.data.driverId == request.auth.uid
+                    && request.resource.data.orderId is string
+                    && request.resource.data.orderId.size() > 0;
+      allow read: if isSignedIn()
+                  && resource.data.driverId == request.auth.uid;
+      allow delete: if isSignedIn()
+                    && resource.data.driverId == request.auth.uid;
+      allow update: if false;
+    }
+
     // Bug reports: write-only, no auth required (OTP errors happen before login).
     // Abuse prevention: require minimal schema + strict size/type validation.
     match /bug_reports/{docId} {
