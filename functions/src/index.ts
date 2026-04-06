@@ -26,6 +26,8 @@ export { notifyUnassignedOrders } from './notifyUnassignedOrders'; // Phase A: R
 export { monitorAcceptedOrders } from './monitorAcceptedOrders'; // Phase D: Monitor accepted orders timeout & reminders
 export { handleDriverCancellation } from './handleDriverCancellation'; // Phase D: Return cancelled orders to matching
 export { cleanupRejectedOrders } from './cleanupRejectedOrders'; // Cleanup expired driver rejection records
+export { autoForceUpdate } from './autoForceUpdate'; // Auto-enable force update after deadline
+export { initAppConfig } from './initAppConfig'; // One-time setup for app update config
 export { requestTripStartExtension } from './requestTripStartExtension'; // Phase D: Driver requests extra time
 export { processTripStartFee } from './processTripStartFee'; // Phase C: Trip start fee deduction
 export { trackOrderAcceptance } from './trackOrderAcceptance'; // Phase B: Track order acceptance timestamp

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تحديث تطبيق واو - سائق</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px 32px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .icon { font-size: 64px; margin-bottom: 16px; }
+    h1 { font-size: 22px; margin-bottom: 8px; }
+    .version { color: #aaa; font-size: 14px; margin-bottom: 24px; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: #f5a623;
+      color: #1a1a2e;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .note {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">🚗</div>
+    <h1>تطبيق واو - سائق</h1>
+    <p class="version" id="version"></p>
+    <a class="btn" href="/downloads/wawapp-driver.apk" id="downloadBtn" download>
+      ⬇️ تحديث
+    </a>
+    <p class="note">بياناتك وحسابك محفوظة — فقط ثبّت التحديث فوق النسخة الحالية</p>
+  </div>
+  <script>
+    // Optionally fetch version from Firestore via REST
+    document.getElementById('version').textContent = '';
+  </script>
+</body>
+</html>

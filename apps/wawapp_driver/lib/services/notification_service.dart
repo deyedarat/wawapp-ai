@@ -55,6 +55,7 @@ class NotificationService {
       importance: Importance.max,
       enableVibration: true,
       playSound: true,
+      sound: RawResourceAndroidNotificationSound('trip_reminder'),
     );
 
     const unassignedOrdersChannel = AndroidNotificationChannel(
@@ -64,6 +65,7 @@ class NotificationService {
       importance: Importance.max,
       enableVibration: true,
       playSound: true,
+      sound: RawResourceAndroidNotificationSound('trip_reminder'),
     );
 
     const orderUpdatesChannel = AndroidNotificationChannel(
@@ -348,6 +350,7 @@ class NotificationService {
           enableVibration: true,
           vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
           playSound: true,
+          sound: const RawResourceAndroidNotificationSound('trip_reminder'),
           fullScreenIntent: true,
           category: AndroidNotificationCategory.call,
           visibility: NotificationVisibility.public,

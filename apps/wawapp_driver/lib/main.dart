@@ -12,12 +12,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'services/analytics_service.dart';
+import 'features/update/force_update_provider.dart';
+import 'features/update/force_update_screen.dart';
 import 'services/connectivity_service.dart';
 import 'services/notification_service.dart';
 
@@ -228,9 +231,39 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final updateState = ref.watch(forceUpdateProvider);
     final router = ref.watch(appRouterProvider);
     NotificationService().updateContext(context);
 
+    return updateState.when(
+      loading: () => _buildApp(router),
+      error: (_, __) => _buildApp(router),
+      data: (state) {
+        if (state.mustUpdate) {
+          return MaterialApp(
+            title: 'WawApp Driver',
+            theme: AppTheme.lightTheme,
+            locale: const Locale('ar'),
+            supportedLocales: const [Locale('ar'), Locale('fr')],
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: ForceUpdateScreen(
+              downloadUrl: state.downloadUrl,
+              latestVersion: state.latestVersion,
+              message: state.message,
+            ),
+          );
+        }
+        return _buildApp(router);
+      },
+    );
+  }
+
+  Widget _buildApp(GoRouter router) {
     return MaterialApp.router(
       title: 'WawApp Driver',
       theme: AppTheme.lightTheme,

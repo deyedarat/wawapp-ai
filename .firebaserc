@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "wawapp-952d6"
-  }
+  },
+  "targets": {
+    "wawapp-952d6": {
+      "hosting": {
+        "downloads": [
+          "wawapp-downloads"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
