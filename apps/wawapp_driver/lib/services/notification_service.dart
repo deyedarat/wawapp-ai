@@ -92,7 +92,7 @@ class NotificationService {
     await android?.createNotificationChannel(orderUpdatesChannel);
     await android?.createNotificationChannel(acceptanceChannel);
 
-    // Channel for trip start reminders — high priority
+    // Channel for trip start reminders — high priority with custom sound
     const tripRemindersChannel = AndroidNotificationChannel(
       'trip_reminders',
       'تذكيرات بدء الرحلة',
@@ -100,6 +100,7 @@ class NotificationService {
       importance: Importance.max,
       enableVibration: true,
       playSound: true,
+      sound: RawResourceAndroidNotificationSound('trip_reminder'),
     );
 
     await android?.createNotificationChannel(tripRemindersChannel);
@@ -269,6 +270,7 @@ class NotificationService {
           colorized: true,
           enableVibration: true,
           playSound: true,
+          sound: const RawResourceAndroidNotificationSound('trip_reminder'),
           fullScreenIntent: true,
           category: AndroidNotificationCategory.reminder,
           visibility: NotificationVisibility.public,
