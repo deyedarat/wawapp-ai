@@ -155,6 +155,11 @@ export const getNearbyOrders = functions.https.onCall(async (data, context) => {
         continue;
       }
 
+      // Skip if this driver previously cancelled/timed out on this order
+      if (orderData.previousDriverId === driverId) {
+        continue;
+      }
+
       // Get pickup location
       const pickupLat = orderData.pickup?.lat;
       const pickupLng = orderData.pickup?.lng;

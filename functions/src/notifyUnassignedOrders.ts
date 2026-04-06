@@ -257,6 +257,14 @@ async function sendDriverNotification(
     };
   }
 
+  // Check if driver previously cancelled/timed out on this order
+  if (orderData.previousDriverId === driver.driverId) {
+    return {
+      success: false,
+      error: 'previous_driver',
+    };
+  }
+
   try {
     // Prepare notification data payload
     const message: admin.messaging.Message = {
