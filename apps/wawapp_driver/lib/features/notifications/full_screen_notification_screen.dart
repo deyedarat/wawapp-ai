@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -111,7 +112,12 @@ class _FullScreenNotificationScreenState
     });
   }
 
+  void _dismissNotification() {
+    FlutterLocalNotificationsPlugin().cancel(widget.data.orderId.hashCode);
+  }
+
   Future<void> _accept() async {
+    _dismissNotification();
     setState(() => _isLoading = true);
     try {
       await ref.read(ordersServiceProvider).acceptOrder(widget.data.orderId);
@@ -133,6 +139,7 @@ class _FullScreenNotificationScreenState
   }
 
   void _reject() async {
+    _dismissNotification();
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
       FirebaseFirestore.instance.collection('driver_rejected_orders').add({
@@ -152,6 +159,7 @@ class _FullScreenNotificationScreenState
   }
 
   void _snooze() {
+    _dismissNotification();
     ref.read(snoozeProvider.notifier).scheduleReminder(
           widget.data.orderId,
           () {

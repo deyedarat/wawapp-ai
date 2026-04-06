@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -327,7 +328,7 @@ class NotificationService {
     final payload = jsonEncode(data);
     final notificationId = notificationData.orderId.hashCode;
 
-    // Show system notification with full-screen intent.
+    // Show system notification with full-screen intent (call-style).
     // On lock screen / screen off → launches FullScreenNotificationScreen.
     // On foreground → shows heads-up notification; we also navigate directly.
     _localNotifications.show(
@@ -343,11 +344,15 @@ class NotificationService {
           color: color,
           colorized: true,
           enableVibration: true,
+          vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
           playSound: true,
           fullScreenIntent: true,
           category: AndroidNotificationCategory.call,
           visibility: NotificationVisibility.public,
           onlyAlertOnce: false,
+          ongoing: true,
+          autoCancel: false,
+          timeoutAfter: 60000,
         ),
       ),
       payload: payload,
