@@ -287,6 +287,10 @@ async function sendDriverNotification(
     // Prepare notification data payload
     const message: admin.messaging.Message = {
       token: driver.fcmToken,
+      notification: {
+        title: 'طلب جديد قريب منك',
+        body: `${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'} → ${orderData.dropoff?.label || orderData.dropoffAddress || 'الوجهة'}`,
+      },
       // Data-only message — let Flutter app handle display via full-screen intent
       data: {
         notificationType: 'unassigned_order_reminder',
@@ -304,7 +308,13 @@ async function sendDriverNotification(
       },
       android: {
         priority: 'high',
-        ttl: 300000, // 5 minutes TTL
+        ttl: 300000,
+        notification: {
+          channelId: 'unassigned_orders',
+          sound: 'trip_reminder',
+          priority: 'max',
+          visibility: 'public',
+        },
       },
       apns: {
         payload: {

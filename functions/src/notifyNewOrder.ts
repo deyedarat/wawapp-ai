@@ -194,6 +194,10 @@ async function sendDriverNotification(
 
     const message: admin.messaging.Message = {
       token: driver.fcmToken,
+      notification: {
+        title: 'طلب جديد قريب منك',
+        body: `${pickupLabel} → ${dropoffLabel}`,
+      },
       data: {
         notificationType: 'new_order',
         type: 'new_order',
@@ -213,7 +217,13 @@ async function sendDriverNotification(
       },
       android: {
         priority: 'high',
-        ttl: 300000, // 5 minutes TTL
+        ttl: 300000,
+        notification: {
+          channelId: 'new_orders',
+          sound: 'trip_reminder',
+          priority: 'max',
+          visibility: 'public',
+        },
       },
       apns: {
         payload: {
