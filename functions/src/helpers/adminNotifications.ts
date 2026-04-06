@@ -10,7 +10,8 @@ export type AdminNotificationType =
   | 'new_driver'
   | 'expired_order'
   | 'topup_request'
-  | 'payout_request';
+  | 'payout_request'
+  | 'critical_delay';
 
 interface AdminNotificationPayload {
   type: AdminNotificationType;

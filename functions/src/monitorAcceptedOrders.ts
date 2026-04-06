@@ -1,36 +1,39 @@
 /**
- * Cloud Function: Monitor Accepted Orders (Phase D)
+ * Cloud Function: Monitor Accepted Orders (Phase D — Enhanced v2)
  *
- * Sends trip-start reminders to drivers every minute after acceptance.
- * Reassigns order back to matching pool if driver doesn't start within timeout.
+ * Sends escalating trip-start reminders to drivers after acceptance.
+ * NO automatic cancellation — order stays with driver indefinitely.
  *
- * Rules:
- * - Reminder every 5 minutes after acceptance
- * - Timeout at 5 minutes (+ optional 2-min extension)
- * - On timeout: reset to matching, notify driver + client
- * - Idempotent: tracks reminderCount + lastReminderSentAt
- * - Stops immediately if status changes from 'accepted'
+ * Escalation levels:
+ *   0-6 min  → Normal reminder (with extension option)
+ *   6-15 min → Warning (delay recorded)
+ *   15+ min  → Critical alert (admin notified + violation logged)
  *
- * Runs every 1 minute via Cloud Scheduler.
+ * Reminders sent every 3 minutes. Runs every 1 minute via Cloud Scheduler.
  */
 
 import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
+import { writeAdminNotification } from './helpers/adminNotifications';
 
 // Constants
-const ACCEPTED_TIMEOUT_MINUTES = 5;
-const REMINDER_INTERVAL_MINUTES = 5;
-const MAX_EXTENSIONS_ALLOWED = 1;
-const EXTENSION_DURATION_MINUTES = 2;
+const REMINDER_INTERVAL_MINUTES = 3;
+const WARNING_THRESHOLD_MINUTES = 6;
+const CRITICAL_THRESHOLD_MINUTES = 15;
 const BATCH_LIMIT = 50;
+
+type EscalationLevel = 'normal' | 'warning' | 'critical';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Send FCM to a driver (drivers collection)
- */
+function getEscalationLevel(elapsedMinutes: number): EscalationLevel {
+  if (elapsedMinutes >= CRITICAL_THRESHOLD_MINUTES) return 'critical';
+  if (elapsedMinutes >= WARNING_THRESHOLD_MINUTES) return 'warning';
+  return 'normal';
+}
+
 async function sendToDriver(
   driverId: string,
   title: string,
@@ -45,15 +48,23 @@ async function sendToDriver(
 
     await admin.messaging().send({
       token: fcmToken,
+      notification: {
+        title,
+        body,
+      },
       data: {
         ...data,
         title,
         body,
+        channelId,
         notificationType: data.notificationType || data.type || '',
       },
       android: {
         priority: 'high',
         ttl: 120000,
+        notification: {
+          channelId,
+        },
       },
       apns: { payload: { aps: { sound: 'default', badge: 1, contentAvailable: true } } },
     });
@@ -72,40 +83,90 @@ async function sendToDriver(
   }
 }
 
-/**
- * Send FCM to a client (users collection)
- */
-async function sendToClient(
-  clientId: string,
-  title: string,
-  body: string,
-  data: Record<string, string>
-): Promise<boolean> {
-  try {
-    const userDoc = await admin.firestore().collection('users').doc(clientId).get();
-    const fcmToken = userDoc.data()?.fcmToken as string | undefined;
-    if (!fcmToken) return false;
+function formatAddress(addr: any): string {
+  if (!addr) return 'غير محدد';
+  if (typeof addr === 'string') return addr;
+  return addr.label || addr.address || addr.name || 'غير محدد';
+}
 
-    await admin.messaging().send({
-      token: fcmToken,
-      notification: { title, body },
-      data,
-      android: { priority: 'high', notification: { sound: 'default', channelId: 'order_updates' } },
-      apns: { payload: { aps: { sound: 'default', badge: 1 } } },
-    });
-    return true;
-  } catch (err: any) {
-    if (
-      err.code === 'messaging/invalid-registration-token' ||
-      err.code === 'messaging/registration-token-not-registered'
-    ) {
-      admin.firestore().collection('users').doc(clientId)
-        .update({ fcmToken: admin.firestore.FieldValue.delete() })
-        .catch(() => {});
-    }
-    console.error('[MonitorAccepted] FCM error (client)', { client_id: clientId, error: err.message });
-    return false;
+function buildNotification(
+  level: EscalationLevel,
+  elapsedMinutes: number,
+  orderData: FirebaseFirestore.DocumentData,
+  orderId: string
+): { title: string; body: string } {
+  const customerName = orderData.clientName || orderData.ownerName || 'العميل';
+  const pickup = formatAddress(orderData.pickupAddress);
+  const destination = formatAddress(orderData.destinationAddress || orderData.dropoffAddress);
+  const elapsed = Math.floor(elapsedMinutes);
+
+  switch (level) {
+    case 'normal':
+      return {
+        title: `تذكير بالرحلة - ${customerName}`,
+        body: `📍 الاستلام: ${pickup}\n🎯 الوجهة: ${destination}\n⏱️ منذ القبول: ${elapsed} دقائق\n\nهل وصلت للعميل؟`,
+      };
+    case 'warning':
+      return {
+        title: `⚠️ تأخير - ${customerName}`,
+        body: `📍 ${pickup} → ${destination}\n⏱️ ${elapsed} دقائق منذ القبول\n\n⚠️ يرجى الوصول فوراً. تم تسجيل التأخير.`,
+      };
+    case 'critical':
+      return {
+        title: `🚨 تحذير نهائي - ${customerName}`,
+        body: `📍 ${pickup} → ${destination}\n⏱️ ${elapsed} دقائق منذ القبول\n\n🚨 تم إبلاغ الإدارة. يرجى بدء الرحلة الآن!`,
+      };
   }
+}
+
+// ---------------------------------------------------------------------------
+// Violation & admin alert helpers (idempotent)
+// ---------------------------------------------------------------------------
+
+async function logViolation(
+  db: FirebaseFirestore.Firestore,
+  driverId: string,
+  orderId: string,
+  delayMinutes: number,
+  extensionsUsed: number
+): Promise<void> {
+  const violationId = `excessive_delay_${orderId}`;
+  const ref = db.collection('drivers').doc(driverId).collection('violations').doc(violationId);
+  const existing = await ref.get();
+  if (existing.exists) return; // idempotent
+
+  await ref.set({
+    type: 'excessive_delay_accepted',
+    orderId,
+    driverId,
+    delayMinutes: Math.floor(delayMinutes),
+    extensionsUsed,
+    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+  });
+  console.log('[MonitorAccepted] Violation logged', { driver_id: driverId, order_id: orderId });
+}
+
+async function notifyAdminCriticalDelay(
+  orderData: FirebaseFirestore.DocumentData,
+  orderId: string,
+  driverId: string,
+  delayMinutes: number
+): Promise<void> {
+  const driverName = orderData.driverName || driverId.substring(0, 8);
+  const customerName = orderData.clientName || orderData.ownerName || 'عميل';
+  const pickup = formatAddress(orderData.pickupAddress);
+
+  await writeAdminNotification({
+    type: 'critical_delay',
+    title: `🚨 تأخير حرج - سائق ${driverName}`,
+    body: `الطلب #${orderId.substring(0, 6)} متأخر ${Math.floor(delayMinutes)} دقيقة.\nالعميل: ${customerName}\nالاستلام: ${pickup}`,
+    data: {
+      orderId,
+      driverId,
+      delayMinutes: String(Math.floor(delayMinutes)),
+      customerName,
+    },
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -116,7 +177,7 @@ async function processAcceptedOrder(
   orderId: string,
   orderData: FirebaseFirestore.DocumentData,
   nowMs: number
-): Promise<'reminded' | 'reassigned' | 'skipped'> {
+): Promise<'reminded' | 'skipped'> {
   const db = admin.firestore();
   const orderRef = db.collection('orders').doc(orderId);
 
@@ -128,102 +189,70 @@ async function processAcceptedOrder(
 
   const elapsedMs = nowMs - acceptedAtMs;
   const elapsedMinutes = elapsedMs / 60000;
-  const extensions: number = orderData.extensionRequestCount || 0;
-  const totalTimeoutMinutes =
-    ACCEPTED_TIMEOUT_MINUTES + Math.min(extensions, MAX_EXTENSIONS_ALLOWED) * EXTENSION_DURATION_MINUTES;
-  const remainingMinutes = Math.max(0, Math.ceil(totalTimeoutMinutes - elapsedMinutes));
-
   const assignedDriverId: string = orderData.assignedDriverId || orderData.driverId;
-  const ownerId: string = orderData.ownerId;
-
-  // ── Timeout → reassign ──
-  if (elapsedMinutes >= totalTimeoutMinutes) {
-    console.log('[MonitorAccepted] Timeout reached, reassigning', {
-      order_id: orderId,
-      elapsed_min: elapsedMinutes.toFixed(1),
-      timeout_min: totalTimeoutMinutes,
-      driver_id: assignedDriverId,
-    });
-
-    try {
-      await db.runTransaction(async (tx) => {
-        const snap = await tx.get(orderRef);
-        if (!snap.exists) return;
-        const current = snap.data()!;
-        // Guard: only reassign if still accepted with same driver
-        if (current.status !== 'accepted' || current.assignedDriverId !== assignedDriverId) return;
-
-        tx.update(orderRef, {
-          status: 'matching',
-          assignedDriverId: null,
-          driverId: null,
-          acceptedAt: null,
-          reassignedAt: admin.firestore.FieldValue.serverTimestamp(),
-          reassignReason: 'accepted_timeout',
-          previousDriverId: assignedDriverId,
-          reminderCount: 0,
-          lastReminderSentAt: null,
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-      });
-    } catch (txErr) {
-      console.error('[MonitorAccepted] Reassign transaction failed', { order_id: orderId, error: txErr });
-      return 'skipped';
-    }
-
-    // Notify driver
-    if (assignedDriverId) {
-      sendToDriver(assignedDriverId, 'انتهى وقت الطلب', `تم إعادة الطلب #${orderId.substring(0, 6)} للسائقين الآخرين`, {
-        notificationType: 'timeout_expired',
-        orderId,
-        reason: 'timeout',
-      }).catch(() => {});
-    }
-
-    // Notify client
-    if (ownerId) {
-      sendToClient(ownerId, 'جارِ البحث عن سائق آخر', 'نعتذر عن التأخير، جارِ إيجاد سائق جديد', {
-        type: 'order_reassigned',
-        orderId,
-      }).catch(() => {});
-    }
-
-    return 'reassigned';
-  }
 
   // ── Not yet at first reminder interval → skip ──
   if (elapsedMinutes < REMINDER_INTERVAL_MINUTES) {
     return 'skipped';
   }
 
-  // ── Idempotency: don't re-send within same minute window ──
+  // ── Idempotency: don't re-send within same interval ──
   const lastSentMs: number = orderData.lastReminderSentAt?.toMillis?.() || 0;
   if (lastSentMs && (nowMs - lastSentMs) < REMINDER_INTERVAL_MINUTES * 60000 * 0.9) {
     return 'skipped';
   }
 
-  // ── Send reminder ──
+  const level = getEscalationLevel(elapsedMinutes);
+  const { title, body } = buildNotification(level, elapsedMinutes, orderData, orderId);
+
+  // ── Send reminder to driver ──
   if (assignedDriverId) {
+    const extensionsUsed: number = orderData.extensionRequestCount || 0;
+
     const sent = await sendToDriver(
       assignedDriverId,
-      'هل وصلت للعميل؟',
-      `لديك ${remainingMinutes} دقائق لبدء الرحلة`,
+      title,
+      body,
       {
         notificationType: 'trip_start_reminder',
         orderId,
-        pickupLabel: orderData.pickupAddress?.label || 'موقع الاستلام',
+        escalationLevel: level,
+        pickupLabel: formatAddress(orderData.pickupAddress),
+        destinationLabel: formatAddress(orderData.destinationAddress || orderData.dropoffAddress),
         elapsedMinutes: String(Math.floor(elapsedMinutes)),
-        remainingMinutes: String(remainingMinutes),
       },
       'trip_reminders'
     );
 
     if (sent) {
-      await orderRef.update({
+      const updatePayload: Record<string, any> = {
         lastReminderSentAt: admin.firestore.FieldValue.serverTimestamp(),
         reminderCount: admin.firestore.FieldValue.increment(1),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      }).catch(() => {});
+      };
+
+      // Log delay warning in order document
+      if (level === 'warning' || level === 'critical') {
+        updatePayload.delayWarnings = admin.firestore.FieldValue.arrayUnion({
+          level,
+          sentAt: new Date(nowMs),
+        });
+      }
+
+      await orderRef.update(updatePayload).catch(() => {});
+    }
+
+    // ── Critical threshold: admin notification + violation (once) ──
+    if (level === 'critical') {
+      const alreadyNotifiedAdmin: boolean = orderData.adminNotifiedAt != null;
+      if (!alreadyNotifiedAdmin) {
+        await notifyAdminCriticalDelay(orderData, orderId, assignedDriverId, elapsedMinutes);
+        await orderRef.update({
+          adminNotifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+        }).catch(() => {});
+      }
+
+      await logViolation(db, assignedDriverId, orderId, elapsedMinutes, extensionsUsed);
     }
   }
 
@@ -246,7 +275,6 @@ export const monitorAcceptedOrders = functions
     console.log('[MonitorAccepted] Triggered at', new Date(now).toISOString());
 
     try {
-      // Query accepted orders with a driver assigned
       const snapshot = await db
         .collection('orders')
         .where('status', '==', 'accepted')
@@ -261,13 +289,10 @@ export const monitorAcceptedOrders = functions
       console.log(`[MonitorAccepted] Found ${snapshot.size} accepted orders.`);
 
       let reminded = 0;
-      let reassigned = 0;
       let skipped = 0;
 
       for (const doc of snapshot.docs) {
         const data = doc.data();
-
-        // Safety: must still be accepted with a driver
         if (data.status !== 'accepted' || !data.assignedDriverId) {
           skipped++;
           continue;
@@ -275,11 +300,10 @@ export const monitorAcceptedOrders = functions
 
         const result = await processAcceptedOrder(doc.id, data, now);
         if (result === 'reminded') reminded++;
-        else if (result === 'reassigned') reassigned++;
         else skipped++;
       }
 
-      console.log('[MonitorAccepted] Run complete', { reminded, reassigned, skipped, total: snapshot.size });
+      console.log('[MonitorAccepted] Run complete', { reminded, skipped, total: snapshot.size });
       return null;
     } catch (error) {
       console.error('[MonitorAccepted] Fatal error:', error);
