@@ -1,0 +1,31 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Product images - store owners can upload, anyone can read
+    match /products/{storeId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null &&
+        firestore.get(/databases/(default)/documents/stores/$(storeId)).data.ownerId == request.auth.uid &&
+        request.resource.size < 5 * 1024 * 1024 && // Max 5MB
+        request.resource.contentType.matches('image/.*');
+    }
+
+    // Store images - store owners can upload, anyone can read
+    match /stores/{storeId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null &&
+        firestore.get(/databases/(default)/documents/stores/$(storeId)).data.ownerId == request.auth.uid &&
+        request.resource.size < 10 * 1024 * 1024 && // Max 10MB
+        request.resource.contentType.matches('image/.*');
+    }
+
+    // User profile images
+    match /users/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId &&
+        request.resource.size < 5 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+    }
+  }
+}

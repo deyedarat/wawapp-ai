@@ -1,0 +1,87 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isStoreOwner(storeId) {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/stores/$(storeId)).data.ownerId == request.auth.uid;
+    }
+
+    // ============================================================
+    // USERS COLLECTION
+    // ============================================================
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isOwner(userId);
+      // Users can create their own profile
+      allow create: if isOwner(userId);
+      // Users can update their own profile
+      allow update: if isOwner(userId);
+      // Only admins can delete users
+      allow delete: if false;
+    }
+
+    // ============================================================
+    // STORES COLLECTION
+    // ============================================================
+    match /stores/{storeId} {
+      // Anyone can read stores (for browsing)
+      allow read: if true;
+      // Only the store owner can create/update their store
+      allow create: if isAuthenticated();
+      allow update: if isStoreOwner(storeId);
+      allow delete: if false;
+
+      // ============================================================
+      // PRODUCTS SUB-COLLECTION
+      // ============================================================
+      match /products/{productId} {
+        // Anyone can read products
+        allow read: if true;
+        // Only store owner can manage products
+        allow create: if isStoreOwner(storeId);
+        allow update: if isStoreOwner(storeId);
+        allow delete: if isStoreOwner(storeId);
+      }
+    }
+
+    // ============================================================
+    // ORDERS COLLECTION
+    // ============================================================
+    match /orders/{orderId} {
+      // Customer can read their own orders
+      // Store owner can read orders for their store
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid ||
+        isStoreOwner(resource.data.storeId)
+      );
+
+      // Authenticated users can create orders
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid;
+
+      // Store owner can update order status
+      // Customer can cancel their own pending order
+      allow update: if isAuthenticated() && (
+        isStoreOwner(resource.data.storeId) ||
+        (resource.data.userId == request.auth.uid &&
+         resource.data.status == 'pending' &&
+         request.resource.data.status == 'cancelled')
+      );
+
+      allow delete: if false;
+    }
+  }
+}
