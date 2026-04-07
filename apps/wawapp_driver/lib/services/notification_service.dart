@@ -28,7 +28,6 @@ class NotificationService {
   String? _pendingTripReminderRoute;
   Map<String, dynamic>? _pendingTripReminderData;
 
-
   Future<void> initialize() async {
     _navigatorKey = appNavigatorKey;
 
@@ -37,8 +36,9 @@ class NotificationService {
   }
 
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings();
 
     await _localNotifications.initialize(
@@ -137,7 +137,15 @@ class NotificationService {
 
     final android = _localNotifications
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+
+    // Delete existing channels to ensure updated sound settings are applied
+    await android?.deleteNotificationChannel('new_orders');
+    await android?.deleteNotificationChannel('unassigned_orders');
+    await android?.deleteNotificationChannel('order_updates');
+    await android?.deleteNotificationChannel('acceptance_confirmations');
+    await android?.deleteNotificationChannel('trip_reminders');
 
     // Delete ALL old channels to force fresh creation with correct sound
     await android?.deleteNotificationChannel('new_orders');
@@ -183,7 +191,8 @@ class NotificationService {
   void _handleForegroundMessage(RemoteMessage message) async {
     if (kDebugMode) {
       debugPrint(
-          '[NotificationService] 🔔 onMessage received: ${message.data}');
+        '[NotificationService] 🔔 onMessage received: ${message.data}',
+      );
     }
 
     final data = message.data;
@@ -192,7 +201,8 @@ class NotificationService {
 
     if (kDebugMode) {
       debugPrint(
-          '[NotificationService] type=$notificationType, orderId=$orderId');
+        '[NotificationService] type=$notificationType, orderId=$orderId',
+      );
     }
 
     // ── Order notifications → full-screen intent ──
@@ -208,7 +218,9 @@ class NotificationService {
       final isBusy = await _isDriverOnActiveTrip();
       if (isBusy) {
         if (kDebugMode) {
-          debugPrint('[NotificationService] Driver is on active trip (on_route), skipping new order notification');
+          debugPrint(
+            '[NotificationService] Driver is on active trip (on_route), skipping new order notification',
+          );
         }
         return;
       }
@@ -297,7 +309,8 @@ class NotificationService {
 
     if (kDebugMode) {
       debugPrint(
-          '[NotificationService] 🔔 Trip reminder: order=$orderId, remaining=$remaining min');
+        '[NotificationService] 🔔 Trip reminder: order=$orderId, remaining=$remaining min',
+      );
     }
 
     final color = _getNotificationColor('trip_start_reminder');
@@ -366,15 +379,15 @@ class NotificationService {
     final notificationData = FullScreenNotificationData.tryParse(data);
     if (notificationData == null) {
       if (kDebugMode) {
-        debugPrint(
-            '[NotificationService] ❌ Invalid notification data: $data');
+        debugPrint('[NotificationService] ❌ Invalid notification data: $data');
       }
       return;
     }
 
     if (kDebugMode) {
       debugPrint(
-          '[NotificationService] 🚀 Full-screen notification for order: ${notificationData.orderId}');
+        '[NotificationService] 🚀 Full-screen notification for order: ${notificationData.orderId}',
+      );
     }
 
     final type = NotificationHelper.resolveType(data);
@@ -438,7 +451,8 @@ class NotificationService {
       };
       if (kDebugMode) {
         debugPrint(
-            '[NotificationService] Context not ready, scheduling retry for full-screen notification');
+          '[NotificationService] Context not ready, scheduling retry for full-screen notification',
+        );
       }
       _schedulePendingNavigation(() => _navigateToFullScreen(data));
       return;
@@ -446,7 +460,8 @@ class NotificationService {
 
     if (kDebugMode) {
       debugPrint(
-          '[NotificationService] ✅ Navigating to /full-screen-notification');
+        '[NotificationService] ✅ Navigating to /full-screen-notification',
+      );
     }
 
     try {
@@ -546,7 +561,8 @@ class NotificationService {
   void _navigateFromMessage(Map<String, dynamic> data) {
     if (kDebugMode) {
       debugPrint(
-          '[NotificationService] _navigateFromMessage called with data: $data');
+        '[NotificationService] _navigateFromMessage called with data: $data',
+      );
     }
 
     final type = NotificationHelper.resolveType(data);
@@ -620,7 +636,9 @@ class NotificationService {
 
       if (kDebugMode && hasActiveTrip) {
         final doc = snapshot.docs.first;
-        debugPrint('[NotificationService] Driver has active trip: ${doc.id}, status: ${doc.data()['status']}, skipping new order notification');
+        debugPrint(
+          '[NotificationService] Driver has active trip: ${doc.id}, status: ${doc.data()['status']}, skipping new order notification',
+        );
       }
 
       return hasActiveTrip;
@@ -651,8 +669,9 @@ class NotificationService {
       // Handle pending full-screen notification
       if (_pendingRoute == '/full-screen-notification' &&
           _pendingNotificationData != null) {
-        final data =
-            FullScreenNotificationData.tryParse(_pendingNotificationData!);
+        final data = FullScreenNotificationData.tryParse(
+          _pendingNotificationData!,
+        );
         _pendingRoute = null;
         _pendingNotificationData = null;
         if (data != null) {
