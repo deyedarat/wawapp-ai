@@ -20,7 +20,6 @@ class TestLabMockData {
         vehiclePlate: 'ABC-123',
         vehicleColor: 'أبيض',
         city: 'نواكشوط',
-        region: 'تفرغ زينة',
         isVerified: true,
         isOnline: true,
         rating: 4.7,

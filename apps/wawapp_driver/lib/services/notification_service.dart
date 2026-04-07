@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 
 import '../core/router/navigator.dart';
 import '../features/notifications/full_screen_notification_screen.dart';
+import '../features/notifications/trip_start_reminder_screen.dart';
 import 'notification_helper.dart';
 
 class NotificationService {
@@ -24,6 +25,8 @@ class NotificationService {
   GlobalKey<NavigatorState>? _navigatorKey;
   String? _pendingRoute;
   Map<String, dynamic>? _pendingNotificationData;
+  String? _pendingTripReminderRoute;
+  Map<String, dynamic>? _pendingTripReminderData;
 
 
   Future<void> initialize() async {
@@ -44,67 +47,109 @@ class NotificationService {
     );
 
     await _createNotificationChannels();
+
+    // Request USE_FULL_SCREEN_INTENT permission for Android 12+ (API 31+)
+    await _requestFullScreenIntentPermission();
   }
 
-  /// Create Android notification channels
+  /// Request permission to show full-screen intent notifications (Android 12+)
+  Future<void> _requestFullScreenIntentPermission() async {
+    final android = _localNotifications
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+
+    if (android != null) {
+      // Check if we can use full-screen intent
+      final canUse = await android.canScheduleExactNotifications() ?? false;
+
+      if (kDebugMode) {
+        debugPrint('[NotificationService] Can use full-screen intent: $canUse');
+      }
+
+      // Request permission if not granted
+      if (!canUse) {
+        final granted = await android.requestExactAlarmsPermission();
+        if (kDebugMode) {
+          debugPrint('[NotificationService] Full-screen intent permission granted: $granted');
+        }
+      }
+    }
+  }
+
+  /// Create Android notification channels.
+  ///
+  /// All channels use trip_reminder.wav sound as requested.
   Future<void> _createNotificationChannels() async {
+    // Channel 1: New orders — highest priority
     const newOrdersChannel = AndroidNotificationChannel(
-      'new_orders',
+      'new_orders_v2',
       'طلبات جديدة',
-      description: 'إشعارات الطلبات الجديدة القريبة منك',
+      description: 'إشعارات الطلبات الجديدة القريبة منك - أولوية قصوى',
       importance: Importance.max,
       enableVibration: true,
       playSound: true,
       sound: RawResourceAndroidNotificationSound('trip_reminder'),
     );
 
+    // Channel 2: Unassigned orders reminder — highest priority
     const unassignedOrdersChannel = AndroidNotificationChannel(
-      'unassigned_orders',
+      'unassigned_orders_v2',
       'تذكير بطلبات متاحة',
-      description: 'تذكيرات بالطلبات المتاحة القريبة منك',
+      description: 'تذكيرات بالطلبات المتاحة القريبة منك - أولوية قصوى',
       importance: Importance.max,
       enableVibration: true,
       playSound: true,
       sound: RawResourceAndroidNotificationSound('trip_reminder'),
     );
 
+    // Channel 3: Order updates — normal priority
     const orderUpdatesChannel = AndroidNotificationChannel(
       'order_updates',
       'تحديثات الطلبات',
-      description: 'تحديثات حالة الطلبات الحالية',
+      description: 'تحديثات حالة الطلبات الحالية - أولوية عادية',
       importance: Importance.defaultImportance,
       enableVibration: true,
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('trip_reminder'),
     );
 
+    // Channel 4: Acceptance confirmations — high priority
     const acceptanceChannel = AndroidNotificationChannel(
       'acceptance_confirmations',
       'تأكيد القبول',
-      description: 'تأكيدات قبول الطلبات',
+      description: 'تأكيدات قبول الطلبات - أولوية عالية',
       importance: Importance.high,
       enableVibration: true,
       playSound: true,
+      sound: RawResourceAndroidNotificationSound('trip_reminder'),
+    );
+
+    // Channel 5: Trip start reminders — highest priority
+    const tripRemindersChannel = AndroidNotificationChannel(
+      'trip_reminders',
+      'تذكيرات بدء الرحلة',
+      description: 'تذكيرات للسائق لبدء الرحلة بعد القبول - أولوية قصوى',
+      importance: Importance.max,
+      enableVibration: true,
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('trip_reminder'),
     );
 
     final android = _localNotifications
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
 
+    // Delete ALL old channels to force fresh creation with correct sound
+    await android?.deleteNotificationChannel('new_orders');
+    await android?.deleteNotificationChannel('unassigned_orders');
+    await android?.deleteNotificationChannel('new_orders_v2');
+    await android?.deleteNotificationChannel('unassigned_orders_v2');
+    await android?.deleteNotificationChannel('trip_reminders');
+
     await android?.createNotificationChannel(newOrdersChannel);
     await android?.createNotificationChannel(unassignedOrdersChannel);
     await android?.createNotificationChannel(orderUpdatesChannel);
     await android?.createNotificationChannel(acceptanceChannel);
-
-    // Channel for trip start reminders — high priority with custom sound
-    const tripRemindersChannel = AndroidNotificationChannel(
-      'trip_reminders',
-      'تذكيرات بدء الرحلة',
-      description: 'تذكيرات للسائق لبدء الرحلة بعد القبول',
-      importance: Importance.max,
-      enableVibration: true,
-      playSound: true,
-      sound: RawResourceAndroidNotificationSound('trip_reminder'),
-    );
-
     await android?.createNotificationChannel(tripRemindersChannel);
   }
 
@@ -258,6 +303,7 @@ class NotificationService {
     final color = _getNotificationColor('trip_start_reminder');
 
     // Show/update system notification (same ID → updates in place)
+    // NOTE: Using 'call' category instead of 'reminder' for more urgent appearance
     _localNotifications.show(
       orderId.hashCode,
       'هل وصلت للعميل؟',
@@ -274,17 +320,25 @@ class NotificationService {
           playSound: true,
           sound: const RawResourceAndroidNotificationSound('trip_reminder'),
           fullScreenIntent: true,
-          category: AndroidNotificationCategory.reminder,
+          category: AndroidNotificationCategory.call, // Changed from 'reminder' to 'call' for urgency
           visibility: NotificationVisibility.public,
           onlyAlertOnce: false,
+          ongoing: true, // Added: keeps notification persistent
+          autoCancel: false, // Added: prevents dismissal on tap
         ),
       ),
       payload: payload,
     );
 
-    // Navigate to active order if not already there
-    if (!_isOnActiveOrder()) {
-      _navigateTo('/active-order');
+    // NEW: Open full-screen trip start reminder UI instead of just navigating
+    final reminderData = TripStartReminderData.tryParse(data);
+    if (reminderData != null) {
+      _navigateToTripStartReminder(reminderData);
+    } else {
+      // Fallback: navigate to active order if parsing fails
+      if (!_isOnActiveOrder()) {
+        _navigateTo('/active-order');
+      }
     }
   }
 
@@ -325,7 +379,7 @@ class NotificationService {
 
     final type = NotificationHelper.resolveType(data);
     final isReminder = type == 'unassigned_order_reminder';
-    final channelId = isReminder ? 'unassigned_orders' : 'new_orders';
+    final channelId = isReminder ? 'unassigned_orders_v2' : 'new_orders_v2';
     final channelName = isReminder ? 'تذكير بطلبات متاحة' : 'طلبات جديدة';
 
     final color = _getNotificationColor(type ?? '');
@@ -368,10 +422,11 @@ class NotificationService {
   }
 
   /// Navigate to the full-screen notification screen via GoRouter.
+  /// Improved with retry mechanism for better reliability.
   void _navigateToFullScreen(FullScreenNotificationData data) {
     final ctx = _navigatorKey?.currentContext;
     if (ctx == null) {
-      // App not ready yet — store for later
+      // App not ready yet — store for later with retry mechanism
       _pendingRoute = '/full-screen-notification';
       _pendingNotificationData = {
         'orderId': data.orderId,
@@ -383,8 +438,9 @@ class NotificationService {
       };
       if (kDebugMode) {
         debugPrint(
-            '[NotificationService] Context not ready, queued pending route');
+            '[NotificationService] Context not ready, scheduling retry for full-screen notification');
       }
+      _schedulePendingNavigation(() => _navigateToFullScreen(data));
       return;
     }
 
@@ -399,7 +455,76 @@ class NotificationService {
       if (kDebugMode) {
         debugPrint('[NotificationService] ❌ Navigation error: $e');
       }
+      // Retry after short delay
+      _schedulePendingNavigation(() => _navigateToFullScreen(data));
     }
+  }
+
+  /// Navigate to the trip start reminder screen via GoRouter.
+  /// Uses same retry mechanism as full-screen notifications.
+  void _navigateToTripStartReminder(TripStartReminderData data) {
+    final ctx = _navigatorKey?.currentContext;
+    if (ctx == null) {
+      // App not ready yet — store for later with retry mechanism
+      _pendingTripReminderRoute = '/trip-start-reminder';
+      _pendingTripReminderData = {
+        'orderId': data.orderId,
+        'pickupLabel': data.pickupLabel,
+        'remainingMinutes': data.remainingMinutes.toString(),
+        'createdAt': data.createdAtMs,
+      };
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationService] Context not ready, scheduling retry for trip reminder');
+      }
+      _schedulePendingNavigation(() => _navigateToTripStartReminder(data));
+      return;
+    }
+
+    if (kDebugMode) {
+      debugPrint(
+          '[NotificationService] ✅ Navigating to /trip-start-reminder');
+    }
+
+    try {
+      ctx.push('/trip-start-reminder', extra: data);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[NotificationService] ❌ Navigation error: $e');
+      }
+      // Retry after short delay
+      _schedulePendingNavigation(() => _navigateToTripStartReminder(data));
+    }
+  }
+
+  /// Schedule a pending navigation to execute after the next frame.
+  /// Uses WidgetsBinding.addPostFrameCallback for reliable execution.
+  /// Retries up to 3 times with exponential backoff.
+  void _schedulePendingNavigation(VoidCallback callback, {int retryCount = 0}) {
+    if (retryCount >= 3) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationService] ❌ Max retries reached for pending navigation');
+      }
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_navigatorKey?.currentContext != null) {
+        // Context is now available, execute callback
+        callback();
+      } else {
+        // Still no context, retry after delay with exponential backoff
+        final delayMs = 200 * (retryCount + 1); // 200ms, 400ms, 600ms
+        if (kDebugMode) {
+          debugPrint(
+              '[NotificationService] ⏱️ Retry ${retryCount + 1}/3 after ${delayMs}ms');
+        }
+        Future.delayed(Duration(milliseconds: delayMs), () {
+          _schedulePendingNavigation(callback, retryCount: retryCount + 1);
+        });
+      }
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -477,9 +602,8 @@ class NotificationService {
     }
   }
 
-  /// Check if driver has an active trip that has STARTED (on_route status).
-  /// Returns true only if driver is actively driving (status = on_route).
-  /// Returns false if driver accepted but hasn't started trip yet (status = accepted).
+  /// Check if driver has an active trip (accepted or on_route).
+  /// IMPORTANT: Firestore stores status as 'accepted' and 'on_route' (with underscore)
   Future<bool> _isDriverOnActiveTrip() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return false;
@@ -488,14 +612,15 @@ class NotificationService {
       final snapshot = await FirebaseFirestore.instance
           .collection('orders')
           .where('driverId', isEqualTo: user.uid)
-          .where('status', isEqualTo: 'on_route')
+          .where('status', whereIn: ['accepted', 'on_route']) // Fixed: 'on_route' not 'onRoute'
           .limit(1)
           .get();
 
       final hasActiveTrip = snapshot.docs.isNotEmpty;
 
       if (kDebugMode && hasActiveTrip) {
-        debugPrint('[NotificationService] Driver has active trip in progress (on_route)');
+        final doc = snapshot.docs.first;
+        debugPrint('[NotificationService] Driver has active trip: ${doc.id}, status: ${doc.data()['status']}, skipping new order notification');
       }
 
       return hasActiveTrip;
@@ -522,14 +647,13 @@ class NotificationService {
     _navigatorKey = appNavigatorKey;
 
     // Flush any pending navigation from notifications received before context was ready
-    if (_pendingRoute != null && _navigatorKey?.currentContext != null) {
-      final route = _pendingRoute!;
-      _pendingRoute = null;
-
-      if (route == '/full-screen-notification' &&
+    if (_navigatorKey?.currentContext != null) {
+      // Handle pending full-screen notification
+      if (_pendingRoute == '/full-screen-notification' &&
           _pendingNotificationData != null) {
         final data =
             FullScreenNotificationData.tryParse(_pendingNotificationData!);
+        _pendingRoute = null;
         _pendingNotificationData = null;
         if (data != null) {
           _navigateToFullScreen(data);
@@ -537,7 +661,25 @@ class NotificationService {
         }
       }
 
-      _navigatorKey!.currentContext!.go(route);
+      // Handle pending trip start reminder
+      if (_pendingTripReminderRoute == '/trip-start-reminder' &&
+          _pendingTripReminderData != null) {
+        final data =
+            TripStartReminderData.tryParse(_pendingTripReminderData!);
+        _pendingTripReminderRoute = null;
+        _pendingTripReminderData = null;
+        if (data != null) {
+          _navigateToTripStartReminder(data);
+          return;
+        }
+      }
+
+      // Handle other pending routes
+      if (_pendingRoute != null) {
+        final route = _pendingRoute!;
+        _pendingRoute = null;
+        _navigatorKey!.currentContext!.go(route);
+      }
     }
   }
 }

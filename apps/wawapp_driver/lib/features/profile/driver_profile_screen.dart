@@ -65,8 +65,6 @@ class DriverProfileScreen extends ConsumerWidget {
                   _buildInfoTile('الهاتف', profile.phone, Icons.phone),
                   _buildInfoTile('المدينة', profile.city ?? 'غير محدد',
                       Icons.location_city),
-                  _buildInfoTile('المنطقة', profile.region ?? 'غير محدد',
-                      Icons.location_on),
                 ]),
                 const SizedBox(height: 16),
                 _buildInfoSection('معلومات السيارة', [

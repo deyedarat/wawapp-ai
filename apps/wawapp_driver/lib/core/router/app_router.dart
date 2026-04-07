@@ -23,6 +23,7 @@ import '../../features/home/driver_home_screen.dart';
 import '../../features/nearby/nearby_screen.dart';
 import '../../features/profile/driver_profile_edit_screen.dart';
 import '../../features/notifications/full_screen_notification_screen.dart';
+import '../../features/notifications/trip_start_reminder_screen.dart';
 import '../../features/profile/driver_profile_screen.dart';
 import '../../features/profile/providers/driver_profile_providers.dart';
 import '../../features/wallet/wallet_screen.dart';
@@ -137,6 +138,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 'extra=$extra, query=$params');
           }
           return const NearbyScreen();
+        },
+      ),
+      GoRoute(
+        path: '/trip-start-reminder',
+        name: 'tripStartReminder',
+        builder: (context, state) {
+          // 1. Try GoRouter extra (in-app navigation)
+          final extra = state.extra;
+          if (extra is TripStartReminderData) {
+            return TripStartReminderScreen(data: extra);
+          }
+
+          // 2. Try query parameters (deep links / notification tap)
+          final params = state.uri.queryParameters;
+          final data = TripStartReminderData.tryParse(params);
+          if (data != null) {
+            return TripStartReminderScreen(data: data);
+          }
+
+          // 3. Fallback — missing or invalid data, redirect to active order
+          if (kDebugMode) {
+            debugPrint('[ROUTER] ❌ /trip-start-reminder: invalid params, '
+                'extra=$extra, query=$params');
+          }
+          return const ActiveOrderScreen();
         },
       ),
     ],

@@ -88,9 +88,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get not_specified => 'Non spécifié';
 
   @override
-  String get region => 'Région';
-
-  @override
   String get vehicle_info => 'Informations sur le véhicule';
 
   @override

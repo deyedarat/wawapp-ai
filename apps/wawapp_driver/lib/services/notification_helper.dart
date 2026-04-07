@@ -39,7 +39,8 @@ class NotificationHelper {
         route = '/full-screen-notification';
         break;
       case 'trip_start_reminder':
-        route = '/active-order';
+        // Full-screen trip start reminder — data passed via GoRouter extra
+        route = '/trip-start-reminder';
         break;
       case 'timeout_expired':
         route = '/nearby';

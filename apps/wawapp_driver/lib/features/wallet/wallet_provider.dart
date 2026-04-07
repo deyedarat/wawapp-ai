@@ -85,7 +85,7 @@ final dailySummaryProvider = StreamProvider.family<DailySummary, String>((ref, d
       final completedAt = ts.toDate();
       if (completedAt.isBefore(startOfDay)) break; // Sorted DESC, so stop early
       final price = (doc.data()['price'] as num?)?.toDouble() ?? 0;
-      totalEarnings += price;
+      totalEarnings += price * 0.90; // Net after 10% commission
       count++;
     }
 

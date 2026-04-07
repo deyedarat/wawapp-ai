@@ -132,6 +132,16 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              if (Navigator.of(context).canPop()) {
+                Navigator.of(context).pop();
+              } else {
+                context.go('/');
+              }
+            },
+          ),
           title: Text(l10n.nearby_requests),
           actions: [
             IconButton(

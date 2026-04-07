@@ -21,7 +21,6 @@ class _DriverProfileEditScreenState
   final _vehiclePlateController = TextEditingController();
   final _vehicleColorController = TextEditingController();
   final _cityController = TextEditingController();
-  final _regionController = TextEditingController();
 
   @override
   void initState() {
@@ -38,7 +37,6 @@ class _DriverProfileEditScreenState
         _vehiclePlateController.text = profile.vehiclePlate ?? '';
         _vehicleColorController.text = profile.vehicleColor ?? '';
         _cityController.text = profile.city ?? '';
-        _regionController.text = profile.region ?? '';
       }
     });
   }
@@ -50,7 +48,6 @@ class _DriverProfileEditScreenState
     _vehiclePlateController.dispose();
     _vehicleColorController.dispose();
     _cityController.dispose();
-    _regionController.dispose();
     super.dispose();
   }
 
@@ -86,9 +83,6 @@ class _DriverProfileEditScreenState
       city: _cityController.text.trim().isEmpty
           ? null
           : _cityController.text.trim(),
-      region: _regionController.text.trim().isEmpty
-          ? null
-          : _regionController.text.trim(),
       isVerified: currentProfile?.isVerified ?? false,
       isOnline: currentProfile?.isOnline ?? false,
       rating: currentProfile?.rating ?? 0.0,
@@ -229,12 +223,6 @@ class _DriverProfileEditScreenState
                     }
                     return null;
                   },
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  controller: _regionController,
-                  label: 'المنطقة',
-                  icon: Icons.location_on,
                 ),
               ]),
               const SizedBox(height: 24),

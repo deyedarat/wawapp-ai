@@ -128,6 +128,26 @@ async function findEligibleDrivers(
         continue;
       }
 
+      // Skip drivers with active orders (accepted or onRoute)
+      const activeAccepted = await admin
+        .firestore()
+        .collection('orders')
+        .where('driverId', '==', driverId)
+        .where('status', '==', 'accepted')
+        .limit(1)
+        .get();
+      const activeOnRoute = await admin
+        .firestore()
+        .collection('orders')
+        .where('driverId', '==', driverId)
+        .where('status', '==', 'onRoute')
+        .limit(1)
+        .get();
+      if (!activeAccepted.empty || !activeOnRoute.empty) {
+        console.log('[NotifyNewOrder] Skipping driver with active order', { driver_id: driverId });
+        continue;
+      }
+
       // Check profile completeness (name, vehicleType, vehiclePlate, city required)
       const name = driverData?.name as string | undefined;
       const vehicleType = driverData?.vehicleType as string | undefined;
@@ -228,7 +248,7 @@ async function sendDriverNotification(
       apns: {
         payload: {
           aps: {
-            sound: 'default',
+            sound: 'trip_reminder.wav',
             badge: 1,
             contentAvailable: true,
           },

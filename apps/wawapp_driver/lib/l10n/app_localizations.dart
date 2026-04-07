@@ -256,12 +256,6 @@ abstract class AppLocalizations {
   /// **'غير محدد'**
   String get not_specified;
 
-  /// No description provided for @region.
-  ///
-  /// In ar, this message translates to:
-  /// **'المنطقة'**
-  String get region;
-
   /// No description provided for @vehicle_info.
   ///
   /// In ar, this message translates to:

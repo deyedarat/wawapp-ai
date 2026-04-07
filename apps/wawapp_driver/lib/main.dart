@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -37,11 +38,45 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       type == 'new_order_nearby' ||
       type == 'unassigned_order_reminder') {
     final plugin = FlutterLocalNotificationsPlugin();
+
+    // Initialize plugin
     await plugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       ),
     );
+
+    // Create notification channels with sound BEFORE showing notification
+    final android = plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+
+    if (android != null) {
+      // Channel for new orders
+      const newOrdersChannel = AndroidNotificationChannel(
+        'new_orders',
+        'طلبات جديدة',
+        description: 'إشعارات الطلبات الجديدة القريبة منك - أولوية قصوى',
+        importance: Importance.max,
+        enableVibration: true,
+        playSound: true,
+        sound: RawResourceAndroidNotificationSound('trip_reminder'),
+      );
+
+      // Channel for unassigned orders reminder
+      const unassignedOrdersChannel = AndroidNotificationChannel(
+        'unassigned_orders',
+        'تذكير بطلبات متاحة',
+        description: 'تذكيرات بالطلبات المتاحة القريبة منك - أولوية قصوى',
+        importance: Importance.max,
+        enableVibration: true,
+        playSound: true,
+        sound: RawResourceAndroidNotificationSound('trip_reminder'),
+      );
+
+      // Create channels
+      await android.createNotificationChannel(newOrdersChannel);
+      await android.createNotificationChannel(unassignedOrdersChannel);
+    }
 
     final orderId = message.data['orderId'] ?? '';
     final pickupLabel = message.data['pickupLabel'] ?? 'موقع الاستلام';
@@ -49,6 +84,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final channelId = type == 'unassigned_order_reminder'
         ? 'unassigned_orders'
         : 'new_orders';
+    final channelName = type == 'unassigned_order_reminder'
+        ? 'تذكير بطلبات متاحة'
+        : 'طلبات جديدة';
 
     await plugin.show(
       orderId.hashCode,
@@ -57,14 +95,20 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       NotificationDetails(
         android: AndroidNotificationDetails(
           channelId,
-          channelId == 'new_orders' ? 'طلبات جديدة' : 'تذكير بطلبات متاحة',
+          channelName,
           importance: Importance.max,
           priority: Priority.max,
           enableVibration: true,
+          vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
           playSound: true,
+          sound: const RawResourceAndroidNotificationSound('trip_reminder'),
           fullScreenIntent: true,
           category: AndroidNotificationCategory.call,
           visibility: NotificationVisibility.public,
+          showWhen: true,
+          ongoing: true,
+          autoCancel: false,
+          timeoutAfter: 60000,
         ),
       ),
       payload: jsonEncode(message.data),

@@ -284,19 +284,22 @@ async function sendDriverNotification(
   }
 
   try {
+    const pickupLabel = orderData.pickup?.label || (typeof orderData.pickupAddress === 'string' ? orderData.pickupAddress : orderData.pickupAddress?.label) || 'موقع الانطلاق';
+    const dropoffLabel = orderData.dropoff?.label || (typeof orderData.dropoffAddress === 'string' ? orderData.dropoffAddress : orderData.dropoffAddress?.label) || 'الوجهة';
+
     // Prepare notification data payload
     const message: admin.messaging.Message = {
       token: driver.fcmToken,
       notification: {
-        title: 'طلب جديد قريب منك',
-        body: `${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'} → ${orderData.dropoff?.label || orderData.dropoffAddress || 'الوجهة'}`,
+        title: 'تذكير: طلب متاح قريب منك',
+        body: `${pickupLabel} → ${dropoffLabel}`,
       },
-      // Data-only message — let Flutter app handle display via full-screen intent
       data: {
         notificationType: 'unassigned_order_reminder',
+        type: 'unassigned_order_reminder',
         orderId: orderId,
-        pickupLabel: orderData.pickup?.label || (typeof orderData.pickupAddress === 'string' ? orderData.pickupAddress : orderData.pickupAddress?.label) || 'موقع الانطلاق',
-        dropoffLabel: orderData.dropoff?.label || (typeof orderData.dropoffAddress === 'string' ? orderData.dropoffAddress : orderData.dropoffAddress?.label) || 'الوجهة',
+        pickupLabel: pickupLabel,
+        dropoffLabel: dropoffLabel,
         pickupLat: String(orderData.pickup?.lat || orderData.pickupAddress?.latitude || 0),
         pickupLng: String(orderData.pickup?.lng || orderData.pickupAddress?.longitude || 0),
         dropoffLat: String(orderData.dropoff?.lat || orderData.dropoffAddress?.latitude || 0),
@@ -319,7 +322,7 @@ async function sendDriverNotification(
       apns: {
         payload: {
           aps: {
-            sound: 'default',
+            sound: 'trip_reminder.wav',
             badge: 1,
             contentAvailable: true,
           },

@@ -155,7 +155,7 @@ class _FullScreenNotificationScreenState
       }
     }
     if (!mounted) return;
-    context.go('/nearby');
+    context.go('/');
   }
 
   void _snooze() {
@@ -166,7 +166,7 @@ class _FullScreenNotificationScreenState
             // Callback will be handled by notification service
           },
         );
-    context.go('/nearby');
+    context.go('/');
   }
 
   @override

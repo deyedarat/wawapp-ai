@@ -10,7 +10,6 @@ class DriverProfile {
   final String? vehiclePlate;
   final String? vehicleColor;
   final String? city;
-  final String? region;
   final bool isVerified;
   final bool isOnline;
   final bool isBlocked;
@@ -29,7 +28,6 @@ class DriverProfile {
     this.vehiclePlate,
     this.vehicleColor,
     this.city,
-    this.region,
     this.isVerified = false,
     this.isOnline = false,
     this.isBlocked = false,
@@ -66,7 +64,6 @@ class DriverProfile {
       vehiclePlate: json['vehiclePlate'] as String?,
       vehicleColor: json['vehicleColor'] as String?,
       city: json['city'] as String?,
-      region: json['region'] as String?,
       isVerified: json['isVerified'] as bool? ?? false,
       isOnline: json['isOnline'] as bool? ?? false,
       isBlocked: json['isBlocked'] as bool? ?? false,
@@ -88,7 +85,6 @@ class DriverProfile {
       'vehiclePlate': vehiclePlate,
       'vehicleColor': vehicleColor,
       'city': city,
-      'region': region,
       'isVerified': isVerified,
       'isOnline': isOnline,
       'isBlocked': isBlocked,
@@ -110,7 +106,6 @@ class DriverProfile {
       'vehiclePlate': vehiclePlate,
       'vehicleColor': vehicleColor,
       'city': city,
-      'region': region,
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }
@@ -125,7 +120,6 @@ class DriverProfile {
     String? vehiclePlate,
     String? vehicleColor,
     String? city,
-    String? region,
     bool? isVerified,
     bool? isOnline,
     bool? isBlocked,
@@ -144,7 +138,6 @@ class DriverProfile {
       vehiclePlate: vehiclePlate ?? this.vehiclePlate,
       vehicleColor: vehicleColor ?? this.vehicleColor,
       city: city ?? this.city,
-      region: region ?? this.region,
       isVerified: isVerified ?? this.isVerified,
       isOnline: isOnline ?? this.isOnline,
       isBlocked: isBlocked ?? this.isBlocked,
@@ -169,7 +162,6 @@ class DriverProfile {
           vehiclePlate == other.vehiclePlate &&
           vehicleColor == other.vehicleColor &&
           city == other.city &&
-          region == other.region &&
           isVerified == other.isVerified &&
           isOnline == other.isOnline &&
           isBlocked == other.isBlocked &&
@@ -187,7 +179,6 @@ class DriverProfile {
         vehiclePlate,
         vehicleColor,
         city,
-        region,
         isVerified,
         isOnline,
         isBlocked,

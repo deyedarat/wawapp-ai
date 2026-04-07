@@ -88,9 +88,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get not_specified => 'غير محدد';
 
   @override
-  String get region => 'المنطقة';
-
-  @override
   String get vehicle_info => 'معلومات السيارة';
 
   @override
