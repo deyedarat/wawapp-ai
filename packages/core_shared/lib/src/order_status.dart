@@ -122,8 +122,8 @@ enum OrderStatus {
   bool get canDriverCompleteTrip => this == OrderStatus.onRoute;
 
   /// Check if driver can cancel from this status
-  bool get canDriverCancel =>
-      this == OrderStatus.accepted || this == OrderStatus.onRoute;
+  /// Only allowed before trip starts (accepted). Once onRoute, must complete.
+  bool get canDriverCancel => this == OrderStatus.accepted;
 
   /// Check if client can cancel from this status
   bool get canClientCancel =>
@@ -150,7 +150,6 @@ enum OrderStatus {
       ],
       OrderStatus.onRoute: [
         OrderStatus.completed,
-        OrderStatus.cancelledByDriver
       ],
       OrderStatus.completed: <OrderStatus>[],
       OrderStatus.cancelledByClient: <OrderStatus>[],

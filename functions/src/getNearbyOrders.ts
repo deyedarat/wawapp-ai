@@ -115,6 +115,24 @@ export const getNearbyOrders = functions.https.onCall(async (data, context) => {
       return { orders: [] };
     }
 
+    // Skip if driver has an active order (accepted or onRoute)
+    const activeOrderSnapshot = await admin
+      .firestore()
+      .collection('orders')
+      .where('driverId', '==', driverId)
+      .where('status', 'in', ['accepted', 'onRoute'])
+      .limit(1)
+      .get();
+
+    if (!activeOrderSnapshot.empty) {
+      console.log('[getNearbyOrders] Driver has active order, returning empty', {
+        driver_id: driverId,
+        active_order_id: activeOrderSnapshot.docs[0].id,
+        active_status: activeOrderSnapshot.docs[0].data().status,
+      });
+      return { orders: [] };
+    }
+
     // Query matching orders
     const ordersSnapshot = await admin
       .firestore()

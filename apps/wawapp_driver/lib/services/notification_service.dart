@@ -430,6 +430,55 @@ class NotificationService {
       payload: payload,
     );
 
+    // Repeat sound: show 2 more notifications with short delays
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      _localNotifications.show(
+        notificationId + 1,
+        'طلب جديد قريب منك',
+        '${notificationData.pickupLabel} → ${notificationData.dropoffLabel}',
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channelId,
+            channelName,
+            importance: Importance.max,
+            priority: Priority.max,
+            color: color,
+            colorized: true,
+            enableVibration: true,
+            playSound: true,
+            sound: const RawResourceAndroidNotificationSound('trip_reminder'),
+            onlyAlertOnce: false,
+          ),
+        ),
+      );
+    });
+    Future.delayed(const Duration(milliseconds: 3000), () {
+      _localNotifications.show(
+        notificationId + 2,
+        'طلب جديد قريب منك',
+        '${notificationData.pickupLabel} → ${notificationData.dropoffLabel}',
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channelId,
+            channelName,
+            importance: Importance.max,
+            priority: Priority.max,
+            color: color,
+            colorized: true,
+            enableVibration: true,
+            playSound: true,
+            sound: const RawResourceAndroidNotificationSound('trip_reminder'),
+            onlyAlertOnce: false,
+          ),
+        ),
+      );
+      // Clean up extra notifications after a moment
+      Future.delayed(const Duration(seconds: 3), () {
+        _localNotifications.cancel(notificationId + 1);
+        _localNotifications.cancel(notificationId + 2);
+      });
+    });
+
     // In foreground: navigate directly to full-screen route
     _navigateToFullScreen(notificationData);
   }

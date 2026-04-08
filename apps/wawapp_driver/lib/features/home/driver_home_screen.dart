@@ -16,6 +16,7 @@ import '../../services/location_service.dart';
 import '../../services/tracking_service.dart';
 import '../auth/providers/auth_service_provider.dart';
 import '../blocked/blocked_provider.dart';
+import '../active/providers/active_order_provider.dart';
 import '../profile/providers/driver_profile_providers.dart';
 import '../wallet/wallet_provider.dart';
 import 'providers/driver_status_provider.dart';
@@ -351,6 +352,9 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       );
     }
 
+    // Watch active orders — show banner if driver has an active trip
+    final activeOrdersAsync = ref.watch(activeOrdersProvider);
+
     // Watch the online status stream (non-blocking, real-time)
     final onlineStatusAsync = ref.watch(driverOnlineStatusProvider);
 
@@ -423,6 +427,47 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         ),
         body: Column(
           children: [
+            // Active Order Banner
+            activeOrdersAsync.whenOrNull(
+              data: (orders) {
+                if (orders.isEmpty) return null;
+                final order = orders.first;
+                return GestureDetector(
+                  onTap: () => context.push('/active-order'),
+                  child: Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.fromLTRB(
+                      DriverAppSpacing.md, DriverAppSpacing.md, DriverAppSpacing.md, 0,
+                    ),
+                    padding: const EdgeInsets.all(DriverAppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: order.status == 'onRoute'
+                          ? DriverAppColors.primaryLight
+                          : Colors.orange,
+                      borderRadius: BorderRadius.circular(DriverAppSpacing.radiusMd),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.local_shipping, color: Colors.white),
+                        const SizedBox(width: DriverAppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            order.status == 'onRoute'
+                                ? 'لديك رحلة جارية — اضغط للعودة'
+                                : 'لديك طلب مقبول — اضغط لبدء الرحلة',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ) ?? const SizedBox.shrink(),
             // Status Card
             Container(
               margin: const EdgeInsets.all(DriverAppSpacing.md),
