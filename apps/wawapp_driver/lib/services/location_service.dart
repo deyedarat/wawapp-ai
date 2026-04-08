@@ -163,10 +163,9 @@ class LocationService {
     if (defaultTargetPlatform == TargetPlatform.android) {
       locationSettings = AndroidSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 50,
-        forceLocationManager: true,
-        intervalDuration: const Duration(seconds: 10),
-        // P1 FIX: Foreground notification for reliable background tracking
+        distanceFilter: 0,
+        forceLocationManager: false,
+        intervalDuration: const Duration(seconds: 30),
         foregroundNotificationConfig: const ForegroundNotificationConfig(
           notificationTitle: 'WawApp Driver',
           notificationText: 'يتم تتبع موقعك لاستقبال الطلبات',

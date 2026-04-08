@@ -36,7 +36,34 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Show full-screen intent notification for order-related data-only messages
   if (type == 'new_order' ||
       type == 'new_order_nearby' ||
-      type == 'unassigned_order_reminder') {
+      type == 'unassigned_order_reminder' ||
+      type == 'trip_start_reminder') {
+    // Skip new order notifications if driver has an active trip
+    if (type == 'new_order' ||
+        type == 'new_order_nearby' ||
+        type == 'unassigned_order_reminder') {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        var snap = await FirebaseFirestore.instance
+            .collection('orders')
+            .where('assignedDriverId', isEqualTo: user.uid)
+            .where('status', whereIn: ['accepted', 'onRoute'])
+            .limit(1)
+            .get();
+        if (snap.docs.isEmpty) {
+          snap = await FirebaseFirestore.instance
+              .collection('orders')
+              .where('driverId', isEqualTo: user.uid)
+              .where('status', whereIn: ['accepted', 'onRoute'])
+              .limit(1)
+              .get();
+        }
+        if (snap.docs.isNotEmpty) {
+          // Driver is on an active trip — suppress this notification
+          return;
+        }
+      }
+    }
     final plugin = FlutterLocalNotificationsPlugin();
 
     // Initialize plugin
@@ -51,47 +78,73 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         AndroidFlutterLocalNotificationsPlugin>();
 
     if (android != null) {
-      // Channel for new orders
       const newOrdersChannel = AndroidNotificationChannel(
-        'new_orders',
+        'new_orders_v3',
         'طلبات جديدة',
         description: 'إشعارات الطلبات الجديدة القريبة منك - أولوية قصوى',
         importance: Importance.max,
         enableVibration: true,
         playSound: true,
         sound: RawResourceAndroidNotificationSound('trip_reminder'),
+        audioAttributesUsage: AudioAttributesUsage.alarm,
       );
 
-      // Channel for unassigned orders reminder
       const unassignedOrdersChannel = AndroidNotificationChannel(
-        'unassigned_orders',
+        'unassigned_orders_v3',
         'تذكير بطلبات متاحة',
         description: 'تذكيرات بالطلبات المتاحة القريبة منك - أولوية قصوى',
         importance: Importance.max,
         enableVibration: true,
         playSound: true,
         sound: RawResourceAndroidNotificationSound('trip_reminder'),
+        audioAttributesUsage: AudioAttributesUsage.alarm,
       );
 
-      // Create channels
+      const tripRemindersChannel = AndroidNotificationChannel(
+        'trip_reminders',
+        'تذكيرات بدء الرحلة',
+        description: 'تذكيرات للسائق لبدء الرحلة بعد القبول',
+        importance: Importance.max,
+        enableVibration: true,
+        playSound: true,
+        sound: RawResourceAndroidNotificationSound('trip_reminder'),
+        audioAttributesUsage: AudioAttributesUsage.alarm,
+      );
+
       await android.createNotificationChannel(newOrdersChannel);
       await android.createNotificationChannel(unassignedOrdersChannel);
+      await android.createNotificationChannel(tripRemindersChannel);
     }
 
     final orderId = message.data['orderId'] ?? '';
     final pickupLabel = message.data['pickupLabel'] ?? 'موقع الاستلام';
-    final dropoffLabel = message.data['dropoffLabel'] ?? 'الوجهة';
-    final channelId = type == 'unassigned_order_reminder'
-        ? 'unassigned_orders'
-        : 'new_orders';
-    final channelName = type == 'unassigned_order_reminder'
-        ? 'تذكير بطلبات متاحة'
-        : 'طلبات جديدة';
+    final destinationLabel = message.data['destinationLabel'] ?? message.data['dropoffLabel'] ?? 'الوجهة';
 
+    // Trip start reminder: different title/body than new order
+    final bool isTripReminder = type == 'trip_start_reminder';
+    final elapsed = message.data['elapsedMinutes'] ?? '?';
+    final notifTitle = isTripReminder
+        ? (message.data['title'] ?? 'هل وصلت للعميل؟')
+        : (message.data['title'] ?? 'طلب جديد قريب منك');
+    final notifBody = isTripReminder
+        ? '$pickupLabel → $destinationLabel'
+        : '$pickupLabel → $destinationLabel';
+    final channelId = isTripReminder
+        ? 'trip_reminders'
+        : type == 'unassigned_order_reminder'
+            ? 'unassigned_orders_v3'
+            : 'new_orders_v3';
+    final channelName = type == 'trip_start_reminder'
+        ? 'تذكيرات بدء الرحلة'
+        : type == 'unassigned_order_reminder'
+            ? 'تذكير بطلبات متاحة'
+            : 'طلبات جديدة';
+
+    await plugin.cancel(orderId.hashCode);
     await plugin.show(
       orderId.hashCode,
-      message.data['title'] ?? 'طلب جديد قريب منك',
-      '$pickupLabel → $dropoffLabel',
+      notifTitle,
+      notifBody,
       NotificationDetails(
         android: AndroidNotificationDetails(
           channelId,

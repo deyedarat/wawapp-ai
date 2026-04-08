@@ -140,21 +140,22 @@ async function findEligibleDrivers(
       }
 
       // Skip drivers with active orders (accepted or onRoute)
-      const activeAccepted = await admin
+      // Check both driverId and assignedDriverId fields
+      const activeByDriverId = await admin
         .firestore()
         .collection('orders')
         .where('driverId', '==', driverId)
-        .where('status', '==', 'accepted')
+        .where('status', 'in', ['accepted', 'onRoute'])
         .limit(1)
         .get();
-      const activeOnRoute = await admin
+      const activeByAssignedId = await admin
         .firestore()
         .collection('orders')
-        .where('driverId', '==', driverId)
-        .where('status', '==', 'onRoute')
+        .where('assignedDriverId', '==', driverId)
+        .where('status', 'in', ['accepted', 'onRoute'])
         .limit(1)
         .get();
-      if (!activeAccepted.empty || !activeOnRoute.empty) {
+      if (!activeByDriverId.empty || !activeByAssignedId.empty) {
         console.log('[NotifyUnassignedOrders] Skipping driver with active order', { driver_id: driverId });
         continue;
       }
@@ -310,10 +311,6 @@ async function sendDriverNotification(
     // Prepare notification data payload
     const message: admin.messaging.Message = {
       token: driver.fcmToken,
-      notification: {
-        title: 'تذكير: طلب متاح قريب منك',
-        body: `${pickupLabel} → ${dropoffLabel}`,
-      },
       data: {
         notificationType: 'unassigned_order_reminder',
         type: 'unassigned_order_reminder',
@@ -333,7 +330,7 @@ async function sendDriverNotification(
         priority: 'high',
         ttl: 300000,
         notification: {
-          channelId: 'unassigned_orders',
+          channelId: 'unassigned_orders_v3',
           sound: 'trip_reminder',
           priority: 'max',
           visibility: 'public',

@@ -82,24 +82,26 @@ class NotificationService {
   Future<void> _createNotificationChannels() async {
     // Channel 1: New orders — highest priority
     const newOrdersChannel = AndroidNotificationChannel(
-      'new_orders_v2',
+      'new_orders_v3',
       'طلبات جديدة',
       description: 'إشعارات الطلبات الجديدة القريبة منك - أولوية قصوى',
       importance: Importance.max,
       enableVibration: true,
       playSound: true,
       sound: RawResourceAndroidNotificationSound('trip_reminder'),
+      audioAttributesUsage: AudioAttributesUsage.alarm,
     );
 
     // Channel 2: Unassigned orders reminder — highest priority
     const unassignedOrdersChannel = AndroidNotificationChannel(
-      'unassigned_orders_v2',
+      'unassigned_orders_v3',
       'تذكير بطلبات متاحة',
       description: 'تذكيرات بالطلبات المتاحة القريبة منك - أولوية قصوى',
       importance: Importance.max,
       enableVibration: true,
       playSound: true,
       sound: RawResourceAndroidNotificationSound('trip_reminder'),
+      audioAttributesUsage: AudioAttributesUsage.alarm,
     );
 
     // Channel 3: Order updates — normal priority
@@ -133,6 +135,7 @@ class NotificationService {
       enableVibration: true,
       playSound: true,
       sound: RawResourceAndroidNotificationSound('trip_reminder'),
+      audioAttributesUsage: AudioAttributesUsage.alarm,
     );
 
     final android = _localNotifications
@@ -152,6 +155,8 @@ class NotificationService {
     await android?.deleteNotificationChannel('unassigned_orders');
     await android?.deleteNotificationChannel('new_orders_v2');
     await android?.deleteNotificationChannel('unassigned_orders_v2');
+    await android?.deleteNotificationChannel('new_orders_v3');
+    await android?.deleteNotificationChannel('unassigned_orders_v3');
     await android?.deleteNotificationChannel('trip_reminders');
 
     await android?.createNotificationChannel(newOrdersChannel);
@@ -214,12 +219,11 @@ class NotificationService {
       }
 
       // Don't interrupt driver on active trip with new order alerts
-      // Only block if driver has STARTED the trip (on_route status)
       final isBusy = await _isDriverOnActiveTrip();
       if (isBusy) {
         if (kDebugMode) {
           debugPrint(
-            '[NotificationService] Driver is on active trip (on_route), skipping new order notification',
+            '[NotificationService] Driver has active order, skipping new order notification',
           );
         }
         return;
@@ -301,26 +305,29 @@ class NotificationService {
   // Trip start reminder (driver accepted but hasn't started trip)
   // ---------------------------------------------------------------------------
 
-  void _showTripReminderNotification(Map<String, dynamic> data) {
+  void _showTripReminderNotification(Map<String, dynamic> data) async {
     final orderId = data['orderId'] as String? ?? '';
-    final remaining = data['remainingMinutes'] as String? ?? '?';
+    final remaining = data['elapsedMinutes'] as String? ?? '?';
     final pickupLabel = data['pickupLabel'] as String? ?? 'موقع الاستلام';
     final payload = jsonEncode(data);
 
     if (kDebugMode) {
       debugPrint(
-        '[NotificationService] 🔔 Trip reminder: order=$orderId, remaining=$remaining min',
+        '[NotificationService] 🔔 Trip reminder: order=$orderId, elapsed=$remaining min',
       );
     }
 
     final color = _getNotificationColor('trip_start_reminder');
 
-    // Show/update system notification (same ID → updates in place)
+    // Cancel existing ongoing notification before showing new one
+    // so Android treats it as brand-new (with sound + vibration)
+    await _localNotifications.cancel(orderId.hashCode);
+
     // NOTE: Using 'call' category instead of 'reminder' for more urgent appearance
     _localNotifications.show(
       orderId.hashCode,
       'هل وصلت للعميل؟',
-      'لديك $remaining دقائق لبدء الرحلة — $pickupLabel',
+      'مضى $remaining دقائق منذ القبول — $pickupLabel',
       NotificationDetails(
         android: AndroidNotificationDetails(
           'trip_reminders',
@@ -392,7 +399,7 @@ class NotificationService {
 
     final type = NotificationHelper.resolveType(data);
     final isReminder = type == 'unassigned_order_reminder';
-    final channelId = isReminder ? 'unassigned_orders_v2' : 'new_orders_v2';
+    final channelId = isReminder ? 'unassigned_orders_v3' : 'new_orders_v3';
     final channelName = isReminder ? 'تذكير بطلبات متاحة' : 'طلبات جديدة';
 
     final color = _getNotificationColor(type ?? '');
@@ -534,7 +541,8 @@ class NotificationService {
       _pendingTripReminderData = {
         'orderId': data.orderId,
         'pickupLabel': data.pickupLabel,
-        'remainingMinutes': data.remainingMinutes.toString(),
+        'destinationLabel': data.destinationLabel,
+        'elapsedMinutes': data.elapsedMinutes.toString(),
         'createdAt': data.createdAtMs,
       };
       if (kDebugMode) {
@@ -674,12 +682,22 @@ class NotificationService {
     if (user == null) return false;
 
     try {
-      final snapshot = await FirebaseFirestore.instance
+      // Check both driverId and assignedDriverId fields
+      var snapshot = await FirebaseFirestore.instance
           .collection('orders')
-          .where('driverId', isEqualTo: user.uid)
-          .where('status', whereIn: ['accepted', 'on_route']) // Fixed: 'on_route' not 'onRoute'
+          .where('assignedDriverId', isEqualTo: user.uid)
+          .where('status', whereIn: ['accepted', 'onRoute'])
           .limit(1)
           .get();
+
+      if (snapshot.docs.isEmpty) {
+        snapshot = await FirebaseFirestore.instance
+            .collection('orders')
+            .where('driverId', isEqualTo: user.uid)
+            .where('status', whereIn: ['accepted', 'onRoute'])
+            .limit(1)
+            .get();
+      }
 
       final hasActiveTrip = snapshot.docs.isNotEmpty;
 

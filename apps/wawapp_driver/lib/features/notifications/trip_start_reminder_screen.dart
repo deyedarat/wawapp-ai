@@ -13,13 +13,15 @@ class TripStartReminderData {
   const TripStartReminderData({
     required this.orderId,
     required this.pickupLabel,
-    required this.remainingMinutes,
+    required this.destinationLabel,
+    required this.elapsedMinutes,
     this.createdAtMs,
   });
 
   final String orderId;
   final String pickupLabel;
-  final int remainingMinutes;
+  final String destinationLabel;
+  final int elapsedMinutes;
   final int? createdAtMs;
 
   /// Parse from FCM notification data map with validation.
@@ -31,7 +33,8 @@ class TripStartReminderData {
     return TripStartReminderData(
       orderId: orderId,
       pickupLabel: (data['pickupLabel'] as String?) ?? 'موقع الاستلام',
-      remainingMinutes: _toInt(data['remainingMinutes']) ?? 0,
+      destinationLabel: (data['destinationLabel'] as String?) ?? 'الوجهة',
+      elapsedMinutes: _toInt(data['elapsedMinutes']) ?? 0,
       createdAtMs: _toInt(data['createdAt']),
     );
   }
@@ -64,7 +67,7 @@ class _TripStartReminderScreenState
   @override
   void initState() {
     super.initState();
-    _remainingSeconds = widget.data.remainingMinutes * 60;
+    _remainingSeconds = widget.data.elapsedMinutes * 60;
     _startCountdown();
   }
 
@@ -207,7 +210,7 @@ class _TripStartReminderScreenState
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'الوقت المتبقي',
+                      'الوقت منذ القبول',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black54,
@@ -226,6 +229,29 @@ class _TripStartReminderScreenState
                         Expanded(
                           child: Text(
                             widget.data.pickupLabel,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // Destination location
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.flag,
+                          size: 24,
+                          color: Color(0xFFE53935),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            widget.data.destinationLabel,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,

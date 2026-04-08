@@ -48,10 +48,6 @@ async function sendToDriver(
 
     await admin.messaging().send({
       token: fcmToken,
-      notification: {
-        title,
-        body,
-      },
       data: {
         ...data,
         title,
@@ -63,8 +59,10 @@ async function sendToDriver(
         priority: 'high',
         ttl: 120000,
         notification: {
-          channelId,
+          channelId: channelId,
           sound: 'trip_reminder',
+          priority: 'max' as const,
+          visibility: 'public' as const,
         },
       },
       apns: { payload: { aps: { sound: 'trip_reminder.wav', badge: 1, contentAvailable: true } } },
