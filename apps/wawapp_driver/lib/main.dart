@@ -39,6 +39,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       type == 'unassigned_order_reminder' ||
       type == 'trip_start_reminder') {
     // Skip new order notifications if driver has an active trip
+    // (trip_start_reminder should ALWAYS pass through)
     if (type == 'new_order' ||
         type == 'new_order_nearby' ||
         type == 'unassigned_order_reminder') {
@@ -59,14 +60,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
               .get();
         }
         if (snap.docs.isNotEmpty) {
-          // Driver is on an active trip — suppress this notification
           return;
         }
       }
     }
-    final plugin = FlutterLocalNotificationsPlugin();
 
-    // Initialize plugin
+    final plugin = FlutterLocalNotificationsPlugin();
     await plugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -78,10 +77,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         AndroidFlutterLocalNotificationsPlugin>();
 
     if (android != null) {
+      // Delete old channels to force fresh creation
+      for (final old in [
+        'new_orders', 'new_orders_v2', 'new_orders_v3', 'new_orders_v4',
+        'unassigned_orders', 'unassigned_orders_v2', 'unassigned_orders_v3', 'unassigned_orders_v4',
+        'trip_reminders',
+      ]) {
+        await android.deleteNotificationChannel(old);
+      }
+
       const newOrdersChannel = AndroidNotificationChannel(
-        'new_orders_v3',
+        'new_orders_v5',
         'طلبات جديدة',
-        description: 'إشعارات الطلبات الجديدة القريبة منك - أولوية قصوى',
+        description: 'إشعارات الطلبات الجديدة القريبة منك',
         importance: Importance.max,
         enableVibration: true,
         playSound: true,
@@ -90,9 +98,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       );
 
       const unassignedOrdersChannel = AndroidNotificationChannel(
-        'unassigned_orders_v3',
+        'unassigned_orders_v5',
         'تذكير بطلبات متاحة',
-        description: 'تذكيرات بالطلبات المتاحة القريبة منك - أولوية قصوى',
+        description: 'تذكيرات بالطلبات المتاحة القريبة منك',
         importance: Importance.max,
         enableVibration: true,
         playSound: true,
@@ -101,7 +109,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       );
 
       const tripRemindersChannel = AndroidNotificationChannel(
-        'trip_reminders',
+        'trip_reminders_v5',
         'تذكيرات بدء الرحلة',
         description: 'تذكيرات للسائق لبدء الرحلة بعد القبول',
         importance: Importance.max,
@@ -118,54 +126,63 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
     final orderId = message.data['orderId'] ?? '';
     final pickupLabel = message.data['pickupLabel'] ?? 'موقع الاستلام';
-    final destinationLabel = message.data['destinationLabel'] ?? message.data['dropoffLabel'] ?? 'الوجهة';
+    final destinationLabel = message.data['destinationLabel'] ??
+        message.data['dropoffLabel'] ?? 'الوجهة';
 
-    // Trip start reminder: different title/body than new order
     final bool isTripReminder = type == 'trip_start_reminder';
-    final elapsed = message.data['elapsedMinutes'] ?? '?';
     final notifTitle = isTripReminder
         ? (message.data['title'] ?? 'هل وصلت للعميل؟')
         : (message.data['title'] ?? 'طلب جديد قريب منك');
-    final notifBody = isTripReminder
-        ? '$pickupLabel → $destinationLabel'
-        : '$pickupLabel → $destinationLabel';
+    final notifBody = '$pickupLabel → $destinationLabel';
     final channelId = isTripReminder
-        ? 'trip_reminders'
+        ? 'trip_reminders_v5'
         : type == 'unassigned_order_reminder'
-            ? 'unassigned_orders_v3'
-            : 'new_orders_v3';
-    final channelName = type == 'trip_start_reminder'
+            ? 'unassigned_orders_v5'
+            : 'new_orders_v5';
+    final channelName = isTripReminder
         ? 'تذكيرات بدء الرحلة'
         : type == 'unassigned_order_reminder'
             ? 'تذكير بطلبات متاحة'
             : 'طلبات جديدة';
 
-    await plugin.cancel(orderId.hashCode);
-    await plugin.show(
-      orderId.hashCode,
-      notifTitle,
-      notifBody,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          channelId,
-          channelName,
-          importance: Importance.max,
-          priority: Priority.max,
-          enableVibration: true,
-          vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
-          playSound: true,
-          sound: const RawResourceAndroidNotificationSound('trip_reminder'),
-          fullScreenIntent: true,
-          category: AndroidNotificationCategory.call,
-          visibility: NotificationVisibility.public,
-          showWhen: true,
-          ongoing: true,
-          autoCancel: false,
-          timeoutAfter: 60000,
-        ),
+    final notifDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        channelId,
+        channelName,
+        importance: Importance.max,
+        priority: Priority.max,
+        enableVibration: true,
+        vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
+        playSound: true,
+        sound: const RawResourceAndroidNotificationSound('trip_reminder'),
+        fullScreenIntent: true,
+        category: AndroidNotificationCategory.call,
+        visibility: NotificationVisibility.public,
+        showWhen: true,
+        ongoing: true,
+        autoCancel: false,
+        timeoutAfter: 60000,
       ),
-      payload: jsonEncode(message.data),
     );
+
+    final notifId = orderId.hashCode;
+    final payload = jsonEncode(message.data);
+
+    await plugin.cancel(notifId);
+    await plugin.show(notifId, notifTitle, notifBody, notifDetails, payload: payload);
+
+    // Repeat sound 2 more times
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      plugin.show(notifId + 1, notifTitle, notifBody, notifDetails);
+    });
+    Future.delayed(const Duration(milliseconds: 3000), () {
+      plugin.show(notifId + 2, notifTitle, notifBody, notifDetails);
+      // Clean up extra notifications
+      Future.delayed(const Duration(seconds: 3), () {
+        plugin.cancel(notifId + 1);
+        plugin.cancel(notifId + 2);
+      });
+    });
   }
 }
 

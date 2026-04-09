@@ -82,7 +82,7 @@ class NotificationService {
   Future<void> _createNotificationChannels() async {
     // Channel 1: New orders — highest priority
     const newOrdersChannel = AndroidNotificationChannel(
-      'new_orders_v3',
+      'new_orders_v5',
       'طلبات جديدة',
       description: 'إشعارات الطلبات الجديدة القريبة منك - أولوية قصوى',
       importance: Importance.max,
@@ -94,7 +94,7 @@ class NotificationService {
 
     // Channel 2: Unassigned orders reminder — highest priority
     const unassignedOrdersChannel = AndroidNotificationChannel(
-      'unassigned_orders_v3',
+      'unassigned_orders_v5',
       'تذكير بطلبات متاحة',
       description: 'تذكيرات بالطلبات المتاحة القريبة منك - أولوية قصوى',
       importance: Importance.max,
@@ -128,7 +128,7 @@ class NotificationService {
 
     // Channel 5: Trip start reminders — highest priority
     const tripRemindersChannel = AndroidNotificationChannel(
-      'trip_reminders',
+      'trip_reminders_v5',
       'تذكيرات بدء الرحلة',
       description: 'تذكيرات للسائق لبدء الرحلة بعد القبول - أولوية قصوى',
       importance: Importance.max,
@@ -157,7 +157,12 @@ class NotificationService {
     await android?.deleteNotificationChannel('unassigned_orders_v2');
     await android?.deleteNotificationChannel('new_orders_v3');
     await android?.deleteNotificationChannel('unassigned_orders_v3');
+    await android?.deleteNotificationChannel('new_orders_v4');
+    await android?.deleteNotificationChannel('unassigned_orders_v4');
+    await android?.deleteNotificationChannel('new_orders_v5');
+    await android?.deleteNotificationChannel('unassigned_orders_v5');
     await android?.deleteNotificationChannel('trip_reminders');
+    await android?.deleteNotificationChannel('trip_reminders_v5');
 
     await android?.createNotificationChannel(newOrdersChannel);
     await android?.createNotificationChannel(unassignedOrdersChannel);
@@ -330,7 +335,7 @@ class NotificationService {
       'مضى $remaining دقائق منذ القبول — $pickupLabel',
       NotificationDetails(
         android: AndroidNotificationDetails(
-          'trip_reminders',
+          'trip_reminders_v5',
           'تذكيرات بدء الرحلة',
           importance: Importance.max,
           priority: Priority.max,
@@ -399,7 +404,7 @@ class NotificationService {
 
     final type = NotificationHelper.resolveType(data);
     final isReminder = type == 'unassigned_order_reminder';
-    final channelId = isReminder ? 'unassigned_orders_v3' : 'new_orders_v3';
+    final channelId = isReminder ? 'unassigned_orders_v5' : 'new_orders_v5';
     final channelName = isReminder ? 'تذكير بطلبات متاحة' : 'طلبات جديدة';
 
     final color = _getNotificationColor(type ?? '');

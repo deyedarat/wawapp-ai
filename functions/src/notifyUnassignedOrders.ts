@@ -330,7 +330,7 @@ async function sendDriverNotification(
         priority: 'high',
         ttl: 300000,
         notification: {
-          channelId: 'unassigned_orders_v3',
+          channelId: 'unassigned_orders_v5',
           sound: 'trip_reminder',
           priority: 'max',
           visibility: 'public',

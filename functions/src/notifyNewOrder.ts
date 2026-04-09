@@ -129,21 +129,22 @@ async function findEligibleDrivers(
       }
 
       // Skip drivers with active orders (accepted or onRoute)
-      const activeAccepted = await admin
+      // Check both driverId and assignedDriverId fields
+      const activeByDriverId = await admin
         .firestore()
         .collection('orders')
         .where('driverId', '==', driverId)
-        .where('status', '==', 'accepted')
+        .where('status', 'in', ['accepted', 'onRoute'])
         .limit(1)
         .get();
-      const activeOnRoute = await admin
+      const activeByAssignedId = await admin
         .firestore()
         .collection('orders')
-        .where('driverId', '==', driverId)
-        .where('status', '==', 'onRoute')
+        .where('assignedDriverId', '==', driverId)
+        .where('status', 'in', ['accepted', 'onRoute'])
         .limit(1)
         .get();
-      if (!activeAccepted.empty || !activeOnRoute.empty) {
+      if (!activeByDriverId.empty || !activeByAssignedId.empty) {
         console.log('[NotifyNewOrder] Skipping driver with active order', { driver_id: driverId });
         continue;
       }
@@ -239,7 +240,7 @@ async function sendDriverNotification(
         priority: 'high',
         ttl: 300000,
         notification: {
-          channelId: 'new_orders',
+          channelId: 'new_orders_v5',
           sound: 'trip_reminder',
           priority: 'max',
           visibility: 'public',
