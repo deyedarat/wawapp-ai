@@ -67,7 +67,7 @@ async function findEligibleDrivers(
     const locationsSnapshot = await admin
       .firestore()
       .collection('driver_locations')
-      .where('updatedAt', '>', new Date(Date.now() - 5 * 60 * 1000)) // Last 5 minutes
+      .where('updatedAt', '>', new Date(Date.now() - 15 * 60 * 1000)) // Last 15 minutes
       .get();
 
     if (locationsSnapshot.empty) {
@@ -215,10 +215,6 @@ async function sendDriverNotification(
 
     const message: admin.messaging.Message = {
       token: driver.fcmToken,
-      notification: {
-        title: 'طلب جديد قريب منك',
-        body: `${pickupLabel} → ${dropoffLabel}`,
-      },
       data: {
         notificationType: 'new_order',
         type: 'new_order',
@@ -238,13 +234,7 @@ async function sendDriverNotification(
       },
       android: {
         priority: 'high',
-        ttl: 300000,
-        notification: {
-          channelId: 'new_orders_v5',
-          sound: 'trip_reminder',
-          priority: 'max',
-          visibility: 'public',
-        },
+        ttl: 60000, // 60s — stale notifications are useless and bypass busy-check
       },
       apns: {
         payload: {

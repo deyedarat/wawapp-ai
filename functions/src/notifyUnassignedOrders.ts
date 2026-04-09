@@ -314,6 +314,8 @@ async function sendDriverNotification(
       data: {
         notificationType: 'unassigned_order_reminder',
         type: 'unassigned_order_reminder',
+        title: 'طلب جديد قريب منك',
+        body: `${pickupLabel} → ${dropoffLabel}`,
         orderId: orderId,
         pickupLabel: pickupLabel,
         dropoffLabel: dropoffLabel,
@@ -328,13 +330,7 @@ async function sendDriverNotification(
       },
       android: {
         priority: 'high',
-        ttl: 300000,
-        notification: {
-          channelId: 'unassigned_orders_v5',
-          sound: 'trip_reminder',
-          priority: 'max',
-          visibility: 'public',
-        },
+        ttl: 60000, // 60s — stale notifications are useless and bypass busy-check
       },
       apns: {
         payload: {

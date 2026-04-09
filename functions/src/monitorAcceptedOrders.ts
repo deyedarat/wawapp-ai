@@ -210,11 +210,15 @@ async function processAcceptedOrder(
         notificationType: 'trip_start_reminder',
         orderId,
         escalationLevel: level,
-        pickupLabel: formatAddress(orderData.pickupAddress),
-        destinationLabel: formatAddress(orderData.destinationAddress || orderData.dropoffAddress),
+        pickupLabel: formatAddress(orderData.pickupAddress || orderData.pickup),
+        destinationLabel: formatAddress(
+          orderData.destinationAddress ||
+          orderData.dropoffAddress ||
+          orderData.dropoff
+        ),
         elapsedMinutes: String(Math.floor(elapsedMinutes)),
       },
-      'trip_reminders'
+      'trip_reminders_v5'
     );
 
     if (sent) {

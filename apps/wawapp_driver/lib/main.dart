@@ -20,6 +20,7 @@ import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'services/analytics_service.dart';
+import 'services/notification_logger.dart';
 import 'features/update/force_update_provider.dart';
 import 'features/update/force_update_screen.dart';
 import 'services/connectivity_service.dart';
@@ -124,7 +125,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       await android.createNotificationChannel(tripRemindersChannel);
     }
 
-    final orderId = message.data['orderId'] ?? '';
+    final String orderId = (message.data['orderId'] as String?) ?? '';
     final pickupLabel = message.data['pickupLabel'] ?? 'موقع الاستلام';
     final destinationLabel = message.data['destinationLabel'] ??
         message.data['dropoffLabel'] ?? 'الوجهة';
@@ -133,7 +134,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final notifTitle = isTripReminder
         ? (message.data['title'] ?? 'هل وصلت للعميل؟')
         : (message.data['title'] ?? 'طلب جديد قريب منك');
-    final notifBody = '$pickupLabel → $destinationLabel';
+    final notifBody = isTripReminder
+        ? 'مضى ${message.data['elapsedMinutes'] ?? '?'} دقائق منذ القبول — $pickupLabel'
+        : '$pickupLabel → $destinationLabel';
     final channelId = isTripReminder
         ? 'trip_reminders_v5'
         : type == 'unassigned_order_reminder'
@@ -170,6 +173,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
     await plugin.cancel(notifId);
     await plugin.show(notifId, notifTitle, notifBody, notifDetails, payload: payload);
+
+    await NotificationLogger.instance.log(
+      eventType: 'displayed',
+      notificationType: type ?? 'unknown',
+      appState: 'background',
+      displayMode: 'full_screen',
+      orderId: orderId.isNotEmpty ? orderId : null,
+      escalationLevel: message.data['escalationLevel'] as String?,
+    );
 
     // Repeat sound 2 more times
     Future.delayed(const Duration(milliseconds: 1500), () {

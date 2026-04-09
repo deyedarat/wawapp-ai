@@ -327,6 +327,12 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // R1: Notification delivery logs (client-side event tracking per driver)
+    match /notification_logs/{driverId}/events/{eventId} {
+      allow write: if isSignedIn() && request.auth.uid == driverId;
+      allow read: if isAdmin();
+    }
+
     // Bug reports: write-only, no auth required (OTP errors happen before login).
     // Abuse prevention: require minimal schema + strict size/type validation.
     match /bug_reports/{docId} {

@@ -4,7 +4,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:go_router/go_router.dart';
 import 'package:core_shared/core_shared.dart';
 import '../features/notifications/full_screen_notification_screen.dart';
+import '../features/notifications/trip_start_reminder_screen.dart';
 import 'analytics_service.dart';
+import 'notification_logger.dart';
 
 /// Driver-specific FCM service for ride-hailing driver app.
 ///
@@ -27,7 +29,8 @@ class FCMService extends BaseFCMService {
   ) {
     try {
       final orderId = message.data['orderId'] as String?;
-      final type = message.data['type'] as String?;
+      final type = message.data['notificationType'] as String?
+          ?? message.data['type'] as String?;
 
       if (orderId == null || type == null) {
         if (kDebugMode) {
@@ -41,6 +44,12 @@ class FCMService extends BaseFCMService {
         notificationType: type,
         orderId: orderId,
         appState: appState,
+      );
+      NotificationLogger.instance.log(
+        eventType: 'tapped',
+        notificationType: type,
+        appState: appState,
+        orderId: orderId,
       );
 
       if (kDebugMode) {
@@ -59,6 +68,15 @@ class FCMService extends BaseFCMService {
             context.push('/full-screen-notification', extra: data);
           } else {
             context.go('/nearby');
+          }
+          break;
+
+        case 'trip_start_reminder':
+          final reminderData = TripStartReminderData.tryParse(message.data);
+          if (reminderData != null) {
+            context.push('/trip-start-reminder', extra: reminderData);
+          } else {
+            context.go('/active-order');
           }
           break;
 

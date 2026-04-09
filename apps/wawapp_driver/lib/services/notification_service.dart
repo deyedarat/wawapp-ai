@@ -13,6 +13,7 @@ import '../core/router/navigator.dart';
 import '../features/notifications/full_screen_notification_screen.dart';
 import '../features/notifications/trip_start_reminder_screen.dart';
 import 'notification_helper.dart';
+import 'notification_logger.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -52,26 +53,37 @@ class NotificationService {
     await _requestFullScreenIntentPermission();
   }
 
-  /// Request permission to show full-screen intent notifications (Android 12+)
+  /// Request all permissions required for full-screen intent notifications.
+  /// - Android 12+ (API 31+): SCHEDULE_EXACT_ALARM
+  /// - Android 14+ (API 34+): USE_FULL_SCREEN_INTENT (separate explicit grant)
   Future<void> _requestFullScreenIntentPermission() async {
     final android = _localNotifications
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
 
-    if (android != null) {
-      // Check if we can use full-screen intent
-      final canUse = await android.canScheduleExactNotifications() ?? false;
+    if (android == null) return;
 
+    // 1. Exact alarm permission (Android 12+ / API 31+)
+    final canSchedule = await android.canScheduleExactNotifications() ?? false;
+    if (kDebugMode) {
+      debugPrint('[NotificationService] canScheduleExactNotifications: $canSchedule');
+    }
+    if (!canSchedule) {
+      await android.requestExactAlarmsPermission();
+    }
+
+    // 2. USE_FULL_SCREEN_INTENT permission (Android 14+ / API 34+)
+    //    requestFullScreenIntentPermission() internally checks if already granted
+    //    and only opens Settings if not yet approved by the user.
+    try {
+      await android.requestFullScreenIntentPermission();
       if (kDebugMode) {
-        debugPrint('[NotificationService] Can use full-screen intent: $canUse');
+        debugPrint('[NotificationService] requestFullScreenIntentPermission called');
       }
-
-      // Request permission if not granted
-      if (!canUse) {
-        final granted = await android.requestExactAlarmsPermission();
-        if (kDebugMode) {
-          debugPrint('[NotificationService] Full-screen intent permission granted: $granted');
-        }
+    } catch (e) {
+      // Permission request not supported on this Android version — safe to ignore
+      if (kDebugMode) {
+        debugPrint('[NotificationService] fullScreenIntent permission N/A: $e');
       }
     }
   }
@@ -215,6 +227,13 @@ class NotificationService {
       );
     }
 
+    NotificationLogger.instance.log(
+      eventType: 'received',
+      notificationType: notificationType ?? 'unknown',
+      appState: 'foreground',
+      orderId: orderId,
+    );
+
     // ── Order notifications → full-screen intent ──
     if (NotificationHelper.isFullScreenType(notificationType)) {
       // trip_start_reminder: show notification but navigate to /active-order
@@ -304,6 +323,14 @@ class NotificationService {
       ),
       payload: payload,
     );
+
+    NotificationLogger.instance.log(
+      eventType: 'displayed',
+      notificationType: notificationType ?? 'unknown',
+      appState: 'foreground',
+      displayMode: 'heads_up',
+      orderId: orderId,
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -323,37 +350,74 @@ class NotificationService {
     }
 
     final color = _getNotificationColor('trip_start_reminder');
+    final notifId = orderId.hashCode;
+    final notifTitle = 'هل وصلت للعميل؟';
+    final notifBody = 'مضى $remaining دقائق منذ القبول — $pickupLabel';
 
     // Cancel existing ongoing notification before showing new one
     // so Android treats it as brand-new (with sound + vibration)
-    await _localNotifications.cancel(orderId.hashCode);
+    await _localNotifications.cancel(notifId);
 
-    // NOTE: Using 'call' category instead of 'reminder' for more urgent appearance
-    _localNotifications.show(
-      orderId.hashCode,
-      'هل وصلت للعميل؟',
-      'مضى $remaining دقائق منذ القبول — $pickupLabel',
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'trip_reminders_v5',
-          'تذكيرات بدء الرحلة',
-          importance: Importance.max,
-          priority: Priority.max,
-          color: color,
-          colorized: true,
-          enableVibration: true,
-          playSound: true,
-          sound: const RawResourceAndroidNotificationSound('trip_reminder'),
-          fullScreenIntent: true,
-          category: AndroidNotificationCategory.call, // Changed from 'reminder' to 'call' for urgency
-          visibility: NotificationVisibility.public,
-          onlyAlertOnce: false,
-          ongoing: true, // Added: keeps notification persistent
-          autoCancel: false, // Added: prevents dismissal on tap
-        ),
+    final mainDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'trip_reminders_v5',
+        'تذكيرات بدء الرحلة',
+        importance: Importance.max,
+        priority: Priority.max,
+        color: color,
+        colorized: true,
+        enableVibration: true,
+        vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
+        playSound: true,
+        sound: const RawResourceAndroidNotificationSound('trip_reminder'),
+        fullScreenIntent: true,
+        category: AndroidNotificationCategory.call,
+        visibility: NotificationVisibility.public,
+        onlyAlertOnce: false,
+        ongoing: true,
+        autoCancel: false,
+        timeoutAfter: 60000,
       ),
-      payload: payload,
     );
+
+    // Sound-repeat details (no ongoing — these are transient sound triggers)
+    final repeatDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'trip_reminders_v5',
+        'تذكيرات بدء الرحلة',
+        importance: Importance.max,
+        priority: Priority.max,
+        color: color,
+        colorized: true,
+        enableVibration: true,
+        playSound: true,
+        sound: const RawResourceAndroidNotificationSound('trip_reminder'),
+        onlyAlertOnce: false,
+      ),
+    );
+
+    _localNotifications.show(notifId, notifTitle, notifBody, mainDetails, payload: payload);
+
+    NotificationLogger.instance.log(
+      eventType: 'displayed',
+      notificationType: 'trip_start_reminder',
+      appState: 'foreground',
+      displayMode: 'full_screen',
+      orderId: orderId,
+      escalationLevel: data['escalationLevel'] as String?,
+    );
+
+    // Repeat sound 2 more times (same as new order notifications)
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      _localNotifications.show(notifId + 1, notifTitle, notifBody, repeatDetails);
+    });
+    Future.delayed(const Duration(milliseconds: 3000), () {
+      _localNotifications.show(notifId + 2, notifTitle, notifBody, repeatDetails);
+      Future.delayed(const Duration(seconds: 3), () {
+        _localNotifications.cancel(notifId + 1);
+        _localNotifications.cancel(notifId + 2);
+      });
+    });
 
     // NEW: Open full-screen trip start reminder UI instead of just navigating
     final reminderData = TripStartReminderData.tryParse(data);
@@ -440,6 +504,14 @@ class NotificationService {
         ),
       ),
       payload: payload,
+    );
+
+    NotificationLogger.instance.log(
+      eventType: 'displayed',
+      notificationType: type ?? 'unknown',
+      appState: 'foreground',
+      displayMode: 'full_screen',
+      orderId: notificationData.orderId,
     );
 
     // Repeat sound: show 2 more notifications with short delays
@@ -614,6 +686,12 @@ class NotificationService {
 
     try {
       final data = jsonDecode(payload) as Map<String, dynamic>;
+      NotificationLogger.instance.log(
+        eventType: 'tapped',
+        notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
+        appState: 'foreground',
+        orderId: data['orderId'] as String?,
+      );
       _navigateFromMessage(data);
     } on Object catch (e) {
       debugPrint('Error parsing notification payload: $e');
@@ -629,12 +707,20 @@ class NotificationService {
 
     final type = NotificationHelper.resolveType(data);
 
-    // Full-screen types → navigate to full-screen notification screen
+    // Full-screen types → route based on specific type
     if (NotificationHelper.isFullScreenType(type)) {
-      final notificationData = FullScreenNotificationData.tryParse(data);
-      if (notificationData != null) {
-        _navigateToFullScreen(notificationData);
-        return;
+      if (type == 'trip_start_reminder') {
+        final reminderData = TripStartReminderData.tryParse(data);
+        if (reminderData != null) {
+          _navigateToTripStartReminder(reminderData);
+          return;
+        }
+      } else {
+        final notificationData = FullScreenNotificationData.tryParse(data);
+        if (notificationData != null) {
+          _navigateToFullScreen(notificationData);
+          return;
+        }
       }
     }
 
