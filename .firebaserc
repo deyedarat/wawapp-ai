@@ -7,6 +7,9 @@
       "hosting": {
         "downloads": [
           "wawapp-downloads"
+        ],
+        "admin": [
+          "wawapp-952d6"
         ]
       }
     }

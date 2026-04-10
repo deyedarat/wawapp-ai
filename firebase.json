@@ -17,6 +17,7 @@
   },
   "hosting": [
     {
+      "target": "admin",
       "public": "apps/wawapp_admin/build/web",
       "ignore": [
         "firebase.json",

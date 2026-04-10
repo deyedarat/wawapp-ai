@@ -43,7 +43,7 @@ object NotificationHelper {
             val newOrdersChannel = NotificationChannel(
                 CHANNEL_ID_NEW_ORDERS,
                 "7D('* ,/J/) - #HDHJ) B5HI",
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_MAX
             ).apply {
                 description = "%49'1'* 'D7D('* 'D,/J/) - #HDHJ) E+D 'DEC'DE'* 'DG'*AJ)"
                 enableVibration(true)
@@ -68,7 +68,7 @@ object NotificationHelper {
             val unassignedOrdersChannel = NotificationChannel(
                 CHANNEL_ID_UNASSIGNED_ORDERS,
                 "*0CJ1 (7D('* E*'-) - #HDHJ) B5HI",
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_MAX
             ).apply {
                 description = "*0CJ1'* ('D7D('* 'DE*'-) 'DB1J() EFC"
                 enableVibration(true)
@@ -91,7 +91,7 @@ object NotificationHelper {
             val tripRemindersChannel = NotificationChannel(
                 CHANNEL_ID_TRIP_REMINDERS,
                 "*0CJ1'* (/! 'D1-D) - #HDHJ) B5HI",
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_MAX
             ).apply {
                 description = "*0CJ1'* DD3'&B D(/! 'D1-D) (9/ 'DB(HD"
                 enableVibration(true)
@@ -208,7 +208,7 @@ object NotificationHelper {
 
         // Build notification with full-screen intent
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_info) // You should use your app's icon
+            .setSmallIcon(R.mipmap.ic_launcher) // You should use your app's icon
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -231,7 +231,7 @@ object NotificationHelper {
         android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
             // Second sound
             val notification2 = NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -245,7 +245,7 @@ object NotificationHelper {
         android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
             // Third sound
             val notification3 = NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
