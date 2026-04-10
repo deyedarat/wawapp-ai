@@ -82,6 +82,13 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="new_orders_v6" />
+        <!-- Geolocator foreground service for location tracking -->
+        <!-- Explicit declaration ensures Android doesn't kill the service in Doze mode -->
+        <service
+            android:name="com.baseflow.geolocator.GeolocatorLocationService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

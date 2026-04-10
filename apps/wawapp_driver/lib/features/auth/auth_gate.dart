@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/config/testlab_flags.dart';
 import '../../services/analytics_service.dart';
 import '../../services/fcm_service.dart';
+import '../../services/notification_system_initializer.dart';
 import '../../testlab/testlab_home.dart';
 import 'providers/auth_service_provider.dart';
 
@@ -32,6 +33,9 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     );
     AnalyticsService.instance.logAuthCompleted(method: 'phone_pin');
     FCMService.instance.initialize(context);
+
+    // Initialize production-grade notification system
+    NotificationSystemInitializer.initializeAfterLogin();
 
     _lastInitializedUserId = userId;
   }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
@@ -169,8 +170,11 @@ class LocationService {
         foregroundNotificationConfig: const ForegroundNotificationConfig(
           notificationTitle: 'WawApp Driver',
           notificationText: 'يتم تتبع موقعك لاستقبال الطلبات',
-          notificationIcon: AndroidResource(name: 'ic_launcher'),
+          // ✅ Use vector drawable instead of mipmap to fix "broken notification" warning
+          notificationIcon: AndroidResource(name: 'ic_notification', defType: 'drawable'),
           enableWakeLock: true,
+          // ✅ Add color for Material Design compliance (Android 14+)
+          color: Color(0xFF4CAF50),
         ),
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {

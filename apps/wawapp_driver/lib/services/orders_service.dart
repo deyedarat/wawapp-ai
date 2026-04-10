@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
+import 'acceptance_lock_manager.dart';
 import 'analytics_service.dart';
 
 final ordersServiceProvider = Provider<OrdersService>((ref) {
@@ -95,18 +96,35 @@ class OrdersService {
       throw const AppError(type: AppErrorType.permissionDenied, message: 'Driver not authenticated');
     }
 
+    // Set acceptance lock immediately (before server call) to prevent race condition
+    // This ensures that if another order notification arrives while this acceptance
+    // is in progress, it will be silently rejected by the notification handler
+    await AcceptanceLockManager.setAcceptanceLock(orderId);
+
     try {
       final callable = FirebaseFunctions.instance.httpsCallable('acceptOrder');
       await callable.call({'orderId': orderId});
 
       // Log analytics event after successful acceptance
       AnalyticsService.instance.logOrderAcceptedByDriver(orderId: orderId);
+
+      // Clear lock after 5 seconds (successful acceptance)
+      // This gives enough time for Firestore to update and prevents duplicate notifications
+      Future.delayed(const Duration(seconds: 5), () {
+        AcceptanceLockManager.clearLock();
+      });
     } on FirebaseFunctionsException catch (e) {
+      // Acceptance failed - clear lock immediately
+      await AcceptanceLockManager.clearLock();
+
       if (e.code == 'failed-precondition') {
         throw const AppError(type: AppErrorType.permissionDenied, message: 'Order was already taken');
       }
       throw AppError.from(e);
     } on Object catch (e) {
+      // Other error - clear lock immediately
+      await AcceptanceLockManager.clearLock();
+
       if (e is AppError) rethrow;
       throw AppError.from(e);
     }

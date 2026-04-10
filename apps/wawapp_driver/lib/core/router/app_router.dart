@@ -25,6 +25,7 @@ import '../../features/profile/driver_profile_edit_screen.dart';
 import '../../features/notifications/full_screen_notification_screen.dart';
 import '../../features/notifications/trip_start_reminder_screen.dart';
 import '../../features/profile/driver_profile_screen.dart';
+import '../../features/settings/notification_health_screen.dart';
 import '../../features/profile/providers/driver_profile_providers.dart';
 import '../../features/wallet/wallet_screen.dart';
 import 'navigator.dart';
@@ -164,6 +165,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           }
           return const ActiveOrderScreen();
         },
+      ),
+      GoRoute(
+        path: '/notification-health',
+        name: 'notificationHealth',
+        builder: (context, state) => const NotificationHealthScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

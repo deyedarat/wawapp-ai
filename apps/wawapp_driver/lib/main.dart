@@ -19,12 +19,18 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
+import 'services/acceptance_lock_manager.dart';
 import 'services/analytics_service.dart';
 import 'services/notification_logger.dart';
+import 'services/notification_performance_logger.dart';
 import 'features/update/force_update_provider.dart';
 import 'features/update/force_update_screen.dart';
 import 'services/connectivity_service.dart';
 import 'services/notification_service.dart';
+import 'services/fcm_token_manager.dart';
+import 'services/battery_optimization_manager.dart';
+import 'services/notification_health_monitor.dart';
+import 'services/missed_notification_recovery.dart';
 
 /// Top-level background message handler for data-only FCM messages.
 /// Must be a top-level function (not a class method).
@@ -33,36 +39,36 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final type = message.data['notificationType'] ?? message.data['type'];
+  final String orderId = (message.data['orderId'] as String?) ?? '';
 
   // Show full-screen intent notification for order-related data-only messages
   if (type == 'new_order' ||
       type == 'new_order_nearby' ||
       type == 'unassigned_order_reminder' ||
       type == 'trip_start_reminder') {
-    // Skip new order notifications if driver has an active trip
+    // ✅ PERFORMANCE MONITORING: Mark notification received
+    if (orderId.isNotEmpty) {
+      NotificationPerformanceLogger.markReceived(orderId);
+    }
+
+    // ✅ RACE CONDITION FIX: Check local acceptance lock instead of Firestore
+    // The server already filters busy drivers before sending notifications.
+    // This local check prevents notifications from showing during the 1-3 second
+    // window between accepting an order and Firestore updating (race condition).
     // (trip_start_reminder should ALWAYS pass through)
     if (type == 'new_order' ||
         type == 'new_order_nearby' ||
         type == 'unassigned_order_reminder') {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        var snap = await FirebaseFirestore.instance
-            .collection('orders')
-            .where('assignedDriverId', isEqualTo: user.uid)
-            .where('status', whereIn: ['accepted', 'onRoute'])
-            .limit(1)
-            .get();
-        if (snap.docs.isEmpty) {
-          snap = await FirebaseFirestore.instance
-              .collection('orders')
-              .where('driverId', isEqualTo: user.uid)
-              .where('status', whereIn: ['accepted', 'onRoute'])
-              .limit(1)
-              .get();
+      final isLocked = await AcceptanceLockManager.isWithinAcceptanceWindow();
+      if (isLocked) {
+        // Driver accepted an order within the last 5 seconds - silently reject this notification
+        if (orderId.isNotEmpty) {
+          NotificationPerformanceLogger.markRejected(orderId, 'acceptance_window');
         }
-        if (snap.docs.isNotEmpty) {
-          return;
+        if (kDebugMode) {
+          print('[BGHandler] ⛔ Rejected notification for order $orderId (acceptance window active)');
         }
+        return;
       }
     }
 
@@ -125,7 +131,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       await android.createNotificationChannel(tripRemindersChannel);
     }
 
-    final String orderId = (message.data['orderId'] as String?) ?? '';
     final pickupLabel = message.data['pickupLabel'] ?? 'موقع الاستلام';
     final destinationLabel = message.data['destinationLabel'] ??
         message.data['dropoffLabel'] ?? 'الوجهة';
@@ -174,14 +179,21 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     await plugin.cancel(notifId);
     await plugin.show(notifId, notifTitle, notifBody, notifDetails, payload: payload);
 
-    await NotificationLogger.instance.log(
+    // ✅ PERFORMANCE MONITORING: Mark notification shown
+    if (orderId.isNotEmpty) {
+      NotificationPerformanceLogger.markShown(orderId);
+    }
+
+    // ✅ NON-BLOCKING: Fire-and-forget logging to avoid delaying notification display
+    // If this Firestore write fails or is slow, it won't block the notification
+    unawaited(NotificationLogger.instance.log(
       eventType: 'displayed',
       notificationType: type ?? 'unknown',
       appState: 'background',
       displayMode: 'full_screen',
       orderId: orderId.isNotEmpty ? orderId : null,
       escalationLevel: message.data['escalationLevel'] as String?,
-    );
+    ));
 
     // Repeat sound 2 more times
     Future.delayed(const Duration(milliseconds: 1500), () {
@@ -252,8 +264,14 @@ void main() async {
     // Initialize connectivity monitoring
     await ConnectivityService().initialize();
 
+    // Initialize FCM token manager (handles token refresh automatically)
+    await FcmTokenManager().initialize();
+
+    // Check battery optimization status (but don't request yet - do it after login)
+    await BatteryOptimizationManager().isExemptFromBatteryOptimization();
+
     if (kDebugMode) {
-      print('✅ Firebase initialized, Crashlytics ready');
+      print('✅ Firebase initialized, Crashlytics ready, FCM token manager started');
     }
 
     // Register background message handler for data-only FCM messages
@@ -348,9 +366,27 @@ class _MyAppState extends ConsumerState<MyApp> {
 
     // Initialize notification service immediately after first frame
     // Must not delay — onMessage listener needs to be registered ASAP
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (mounted) {
-        NotificationService().initialize();
+        await NotificationService().initialize();
+
+        // Initialize notification health monitoring
+        final monitor = NotificationHealthMonitor();
+        if (await monitor.needsHealthCheck()) {
+          final report = await monitor.checkHealth();
+          await monitor.logHealthToFirestore(report);
+
+          // Auto-repair if health is critical
+          if (report.isCritical) {
+            if (kDebugMode) {
+              debugPrint('[Main] 🔴 Critical notification health, running auto-repair');
+            }
+            await monitor.autoRepair();
+          }
+        }
+
+        // Start missed notification recovery (only after user is authenticated)
+        // Will be triggered from auth_gate after successful login
       }
     });
   }
