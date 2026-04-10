@@ -12,6 +12,8 @@ import '../../core/theme/components.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/analytics_service.dart';
 import '../../services/driver_status_service.dart';
+import '../permissions/permission_helper.dart';
+import '../permissions/permission_setup_screen.dart';
 import '../../services/location_service.dart';
 import '../../services/tracking_service.dart';
 import '../auth/providers/auth_service_provider.dart';
@@ -41,6 +43,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     }
     // Resume tracking if driver was already online from a previous session
     _resumeTrackingIfOnline();
+    // Show permission setup on first launch
+    _checkPermissionSetup();
   }
 
   Future<void> _resumeTrackingIfOnline() async {
@@ -63,6 +67,27 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         }
       }
     }
+  }
+
+  Future<void> _checkPermissionSetup() async {
+    final prefs = await SharedPreferences.getInstance();
+    final done = prefs.getBool(kPermissionSetupCompleted) ?? false;
+    if (done) return;
+
+    final allGranted = await PermissionHelper.areAllCriticalPermissionsGranted();
+    if (allGranted) {
+      await prefs.setBool(kPermissionSetupCompleted, true);
+      return;
+    }
+
+    if (!mounted) return;
+    // Show permission setup as a full-screen modal
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => const PermissionSetupScreen(),
+      ),
+    );
   }
 
   Future<void> _toggleOnlineStatus(bool value) async {

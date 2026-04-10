@@ -14,6 +14,7 @@ import '../features/notifications/full_screen_notification_screen.dart';
 import '../features/notifications/trip_start_reminder_screen.dart';
 import 'notification_helper.dart';
 import 'notification_logger.dart';
+import 'notification_method_channel.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -91,7 +92,23 @@ class NotificationService {
   /// Create Android notification channels.
   ///
   /// All channels use trip_reminder.wav sound as requested.
+  /// We use BOTH native Android code (via MethodChannel) AND flutter_local_notifications
+  /// for maximum compatibility and reliability.
   Future<void> _createNotificationChannels() async {
+    // ✅ PRIMARY: Create channels using native Android code (with bypassDnd: true)
+    try {
+      await NotificationMethodChannel.createNotificationChannels();
+      if (kDebugMode) {
+        debugPrint('[NotificationService] ✅ Native notification channels created');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[NotificationService] ⚠️ Native channel creation failed: $e');
+      }
+    }
+
+    // ✅ FALLBACK: Also create channels using flutter_local_notifications
+    // (for compatibility with existing code)
     // Channel 1: New orders — highest priority
     const newOrdersChannel = AndroidNotificationChannel(
       'new_orders_v5',
@@ -468,6 +485,11 @@ class NotificationService {
 
     final type = NotificationHelper.resolveType(data);
     final isReminder = type == 'unassigned_order_reminder';
+
+    // ✅ PRIMARY METHOD: Use native Android code for maximum reliability
+    _showFullScreenNotificationViaNative(notificationData, type ?? 'new_order');
+
+    // ✅ FALLBACK: Also show via flutter_local_notifications (for redundancy)
     final channelId = isReminder ? 'unassigned_orders_v5' : 'new_orders_v5';
     final channelName = isReminder ? 'تذكير بطلبات متاحة' : 'طلبات جديدة';
 
@@ -565,6 +587,40 @@ class NotificationService {
 
     // In foreground: navigate directly to full-screen route
     _navigateToFullScreen(notificationData);
+  }
+
+  /// Show full-screen notification using native Android code (PRIMARY METHOD).
+  /// This method uses MethodChannel to call Kotlin code directly, which ensures:
+  /// - Full-screen intent works even on lock screen
+  /// - Bypass DND mode
+  /// - Maximum priority (like phone calls)
+  /// - Sound repeats 3 times automatically
+  Future<void> _showFullScreenNotificationViaNative(
+    FullScreenNotificationData data,
+    String notificationType,
+  ) async {
+    try {
+      await NotificationMethodChannel.showFullScreenNotification(
+        orderId: data.orderId,
+        title: 'طلب جديد قريب منك',
+        body: '${data.pickupLabel} → ${data.dropoffLabel}',
+        pickupLabel: data.pickupLabel,
+        dropoffLabel: data.dropoffLabel,
+        price: data.price,
+        distance: data.distance,
+        createdAt: data.createdAtMs ?? DateTime.now().millisecondsSinceEpoch,
+        notificationType: notificationType,
+      );
+      if (kDebugMode) {
+        debugPrint('[NotificationService] ✅ Native full-screen notification sent');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[NotificationService] ⚠️ Native notification failed: $e');
+        debugPrint('[NotificationService] ↪️ Falling back to flutter_local_notifications');
+      }
+      // Fallback is already handled by the code that follows this call
+    }
   }
 
   /// Navigate to the full-screen notification screen via GoRouter.
