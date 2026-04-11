@@ -91,10 +91,11 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="new_orders_v6" />
         <!-- Native FCM handler — calls NotificationHelper.kt for full-screen intent -->
+        <!-- Higher priority than Flutter plugin's service (priority=10 vs default 0) -->
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
-            <intent-filter>
+            <intent-filter android:priority="10">
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
