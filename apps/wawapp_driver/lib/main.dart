@@ -32,183 +32,12 @@ import 'services/battery_optimization_manager.dart';
 import 'services/notification_health_monitor.dart';
 import 'services/missed_notification_recovery.dart';
 
-/// Top-level background message handler for data-only FCM messages.
-/// Must be a top-level function (not a class method).
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  final type = message.data['notificationType'] ?? message.data['type'];
-  final String orderId = (message.data['orderId'] as String?) ?? '';
-
-  // Show full-screen intent notification for order-related data-only messages
-  if (type == 'new_order' ||
-      type == 'new_order_nearby' ||
-      type == 'unassigned_order_reminder' ||
-      type == 'trip_start_reminder') {
-    // ✅ PERFORMANCE MONITORING: Mark notification received
-    if (orderId.isNotEmpty) {
-      NotificationPerformanceLogger.markReceived(orderId);
-    }
-
-    // ✅ RACE CONDITION FIX: Check local acceptance lock instead of Firestore
-    // The server already filters busy drivers before sending notifications.
-    // This local check prevents notifications from showing during the 1-3 second
-    // window between accepting an order and Firestore updating (race condition).
-    // (trip_start_reminder should ALWAYS pass through)
-    if (type == 'new_order' ||
-        type == 'new_order_nearby' ||
-        type == 'unassigned_order_reminder') {
-      final isLocked = await AcceptanceLockManager.isWithinAcceptanceWindow();
-      if (isLocked) {
-        // Driver accepted an order within the last 5 seconds - silently reject this notification
-        if (orderId.isNotEmpty) {
-          NotificationPerformanceLogger.markRejected(orderId, 'acceptance_window');
-        }
-        if (kDebugMode) {
-          print('[BGHandler] ⛔ Rejected notification for order $orderId (acceptance window active)');
-        }
-        return;
-      }
-    }
-
-    final plugin = FlutterLocalNotificationsPlugin();
-    await plugin.initialize(
-      const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      ),
-    );
-
-    // Create notification channels with sound BEFORE showing notification
-    final android = plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
-
-    if (android != null) {
-      // Delete old channels to force fresh creation
-      for (final old in [
-        'new_orders', 'new_orders_v2', 'new_orders_v3', 'new_orders_v4',
-        'unassigned_orders', 'unassigned_orders_v2', 'unassigned_orders_v3', 'unassigned_orders_v4',
-        'trip_reminders',
-      ]) {
-        await android.deleteNotificationChannel(old);
-      }
-
-      const newOrdersChannel = AndroidNotificationChannel(
-        'new_orders_v5',
-        'طلبات جديدة',
-        description: 'إشعارات الطلبات الجديدة القريبة منك',
-        importance: Importance.max,
-        enableVibration: true,
-        playSound: true,
-        sound: RawResourceAndroidNotificationSound('trip_reminder'),
-        audioAttributesUsage: AudioAttributesUsage.alarm,
-      );
-
-      const unassignedOrdersChannel = AndroidNotificationChannel(
-        'unassigned_orders_v5',
-        'تذكير بطلبات متاحة',
-        description: 'تذكيرات بالطلبات المتاحة القريبة منك',
-        importance: Importance.max,
-        enableVibration: true,
-        playSound: true,
-        sound: RawResourceAndroidNotificationSound('trip_reminder'),
-        audioAttributesUsage: AudioAttributesUsage.alarm,
-      );
-
-      const tripRemindersChannel = AndroidNotificationChannel(
-        'trip_reminders_v5',
-        'تذكيرات بدء الرحلة',
-        description: 'تذكيرات للسائق لبدء الرحلة بعد القبول',
-        importance: Importance.max,
-        enableVibration: true,
-        playSound: true,
-        sound: RawResourceAndroidNotificationSound('trip_reminder'),
-        audioAttributesUsage: AudioAttributesUsage.alarm,
-      );
-
-      await android.createNotificationChannel(newOrdersChannel);
-      await android.createNotificationChannel(unassignedOrdersChannel);
-      await android.createNotificationChannel(tripRemindersChannel);
-    }
-
-    final pickupLabel = message.data['pickupLabel'] ?? 'موقع الاستلام';
-    final destinationLabel = message.data['destinationLabel'] ??
-        message.data['dropoffLabel'] ?? 'الوجهة';
-
-    final bool isTripReminder = type == 'trip_start_reminder';
-    final notifTitle = isTripReminder
-        ? (message.data['title'] ?? 'هل وصلت للعميل؟')
-        : (message.data['title'] ?? 'طلب جديد قريب منك');
-    final notifBody = isTripReminder
-        ? 'مضى ${message.data['elapsedMinutes'] ?? '?'} دقائق منذ القبول — $pickupLabel'
-        : '$pickupLabel → $destinationLabel';
-    final channelId = isTripReminder
-        ? 'trip_reminders_v5'
-        : type == 'unassigned_order_reminder'
-            ? 'unassigned_orders_v5'
-            : 'new_orders_v5';
-    final channelName = isTripReminder
-        ? 'تذكيرات بدء الرحلة'
-        : type == 'unassigned_order_reminder'
-            ? 'تذكير بطلبات متاحة'
-            : 'طلبات جديدة';
-
-    final notifDetails = NotificationDetails(
-      android: AndroidNotificationDetails(
-        channelId,
-        channelName,
-        importance: Importance.max,
-        priority: Priority.max,
-        enableVibration: true,
-        vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
-        playSound: true,
-        sound: const RawResourceAndroidNotificationSound('trip_reminder'),
-        fullScreenIntent: true,
-        category: AndroidNotificationCategory.call,
-        visibility: NotificationVisibility.public,
-        showWhen: true,
-        ongoing: true,
-        autoCancel: false,
-        timeoutAfter: 60000,
-      ),
-    );
-
-    final notifId = orderId.hashCode;
-    final payload = jsonEncode(message.data);
-
-    await plugin.cancel(notifId);
-    await plugin.show(notifId, notifTitle, notifBody, notifDetails, payload: payload);
-
-    // ✅ PERFORMANCE MONITORING: Mark notification shown
-    if (orderId.isNotEmpty) {
-      NotificationPerformanceLogger.markShown(orderId);
-    }
-
-    // ✅ NON-BLOCKING: Fire-and-forget logging to avoid delaying notification display
-    // If this Firestore write fails or is slow, it won't block the notification
-    unawaited(NotificationLogger.instance.log(
-      eventType: 'displayed',
-      notificationType: type ?? 'unknown',
-      appState: 'background',
-      displayMode: 'full_screen',
-      orderId: orderId.isNotEmpty ? orderId : null,
-      escalationLevel: message.data['escalationLevel'] as String?,
-    ));
-
-    // Repeat sound 2 more times
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      plugin.show(notifId + 1, notifTitle, notifBody, notifDetails);
-    });
-    Future.delayed(const Duration(milliseconds: 3000), () {
-      plugin.show(notifId + 2, notifTitle, notifBody, notifDetails);
-      // Clean up extra notifications
-      Future.delayed(const Duration(seconds: 3), () {
-        plugin.cancel(notifId + 1);
-        plugin.cancel(notifId + 2);
-      });
-    });
-  }
-}
+/// REMOVED: Dart background handler is no longer used.
+/// Background FCM messages are handled by MyFirebaseMessagingService.kt (Native Kotlin).
+/// This ensures proper fullScreenIntent support when app is killed or screen is locked.
+///
+/// Performance monitoring and logging for background messages will be added
+/// to MyFirebaseMessagingService.kt in the future if needed.
 
 void main() async {
   // Run app initialization in error zone to catch all errors
@@ -274,8 +103,10 @@ void main() async {
       print('✅ Firebase initialized, Crashlytics ready, FCM token manager started');
     }
 
-    // Register background message handler for data-only FCM messages
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    // ❌ REMOVED: Dart background handler conflicts with Native MyFirebaseMessagingService
+    // Background notifications are now handled ONLY by MyFirebaseMessagingService.kt
+    // which provides proper fullScreenIntent support for killed/locked states.
+    // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     runApp(const ProviderScope(child: MyApp()));
   }, (error, stack) {

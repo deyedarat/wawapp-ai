@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -91,15 +90,17 @@ class NotificationService {
 
   /// Create Android notification channels.
   ///
-  /// All channels use trip_reminder.wav sound as requested.
-  /// We use BOTH native Android code (via MethodChannel) AND flutter_local_notifications
-  /// for maximum compatibility and reliability.
+  /// v6 channels (with bypassDnd + USAGE_ALARM) are created via Native Kotlin
+  /// through NotificationMethodChannel. These handle all order/reminder notifications.
+  ///
+  /// flutter_local_notifications is only used for non-critical notifications
+  /// (acceptance_confirmation, order_updates) which use the default channel.
   Future<void> _createNotificationChannels() async {
-    // ✅ PRIMARY: Create channels using native Android code (with bypassDnd: true)
+    // v6 channels via Native Kotlin (bypassDnd, full-screen intent, USAGE_ALARM)
     try {
       await NotificationMethodChannel.createNotificationChannels();
       if (kDebugMode) {
-        debugPrint('[NotificationService] ✅ Native notification channels created');
+        debugPrint('[NotificationService] ✅ Native v6 channels created');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -107,97 +108,21 @@ class NotificationService {
       }
     }
 
-    // ✅ FALLBACK: Also create channels using flutter_local_notifications
-    // (for compatibility with existing code)
-    // Channel 1: New orders — highest priority
-    const newOrdersChannel = AndroidNotificationChannel(
-      'new_orders_v5',
-      'طلبات جديدة',
-      description: 'إشعارات الطلبات الجديدة القريبة منك - أولوية قصوى',
-      importance: Importance.max,
-      enableVibration: true,
-      playSound: true,
-      sound: RawResourceAndroidNotificationSound('trip_reminder'),
-      audioAttributesUsage: AudioAttributesUsage.alarm,
-    );
-
-    // Channel 2: Unassigned orders reminder — highest priority
-    const unassignedOrdersChannel = AndroidNotificationChannel(
-      'unassigned_orders_v5',
-      'تذكير بطلبات متاحة',
-      description: 'تذكيرات بالطلبات المتاحة القريبة منك - أولوية قصوى',
-      importance: Importance.max,
-      enableVibration: true,
-      playSound: true,
-      sound: RawResourceAndroidNotificationSound('trip_reminder'),
-      audioAttributesUsage: AudioAttributesUsage.alarm,
-    );
-
-    // Channel 3: Order updates — normal priority
-    const orderUpdatesChannel = AndroidNotificationChannel(
-      'order_updates',
-      'تحديثات الطلبات',
-      description: 'تحديثات حالة الطلبات الحالية - أولوية عادية',
-      importance: Importance.defaultImportance,
-      enableVibration: true,
-      playSound: true,
-      sound: RawResourceAndroidNotificationSound('trip_reminder'),
-    );
-
-    // Channel 4: Acceptance confirmations — high priority
-    const acceptanceChannel = AndroidNotificationChannel(
-      'acceptance_confirmations',
-      'تأكيد القبول',
-      description: 'تأكيدات قبول الطلبات - أولوية عالية',
-      importance: Importance.high,
-      enableVibration: true,
-      playSound: true,
-      sound: RawResourceAndroidNotificationSound('trip_reminder'),
-    );
-
-    // Channel 5: Trip start reminders — highest priority
-    const tripRemindersChannel = AndroidNotificationChannel(
-      'trip_reminders_v5',
-      'تذكيرات بدء الرحلة',
-      description: 'تذكيرات للسائق لبدء الرحلة بعد القبول - أولوية قصوى',
-      importance: Importance.max,
-      enableVibration: true,
-      playSound: true,
-      sound: RawResourceAndroidNotificationSound('trip_reminder'),
-      audioAttributesUsage: AudioAttributesUsage.alarm,
-    );
-
+    // Clean up legacy v1-v5 channels (one-time migration)
     final android = _localNotifications
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >();
-
-    // Delete existing channels to ensure updated sound settings are applied
-    await android?.deleteNotificationChannel('new_orders');
-    await android?.deleteNotificationChannel('unassigned_orders');
-    await android?.deleteNotificationChannel('order_updates');
-    await android?.deleteNotificationChannel('acceptance_confirmations');
-    await android?.deleteNotificationChannel('trip_reminders');
-
-    // Delete ALL old channels to force fresh creation with correct sound
-    await android?.deleteNotificationChannel('new_orders');
-    await android?.deleteNotificationChannel('unassigned_orders');
-    await android?.deleteNotificationChannel('new_orders_v2');
-    await android?.deleteNotificationChannel('unassigned_orders_v2');
-    await android?.deleteNotificationChannel('new_orders_v3');
-    await android?.deleteNotificationChannel('unassigned_orders_v3');
-    await android?.deleteNotificationChannel('new_orders_v4');
-    await android?.deleteNotificationChannel('unassigned_orders_v4');
-    await android?.deleteNotificationChannel('new_orders_v5');
-    await android?.deleteNotificationChannel('unassigned_orders_v5');
-    await android?.deleteNotificationChannel('trip_reminders');
-    await android?.deleteNotificationChannel('trip_reminders_v5');
-
-    await android?.createNotificationChannel(newOrdersChannel);
-    await android?.createNotificationChannel(unassignedOrdersChannel);
-    await android?.createNotificationChannel(orderUpdatesChannel);
-    await android?.createNotificationChannel(acceptanceChannel);
-    await android?.createNotificationChannel(tripRemindersChannel);
+    if (android != null) {
+      for (final id in [
+        'new_orders', 'new_orders_v2', 'new_orders_v3', 'new_orders_v4', 'new_orders_v5',
+        'unassigned_orders', 'unassigned_orders_v2', 'unassigned_orders_v3',
+        'unassigned_orders_v4', 'unassigned_orders_v5',
+        'trip_reminders', 'trip_reminders_v5',
+      ]) {
+        await android.deleteNotificationChannel(id);
+      }
+    }
   }
 
   Future<void> _setupFirebaseMessaging() async {
@@ -357,8 +282,6 @@ class NotificationService {
   void _showTripReminderNotification(Map<String, dynamic> data) async {
     final orderId = data['orderId'] as String? ?? '';
     final remaining = data['elapsedMinutes'] as String? ?? '?';
-    final pickupLabel = data['pickupLabel'] as String? ?? 'موقع الاستلام';
-    final payload = jsonEncode(data);
 
     if (kDebugMode) {
       debugPrint(
@@ -366,54 +289,8 @@ class NotificationService {
       );
     }
 
-    final color = _getNotificationColor('trip_start_reminder');
-    final notifId = orderId.hashCode;
-    final notifTitle = 'هل وصلت للعميل؟';
-    final notifBody = 'مضى $remaining دقائق منذ القبول — $pickupLabel';
-
-    // Cancel existing ongoing notification before showing new one
-    // so Android treats it as brand-new (with sound + vibration)
-    await _localNotifications.cancel(notifId);
-
-    final mainDetails = NotificationDetails(
-      android: AndroidNotificationDetails(
-        'trip_reminders_v5',
-        'تذكيرات بدء الرحلة',
-        importance: Importance.max,
-        priority: Priority.max,
-        color: color,
-        colorized: true,
-        enableVibration: true,
-        vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
-        playSound: true,
-        sound: const RawResourceAndroidNotificationSound('trip_reminder'),
-        fullScreenIntent: true,
-        category: AndroidNotificationCategory.call,
-        visibility: NotificationVisibility.public,
-        onlyAlertOnce: false,
-        ongoing: true,
-        autoCancel: false,
-        timeoutAfter: 60000,
-      ),
-    );
-
-    // Sound-repeat details (no ongoing — these are transient sound triggers)
-    final repeatDetails = NotificationDetails(
-      android: AndroidNotificationDetails(
-        'trip_reminders_v5',
-        'تذكيرات بدء الرحلة',
-        importance: Importance.max,
-        priority: Priority.max,
-        color: color,
-        colorized: true,
-        enableVibration: true,
-        playSound: true,
-        sound: const RawResourceAndroidNotificationSound('trip_reminder'),
-        onlyAlertOnce: false,
-      ),
-    );
-
-    _localNotifications.show(notifId, notifTitle, notifBody, mainDetails, payload: payload);
+    // FOREGROUND: Skip Native notification (shows as heads-up, not full-screen).
+    // Navigate directly to the trip reminder Flutter UI.
 
     NotificationLogger.instance.log(
       eventType: 'displayed',
@@ -424,24 +301,11 @@ class NotificationService {
       escalationLevel: data['escalationLevel'] as String?,
     );
 
-    // Repeat sound 2 more times (same as new order notifications)
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      _localNotifications.show(notifId + 1, notifTitle, notifBody, repeatDetails);
-    });
-    Future.delayed(const Duration(milliseconds: 3000), () {
-      _localNotifications.show(notifId + 2, notifTitle, notifBody, repeatDetails);
-      Future.delayed(const Duration(seconds: 3), () {
-        _localNotifications.cancel(notifId + 1);
-        _localNotifications.cancel(notifId + 2);
-      });
-    });
-
-    // NEW: Open full-screen trip start reminder UI instead of just navigating
+    // Open full-screen trip start reminder UI directly
     final reminderData = TripStartReminderData.tryParse(data);
     if (reminderData != null) {
       _navigateToTripStartReminder(reminderData);
     } else {
-      // Fallback: navigate to active order if parsing fails
       if (!_isOnActiveOrder()) {
         _navigateTo('/active-order');
       }
@@ -484,49 +348,10 @@ class NotificationService {
     }
 
     final type = NotificationHelper.resolveType(data);
-    final isReminder = type == 'unassigned_order_reminder';
 
-    // ✅ PRIMARY METHOD: Use native Android code for maximum reliability
-    _showFullScreenNotificationViaNative(notificationData, type ?? 'new_order');
-
-    // ✅ FALLBACK: Also show via flutter_local_notifications (for redundancy)
-    final channelId = isReminder ? 'unassigned_orders_v5' : 'new_orders_v5';
-    final channelName = isReminder ? 'تذكير بطلبات متاحة' : 'طلبات جديدة';
-
-    final color = _getNotificationColor(type ?? '');
-    final payload = jsonEncode(data);
-    final notificationId = notificationData.orderId.hashCode;
-
-    // Show system notification with full-screen intent (call-style).
-    // On lock screen / screen off → launches FullScreenNotificationScreen.
-    // On foreground → shows heads-up notification; we also navigate directly.
-    _localNotifications.show(
-      notificationId,
-      'طلب جديد قريب منك',
-      '${notificationData.pickupLabel} → ${notificationData.dropoffLabel}',
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          channelId,
-          channelName,
-          importance: Importance.max,
-          priority: Priority.max,
-          color: color,
-          colorized: true,
-          enableVibration: true,
-          vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
-          playSound: true,
-          sound: const RawResourceAndroidNotificationSound('trip_reminder'),
-          fullScreenIntent: true,
-          category: AndroidNotificationCategory.call,
-          visibility: NotificationVisibility.public,
-          onlyAlertOnce: false,
-          ongoing: true,
-          autoCancel: false,
-          timeoutAfter: 60000,
-        ),
-      ),
-      payload: payload,
-    );
+    // FOREGROUND: Skip Native notification (Android shows it as heads-up, not full-screen).
+    // Navigate directly to the full-screen Flutter UI instead.
+    // Native notification is only useful in background/locked (handled by main.dart BGHandler).
 
     NotificationLogger.instance.log(
       eventType: 'displayed',
@@ -536,56 +361,7 @@ class NotificationService {
       orderId: notificationData.orderId,
     );
 
-    // Repeat sound: show 2 more notifications with short delays
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      _localNotifications.show(
-        notificationId + 1,
-        'طلب جديد قريب منك',
-        '${notificationData.pickupLabel} → ${notificationData.dropoffLabel}',
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            channelId,
-            channelName,
-            importance: Importance.max,
-            priority: Priority.max,
-            color: color,
-            colorized: true,
-            enableVibration: true,
-            playSound: true,
-            sound: const RawResourceAndroidNotificationSound('trip_reminder'),
-            onlyAlertOnce: false,
-          ),
-        ),
-      );
-    });
-    Future.delayed(const Duration(milliseconds: 3000), () {
-      _localNotifications.show(
-        notificationId + 2,
-        'طلب جديد قريب منك',
-        '${notificationData.pickupLabel} → ${notificationData.dropoffLabel}',
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            channelId,
-            channelName,
-            importance: Importance.max,
-            priority: Priority.max,
-            color: color,
-            colorized: true,
-            enableVibration: true,
-            playSound: true,
-            sound: const RawResourceAndroidNotificationSound('trip_reminder'),
-            onlyAlertOnce: false,
-          ),
-        ),
-      );
-      // Clean up extra notifications after a moment
-      Future.delayed(const Duration(seconds: 3), () {
-        _localNotifications.cancel(notificationId + 1);
-        _localNotifications.cancel(notificationId + 2);
-      });
-    });
-
-    // In foreground: navigate directly to full-screen route
+    // Navigate directly to full-screen route (no heads-up delay)
     _navigateToFullScreen(notificationData);
   }
 
@@ -742,12 +518,17 @@ class NotificationService {
 
     try {
       final data = jsonDecode(payload) as Map<String, dynamic>;
+      final tappedOrderId = data['orderId'] as String?;
       NotificationLogger.instance.log(
         eventType: 'tapped',
         notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
         appState: 'foreground',
-        orderId: data['orderId'] as String?,
+        orderId: tappedOrderId,
       );
+      // Cancel sound repeats on tap
+      if (tappedOrderId != null) {
+        NotificationMethodChannel.cancelSoundRepeats(tappedOrderId);
+      }
       _navigateFromMessage(data);
     } on Object catch (e) {
       debugPrint('Error parsing notification payload: $e');

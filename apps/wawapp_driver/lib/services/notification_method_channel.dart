@@ -162,6 +162,18 @@ class NotificationMethodChannel {
     }
   }
 
+  /// Cancel pending sound repeats for an order.
+  /// Call when order is accepted, rejected, or notification is tapped from Flutter.
+  static Future<void> cancelSoundRepeats(String orderId) async {
+    try {
+      await _channel.invokeMethod('cancelSoundRepeats', {'orderId': orderId});
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        debugPrint('[NotificationMethodChannel] Error cancelling sound repeats: ${e.message}');
+      }
+    }
+  }
+
   /// Get all permission statuses in one call.
   /// Returns a map with the following keys:
   /// - batteryOptimizationDisabled

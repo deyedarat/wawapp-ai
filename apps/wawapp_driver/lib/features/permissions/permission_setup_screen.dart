@@ -63,7 +63,7 @@ class _PermissionSetupScreenState extends State<PermissionSetupScreen>
         body: SafeArea(
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
-              : Padding(
+              : SingleChildScrollView(
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -106,7 +106,7 @@ class _PermissionSetupScreenState extends State<PermissionSetupScreen>
                         _statuses['canScheduleExactAlarms'] ?? false,
                         () => PermissionHelper.requestMissingPermissions(),
                       ),
-                      const Spacer(),
+                      const SizedBox(height: 32),
                       ElevatedButton(
                         onPressed: _allGranted ? _onContinue : () async {
                           await PermissionHelper.requestMissingPermissions();
