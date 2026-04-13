@@ -106,6 +106,13 @@ class _PermissionSetupScreenState extends State<PermissionSetupScreen>
                         _statuses['canScheduleExactAlarms'] ?? false,
                         () => PermissionHelper.requestMissingPermissions(),
                       ),
+                      _tile(
+                        'إشعارات ملء الشاشة',
+                        'يسمح بإظهار إشعارات الطلبات بملء الشاشة (Android 14+)',
+                        Icons.fullscreen,
+                        _statuses['canUseFullScreenIntent'] ?? false,
+                        () => PermissionHelper.requestMissingPermissions(),
+                      ),
                       const SizedBox(height: 32),
                       ElevatedButton(
                         onPressed: _allGranted ? _onContinue : () async {

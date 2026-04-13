@@ -75,14 +75,17 @@ flutter {
 dependencies {
     // Core library desugaring for flutter_local_notifications
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
-    
+
     // Firebase Messaging — required by MyFirebaseMessagingService.kt
     implementation("com.google.firebase:firebase-messaging:24.1.0")
-    
+
     // CRITICAL FIX: Force upgrade play-services-auth to fix SignInHubActivity NullPointerException
     // Root cause: Firebase Auth pulls in play-services-auth:20.7.0 transitively
     // Version 20.7.0 has known NPE issues in SignInHubActivity.onCreate() when Intent extras are null
     // Version 21.2.0 has improved null safety and error handling
     // See: SIGNIN_HUB_CRASH_RCA.md for full analysis
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+
+    // CardView for activity_full_screen_notification.xml
+    implementation("androidx.cardview:cardview:1.0.0")
 }

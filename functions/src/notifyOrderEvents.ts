@@ -212,29 +212,28 @@ async function sendNotification(
       return false; // Not an error - user hasn't granted notification permission
     }
 
-    // Send FCM notification
+    // Send FCM notification (data-only for full-screen intent on Android)
     const message: admin.messaging.Message = {
       token: fcmToken,
-      notification: {
-        title: config.title,
-        body: config.body,
-      },
       data: {
         orderId: orderId,
         type: config.type,
         status: config.type, // For backwards compatibility
         deepLink: deepLink, // Deep link for navigation
+        title: config.title, // Move to data for native handling
+        body: config.body, // Move to data for native handling
+        notificationType: 'order_update', // For native notification handler
       },
       android: {
         priority: 'high',
-        notification: {
-          sound: 'default',
-          channelId: 'order_updates', // Must match Android channel in app
-        },
       },
       apns: {
         payload: {
           aps: {
+            alert: {
+              title: config.title,
+              body: config.body,
+            },
             sound: 'default',
             badge: 1,
           },

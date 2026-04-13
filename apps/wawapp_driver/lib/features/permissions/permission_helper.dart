@@ -14,12 +14,14 @@ class PermissionHelper {
   /// - Battery optimization is disabled
   /// - Can bypass Do Not Disturb
   /// - Can schedule exact alarms (Android 12+)
+  /// - Can use full-screen intent (Android 14+)
   static Future<bool> areAllCriticalPermissionsGranted() async {
     try {
       final statuses = await NotificationMethodChannel.getAllPermissionStatuses();
       final allGranted = statuses['batteryOptimizationDisabled'] == true &&
           statuses['canBypassDnd'] == true &&
-          statuses['canScheduleExactAlarms'] == true;
+          statuses['canScheduleExactAlarms'] == true &&
+          statuses['canUseFullScreenIntent'] == true;
 
       if (kDebugMode) {
         debugPrint('[PermissionHelper] All critical permissions granted: $allGranted');
@@ -41,6 +43,7 @@ class PermissionHelper {
   /// - batteryOptimizationDisabled: bool
   /// - canBypassDnd: bool
   /// - canScheduleExactAlarms: bool
+  /// - canUseFullScreenIntent: bool (Android 14+)
   static Future<Map<String, bool>> getDetailedPermissionStatuses() async {
     try {
       return await NotificationMethodChannel.getAllPermissionStatuses();
@@ -52,6 +55,7 @@ class PermissionHelper {
         'batteryOptimizationDisabled': false,
         'canBypassDnd': false,
         'canScheduleExactAlarms': false,
+        'canUseFullScreenIntent': false,
       };
     }
   }
@@ -72,6 +76,9 @@ class PermissionHelper {
     }
     if (statuses['canScheduleExactAlarms'] == false) {
       missing.add('Schedule Exact Alarms');
+    }
+    if (statuses['canUseFullScreenIntent'] == false) {
+      missing.add('Full-Screen Notifications (Android 14+)');
     }
 
     return missing;
@@ -114,6 +121,16 @@ class PermissionHelper {
         }
         await NotificationMethodChannel.requestExactAlarmPermission();
         anyRequested = true;
+        await Future.delayed(const Duration(seconds: 1));
+      }
+
+      // 4. Request full-screen intent permission (Android 14+)
+      if (statuses['canUseFullScreenIntent'] == false) {
+        if (kDebugMode) {
+          debugPrint('[PermissionHelper] Requesting full-screen intent permission...');
+        }
+        await NotificationMethodChannel.requestFullScreenIntentPermission();
+        anyRequested = true;
       }
 
       return anyRequested;
@@ -131,11 +148,12 @@ class PermissionHelper {
   static Future<int> getPermissionCompletionPercentage() async {
     final statuses = await getDetailedPermissionStatuses();
     int granted = 0;
-    int total = 3;
+    int total = 4;
 
     if (statuses['batteryOptimizationDisabled'] == true) granted++;
     if (statuses['canBypassDnd'] == true) granted++;
     if (statuses['canScheduleExactAlarms'] == true) granted++;
+    if (statuses['canUseFullScreenIntent'] == true) granted++;
 
     return ((granted / total) * 100).round();
   }

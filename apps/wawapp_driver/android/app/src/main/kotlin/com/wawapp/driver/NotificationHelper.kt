@@ -5,6 +5,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Person
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
@@ -13,6 +14,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.graphics.drawable.IconCompat
 
 /**
  * Helper class for creating high-priority, full-screen intent notifications
@@ -116,14 +118,146 @@ object NotificationHelper {
             else -> CHANNEL_ID_NEW_ORDERS
         }
 
+        val notificationId = orderId.hashCode()
+
+        // Check permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            if (!nm.canUseFullScreenIntent()) {
+                Log.w(TAG, "⚠️ USE_FULL_SCREEN_INTENT permission not granted on Android 14+")
+            } else {
+                Log.d(TAG, "✓ USE_FULL_SCREEN_INTENT permission granted")
+            }
+        }
+
+        // Build CallStyle notification (Android 12+)
+        val notification = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            buildCallStyleNotification(
+                context, orderId, title, body, pickupLabel, dropoffLabel,
+                price, distance, channelId, notificationId
+            )
+        } else {
+            // Fallback for Android < 12: use traditional full-screen intent
+            buildLegacyFullScreenNotification(
+                context, orderId, title, body, pickupLabel, dropoffLabel,
+                price, distance, createdAt, notificationType, channelId
+            )
+        }
+
+        nm.notify(notificationId, notification)
+        Log.d(TAG, "✓ Call-style notification shown: id=$notificationId, order=$orderId, channel=$channelId")
+
+        // Schedule sound repeats
+        scheduleSoundRepeats(context, orderId, notificationId)
+    }
+
+    /**
+     * Build modern CallStyle notification (Android 12+).
+     * This is the Uber/Careem pattern - bypasses BAL restrictions.
+     */
+    private fun buildCallStyleNotification(
+        context: Context,
+        orderId: String,
+        title: String,
+        body: String,
+        pickupLabel: String,
+        dropoffLabel: String,
+        price: Double,
+        distance: Double,
+        channelId: String,
+        notificationId: Int
+    ): Notification {
+        // Create Person for the "caller" (order)
+        val caller = Person.Builder()
+            .setName("طلب جديد")
+            .setImportant(true)
+            .build()
+
+        // Accept action
+        val acceptIntent = Intent(context, OrderActionReceiver::class.java).apply {
+            action = OrderActionReceiver.ACTION_ACCEPT
+            putExtra("orderId", orderId)
+            putExtra("notificationId", notificationId)
+        }
+        val acceptPendingIntent = PendingIntent.getBroadcast(
+            context, orderId.hashCode() + 1, acceptIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Decline action
+        val declineIntent = Intent(context, OrderActionReceiver::class.java).apply {
+            action = OrderActionReceiver.ACTION_DECLINE
+            putExtra("orderId", orderId)
+            putExtra("notificationId", notificationId)
+        }
+        val declinePendingIntent = PendingIntent.getBroadcast(
+            context, orderId.hashCode() + 2, declineIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Content tap intent → opens MainActivity (when user taps notification body)
+        val contentIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("orderId", orderId)
+            putExtra("notificationType", "new_order")
+            putExtra("action", "open_order")
+        }
+        val contentPendingIntent = PendingIntent.getActivity(
+            context, orderId.hashCode(), contentIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Delete intent
+        val deleteIntent = createDeletePendingIntent(context, orderId)
+
+        // Build notification with CallStyle
+        // NOTE: CallStyle handles full-screen behavior automatically on locked screen
+        // No need for setFullScreenIntent() - it causes conflicts
+        return Notification.Builder(context, channelId)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle("$pickupLabel → $dropoffLabel")
+            .setContentText("${price.toInt()} أوقية • ${String.format("%.1f", distance)} كم")
+            .setStyle(
+                Notification.CallStyle.forIncomingCall(
+                    caller,
+                    declinePendingIntent,
+                    acceptPendingIntent
+                )
+            )
+            .setContentIntent(contentPendingIntent)
+            .setCategory(Notification.CATEGORY_CALL)
+            .setPriority(NotificationManager.IMPORTANCE_HIGH)
+            .setVisibility(Notification.VISIBILITY_PUBLIC)
+            .setOngoing(true)
+            .setAutoCancel(false)
+            .setDeleteIntent(deleteIntent)
+            .setVibrate(longArrayOf(0, 500, 200, 500, 200, 500))
+            .setSound(Uri.parse("android.resource://${context.packageName}/raw/trip_reminder"))
+            .setTimeoutAfter(60000)
+            .build()
+    }
+
+    /**
+     * Fallback for Android < 12: traditional full-screen intent notification.
+     */
+    private fun buildLegacyFullScreenNotification(
+        context: Context,
+        orderId: String,
+        title: String,
+        body: String,
+        pickupLabel: String,
+        dropoffLabel: String,
+        price: Double,
+        distance: Double,
+        createdAt: Long,
+        notificationType: String,
+        channelId: String
+    ): Notification {
         val fullScreenIntent = createFullScreenPendingIntent(
             context, orderId, pickupLabel, dropoffLabel, price, distance, createdAt, notificationType
         )
-
-        // Delete intent: cancel sound repeats when notification is dismissed
         val deleteIntent = createDeletePendingIntent(context, orderId)
 
-        val notification = NotificationCompat.Builder(context, channelId)
+        return NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
             .setContentText(body)
@@ -139,14 +273,56 @@ object NotificationHelper {
             .setSound(Uri.parse("android.resource://${context.packageName}/raw/trip_reminder"))
             .setTimeoutAfter(60000)
             .build()
+    }
 
-        val notificationId = orderId.hashCode()
+    /**
+     * Show a simple heads-up notification (no full-screen intent, no sound repeats).
+     * Used for non-critical notifications like acceptance_confirmation and order_update.
+     */
+    fun showSimpleNotification(
+        context: Context,
+        orderId: String,
+        title: String,
+        body: String,
+        notificationType: String
+    ) {
+        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Use the same channels but without full-screen intent
+        val channelId = when (notificationType) {
+            "acceptance_confirmation" -> CHANNEL_ID_NEW_ORDERS
+            "order_update" -> CHANNEL_ID_NEW_ORDERS
+            else -> CHANNEL_ID_NEW_ORDERS
+        }
+
+        // Create tap intent to open MainActivity
+        val tapIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("orderId", orderId)
+            putExtra("notificationType", notificationType)
+            putExtra("action", "open_order")
+        }
+        val tapPendingIntent = PendingIntent.getActivity(
+            context, orderId.hashCode(), tapIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true)
+            .setContentIntent(tapPendingIntent)
+            .setVibrate(longArrayOf(0, 300, 200, 300))
+            .setTimeoutAfter(30000)
+            .build()
+
+        val notificationId = (orderId + "_" + notificationType).hashCode()
         nm.notify(notificationId, notification)
-
-        Log.d(TAG, "Full-screen notification shown: id=$notificationId, order=$orderId")
-
-        // Schedule 2 sound repeats via AlarmManager (main notification already plays sound once)
-        scheduleSoundRepeats(context, orderId, notificationId)
+        Log.d(TAG, "✓ Simple notification shown: id=$notificationId, order=$orderId, type=$notificationType")
     }
 
     // =========================================================================
@@ -164,7 +340,8 @@ object NotificationHelper {
         notificationType: String
     ): PendingIntent {
         val intent = Intent(context, FullScreenNotificationActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            // Android 14+ requires FLAG_ACTIVITY_NO_USER_ACTION for full-screen intent
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
             putExtra("orderId", orderId)
             putExtra("pickupLabel", pickupLabel)
             putExtra("dropoffLabel", dropoffLabel)

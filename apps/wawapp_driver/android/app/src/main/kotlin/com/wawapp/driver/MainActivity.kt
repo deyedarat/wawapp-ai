@@ -17,6 +17,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.wawapp.driver/notifications"
+    private val INTENT_CHANNEL = "com.wawapp.driver/intent_data"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +39,21 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+
+        // Setup Intent Data Channel (for handling notification accept action)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, INTENT_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "getIntentData" -> {
+                    val intentData = getIntentExtras()
+                    result.success(intentData)
+                }
+                "clearIntentData" -> {
+                    clearIntentExtras()
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
@@ -99,11 +115,20 @@ class MainActivity : FlutterActivity() {
                     val granted = requestExactAlarmPermission()
                     result.success(granted)
                 }
+                "canUseFullScreenIntent" -> {
+                    val canUse = canUseFullScreenIntent()
+                    result.success(canUse)
+                }
+                "requestFullScreenIntentPermission" -> {
+                    val granted = requestFullScreenIntentPermission()
+                    result.success(granted)
+                }
                 "getAllPermissionStatuses" -> {
                     val statuses = mapOf(
                         "batteryOptimizationDisabled" to isBatteryOptimizationDisabled(),
                         "canBypassDnd" to canBypassDnd(),
-                        "canScheduleExactAlarms" to canScheduleExactAlarms()
+                        "canScheduleExactAlarms" to canScheduleExactAlarms(),
+                        "canUseFullScreenIntent" to canUseFullScreenIntent()
                     )
                     result.success(statuses)
                 }
@@ -185,5 +210,62 @@ class MainActivity : FlutterActivity() {
         } else {
             true // Not needed on older Android versions
         }
+    }
+
+    private fun canUseFullScreenIntent(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            // Android 14+ (API 34+) requires explicit permission
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.canUseFullScreenIntent()
+        } else {
+            true // Not needed on older Android versions
+        }
+    }
+
+    private fun requestFullScreenIntentPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
+                data = Uri.parse("package:$packageName")
+            }
+            try {
+                startActivity(intent)
+                true
+            } catch (e: Exception) {
+                false
+            }
+        } else {
+            true // Not needed on older Android versions
+        }
+    }
+
+    /**
+     * Get intent extras from notification accept action.
+     * Returns null if no data or if already consumed.
+     */
+    private fun getIntentExtras(): Map<String, String?>? {
+        val action = intent?.getStringExtra("action")
+        if (action == "open_order") {
+            return mapOf(
+                "orderId" to intent?.getStringExtra("orderId"),
+                "notificationType" to intent?.getStringExtra("notificationType"),
+                "action" to action
+            )
+        }
+        return null
+    }
+
+    /**
+     * Clear intent extras to prevent duplicate handling.
+     */
+    private fun clearIntentExtras() {
+        intent?.removeExtra("action")
+        intent?.removeExtra("orderId")
+        intent?.removeExtra("notificationType")
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        // Update the intent so getIntentExtras() can access new data
+        setIntent(intent)
     }
 }

@@ -426,15 +426,9 @@ async function sendAcceptanceConfirmation(
       return { success: false, error: 'no_fcm_token' };
     }
 
-    // Prepare notification message
+    // Prepare notification message (data-only for full-screen intent on Android)
     const message: admin.messaging.Message = {
       token: fcmToken,
-      notification: {
-        title: 'تأكيد قبول الطلب',
-        body: `تم قبول طلبك بنجاح. ${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'} → ${
-          orderData.dropoff?.label || orderData.dropoffAddress || 'الوجهة'
-        }`,
-      },
       data: {
         notificationType: 'acceptance_confirmation',
         orderId: orderId,
@@ -444,20 +438,24 @@ async function sendAcceptanceConfirmation(
         dropoffLng: String(orderData.dropoff?.lng || 0),
         clientName: orderData.clientName || 'عميل',
         acceptedAt: String(orderData.acceptedAt?.toMillis() || Date.now()),
+        title: 'تأكيد قبول الطلب', // Move to data for native handling
+        body: `تم قبول طلبك بنجاح. ${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'} → ${
+          orderData.dropoff?.label || orderData.dropoffAddress || 'الوجهة'
+        }`,
       },
       android: {
         priority: 'high',
-        notification: {
-          sound: 'default',
-          channelId: 'acceptance_confirmations',
-          priority: 'high',
-          visibility: 'public',
-        },
         ttl: 300000, // 5 minutes TTL
       },
       apns: {
         payload: {
           aps: {
+            alert: {
+              title: 'تأكيد قبول الطلب',
+              body: `تم قبول طلبك بنجاح. ${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'} → ${
+                orderData.dropoff?.label || orderData.dropoffAddress || 'الوجهة'
+              }`,
+            },
             sound: 'default',
             badge: 1,
             contentAvailable: true,
