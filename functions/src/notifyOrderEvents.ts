@@ -25,28 +25,6 @@ interface NotificationConfig {
 }
 
 /**
- * Generates a Firebase Dynamic Link for notification deep linking
- * @param domain - Dynamic Links domain (e.g., 'wawappclient.page.link')
- * @param deepLinkPath - Path to navigate to (e.g., '/order/123/tracking')
- * @returns The generated dynamic link URL
- */
-function generateDynamicLink(
-  domain: string,
-  deepLinkPath: string
-): string {
-  try {
-    // Return the full dynamic link URL
-    // Firebase Dynamic Links will handle redirection via AndroidManifest intent-filters
-    const deepLink = `https://${domain}${deepLinkPath}`;
-    return deepLink;
-  } catch (error) {
-    console.error('[Dynamic Link] Generation failed:', error);
-    // Fallback to basic deep link
-    return `https://${domain}${deepLinkPath}`;
-  }
-}
-
-/**
  * Get notification content based on status transition
  */
 function getNotificationConfig(
@@ -147,49 +125,30 @@ async function sendNotification(
   switch (config.type) {
     case 'driver_accepted':
     case 'driver_on_route':
-      deepLink = generateDynamicLink(
-        'wawappclient.page.link',
-        `/order/${orderId}/tracking`
-      );
+      deepLink = `/order/${orderId}/tracking`;
       break;
     
     case 'trip_completed':
-      deepLink = generateDynamicLink(
-        'wawappclient.page.link',
-        `/order/${orderId}/completed`
-      );
+      deepLink = `/order/${orderId}/completed`;
       break;
     
     case 'order_expired':
-      deepLink = generateDynamicLink(
-        'wawappclient.page.link',
-        '/error?message=Order expired'
-      );
+      deepLink = '/error?message=Order expired';
       break;
     
     case 'order_cancelled_by_client':
     case 'trip_cancelled_by_client':
-      deepLink = generateDynamicLink(
-        'wawappdriver.page.link',
-        `/orders/nearby`
-      );
+      deepLink = '/orders/nearby';
       break;
         
     case 'order_expired_driver':
-      deepLink = generateDynamicLink(
-        'wawappdriver.page.link',
-        '/orders/nearby'
-      );
+      deepLink = '/orders/nearby';
       break;
     
     default:
-      deepLink = generateDynamicLink(
-        'wawappclient.page.link',
-        '/'
-      );
+      deepLink = '/';
   }
-  
-  console.log(`[Dynamic Link] Generated for ${config.type}: ${deepLink}`);
+
   try {
     // Fetch user's FCM token from Firestore
     const userDoc = await admin.firestore()
@@ -222,7 +181,7 @@ async function sendNotification(
         deepLink: deepLink, // Deep link for navigation
         title: config.title, // Move to data for native handling
         body: config.body, // Move to data for native handling
-        notificationType: 'order_update', // For native notification handler
+        notificationType: config.type, // For native notification handler
       },
       android: {
         priority: 'high',

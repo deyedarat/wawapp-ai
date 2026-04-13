@@ -46,12 +46,10 @@ void main() async {
     // Solution: Always use PlayIntegrity (works on Play Store, gracefully fails locally)
     try {
       await FirebaseAppCheck.instance.activate(
-        androidProvider: kDebugMode 
-          ? AndroidProvider.debug 
-          : AndroidProvider.playIntegrity,
-        appleProvider: kDebugMode 
-          ? AppleProvider.debug 
-          : AppleProvider.appAttest,
+        androidProvider:
+            kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+        appleProvider:
+            kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
       );
       if (kDebugMode) {
         debugPrint('✅ Firebase App Check activated with Play Integrity');
@@ -60,7 +58,8 @@ void main() async {
       // Expected to fail on local ADB installs - this is NORMAL
       // On Play Store, this will succeed
       if (kDebugMode) {
-        debugPrint('⚠️ App Check activation failed (expected for ADB installs): $e');
+        debugPrint(
+            '⚠️ App Check activation failed (expected for ADB installs): $e');
       }
     }
 

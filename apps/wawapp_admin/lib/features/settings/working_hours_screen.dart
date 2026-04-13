@@ -10,7 +10,7 @@ class WorkingHoursConfig {
   final String dayName;
   final int dayIndex; // 0=Sunday ... 6=Saturday
   final bool isWorkingDay;
-  final String openTime;  // e.g. "08:00"
+  final String openTime; // e.g. "08:00"
   final String closeTime; // e.g. "22:00"
 
   WorkingHoursConfig({
@@ -37,18 +37,59 @@ class WorkingHoursConfig {
 
 // ---------- Defaults ----------
 final _defaultDays = [
-  {'dayIndex': 0, 'dayName': 'الأحد',    'isWorkingDay': true,  'openTime': '08:00', 'closeTime': '22:00'},
-  {'dayIndex': 1, 'dayName': 'الاثنين',   'isWorkingDay': true,  'openTime': '08:00', 'closeTime': '22:00'},
-  {'dayIndex': 2, 'dayName': 'الثلاثاء',  'isWorkingDay': true,  'openTime': '08:00', 'closeTime': '22:00'},
-  {'dayIndex': 3, 'dayName': 'الأربعاء',  'isWorkingDay': true,  'openTime': '08:00', 'closeTime': '22:00'},
-  {'dayIndex': 4, 'dayName': 'الخميس',   'isWorkingDay': true,  'openTime': '08:00', 'closeTime': '22:00'},
-  {'dayIndex': 5, 'dayName': 'الجمعة',   'isWorkingDay': false, 'openTime': '08:00', 'closeTime': '14:00'},
-  {'dayIndex': 6, 'dayName': 'السبت',    'isWorkingDay': true,  'openTime': '08:00', 'closeTime': '20:00'},
+  {
+    'dayIndex': 0,
+    'dayName': 'الأحد',
+    'isWorkingDay': true,
+    'openTime': '08:00',
+    'closeTime': '22:00'
+  },
+  {
+    'dayIndex': 1,
+    'dayName': 'الاثنين',
+    'isWorkingDay': true,
+    'openTime': '08:00',
+    'closeTime': '22:00'
+  },
+  {
+    'dayIndex': 2,
+    'dayName': 'الثلاثاء',
+    'isWorkingDay': true,
+    'openTime': '08:00',
+    'closeTime': '22:00'
+  },
+  {
+    'dayIndex': 3,
+    'dayName': 'الأربعاء',
+    'isWorkingDay': true,
+    'openTime': '08:00',
+    'closeTime': '22:00'
+  },
+  {
+    'dayIndex': 4,
+    'dayName': 'الخميس',
+    'isWorkingDay': true,
+    'openTime': '08:00',
+    'closeTime': '22:00'
+  },
+  {
+    'dayIndex': 5,
+    'dayName': 'الجمعة',
+    'isWorkingDay': false,
+    'openTime': '08:00',
+    'closeTime': '14:00'
+  },
+  {
+    'dayIndex': 6,
+    'dayName': 'السبت',
+    'isWorkingDay': true,
+    'openTime': '08:00',
+    'closeTime': '20:00'
+  },
 ];
 
 // ---------- Provider ----------
-final workingHoursProvider =
-    StreamProvider<List<WorkingHoursConfig>>((ref) {
+final workingHoursProvider = StreamProvider<List<WorkingHoursConfig>>((ref) {
   return FirebaseFirestore.instance
       .collection('working_hours')
       .orderBy('dayIndex')
@@ -106,8 +147,7 @@ class _WorkingHoursScreenState extends ConsumerState<WorkingHoursScreen> {
                       style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 8),
                   ElevatedButton.icon(
-                    onPressed:
-                        _isInitializing ? null : _initializeDefaults,
+                    onPressed: _isInitializing ? null : _initializeDefaults,
                     icon: _isInitializing
                         ? const SizedBox(
                             width: 18,
@@ -154,10 +194,8 @@ class _WorkingHoursScreenState extends ConsumerState<WorkingHoursScreen> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: configs.length,
-                    separatorBuilder: (_, __) =>
-                        const Divider(height: 1),
-                    itemBuilder: (ctx, i) =>
-                        _buildDayRow(context, configs[i]),
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (ctx, i) => _buildDayRow(context, configs[i]),
                   ),
                 ),
               ],
@@ -182,19 +220,18 @@ class _WorkingHoursScreenState extends ConsumerState<WorkingHoursScreen> {
                 Switch(
                   value: config.isWorkingDay,
                   activeColor: AdminAppColors.primaryGreen,
-                  onChanged: (val) => _updateDay(config.id,
-                      {'isWorkingDay': val}),
+                  onChanged: (val) =>
+                      _updateDay(config.id, {'isWorkingDay': val}),
                 ),
                 const SizedBox(width: AdminSpacing.xs),
                 Expanded(
                   child: Text(
                     config.dayName,
-                    style:
-                        Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: config.isWorkingDay
-                                  ? null
-                                  : AdminAppColors.textSecondaryLight,
-                            ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: config.isWorkingDay
+                              ? null
+                              : AdminAppColors.textSecondaryLight,
+                        ),
                   ),
                 ),
               ],
@@ -209,8 +246,7 @@ class _WorkingHoursScreenState extends ConsumerState<WorkingHoursScreen> {
               context,
               label: 'من',
               time: config.openTime,
-              onChanged: (t) =>
-                  _updateDay(config.id, {'openTime': t}),
+              onChanged: (t) => _updateDay(config.id, {'openTime': t}),
             ),
             const SizedBox(width: AdminSpacing.md),
             // Close time
@@ -218,8 +254,7 @@ class _WorkingHoursScreenState extends ConsumerState<WorkingHoursScreen> {
               context,
               label: 'إلى',
               time: config.closeTime,
-              onChanged: (t) =>
-                  _updateDay(config.id, {'closeTime': t}),
+              onChanged: (t) => _updateDay(config.id, {'closeTime': t}),
             ),
           ] else
             Text(
@@ -235,17 +270,17 @@ class _WorkingHoursScreenState extends ConsumerState<WorkingHoursScreen> {
           if (config.isWorkingDay)
             Container(
               padding: const EdgeInsets.symmetric(
-                  horizontal: AdminSpacing.sm,
-                  vertical: AdminSpacing.xxs),
+                  horizontal: AdminSpacing.sm, vertical: AdminSpacing.xxs),
               decoration: BoxDecoration(
                 color: AdminAppColors.primaryGreen.withOpacity(0.1),
-                borderRadius:
-                    BorderRadius.circular(AdminSpacing.radiusSm),
+                borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
               ),
               child: Text(
                 _calcHours(config.openTime, config.closeTime),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AdminAppColors.primaryGreen),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: AdminAppColors.primaryGreen),
               ),
             ),
         ],
@@ -281,19 +316,22 @@ class _WorkingHoursScreenState extends ConsumerState<WorkingHoursScreen> {
             horizontal: AdminSpacing.md, vertical: AdminSpacing.xs),
         decoration: BoxDecoration(
           border: Border.all(color: AdminAppColors.borderLight),
-          borderRadius:
-              BorderRadius.circular(AdminSpacing.radiusSm),
+          borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AdminAppColors.textSecondaryLight)),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: AdminAppColors.textSecondaryLight)),
             const SizedBox(width: AdminSpacing.xs),
             Text(time,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold)),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall
+                    ?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(width: AdminSpacing.xs),
             const Icon(Icons.access_time, size: 16),
           ],
@@ -302,8 +340,7 @@ class _WorkingHoursScreenState extends ConsumerState<WorkingHoursScreen> {
     );
   }
 
-  Future<void> _updateDay(
-      String id, Map<String, dynamic> data) async {
+  Future<void> _updateDay(String id, Map<String, dynamic> data) async {
     await FirebaseFirestore.instance
         .collection('working_hours')
         .doc(id)
@@ -317,10 +354,8 @@ class _WorkingHoursScreenState extends ConsumerState<WorkingHoursScreen> {
     try {
       final oParts = open.split(':');
       final cParts = close.split(':');
-      final oMins =
-          int.parse(oParts[0]) * 60 + int.parse(oParts[1]);
-      final cMins =
-          int.parse(cParts[0]) * 60 + int.parse(cParts[1]);
+      final oMins = int.parse(oParts[0]) * 60 + int.parse(oParts[1]);
+      final cMins = int.parse(cParts[0]) * 60 + int.parse(cParts[1]);
       final diff = cMins - oMins;
       if (diff <= 0) return '—';
       final h = diff ~/ 60;

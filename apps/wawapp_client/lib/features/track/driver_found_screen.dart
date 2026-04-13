@@ -41,7 +41,8 @@ class DriverFoundScreen extends ConsumerWidget {
           final reassignedAt = data['reassignedAt'];
 
           // ── Reassignment state: order went back to matching ──
-          if (status == 'matching' || (status == 'requested' && reassignedAt != null)) {
+          if (status == 'matching' ||
+              (status == 'requested' && reassignedAt != null)) {
             return _ReassignmentView(
               orderId: orderId,
               previousDriverId: data['previousDriverId'] as String?,
@@ -49,9 +50,15 @@ class DriverFoundScreen extends ConsumerWidget {
           }
 
           return FutureBuilder<DocumentSnapshot>(
-            future: driverId != null ? FirebaseFirestore.instance.collection('drivers').doc(driverId).get() : null,
+            future: driverId != null
+                ? FirebaseFirestore.instance
+                    .collection('drivers')
+                    .doc(driverId)
+                    .get()
+                : null,
             builder: (context, driverSnapshot) {
-              final driverData = driverSnapshot.data?.data() as Map<String, dynamic>?;
+              final driverData =
+                  driverSnapshot.data?.data() as Map<String, dynamic>?;
               final driverName = driverData?['name'] as String? ?? 'السائق';
               final driverPhone = driverData?['phone'] as String? ?? '';
               final vehicle = driverData?['vehicle'] as String? ?? 'غير محدد';
@@ -61,11 +68,13 @@ class DriverFoundScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(Icons.check_circle, size: 80, color: Colors.green),
+                    const Icon(Icons.check_circle,
+                        size: 80, color: Colors.green),
                     const SizedBox(height: 24),
                     const Text(
                       'تم قبول طلبك!',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
@@ -75,14 +84,18 @@ class DriverFoundScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('السائق: $driverName', style: const TextStyle(fontSize: 18)),
+                            Text('السائق: $driverName',
+                                style: const TextStyle(fontSize: 18)),
                             const SizedBox(height: 8),
                             if (driverPhone.isNotEmpty)
-                              Text('الهاتف: $driverPhone', style: const TextStyle(fontSize: 16)),
+                              Text('الهاتف: $driverPhone',
+                                  style: const TextStyle(fontSize: 16)),
                             const SizedBox(height: 8),
-                            Text('المركبة: $vehicle', style: const TextStyle(fontSize: 16)),
+                            Text('المركبة: $vehicle',
+                                style: const TextStyle(fontSize: 16)),
                             const SizedBox(height: 8),
-                            Text('الحالة: ${status ?? "غير معروف"}', style: const TextStyle(fontSize: 16)),
+                            Text('الحالة: ${status ?? "غير معروف"}',
+                                style: const TextStyle(fontSize: 16)),
                           ],
                         ),
                       ),
@@ -97,7 +110,8 @@ class DriverFoundScreen extends ConsumerWidget {
                           children: [
                             Icon(Icons.access_time),
                             SizedBox(width: 8),
-                            Text('الوقت المتوقع للوصول: 5-10 دقائق', style: TextStyle(fontSize: 16)),
+                            Text('الوقت المتوقع للوصول: 5-10 دقائق',
+                                style: TextStyle(fontSize: 16)),
                           ],
                         ),
                       ),
@@ -119,7 +133,8 @@ class DriverFoundScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDriverMap(WidgetRef ref, String orderId, Map<String, dynamic> orderData) {
+  Widget _buildDriverMap(
+      WidgetRef ref, String orderId, Map<String, dynamic> orderData) {
     final driverLocationAsync = ref.watch(driverLocationProvider(orderId));
 
     return Card(
@@ -131,7 +146,8 @@ class DriverFoundScreen extends ConsumerWidget {
           children: [
             const Padding(
               padding: EdgeInsets.all(8),
-              child: Text('موقع السائق', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text('موقع السائق',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             Expanded(
               child: driverLocationAsync.when(
@@ -226,7 +242,8 @@ class _DriverMapWidget extends StatefulWidget {
   State<_DriverMapWidget> createState() => _DriverMapWidgetState();
 }
 
-class _DriverMapWidgetState extends State<_DriverMapWidget> with WidgetsBindingObserver, SafeCameraMixin {
+class _DriverMapWidgetState extends State<_DriverMapWidget>
+    with WidgetsBindingObserver, SafeCameraMixin {
   Set<Marker> _markers = {};
   double _currentZoom = 15.0;
 
@@ -269,7 +286,8 @@ class _DriverMapWidgetState extends State<_DriverMapWidget> with WidgetsBindingO
         markers.add(Marker(
           markerId: const MarkerId('pickup'),
           position: LatLng(lat, lng),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
           infoWindow: InfoWindow(
             title: 'نقطة الاستلام',
             snippet: pickup['label'] as String?,
@@ -301,7 +319,8 @@ class _DriverMapWidgetState extends State<_DriverMapWidget> with WidgetsBindingO
 
         final polygons = ref.watch(districtPolygonsProvider);
         final locale = Localizations.localeOf(context);
-        final markersAsync = ref.watch(districtMarkersProvider(locale.languageCode));
+        final markersAsync =
+            ref.watch(districtMarkersProvider(locale.languageCode));
 
         return markersAsync.when(
           data: (districtMarkers) => GoogleMap(

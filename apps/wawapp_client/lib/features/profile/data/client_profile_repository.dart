@@ -44,7 +44,8 @@ class ClientProfileRepository {
       'createdAt': FieldValue.serverTimestamp(), // Only for initial creation
     });
 
-    debugPrint('[ClientProfile] Profile created successfully (client-safe fields only)');
+    debugPrint(
+        '[ClientProfile] Profile created successfully (client-safe fields only)');
   }
 
   Future<void> updateProfile(ClientProfile profile) async {

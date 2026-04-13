@@ -48,8 +48,9 @@ class DriverEarningsRepository {
 
   int totalForToday(List<Order> orders) {
     final todayOrders = getDailyEarnings(orders);
-    final total =
-        todayOrders.fold<double>(0, (acc, order) => acc + _netPrice(order)).toInt();
+    final total = todayOrders
+        .fold<double>(0, (acc, order) => acc + _netPrice(order))
+        .toInt();
     debugPrint(
         '[EARNINGS] Today total: $total MRU from ${todayOrders.length} orders');
     return total;
@@ -69,8 +70,9 @@ class DriverEarningsRepository {
 
   int totalForCurrentWeek(List<Order> orders) {
     final weekOrders = getWeeklyEarnings(orders);
-    final total =
-        weekOrders.fold<double>(0, (acc, order) => acc + _netPrice(order)).toInt();
+    final total = weekOrders
+        .fold<double>(0, (acc, order) => acc + _netPrice(order))
+        .toInt();
     debugPrint(
         '[EARNINGS] Week total: $total MRU from ${weekOrders.length} orders');
     return total;
@@ -85,8 +87,9 @@ class DriverEarningsRepository {
       return completedAt != null && completedAt.isAfter(monthStart);
     }).toList();
 
-    final total =
-        monthOrders.fold<double>(0, (acc, order) => acc + _netPrice(order)).toInt();
+    final total = monthOrders
+        .fold<double>(0, (acc, order) => acc + _netPrice(order))
+        .toInt();
     debugPrint(
         '[EARNINGS] Month total: $total MRU from ${monthOrders.length} orders');
     return total;

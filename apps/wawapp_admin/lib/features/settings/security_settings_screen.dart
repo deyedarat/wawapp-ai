@@ -40,16 +40,16 @@ class _SecuritySettingsScreenState
                       Text('الحساب الحالي',
                           style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: AdminSpacing.md),
-                      _buildInfoRow(
-                          context, Icons.email, 'البريد الإلكتروني',
+                      _buildInfoRow(context, Icons.email, 'البريد الإلكتروني',
                           currentUser.email ?? '-'),
                       const Divider(height: AdminSpacing.lg),
-                      _buildInfoRow(
-                          context, Icons.person, 'معرف المستخدم',
+                      _buildInfoRow(context, Icons.person, 'معرف المستخدم',
                           currentUser.uid),
                       const Divider(height: AdminSpacing.lg),
                       _buildInfoRow(
-                          context, Icons.verified_user, 'التحقق من البريد',
+                          context,
+                          Icons.verified_user,
+                          'التحقق من البريد',
                           currentUser.emailVerified
                               ? '✅ مفعّل'
                               : '⚠️ غير مفعّل'),
@@ -81,8 +81,8 @@ class _SecuritySettingsScreenState
                       buttonColor: AdminAppColors.activeBlue,
                       onPressed: currentUser?.email == null
                           ? null
-                          : () => _sendPasswordReset(
-                              context, currentUser!.email!),
+                          : () =>
+                              _sendPasswordReset(context, currentUser!.email!),
                     ),
                     const Divider(height: AdminSpacing.xl),
 
@@ -104,8 +104,7 @@ class _SecuritySettingsScreenState
             const SizedBox(height: AdminSpacing.xl),
 
             // Security tips
-            Text('نصائح الأمان',
-                style: Theme.of(context).textTheme.titleLarge),
+            Text('نصائح الأمان', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: AdminSpacing.md),
             Card(
               color: AdminAppColors.primaryGreen.withOpacity(0.03),
@@ -134,8 +133,8 @@ class _SecuritySettingsScreenState
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, IconData icon, String label,
-      String value) {
+  Widget _buildInfoRow(
+      BuildContext context, IconData icon, String label, String value) {
     return Row(
       children: [
         Icon(icon, color: AdminAppColors.primaryGreen, size: 20),
@@ -144,10 +143,11 @@ class _SecuritySettingsScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AdminAppColors.textSecondaryLight)),
-            Text(value,
-                style: Theme.of(context).textTheme.titleSmall),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: AdminAppColors.textSecondaryLight)),
+            Text(value, style: Theme.of(context).textTheme.titleSmall),
           ],
         ),
       ],
@@ -178,11 +178,12 @@ class _SecuritySettingsScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
               Text(subtitle,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AdminAppColors.textSecondaryLight)),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: AdminAppColors.textSecondaryLight)),
             ],
           ),
         ),
@@ -212,15 +213,13 @@ class _SecuritySettingsScreenState
         Icon(icon, color: AdminAppColors.primaryGreen, size: 20),
         const SizedBox(width: AdminSpacing.md),
         Expanded(
-          child: Text(text,
-              style: Theme.of(context).textTheme.bodyMedium),
+          child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
         ),
       ],
     );
   }
 
-  Future<void> _sendPasswordReset(
-      BuildContext context, String email) async {
+  Future<void> _sendPasswordReset(BuildContext context, String email) async {
     setState(() => _isLoading = true);
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
@@ -254,8 +253,7 @@ class _SecuritySettingsScreenState
         content: const Text('هل أنت متأكد من تسجيل الخروج من لوحة التحكم؟'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('إلغاء')),
+              onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: AdminAppColors.errorLight),
@@ -264,8 +262,8 @@ class _SecuritySettingsScreenState
               await FirebaseAuth.instance.signOut();
               if (context.mounted) context.go('/login');
             },
-            child: const Text('تسجيل خروج',
-                style: TextStyle(color: Colors.white)),
+            child:
+                const Text('تسجيل خروج', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

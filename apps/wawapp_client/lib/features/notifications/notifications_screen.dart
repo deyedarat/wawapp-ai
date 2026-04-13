@@ -31,7 +31,8 @@ class NotificationsScreen extends ConsumerWidget {
       ),
       body: notificationsAsync.when(
         data: (notifications) {
-          debugPrint('[Notifications] Loaded ${notifications.length} notifications');
+          debugPrint(
+              '[Notifications] Loaded ${notifications.length} notifications');
           if (notifications.isEmpty) {
             return const Center(
               child: Column(

@@ -17,14 +17,16 @@ class PermissionHelper {
   /// - Can use full-screen intent (Android 14+)
   static Future<bool> areAllCriticalPermissionsGranted() async {
     try {
-      final statuses = await NotificationMethodChannel.getAllPermissionStatuses();
+      final statuses =
+          await NotificationMethodChannel.getAllPermissionStatuses();
       final allGranted = statuses['batteryOptimizationDisabled'] == true &&
           statuses['canBypassDnd'] == true &&
           statuses['canScheduleExactAlarms'] == true &&
           statuses['canUseFullScreenIntent'] == true;
 
       if (kDebugMode) {
-        debugPrint('[PermissionHelper] All critical permissions granted: $allGranted');
+        debugPrint(
+            '[PermissionHelper] All critical permissions granted: $allGranted');
         debugPrint('[PermissionHelper] Details: $statuses');
       }
 
@@ -96,7 +98,8 @@ class PermissionHelper {
       // 1. Request battery optimization exemption
       if (statuses['batteryOptimizationDisabled'] == false) {
         if (kDebugMode) {
-          debugPrint('[PermissionHelper] Requesting battery optimization exemption...');
+          debugPrint(
+              '[PermissionHelper] Requesting battery optimization exemption...');
         }
         await NotificationMethodChannel.requestBatteryOptimizationExemption();
         anyRequested = true;
@@ -127,7 +130,8 @@ class PermissionHelper {
       // 4. Request full-screen intent permission (Android 14+)
       if (statuses['canUseFullScreenIntent'] == false) {
         if (kDebugMode) {
-          debugPrint('[PermissionHelper] Requesting full-screen intent permission...');
+          debugPrint(
+              '[PermissionHelper] Requesting full-screen intent permission...');
         }
         await NotificationMethodChannel.requestFullScreenIntentPermission();
         anyRequested = true;

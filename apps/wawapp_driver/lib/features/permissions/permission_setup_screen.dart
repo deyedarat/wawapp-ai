@@ -43,7 +43,11 @@ class _PermissionSetupScreenState extends State<PermissionSetupScreen>
   Future<void> _loadStatuses() async {
     setState(() => _isLoading = true);
     final s = await PermissionHelper.getDetailedPermissionStatuses();
-    if (mounted) setState(() { _statuses = s; _isLoading = false; });
+    if (mounted)
+      setState(() {
+        _statuses = s;
+        _isLoading = false;
+      });
   }
 
   bool get _allGranted =>
@@ -115,12 +119,15 @@ class _PermissionSetupScreenState extends State<PermissionSetupScreen>
                       ),
                       const SizedBox(height: 32),
                       ElevatedButton(
-                        onPressed: _allGranted ? _onContinue : () async {
-                          await PermissionHelper.requestMissingPermissions();
-                          await Future.delayed(
-                              const Duration(milliseconds: 500));
-                          _loadStatuses();
-                        },
+                        onPressed: _allGranted
+                            ? _onContinue
+                            : () async {
+                                await PermissionHelper
+                                    .requestMissingPermissions();
+                                await Future.delayed(
+                                    const Duration(milliseconds: 500));
+                                _loadStatuses();
+                              },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _allGranted
                               ? const Color(0xFF1B5E20)
@@ -156,15 +163,14 @@ class _PermissionSetupScreenState extends State<PermissionSetupScreen>
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
-        leading: Icon(icon,
-            color: granted ? Colors.green : Colors.orange, size: 28),
+        leading:
+            Icon(icon, color: granted ? Colors.green : Colors.orange, size: 28),
         title: Text(title,
             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
         subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
         trailing: granted
             ? const Icon(Icons.check_circle, color: Colors.green)
-            : const Icon(Icons.arrow_forward_ios,
-                size: 16, color: Colors.grey),
+            : const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
         onTap: granted ? null : onTap,
       ),
     );

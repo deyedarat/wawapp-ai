@@ -24,12 +24,18 @@ class AdminSidebar extends ConsumerWidget {
     final unreadCount = ref.watch(adminUnreadCountProvider).valueOrNull ?? 0;
 
     return Container(
-      width: isCollapsed ? AdminSpacing.sidebarWidthCollapsed : AdminSpacing.sidebarWidth,
+      width: isCollapsed
+          ? AdminSpacing.sidebarWidthCollapsed
+          : AdminSpacing.sidebarWidth,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
-          left: isRTL ? const BorderSide(color: AdminAppColors.borderLight) : BorderSide.none,
-          right: !isRTL ? const BorderSide(color: AdminAppColors.borderLight) : BorderSide.none,
+          left: isRTL
+              ? const BorderSide(color: AdminAppColors.borderLight)
+              : BorderSide.none,
+          right: !isRTL
+              ? const BorderSide(color: AdminAppColors.borderLight)
+              : BorderSide.none,
         ),
       ),
       child: Column(
@@ -258,7 +264,9 @@ class AdminSidebar extends ConsumerWidget {
         vertical: AdminSpacing.xxs,
       ),
       child: Material(
-        color: isActive ? AdminAppColors.primaryGreen.withValues(alpha: 0.1) : Colors.transparent,
+        color: isActive
+            ? AdminAppColors.primaryGreen.withValues(alpha: 0.1)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
         child: InkWell(
           onTap: () {
@@ -277,7 +285,9 @@ class AdminSidebar extends ConsumerWidget {
                   isLabelVisible: badgeCount > 0,
                   child: Icon(
                     icon,
-                    color: isActive ? AdminAppColors.primaryGreen : AdminAppColors.textSecondaryLight,
+                    color: isActive
+                        ? AdminAppColors.primaryGreen
+                        : AdminAppColors.textSecondaryLight,
                     size: 24,
                   ),
                 ),
@@ -287,8 +297,11 @@ class AdminSidebar extends ConsumerWidget {
                     child: Text(
                       label,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: isActive ? AdminAppColors.primaryGreen : AdminAppColors.textPrimaryLight,
-                            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                            color: isActive
+                                ? AdminAppColors.primaryGreen
+                                : AdminAppColors.textPrimaryLight,
+                            fontWeight:
+                                isActive ? FontWeight.w600 : FontWeight.normal,
                           ),
                     ),
                   ),

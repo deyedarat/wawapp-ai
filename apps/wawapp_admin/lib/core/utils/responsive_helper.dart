@@ -112,7 +112,8 @@ class ResponsiveHelper {
   }
 
   /// Get responsive sidebar width
-  static double getSidebarWidth(BuildContext context, {bool isCollapsed = false}) {
+  static double getSidebarWidth(BuildContext context,
+      {bool isCollapsed = false}) {
     if (isCollapsed) return 72.0;
     return isMobile(context) ? 280.0 : 280.0;
   }

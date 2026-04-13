@@ -64,8 +64,8 @@ class _AcceptedCountdownBannerState
   Future<void> _requestExtension(String orderId) async {
     setState(() => _isExtending = true);
     try {
-      final callable = FirebaseFunctions.instance
-          .httpsCallable('requestTripStartExtension');
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('requestTripStartExtension');
       final result = await callable.call({'orderId': orderId});
       final data = Map<String, dynamic>.from(result.data as Map);
 

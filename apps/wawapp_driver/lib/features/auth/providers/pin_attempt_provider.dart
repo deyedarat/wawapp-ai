@@ -38,7 +38,7 @@ class PinAttemptNotifier extends StateNotifier<PinAttemptState> {
     final prefs = await SharedPreferences.getInstance();
     final attempts = prefs.getInt(_prefKey) ?? 0;
     final lockoutMillis = prefs.getInt(_lockoutKey);
-    
+
     DateTime? lockoutUntil;
     if (lockoutMillis != null) {
       lockoutUntil = DateTime.fromMillisecondsSinceEpoch(lockoutMillis);
@@ -57,14 +57,14 @@ class PinAttemptNotifier extends StateNotifier<PinAttemptState> {
 
   Future<void> recordFailedAttempt() async {
     final newAttempts = state.attempts + 1;
-    
+
     if (newAttempts >= _maxAttempts) {
       // Lock the account
       final lockoutUntil = DateTime.now().add(_lockoutDuration);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt(_lockoutKey, lockoutUntil.millisecondsSinceEpoch);
       await prefs.setInt(_prefKey, newAttempts);
-      
+
       state = PinAttemptState(
         attempts: newAttempts,
         lockoutUntil: lockoutUntil,
@@ -72,7 +72,7 @@ class PinAttemptNotifier extends StateNotifier<PinAttemptState> {
     } else {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setInt(_prefKey, newAttempts);
-      
+
       state = PinAttemptState(
         attempts: newAttempts,
         lockoutUntil: null,
@@ -93,7 +93,8 @@ class PinAttemptNotifier extends StateNotifier<PinAttemptState> {
 }
 
 /// Provider instance
-final pinAttemptProvider = StateNotifierProvider<PinAttemptNotifier, PinAttemptState>((ref) {
+final pinAttemptProvider =
+    StateNotifierProvider<PinAttemptNotifier, PinAttemptState>((ref) {
   final notifier = PinAttemptNotifier();
   notifier.loadState();
   return notifier;

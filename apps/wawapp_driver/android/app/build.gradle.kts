@@ -88,4 +88,8 @@ dependencies {
 
     // CardView for activity_full_screen_notification.xml
     implementation("androidx.cardview:cardview:1.0.0")
+
+    // ProcessLifecycleOwner — used by MyFirebaseMessagingService to detect foreground
+    // state using the same mechanism as Firebase SDK (aligns isAppInForeground() with onMessage)
+    implementation("androidx.lifecycle:lifecycle-process:2.8.7")
 }

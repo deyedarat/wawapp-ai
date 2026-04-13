@@ -66,7 +66,11 @@ class LogService {
     dev.log(line, name: 'LogService');
 
     // 3. Selective Crashlytics — only for important lifecycle events
-    _logToCrashlytics(event: event, line: line, errorCode: errorCode, errorMessage: errorMessage);
+    _logToCrashlytics(
+        event: event,
+        line: line,
+        errorCode: errorCode,
+        errorMessage: errorMessage);
   }
 
   // ─── Private helpers ──────────────────────────────────────────────────────

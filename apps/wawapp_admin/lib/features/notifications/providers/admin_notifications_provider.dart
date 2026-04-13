@@ -76,9 +76,7 @@ class AdminNotificationsService {
         message: data['body'] as String? ?? '',
         icon: _iconForType(type),
         color: _colorForType(type),
-        timestamp: createdAt is Timestamp
-            ? createdAt.toDate()
-            : DateTime.now(),
+        timestamp: createdAt is Timestamp ? createdAt.toDate() : DateTime.now(),
         isRead: data['isRead'] as bool? ?? false,
         actionRoute: _routeForType(type, data['data'] as Map<String, dynamic>?),
       );

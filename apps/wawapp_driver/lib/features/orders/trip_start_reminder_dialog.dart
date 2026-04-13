@@ -73,7 +73,8 @@ class _TripStartReminderDialogState
     _extensionCount = widget.extensionRequestCount;
     _totalTimeoutMs = widget.totalTimeoutMs;
     _updateRemaining();
-    _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _updateRemaining());
+    _ticker =
+        Timer.periodic(const Duration(seconds: 1), (_) => _updateRemaining());
   }
 
   @override
@@ -84,7 +85,8 @@ class _TripStartReminderDialogState
 
   void _updateRemaining() {
     final deadlineMs = widget.acceptedAtMs + _totalTimeoutMs;
-    final remaining = ((deadlineMs - DateTime.now().millisecondsSinceEpoch) / 1000).ceil();
+    final remaining =
+        ((deadlineMs - DateTime.now().millisecondsSinceEpoch) / 1000).ceil();
     if (!mounted) return;
     setState(() => _remainingSeconds = remaining.clamp(0, 99999));
 
@@ -114,13 +116,17 @@ class _TripStartReminderDialogState
   Future<void> _startTrip() async {
     setState(() => _isStarting = true);
     try {
-      await ref.read(ordersServiceProvider).transition(widget.orderId, OrderStatus.onRoute);
+      await ref
+          .read(ordersServiceProvider)
+          .transition(widget.orderId, OrderStatus.onRoute);
       if (mounted) Navigator.of(context).pop();
     } on Object catch (e) {
       if (!mounted) return;
       setState(() => _isStarting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطأ: ${e is AppError ? e.toUserMessage() : e.toString()}')),
+        SnackBar(
+            content: Text(
+                'خطأ: ${e is AppError ? e.toUserMessage() : e.toString()}')),
       );
     }
   }
@@ -128,12 +134,14 @@ class _TripStartReminderDialogState
   Future<void> _requestExtension() async {
     setState(() => _isExtending = true);
     try {
-      final callable = FirebaseFunctions.instance.httpsCallable('requestTripStartExtension');
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('requestTripStartExtension');
       final result = await callable.call({'orderId': widget.orderId});
       final data = Map<String, dynamic>.from(result.data as Map);
 
       if (data['success'] == true) {
-        final extraMs = ((data['extensionGrantedMinutes'] as num?) ?? 2) * 60000;
+        final extraMs =
+            ((data['extensionGrantedMinutes'] as num?) ?? 2) * 60000;
         if (mounted) {
           setState(() {
             _extensionCount++;
@@ -168,7 +176,9 @@ class _TripStartReminderDialogState
     if (reason == null || !mounted) return;
 
     try {
-      await ref.read(ordersServiceProvider).cancelOrder(widget.orderId, reason: reason);
+      await ref
+          .read(ordersServiceProvider)
+          .cancelOrder(widget.orderId, reason: reason);
       if (mounted) {
         Navigator.of(context).pop();
         context.go('/nearby');
@@ -176,14 +186,17 @@ class _TripStartReminderDialogState
     } on Object catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('خطأ: ${e is AppError ? e.toUserMessage() : e.toString()}')),
+        SnackBar(
+            content: Text(
+                'خطأ: ${e is AppError ? e.toUserMessage() : e.toString()}')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final urgentColor = _isUrgent ? DriverAppColors.accentRed : DriverAppColors.primaryLight;
+    final urgentColor =
+        _isUrgent ? DriverAppColors.accentRed : DriverAppColors.primaryLight;
 
     return Center(
       child: Container(
@@ -238,7 +251,11 @@ class _TripStartReminderDialogState
                 const SizedBox(height: 4),
                 Text(
                   _isUrgent ? 'الوقت ينفد!' : 'ابدأ الرحلة قبل انتهاء المهلة',
-                  style: TextStyle(fontSize: 14, color: _isUrgent ? DriverAppColors.accentRed : Colors.grey.shade600),
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: _isUrgent
+                          ? DriverAppColors.accentRed
+                          : Colors.grey.shade600),
                 ),
                 const SizedBox(height: 16),
 
@@ -251,9 +268,11 @@ class _TripStartReminderDialogState
                   ),
                   child: Column(
                     children: [
-                      _locationRow(Icons.circle, DriverAppColors.primaryLight, widget.pickupLabel),
+                      _locationRow(Icons.circle, DriverAppColors.primaryLight,
+                          widget.pickupLabel),
                       const SizedBox(height: 8),
-                      _locationRow(Icons.location_on, DriverAppColors.accentRed, widget.dropoffLabel),
+                      _locationRow(Icons.location_on, DriverAppColors.accentRed,
+                          widget.dropoffLabel),
                     ],
                   ),
                 ),
@@ -266,13 +285,20 @@ class _TripStartReminderDialogState
                   child: ElevatedButton.icon(
                     onPressed: _isStarting ? null : _startTrip,
                     icon: _isStarting
-                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white))
                         : const Icon(Icons.play_arrow_rounded, size: 28),
-                    label: const Text('بدء الرحلة الآن', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    label: const Text('بدء الرحلة الآن',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: DriverAppColors.primaryLight,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14)),
                     ),
                   ),
                 ),
@@ -286,13 +312,19 @@ class _TripStartReminderDialogState
                     child: OutlinedButton.icon(
                       onPressed: _isExtending ? null : _requestExtension,
                       icon: _isExtending
-                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2))
                           : const Icon(Icons.schedule, size: 20),
-                      label: const Text('طلب وقت إضافي (+2 دقائق)', style: TextStyle(fontSize: 14)),
+                      label: const Text('طلب وقت إضافي (+2 دقائق)',
+                          style: TextStyle(fontSize: 14)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: DriverAppColors.secondaryLight,
-                        side: const BorderSide(color: DriverAppColors.secondaryLight),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        side: const BorderSide(
+                            color: DriverAppColors.secondaryLight),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                       ),
                     ),
                   ),
@@ -301,8 +333,10 @@ class _TripStartReminderDialogState
                 // ── Cancel button ──
                 TextButton(
                   onPressed: _cancelOrder,
-                  style: TextButton.styleFrom(foregroundColor: DriverAppColors.accentRed),
-                  child: const Text('إلغاء الطلب', style: TextStyle(fontSize: 14)),
+                  style: TextButton.styleFrom(
+                      foregroundColor: DriverAppColors.accentRed),
+                  child:
+                      const Text('إلغاء الطلب', style: TextStyle(fontSize: 14)),
                 ),
               ],
             ),
@@ -318,7 +352,10 @@ class _TripStartReminderDialogState
         Icon(icon, size: 16, color: color),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14)),
+          child: Text(label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 14)),
         ),
       ],
     );

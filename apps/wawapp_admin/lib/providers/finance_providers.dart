@@ -12,9 +12,8 @@ final driverWalletsProvider = StreamProvider<List<WalletModel>>((ref) {
       .where('type', isEqualTo: 'driver')
       .orderBy('balance', descending: true)
       .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) => WalletModel.fromFirestore(doc))
-          .toList());
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => WalletModel.fromFirestore(doc)).toList());
 });
 
 /// Provider for platform wallet
@@ -63,9 +62,8 @@ final payoutsProvider = StreamProvider<List<PayoutModel>>((ref) {
       .orderBy('createdAt', descending: true)
       .limit(100)
       .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) => PayoutModel.fromFirestore(doc))
-          .toList());
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => PayoutModel.fromFirestore(doc)).toList());
 });
 
 /// Provider for payouts by status
@@ -77,9 +75,8 @@ final payoutsByStatusProvider =
       .orderBy('createdAt', descending: true)
       .limit(50)
       .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) => PayoutModel.fromFirestore(doc))
-          .toList());
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => PayoutModel.fromFirestore(doc)).toList());
 });
 
 /// Provider for payouts for a specific driver
@@ -91,9 +88,8 @@ final driverPayoutsProvider =
       .orderBy('createdAt', descending: true)
       .limit(20)
       .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) => PayoutModel.fromFirestore(doc))
-          .toList());
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => PayoutModel.fromFirestore(doc)).toList());
 });
 
 /// Payout service for admin actions

@@ -88,14 +88,16 @@ class FinancialReportTab extends ConsumerWidget {
               _buildSummaryCard(
                 context: context,
                 title: 'أرباح السائقين',
-                value: '${_formatCurrency(data.summary.totalDriverEarnings)} MRU',
+                value:
+                    '${_formatCurrency(data.summary.totalDriverEarnings)} MRU',
                 icon: Icons.people,
                 color: Colors.blue,
               ),
               _buildSummaryCard(
                 context: context,
                 title: 'عمولة المنصة',
-                value: '${_formatCurrency(data.summary.totalPlatformCommission)} MRU',
+                value:
+                    '${_formatCurrency(data.summary.totalPlatformCommission)} MRU',
                 icon: Icons.account_balance,
                 color: Colors.orange,
               ),
@@ -138,21 +140,24 @@ class FinancialReportTab extends ConsumerWidget {
               _buildSummaryCard(
                 context: context,
                 title: 'المدفوعات المكتملة',
-                value: '${_formatCurrency(data.summary.totalPayoutsInPeriod)} MRU',
+                value:
+                    '${_formatCurrency(data.summary.totalPayoutsInPeriod)} MRU',
                 icon: Icons.payment,
                 color: Color(0xFF9C27B0), // Purple
               ),
               _buildSummaryCard(
                 context: context,
                 title: 'أرصدة السائقين المعلقة',
-                value: '${_formatCurrency(data.summary.totalDriverOutstandingBalance)} MRU',
+                value:
+                    '${_formatCurrency(data.summary.totalDriverOutstandingBalance)} MRU',
                 icon: Icons.account_balance_wallet,
                 color: Color(0xFFFF9800), // Orange
               ),
               _buildSummaryCard(
                 context: context,
                 title: 'رصيد محفظة المنصة',
-                value: '${_formatCurrency(data.summary.platformWalletBalance)} MRU',
+                value:
+                    '${_formatCurrency(data.summary.platformWalletBalance)} MRU',
                 icon: Icons.business,
                 color: Color(0xFF00BCD4), // Cyan
               ),
@@ -181,33 +186,36 @@ class FinancialReportTab extends ConsumerWidget {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 900),
-                child: DataTable(
-                headingRowColor: MaterialStateProperty.all(
-                  AdminAppColors.backgroundLight,
-                ),
-                columns: const [
-                  DataColumn(label: Text('التاريخ')),
-                  DataColumn(label: Text('عدد الطلبات')),
-                  DataColumn(label: Text('إجمالي الإيرادات')),
-                  DataColumn(label: Text('أرباح السائقين')),
-                  DataColumn(label: Text('عمولة المنصة')),
-                ],
-                rows: data.dailyBreakdown.map<DataRow>((day) {
-                  final date = DateTime.parse(day.date);
-                  final dateFormat = DateFormat('dd/MM/yyyy');
+                  constraints: const BoxConstraints(minWidth: 900),
+                  child: DataTable(
+                    headingRowColor: MaterialStateProperty.all(
+                      AdminAppColors.backgroundLight,
+                    ),
+                    columns: const [
+                      DataColumn(label: Text('التاريخ')),
+                      DataColumn(label: Text('عدد الطلبات')),
+                      DataColumn(label: Text('إجمالي الإيرادات')),
+                      DataColumn(label: Text('أرباح السائقين')),
+                      DataColumn(label: Text('عمولة المنصة')),
+                    ],
+                    rows: data.dailyBreakdown.map<DataRow>((day) {
+                      final date = DateTime.parse(day.date);
+                      final dateFormat = DateFormat('dd/MM/yyyy');
 
-                  return DataRow(cells: [
-                    DataCell(Text(dateFormat.format(date))),
-                    DataCell(Text(day.ordersCount.toString())),
-                    DataCell(Text('${_formatCurrency(day.grossRevenue)} MRU')),
-                    DataCell(Text('${_formatCurrency(day.driverEarnings)} MRU')),
-                    DataCell(Text('${_formatCurrency(day.platformCommission)} MRU')),
-                  ]);
-                }).toList(),
+                      return DataRow(cells: [
+                        DataCell(Text(dateFormat.format(date))),
+                        DataCell(Text(day.ordersCount.toString())),
+                        DataCell(
+                            Text('${_formatCurrency(day.grossRevenue)} MRU')),
+                        DataCell(
+                            Text('${_formatCurrency(day.driverEarnings)} MRU')),
+                        DataCell(Text(
+                            '${_formatCurrency(day.platformCommission)} MRU')),
+                      ]);
+                    }).toList(),
+                  ),
+                ),
               ),
-              ),
-            ),
             ),
           ),
         ],

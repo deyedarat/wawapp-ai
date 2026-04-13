@@ -69,9 +69,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '363341993641',
     projectId: 'wawapp-952d6',
     storageBucket: 'wawapp-952d6.firebasestorage.app',
-    androidClientId: '363341993641-281ghqo4nu3nsq8rkj3984rusbdcd9qr.apps.googleusercontent.com',
-    iosClientId: '363341993641-m07mgi9dlrbbk50a4ceeahv2i6kjdvid.apps.googleusercontent.com',
+    androidClientId:
+        '363341993641-281ghqo4nu3nsq8rkj3984rusbdcd9qr.apps.googleusercontent.com',
+    iosClientId:
+        '363341993641-m07mgi9dlrbbk50a4ceeahv2i6kjdvid.apps.googleusercontent.com',
     iosBundleId: 'com.wawapp.client',
   );
-
 }

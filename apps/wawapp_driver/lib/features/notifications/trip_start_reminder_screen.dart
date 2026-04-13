@@ -62,12 +62,12 @@ class _TripStartReminderScreenState
     extends ConsumerState<TripStartReminderScreen> {
   bool _isLoading = false;
   Timer? _countdownTimer;
-  int _remainingSeconds = 0;
+  int _elapsedSeconds = 0;
 
   @override
   void initState() {
     super.initState();
-    _remainingSeconds = widget.data.elapsedMinutes * 60;
+    _elapsedSeconds = widget.data.elapsedMinutes * 60;
     _startCountdown();
   }
 
@@ -81,18 +81,14 @@ class _TripStartReminderScreenState
     _countdownTimer = Timer.periodic(
       const Duration(seconds: 1),
       (_) {
-        if (_remainingSeconds > 0) {
-          setState(() => _remainingSeconds--);
-        } else {
-          _countdownTimer?.cancel();
-        }
+        setState(() => _elapsedSeconds++);
       },
     );
   }
 
   String get _formattedTime {
-    final minutes = _remainingSeconds ~/ 60;
-    final seconds = _remainingSeconds % 60;
+    final minutes = _elapsedSeconds ~/ 60;
+    final seconds = _elapsedSeconds % 60;
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
@@ -106,9 +102,9 @@ class _TripStartReminderScreenState
     try {
       // Transition order from 'accepted' to 'on_route' (trip started)
       await ref.read(ordersServiceProvider).transition(
-        widget.data.orderId,
-        OrderStatus.onRoute,
-      );
+            widget.data.orderId,
+            OrderStatus.onRoute,
+          );
       if (!mounted) return;
       context.go('/active-order');
     } on Object catch (e) {

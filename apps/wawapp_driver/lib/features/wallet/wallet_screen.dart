@@ -17,15 +17,14 @@ class WalletScreen extends ConsumerWidget {
     final isRTL = Directionality.of(context) == TextDirection.rtl;
     final theme = Theme.of(context);
     final topupState = ref.watch(topupRequestProvider);
-    
+
     // Get current user ID
     final authState = ref.watch(authProvider);
     final driverId = authState.user?.uid;
-    
+
     // Watch wallet data
-    final walletDataAsync = driverId != null 
-        ? ref.watch(walletDataProvider(driverId))
-        : null;
+    final walletDataAsync =
+        driverId != null ? ref.watch(walletDataProvider(driverId)) : null;
 
     final transactionsAsync = driverId != null
         ? ref.watch(driverTransactionsProvider(driverId))
@@ -71,7 +70,8 @@ class WalletScreen extends ConsumerWidget {
             : walletDataAsync == null
                 ? const Center(child: Text('يرجى تسجيل الدخول'))
                 : walletDataAsync.when(
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (error, stack) => Center(
                       child: Text('خطأ في تحميل البيانات: $error'),
                     ),
@@ -81,7 +81,8 @@ class WalletScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           // Main Balance Card
-                          _buildBalanceCard(context, theme, walletData.totalBalance),
+                          _buildBalanceCard(
+                              context, theme, walletData.totalBalance),
                           SizedBox(height: DriverAppSpacing.lg),
 
                           // Top-up Request Button
@@ -97,10 +98,13 @@ class WalletScreen extends ConsumerWidget {
                           ),
                           SizedBox(height: DriverAppSpacing.md),
                           if (transactionsAsync == null)
-                            const DriverEmptyState(icon: Icons.receipt_long, message: 'لا توجد معاملات')
+                            const DriverEmptyState(
+                                icon: Icons.receipt_long,
+                                message: 'لا توجد معاملات')
                           else
                             transactionsAsync.when(
-                              loading: () => const Center(child: CircularProgressIndicator()),
+                              loading: () => const Center(
+                                  child: CircularProgressIndicator()),
                               error: (_, __) => const DriverEmptyState(
                                   icon: Icons.receipt_long,
                                   message: 'لا توجد معاملات حتى الآن'),
@@ -110,7 +114,8 @@ class WalletScreen extends ConsumerWidget {
                                       message: 'لا توجد معاملات حتى الآن')
                                   : Column(
                                       children: transactions
-                                          .map((tx) => _buildTransactionItem(context, theme, tx))
+                                          .map((tx) => _buildTransactionItem(
+                                              context, theme, tx))
                                           .toList(),
                                     ),
                             ),
@@ -122,7 +127,8 @@ class WalletScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBalanceCard(BuildContext context, ThemeData theme, double balance) {
+  Widget _buildBalanceCard(
+      BuildContext context, ThemeData theme, double balance) {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -236,7 +242,8 @@ class WalletScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTopupButton(BuildContext context, WidgetRef ref, TopupRequestState topupState) {
+  Widget _buildTopupButton(
+      BuildContext context, WidgetRef ref, TopupRequestState topupState) {
     return ElevatedButton.icon(
       onPressed: topupState.isLoading
           ? null

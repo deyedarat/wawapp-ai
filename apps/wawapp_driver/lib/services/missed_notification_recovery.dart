@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'notification_service.dart';
+
 /// Firestore-based missed notification recovery system.
 ///
 /// When notifications fail to deliver via FCM (network issues, device off, etc.),
@@ -32,7 +34,8 @@ class MissedNotificationRecovery {
   /// Start missed notification recovery service.
   Future<void> start() async {
     if (kDebugMode) {
-      debugPrint('[MissedNotificationRecovery] 🚀 Starting recovery service...');
+      debugPrint(
+          '[MissedNotificationRecovery] 🚀 Starting recovery service...');
     }
 
     // Load previously recovered IDs to prevent duplicates
@@ -155,8 +158,7 @@ class MissedNotificationRecovery {
         );
       }
 
-      // TODO: Integrate with NotificationService to display notification
-      // For now, we'll mark it as delivered
+      NotificationService().recoverNotification(data);
       await _markAsDelivered(notificationId);
 
       // Track as recovered
@@ -209,7 +211,8 @@ class MissedNotificationRecovery {
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('[MissedNotificationRecovery] ❌ Error loading recovered IDs: $e');
+        debugPrint(
+            '[MissedNotificationRecovery] ❌ Error loading recovered IDs: $e');
       }
     }
   }
@@ -224,7 +227,8 @@ class MissedNotificationRecovery {
       );
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('[MissedNotificationRecovery] ❌ Error saving recovered IDs: $e');
+        debugPrint(
+            '[MissedNotificationRecovery] ❌ Error saving recovered IDs: $e');
       }
     }
   }

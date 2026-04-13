@@ -14,12 +14,12 @@ class AdminApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'WawApp Admin - لوحة إدارة واو أب',
       debugShowCheckedModeBanner: false,
-      
+
       // Theme
       theme: AdminAppTheme.lightTheme,
       darkTheme: AdminAppTheme.darkTheme,
       themeMode: ThemeMode.light, // TODO: Implement theme switching
-      
+
       // Localization
       locale: const Locale('ar'),
       supportedLocales: const [

@@ -34,10 +34,11 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
       final duration = pinAttemptState.lockoutDuration;
       final minutes = duration.inMinutes;
       final seconds = duration.inSeconds % 60;
-      setState(() => _err = 'تم قفل الحساب. حاول مرة أخرى بعد $minutes دقيقة و $seconds ثانية');
+      setState(() => _err =
+          'تم قفل الحساب. حاول مرة أخرى بعد $minutes دقيقة و $seconds ثانية');
       return;
     }
-    
+
     final pin = _pin.text.trim();
     if (pin.isEmpty) {
       setState(() => _err = 'يرجى إدخال الرمز السري');
@@ -76,14 +77,16 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> {
     } catch (e) {
       // Record failed attempt
       await ref.read(pinAttemptProvider.notifier).recordFailedAttempt();
-      
+
       // Check if now locked
       final newState = ref.read(pinAttemptProvider);
       if (newState.isLocked) {
-        setState(() => _err = 'تم تجاوز الحد الأقصى من المحاولات. تم قفل الحساب لمدة 15 دقيقة');
+        setState(() => _err =
+            'تم تجاوز الحد الأقصى من المحاولات. تم قفل الحساب لمدة 15 دقيقة');
       } else {
         final remaining = newState.remainingAttempts;
-        setState(() => _err = 'رمز PIN غير صحيح. المحاولات المتبقية: $remaining');
+        setState(
+            () => _err = 'رمز PIN غير صحيح. المحاولات المتبقية: $remaining');
       }
     }
   }

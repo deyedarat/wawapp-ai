@@ -78,9 +78,8 @@ class _NewOrderAlertDialogState extends ConsumerState<_NewOrderAlertDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: Center(
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 24),

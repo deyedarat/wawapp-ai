@@ -24,7 +24,8 @@ class ConnectivityService {
           r == ConnectivityResult.ethernet);
 
       if (kDebugMode) {
-        print('📡 Initial connectivity: ${result.join(", ")} (Online: $isOnline)');
+        print(
+            '📡 Initial connectivity: ${result.join(", ")} (Online: $isOnline)');
       }
 
       // If online at startup, trigger initial Firestore connection after delay
@@ -63,7 +64,8 @@ class ConnectivityService {
         result == ConnectivityResult.ethernet);
 
     if (kDebugMode) {
-      print('📡 Connectivity changed: ${results.join(", ")} (Online: $isOnline)');
+      print(
+          '📡 Connectivity changed: ${results.join(", ")} (Online: $isOnline)');
     }
 
     if (isOnline && _wasOffline) {

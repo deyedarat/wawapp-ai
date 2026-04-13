@@ -40,7 +40,8 @@ class StatCard extends StatelessWidget {
                     padding: const EdgeInsets.all(AdminSpacing.xs),
                     decoration: BoxDecoration(
                       color: cardColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
+                      borderRadius:
+                          BorderRadius.circular(AdminSpacing.radiusSm),
                     ),
                     child: Icon(
                       icon,
@@ -60,8 +61,8 @@ class StatCard extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AdminAppColors.textSecondaryLight,
-                ),
+                      color: AdminAppColors.textSecondaryLight,
+                    ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -69,17 +70,17 @@ class StatCard extends StatelessWidget {
               Text(
                 value,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: cardColor,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: cardColor,
+                    ),
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: AdminSpacing.xxs),
                 Text(
                   subtitle!,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AdminAppColors.textSecondaryLight,
-                  ),
+                        color: AdminAppColors.textSecondaryLight,
+                      ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

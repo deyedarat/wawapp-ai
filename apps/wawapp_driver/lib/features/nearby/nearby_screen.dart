@@ -49,7 +49,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     try {
       _currentPosition = await _locationService.getCurrentPosition();
       if (kDebugMode) {
-        print('[NEARBY_SCREEN] ✅ Location obtained: lat=${_currentPosition!.latitude.toStringAsFixed(4)}, lng=${_currentPosition!.longitude.toStringAsFixed(4)}');
+        print(
+            '[NEARBY_SCREEN] ✅ Location obtained: lat=${_currentPosition!.latitude.toStringAsFixed(4)}, lng=${_currentPosition!.longitude.toStringAsFixed(4)}');
       }
       if (mounted) {
         setState(() {
@@ -98,17 +99,22 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('خطأ: ${e.toString().contains('already taken') ? 'تم أخذ الطلب بالفعل' : e.toString()}')),
+            content: Text(
+                'خطأ: ${e.toString().contains('already taken') ? 'تم أخذ الطلب بالفعل' : e.toString()}')),
       );
     }
   }
 
-  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+  double _calculateDistance(
+      double lat1, double lon1, double lat2, double lon2) {
     const R = 6371;
     final dLat = (lat2 - lat1) * pi / 180;
     final dLon = (lon2 - lon1) * pi / 180;
-    final a =
-        sin(dLat / 2) * sin(dLat / 2) + cos(lat1 * pi / 180) * cos(lat2 * pi / 180) * sin(dLon / 2) * sin(dLon / 2);
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(lat1 * pi / 180) *
+            cos(lat2 * pi / 180) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
     return R * 2 * atan2(sqrt(a), sqrt(1 - a));
   }
 
@@ -155,10 +161,12 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error, size: 64, color: DriverAppColors.errorLight),
+                    const Icon(Icons.error,
+                        size: 64, color: DriverAppColors.errorLight),
                     SizedBox(height: DriverAppSpacing.md),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: DriverAppSpacing.lg),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: DriverAppSpacing.lg),
                       child: Text(
                         'خطأ في الموقع: $_error',
                         textAlign: TextAlign.center,
@@ -184,7 +192,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   Widget _buildOrdersList() {
     if (kDebugMode) {
       print('[NEARBY_SCREEN] 📋 Building orders list widget');
-      print('[NEARBY_SCREEN] 📍 Position: lat=${_currentPosition!.latitude.toStringAsFixed(6)}, lng=${_currentPosition!.longitude.toStringAsFixed(6)}');
+      print(
+          '[NEARBY_SCREEN] 📍 Position: lat=${_currentPosition!.latitude.toStringAsFixed(6)}, lng=${_currentPosition!.longitude.toStringAsFixed(6)}');
     }
 
     // Force invalidate the provider to ensure fresh data
@@ -226,7 +235,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
           } else {
             for (var i = 0; i < orders.length; i++) {
               final order = orders[i];
-              print('[NEARBY_SCREEN] Order #${i + 1}: ${order.id}, ${order.price}MRU');
+              print(
+                  '[NEARBY_SCREEN] Order #${i + 1}: ${order.id}, ${order.price}MRU');
             }
           }
         }
@@ -260,7 +270,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                           Container(
                             padding: EdgeInsets.all(DriverAppSpacing.sm),
                             decoration: BoxDecoration(
-                              color: DriverAppColors.primaryLight.withOpacity(0.1),
+                              color:
+                                  DriverAppColors.primaryLight.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -275,13 +286,19 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                             children: [
                               Text(
                                 'طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),
                               Text(
                                 'المسافة: ${distance.toStringAsFixed(1)} كم',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
                                       color: DriverAppColors.textSecondaryLight,
                                     ),
                               ),
@@ -296,7 +313,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: DriverAppColors.successLight.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(DriverAppSpacing.radiusFull),
+                          borderRadius: BorderRadius.circular(
+                              DriverAppSpacing.radiusFull),
                         ),
                         child: Text(
                           '${order.price} MRU',
@@ -351,10 +369,13 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                   DriverActionButton(
                     label: 'قبول الطلب',
                     icon: Icons.check_circle,
-                    onPressed: order.id != null ? () {
-                      print('[NEARBY_SCREEN] 🟢 Accept button pressed for order: ${order.id}');
-                      _acceptOrder(order.id!);
-                    } : null,
+                    onPressed: order.id != null
+                        ? () {
+                            print(
+                                '[NEARBY_SCREEN] 🟢 Accept button pressed for order: ${order.id}');
+                            _acceptOrder(order.id!);
+                          }
+                        : null,
                     isFullWidth: true,
                   ),
                 ],

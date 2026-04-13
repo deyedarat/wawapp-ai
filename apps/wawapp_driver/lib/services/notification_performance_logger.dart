@@ -44,7 +44,8 @@ class NotificationPerformanceLogger {
     if (receivedMs == null) {
       // markReceived wasn't called - unexpected
       if (kDebugMode) {
-        dev.log('[NotifPerf] ⚠️  Shown: $orderId (no received timestamp - skipped markReceived?)');
+        dev.log(
+            '[NotifPerf] ⚠️  Shown: $orderId (no received timestamp - skipped markReceived?)');
       }
       return;
     }
@@ -57,7 +58,8 @@ class NotificationPerformanceLogger {
 
       // Highlight performance issues
       if (latencyMs > 1000) {
-        dev.log('[NotifPerf] ⚠️  HIGH LATENCY for $orderId: ${latencyMs}ms (target: <800ms)');
+        dev.log(
+            '[NotifPerf] ⚠️  HIGH LATENCY for $orderId: ${latencyMs}ms (target: <800ms)');
       } else if (latencyMs < 500) {
         dev.log('[NotifPerf] ✅ EXCELLENT latency for $orderId: ${latencyMs}ms');
       }

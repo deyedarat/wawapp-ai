@@ -60,14 +60,12 @@ async function findEligibleDrivers(
   pickupLat: number,
   pickupLng: number
 ): Promise<EligibleDriver[]> {
-  const eligibleDrivers: EligibleDriver[] = [];
-
   try {
-    // Query driver_locations collection for recent, accurate locations
+    // Step 1 — Get all recent driver locations (single read)
     const locationsSnapshot = await admin
       .firestore()
       .collection('driver_locations')
-      .where('updatedAt', '>', new Date(Date.now() - 15 * 60 * 1000)) // Last 15 minutes
+      .where('updatedAt', '>', new Date(Date.now() - 15 * 60 * 1000))
       .get();
 
     if (locationsSnapshot.empty) {
@@ -75,16 +73,13 @@ async function findEligibleDrivers(
       return [];
     }
 
-    // Process each driver location
+    // Step 2 — Filter by distance locally (no Firestore reads)
+    const nearbyDriverIds: string[] = [];
     for (const locationDoc of locationsSnapshot.docs) {
       const locationData = locationDoc.data();
-      const driverId = locationDoc.id;
-
-      // Support both field name formats: lat/lng (driver app) and latitude/longitude (legacy)
       const driverLat = locationData.latitude || locationData.lat;
       const driverLng = locationData.longitude || locationData.lng;
 
-      // Skip if location data is incomplete or inaccurate
       if (
         !driverLat ||
         !driverLng ||
@@ -93,70 +88,30 @@ async function findEligibleDrivers(
         continue;
       }
 
-      // Calculate distance from pickup location
-      const distance = calculateDistance(
-        pickupLat,
-        pickupLng,
-        driverLat,
-        driverLng
-      );
-
-      // Skip if driver is too far
-      if (distance > MAX_NOTIFICATION_RADIUS_KM) {
-        continue;
+      const distance = calculateDistance(pickupLat, pickupLng, driverLat, driverLng);
+      if (distance <= MAX_NOTIFICATION_RADIUS_KM) {
+        nearbyDriverIds.push(locationDoc.id);
       }
+    }
 
-      // Fetch driver profile to check online/available status and FCM token
-      const driverDoc = await admin
-        .firestore()
-        .collection('drivers')
-        .doc(driverId)
-        .get();
+    if (nearbyDriverIds.length === 0) return [];
 
-      if (!driverDoc.exists) {
-        continue;
-      }
+    // Step 3 — Batch-fetch all driver profiles in one RPC
+    const driverRefs = nearbyDriverIds.map((id) =>
+      admin.firestore().collection('drivers').doc(id)
+    );
+    const driverDocs = await admin.firestore().getAll(...driverRefs);
 
-      const driverData = driverDoc.data();
-
-      // Check if driver is online and verified
-      const isOnline = driverData?.isOnline === true;
-      const isVerified = driverData?.isVerified === true;
-
-      // Only notify online AND verified drivers
-      if (!isOnline || !isVerified) {
-        continue;
-      }
-
-      // Skip drivers with active orders (accepted or onRoute)
-      // Check both driverId and assignedDriverId fields
-      const activeByDriverId = await admin
-        .firestore()
-        .collection('orders')
-        .where('driverId', '==', driverId)
-        .where('status', 'in', ['accepted', 'onRoute'])
-        .limit(1)
-        .get();
-      const activeByAssignedId = await admin
-        .firestore()
-        .collection('orders')
-        .where('assignedDriverId', '==', driverId)
-        .where('status', 'in', ['accepted', 'onRoute'])
-        .limit(1)
-        .get();
-      if (!activeByDriverId.empty || !activeByAssignedId.empty) {
-        console.log('[NotifyNewOrder] Skipping driver with active order', { driver_id: driverId });
-        continue;
-      }
-
-      // Check profile completeness (name, vehicleType, vehiclePlate, city required)
-      const name = driverData?.name as string | undefined;
-      const vehicleType = driverData?.vehicleType as string | undefined;
-      const vehiclePlate = driverData?.vehiclePlate as string | undefined;
-      const city = driverData?.city as string | undefined;
+    // Step 4 — Filter offline / unverified / incomplete profiles locally
+    const candidateDrivers: Array<{ driverId: string; distance: number; driverData: FirebaseFirestore.DocumentData }> = [];
+    for (const driverDoc of driverDocs) {
+      if (!driverDoc.exists) continue;
+      const driverData = driverDoc.data()!;
+      if (driverData.isOnline !== true || driverData.isVerified !== true) continue;
+      const { name, vehicleType, vehiclePlate, city } = driverData;
       if (!name || !vehicleType || !vehiclePlate || !city) {
         console.log('[NotifyNewOrder] Skipping driver with incomplete profile', {
-          driver_id: driverId,
+          driver_id: driverDoc.id,
           missing: [
             ...(!name ? ['name'] : []),
             ...(!vehicleType ? ['vehicleType'] : []),
@@ -167,17 +122,56 @@ async function findEligibleDrivers(
         continue;
       }
 
-      eligibleDrivers.push({
-        driverId,
-        distance,
-        fcmToken: driverData?.fcmToken as string | undefined,
-        isOnline,
-      });
+      // Recalculate distance (already filtered above, but needed for sorting)
+      const locationDoc = locationsSnapshot.docs.find((d) => d.id === driverDoc.id);
+      if (!locationDoc) continue;
+      const locationData = locationDoc.data();
+      const driverLat = locationData.latitude || locationData.lat;
+      const driverLng = locationData.longitude || locationData.lng;
+      const distance = calculateDistance(pickupLat, pickupLng, driverLat, driverLng);
+
+      candidateDrivers.push({ driverId: driverDoc.id, distance, driverData });
     }
 
-    // Sort by distance (closest first) and limit
+    if (candidateDrivers.length === 0) return [];
+
+    // Step 5 — Check active orders in parallel (2 queries per candidate, all concurrent)
+    const activeOrderChecks = await Promise.all(
+      candidateDrivers.map(async ({ driverId, distance, driverData }) => {
+        const [activeByDriverId, activeByAssignedId] = await Promise.all([
+          admin.firestore()
+            .collection('orders')
+            .where('driverId', '==', driverId)
+            .where('status', 'in', ['accepted', 'onRoute'])
+            .limit(1)
+            .get(),
+          admin.firestore()
+            .collection('orders')
+            .where('assignedDriverId', '==', driverId)
+            .where('status', 'in', ['accepted', 'onRoute'])
+            .limit(1)
+            .get(),
+        ]);
+
+        if (!activeByDriverId.empty || !activeByAssignedId.empty) {
+          console.log('[NotifyNewOrder] Skipping driver with active order', { driver_id: driverId });
+          return null;
+        }
+
+        return {
+          driverId,
+          distance,
+          fcmToken: driverData.fcmToken as string | undefined,
+          isOnline: true,
+        } as EligibleDriver;
+      })
+    );
+
+    // Step 6 — Sort by distance and return top N
+    const eligibleDrivers = activeOrderChecks.filter((d): d is EligibleDriver => d !== null);
     eligibleDrivers.sort((a, b) => a.distance - b.distance);
     return eligibleDrivers.slice(0, MAX_DRIVERS_TO_NOTIFY);
+
   } catch (error: any) {
     console.error('[NotifyNewOrder] Error finding eligible drivers:', {
       error: error.message,

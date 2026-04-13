@@ -7,13 +7,15 @@ class AdminAppColors {
 
   // ========== Primary Colors (Manus Visual Identity) ==========
   static const Color primaryGreen = Color(0xFF00704A); // Mauritania Green
-  static const Color primaryLight = Color(0xFF4CAF50); // Light variant of primary green
+  static const Color primaryLight =
+      Color(0xFF4CAF50); // Light variant of primary green
   static const Color goldenYellow = Color(0xFFF5A623); // Golden Yellow
   static const Color accentRed = Color(0xFFC1272D); // Mauritania Red accent
   static const Color accentBlue = Color(0xFF2196F3); // Accent blue color
 
   // ========== Background Colors ==========
-  static const Color backgroundLight = Color(0xFFF8F9FA); // Light mode background
+  static const Color backgroundLight =
+      Color(0xFFF8F9FA); // Light mode background
   static const Color backgroundDark = Color(0xFF0A1612); // Dark mode background
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color surfaceDark = Color(0xFF1E1E1E);

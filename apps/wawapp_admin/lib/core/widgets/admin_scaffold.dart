@@ -25,7 +25,8 @@ class AdminScaffold extends ConsumerStatefulWidget {
     this.actions,
     this.searchController,
     this.onSearchChanged,
-  }) : assert(child != null || body != null, 'Either child or body must be provided');
+  }) : assert(child != null || body != null,
+            'Either child or body must be provided');
 
   @override
   ConsumerState<AdminScaffold> createState() => _AdminScaffoldState();
@@ -91,7 +92,9 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                 AnimatedContainer(
                   duration: AdminAnimations.normal,
                   curve: AdminAnimations.defaultCurve,
-                  width: _isSidebarCollapsed ? AdminSpacing.sidebarWidthCollapsed : AdminSpacing.sidebarWidth,
+                  width: _isSidebarCollapsed
+                      ? AdminSpacing.sidebarWidthCollapsed
+                      : AdminSpacing.sidebarWidth,
                   child: AdminSidebar(
                     isCollapsed: _isSidebarCollapsed,
                     onToggle: _toggleSidebar,
@@ -121,7 +124,8 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                       ),
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: isMobile ? AdminSpacing.md : AdminSpacing.lg,
+                          horizontal:
+                              isMobile ? AdminSpacing.md : AdminSpacing.lg,
                         ),
                         child: Row(
                           children: [
@@ -140,8 +144,12 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                             Expanded(
                               child: Text(
                                 widget.title,
-                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                      fontSize: ResponsiveHelper.responsiveFontSize(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineSmall
+                                    ?.copyWith(
+                                      fontSize:
+                                          ResponsiveHelper.responsiveFontSize(
                                         context,
                                         mobile: 18,
                                         desktop: 24,
@@ -166,10 +174,12 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                                 controller: _searchController,
                                 decoration: InputDecoration(
                                   hintText: 'بحث...',
-                                  prefixIcon: const Icon(Icons.search, size: 20),
+                                  prefixIcon:
+                                      const Icon(Icons.search, size: 20),
                                   suffixIcon: _searchController.text.isNotEmpty
                                       ? IconButton(
-                                          icon: const Icon(Icons.clear, size: 18),
+                                          icon:
+                                              const Icon(Icons.clear, size: 18),
                                           onPressed: () {
                                             _searchController.clear();
                                           },
@@ -184,7 +194,9 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                                   filled: true,
                                   fillColor: AdminAppColors.backgroundLight,
                                   contentPadding: EdgeInsets.symmetric(
-                                    horizontal: isMobile ? AdminSpacing.sm : AdminSpacing.md,
+                                    horizontal: isMobile
+                                        ? AdminSpacing.sm
+                                        : AdminSpacing.md,
                                     vertical: AdminSpacing.sm,
                                   ),
                                   isDense: true,
@@ -217,7 +229,8 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                             ),
 
                             // Theme toggle (hide on very small mobile)
-                            if (!isMobile || MediaQuery.of(context).size.width > 400)
+                            if (!isMobile ||
+                                MediaQuery.of(context).size.width > 400)
                               HoverAnimatedContainer(
                                 child: IconButton(
                                   icon: const Icon(Icons.brightness_6_outlined),

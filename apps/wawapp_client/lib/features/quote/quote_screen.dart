@@ -73,12 +73,15 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(kReleaseMode ? l10n.estimated_price : '${l10n.estimated_price} • DEBUG'),
+          title: Text(kReleaseMode
+              ? l10n.estimated_price
+              : '${l10n.estimated_price} • DEBUG'),
           centerTitle: true,
         ),
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsetsDirectional.all(WawAppSpacing.screenPadding),
+            padding:
+                const EdgeInsetsDirectional.all(WawAppSpacing.screenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -105,8 +108,10 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                   elevation: WawAppElevation.medium,
                   child: Builder(
                     builder: (context) {
-                      final shipmentType = ref.watch(selectedShipmentTypeProvider);
-                      final cargoWeight = ref.watch(selectedCargoWeightProvider);
+                      final shipmentType =
+                          ref.watch(selectedShipmentTypeProvider);
+                      final cargoWeight =
+                          ref.watch(selectedCargoWeightProvider);
 
                       final breakdown = quoteState.distanceKm != null
                           ? Pricing.computeWithShipmentType(
@@ -117,7 +122,9 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                           : null;
 
                       // Total shown to user = rounded subtotal + weight cost
-                      final displayPrice = breakdown != null ? breakdown.rounded + breakdown.weightCost : 0;
+                      final displayPrice = breakdown != null
+                          ? breakdown.rounded + breakdown.weightCost
+                          : 0;
 
                       return Column(
                         children: [
@@ -138,7 +145,9 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
 
                             // Shipment Type Badge
                             WawStatusBadge(
-                              label: isRTL ? shipmentType.arabicLabel : shipmentType.frenchLabel,
+                              label: isRTL
+                                  ? shipmentType.arabicLabel
+                                  : shipmentType.frenchLabel,
                               color: shipmentType.color,
                               icon: shipmentType.icon,
                             ),
@@ -146,7 +155,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                             if (breakdown.multiplier != 1.0) ...[
                               const SizedBox(height: WawAppSpacing.xs),
                               Text(
-                                ShipmentPricingMultipliers.getMultiplierDescription(shipmentType),
+                                ShipmentPricingMultipliers
+                                    .getMultiplierDescription(shipmentType),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: shipmentType.color,
                                   fontWeight: FontWeight.bold,
@@ -201,7 +211,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                               context,
                               icon: Icons.straighten,
                               label: l10n.distance,
-                              value: '${quoteState.distanceKm!.toStringAsFixed(1)} ${l10n.km}',
+                              value:
+                                  '${quoteState.distanceKm!.toStringAsFixed(1)} ${l10n.km}',
                             ),
                             Container(
                               width: 1,
@@ -212,7 +223,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
                               context,
                               icon: Icons.access_time,
                               label: l10n.estimated_time,
-                              value: '${Eta.minutesFromKm(quoteState.distanceKm!).ceil()} ${l10n.minute}',
+                              value:
+                                  '${Eta.minutesFromKm(quoteState.distanceKm!).ceil()} ${l10n.minute}',
                             ),
                           ],
                         ),
@@ -253,7 +265,9 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
+              color: isSelected
+                  ? theme.colorScheme.onPrimary
+                  : theme.colorScheme.onSurface,
             ),
           ),
           selected: isSelected,
@@ -264,20 +278,25 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
           avatar: Icon(
             weight.icon,
             size: 16,
-            color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
+            color: isSelected
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.primary,
           ),
         );
       }).toList(),
     );
   }
 
-  Widget _buildPriceBreakdown(BuildContext context, AppLocalizations l10n, PricingBreakdown breakdown) {
+  Widget _buildPriceBreakdown(
+      BuildContext context, AppLocalizations l10n, PricingBreakdown breakdown) {
     final theme = Theme.of(context);
     return Column(
       children: [
-        _buildBreakdownRow(context, l10n.base_price, '${breakdown.base} ${l10n.currency}'),
+        _buildBreakdownRow(
+            context, l10n.base_price, '${breakdown.base} ${l10n.currency}'),
         const SizedBox(height: WawAppSpacing.xs),
-        _buildBreakdownRow(context, l10n.distance_cost, '${breakdown.distancePart} ${l10n.currency}'),
+        _buildBreakdownRow(context, l10n.distance_cost,
+            '${breakdown.distancePart} ${l10n.currency}'),
         if (breakdown.multiplier != 1.0) ...[
           const SizedBox(height: WawAppSpacing.xs),
           _buildBreakdownRow(
@@ -314,7 +333,8 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
     );
   }
 
-  Widget _buildBreakdownRow(BuildContext context, String label, String value, {bool isBold = false, Color? color}) {
+  Widget _buildBreakdownRow(BuildContext context, String label, String value,
+      {bool isBold = false, Color? color}) {
     final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

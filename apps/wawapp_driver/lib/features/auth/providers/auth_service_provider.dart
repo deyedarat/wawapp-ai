@@ -228,7 +228,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
       // User will be updated via authStateChanges listener
     } on FirebaseFunctionsException catch (e) {
-      if (kDebugMode) print('[AuthNotifier] Verify OTP Cloud Function error: ${e.code}');
+      if (kDebugMode)
+        print('[AuthNotifier] Verify OTP Cloud Function error: ${e.code}');
       state = state.copyWith(
         isLoading: false,
         error: AuthErrorMessages.getErrorMessage(e),

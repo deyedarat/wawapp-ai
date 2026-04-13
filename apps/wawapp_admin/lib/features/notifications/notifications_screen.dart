@@ -12,7 +12,8 @@ class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
-  ConsumerState<NotificationsScreen> createState() => _NotificationsScreenState();
+  ConsumerState<NotificationsScreen> createState() =>
+      _NotificationsScreenState();
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
@@ -58,7 +59,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
                     },
               icon: _isMarkingAll
                   ? const SizedBox(
-                      width: 16, height: 16,
+                      width: 16,
+                      height: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.done_all, size: 18),
@@ -102,7 +104,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
                   ),
                   labelColor: Colors.white,
                   unselectedLabelColor: AdminAppColors.textSecondaryLight,
-                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  labelStyle: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 14),
                   dividerColor: Colors.transparent,
                   tabs: [
                     Tab(
@@ -114,14 +117,16 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
                           if (unread.isNotEmpty) ...[
                             const SizedBox(width: 6),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 7, vertical: 2),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.25),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
                                 '${unread.length}',
-                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontSize: 11, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ],
@@ -137,7 +142,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
                           if (read.isNotEmpty) ...[
                             const SizedBox(width: 6),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 7, vertical: 2),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(10),
@@ -162,7 +168,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
                 child: [
                   // Unread tab
                   unread.isEmpty
-                      ? const _EmptyTabState(message: 'لا توجد إشعارات غير مقروءة')
+                      ? const _EmptyTabState(
+                          message: 'لا توجد إشعارات غير مقروءة')
                       : _NotificationsList(
                           notifications: unread,
                           service: service,
@@ -195,7 +202,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
           ? 'طلب'
           : n.icon == Icons.person_add
               ? 'سائق'
-              : n.icon == Icons.account_balance_wallet || n.icon == Icons.payments
+              : n.icon == Icons.account_balance_wallet ||
+                      n.icon == Icons.payments
                   ? 'مالية'
                   : 'أخرى';
       typeGroups[type] = (typeGroups[type] ?? 0) + 1;
@@ -321,7 +329,8 @@ class _NotificationCard extends StatelessWidget {
                   color: notification.color.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(notification.icon, color: notification.color, size: 24),
+                child: Icon(notification.icon,
+                    color: notification.color, size: 24),
               ),
               const SizedBox(width: 14),
 
@@ -376,20 +385,23 @@ class _NotificationCard extends StatelessWidget {
                         Icon(
                           Icons.access_time_rounded,
                           size: 12,
-                          color: AdminAppColors.textSecondaryLight.withOpacity(0.6),
+                          color: AdminAppColors.textSecondaryLight
+                              .withOpacity(0.6),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           _formatTime(notification.timestamp),
                           style: TextStyle(
                             fontSize: 11,
-                            color: AdminAppColors.textSecondaryLight.withOpacity(0.7),
+                            color: AdminAppColors.textSecondaryLight
+                                .withOpacity(0.7),
                           ),
                         ),
                         const Spacer(),
                         // Type badge
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
                             color: notification.color.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(6),

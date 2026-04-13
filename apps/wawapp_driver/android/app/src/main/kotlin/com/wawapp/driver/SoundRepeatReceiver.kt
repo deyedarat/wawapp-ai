@@ -3,20 +3,17 @@ package com.wawapp.driver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.media.AudioAttributes
-import android.media.MediaPlayer
-import android.net.Uri
-import android.os.Build
 import android.util.Log
 
 /**
- * BroadcastReceiver triggered by AlarmManager to repeat notification sound.
+ * BroadcastReceiver triggered by AlarmManager as a BACKUP for sound repeats.
  *
- * Uses MediaPlayer with USAGE_ALARM to bypass DND and play the sound
- * without creating additional visible notifications.
+ * PRIMARY path: Handler.postDelayed in NotificationHelper fires at +2s/+4s
+ * while the process is alive (FullScreenNotificationActivity is showing).
  *
- * Checks that the main notification still exists before playing
- * (user may have dismissed or tapped it).
+ * BACKUP path (this receiver): fires via AlarmManager even if the process
+ * was killed before the Handler could run. Uses consumePendingRepeat() to
+ * prevent double-play if the Handler already fired.
  */
 class SoundRepeatReceiver : BroadcastReceiver() {
 
@@ -25,40 +22,27 @@ class SoundRepeatReceiver : BroadcastReceiver() {
         const val ACTION = "com.wawapp.driver.SOUND_REPEAT"
         const val EXTRA_NOTIFICATION_ID = "notificationId"
         const val EXTRA_ORDER_ID = "orderId"
+        const val EXTRA_REPEAT_NUM = "repeatNum"
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, 0)
         val orderId = intent.getStringExtra(EXTRA_ORDER_ID) ?: ""
+        val repeatNum = intent.getIntExtra(EXTRA_REPEAT_NUM, 0)
 
-        // Check if repeats were cancelled (user accepted/rejected)
-        if (!NotificationHelper.hasPendingRepeats(context, orderId)) {
-            Log.d(TAG, "Sound repeats cancelled for order $orderId, skipping")
+        if (repeatNum == 0 || orderId.isEmpty()) {
+            Log.w(TAG, "Missing orderId or repeatNum, skipping")
             return
         }
 
-        Log.d(TAG, "Playing repeat sound for order $orderId")
-        playSoundOnce(context)
-    }
-
-    private fun playSoundOnce(context: Context) {
-        try {
-            val soundUri = Uri.parse("android.resource://${context.packageName}/raw/trip_reminder")
-            MediaPlayer().apply {
-                setDataSource(context, soundUri)
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .setUsage(AudioAttributes.USAGE_ALARM)
-                        .build()
-                )
-                setOnCompletionListener { it.release() }
-                setOnErrorListener { mp, _, _ -> mp.release(); true }
-                prepare()
-                start()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error playing repeat sound: ${e.message}")
+        // consumePendingRepeat returns false if:
+        //   (a) Handler already played this repeat slot, OR
+        //   (b) cancelSoundRepeats was called (order accepted/rejected)
+        if (!NotificationHelper.consumePendingRepeat(context, orderId, repeatNum)) {
+            Log.d(TAG, "Repeat $repeatNum already consumed or cancelled for order $orderId")
+            return
         }
+
+        Log.d(TAG, "AlarmManager backup: playing repeat $repeatNum for order $orderId")
+        NotificationHelper.playSoundOnce(context)
     }
 }

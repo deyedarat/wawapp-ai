@@ -10,8 +10,10 @@ import 'package:flutter/services.dart';
 /// - Check permission statuses
 /// - Receive intent data from native notification accept action
 class NotificationMethodChannel {
-  static const MethodChannel _channel = MethodChannel('com.wawapp.driver/notifications');
-  static const MethodChannel _intentChannel = MethodChannel('com.wawapp.driver/intent_data');
+  static const MethodChannel _channel =
+      MethodChannel('com.wawapp.driver/notifications');
+  static const MethodChannel _intentChannel =
+      MethodChannel('com.wawapp.driver/intent_data');
 
   /// Stream of foreground FCM messages forwarded by [FcmForegroundBridge] (Kotlin).
   ///
@@ -30,10 +32,9 @@ class NotificationMethodChannel {
   static const EventChannel _newIntentChannel =
       EventChannel('com.wawapp.driver/new_intent');
 
-  static Stream<Map<String, dynamic>> get onNewIntent =>
-      _newIntentChannel
-          .receiveBroadcastStream()
-          .map((event) => Map<String, dynamic>.from(event as Map));
+  static Stream<Map<String, dynamic>> get onNewIntent => _newIntentChannel
+      .receiveBroadcastStream()
+      .map((event) => Map<String, dynamic>.from(event as Map));
 
   /// Show a full-screen notification using native Android code.
   /// This ensures maximum reliability across all Android versions and manufacturers.
@@ -72,7 +73,8 @@ class NotificationMethodChannel {
         'notificationType': notificationType,
       });
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel]  Full-screen notification sent via native code');
+        debugPrint(
+            '[NotificationMethodChannel]  Full-screen notification sent via native code');
       }
     } on PlatformException catch (e) {
       if (kDebugMode) {
@@ -88,11 +90,13 @@ class NotificationMethodChannel {
     try {
       await _channel.invokeMethod('createNotificationChannels');
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel]  Notification channels created via native code');
+        debugPrint(
+            '[NotificationMethodChannel]  Notification channels created via native code');
       }
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] L Error creating channels: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] L Error creating channels: ${e.message}');
       }
       rethrow;
     }
@@ -102,14 +106,17 @@ class NotificationMethodChannel {
   /// This is critical for ensuring notifications work reliably in background.
   static Future<bool> requestBatteryOptimizationExemption() async {
     try {
-      final bool? result = await _channel.invokeMethod('requestBatteryOptimizationExemption');
+      final bool? result =
+          await _channel.invokeMethod('requestBatteryOptimizationExemption');
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] Battery optimization exemption: ${result == true ? "Granted" : "Denied"}');
+        debugPrint(
+            '[NotificationMethodChannel] Battery optimization exemption: ${result == true ? "Granted" : "Denied"}');
       }
       return result ?? false;
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] L Error requesting battery exemption: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] L Error requesting battery exemption: ${e.message}');
       }
       return false;
     }
@@ -118,11 +125,13 @@ class NotificationMethodChannel {
   /// Check if battery optimization is currently disabled for this app.
   static Future<bool> isBatteryOptimizationDisabled() async {
     try {
-      final bool? result = await _channel.invokeMethod('isBatteryOptimizationDisabled');
+      final bool? result =
+          await _channel.invokeMethod('isBatteryOptimizationDisabled');
       return result ?? false;
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] L Error checking battery optimization: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] L Error checking battery optimization: ${e.message}');
       }
       return false;
     }
@@ -135,7 +144,8 @@ class NotificationMethodChannel {
       return result ?? false;
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] L Error checking DND bypass: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] L Error checking DND bypass: ${e.message}');
       }
       return false;
     }
@@ -144,14 +154,17 @@ class NotificationMethodChannel {
   /// Request permission to bypass Do Not Disturb mode.
   static Future<bool> requestDndBypassPermission() async {
     try {
-      final bool? result = await _channel.invokeMethod('requestDndBypassPermission');
+      final bool? result =
+          await _channel.invokeMethod('requestDndBypassPermission');
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] DND bypass permission: ${result == true ? "Granted" : "Denied"}');
+        debugPrint(
+            '[NotificationMethodChannel] DND bypass permission: ${result == true ? "Granted" : "Denied"}');
       }
       return result ?? false;
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] L Error requesting DND bypass: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] L Error requesting DND bypass: ${e.message}');
       }
       return false;
     }
@@ -160,11 +173,13 @@ class NotificationMethodChannel {
   /// Check if exact alarm permission is granted (Android 12+).
   static Future<bool> canScheduleExactAlarms() async {
     try {
-      final bool? result = await _channel.invokeMethod('canScheduleExactAlarms');
+      final bool? result =
+          await _channel.invokeMethod('canScheduleExactAlarms');
       return result ?? false;
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] L Error checking exact alarms: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] L Error checking exact alarms: ${e.message}');
       }
       return false;
     }
@@ -173,14 +188,17 @@ class NotificationMethodChannel {
   /// Request exact alarm permission (Android 12+).
   static Future<bool> requestExactAlarmPermission() async {
     try {
-      final bool? result = await _channel.invokeMethod('requestExactAlarmPermission');
+      final bool? result =
+          await _channel.invokeMethod('requestExactAlarmPermission');
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] Exact alarm permission: ${result == true ? "Granted" : "Denied"}');
+        debugPrint(
+            '[NotificationMethodChannel] Exact alarm permission: ${result == true ? "Granted" : "Denied"}');
       }
       return result ?? false;
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] L Error requesting exact alarms: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] L Error requesting exact alarms: ${e.message}');
       }
       return false;
     }
@@ -193,7 +211,8 @@ class NotificationMethodChannel {
       await _channel.invokeMethod('cancelSoundRepeats', {'orderId': orderId});
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] Error cancelling sound repeats: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] Error cancelling sound repeats: ${e.message}');
       }
     }
   }
@@ -202,11 +221,13 @@ class NotificationMethodChannel {
   /// This permission is required for full-screen notifications on Android 14+.
   static Future<bool> canUseFullScreenIntent() async {
     try {
-      final bool? result = await _channel.invokeMethod('canUseFullScreenIntent');
+      final bool? result =
+          await _channel.invokeMethod('canUseFullScreenIntent');
       return result ?? false;
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] L Error checking full-screen intent: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] L Error checking full-screen intent: ${e.message}');
       }
       return false;
     }
@@ -216,14 +237,17 @@ class NotificationMethodChannel {
   /// Opens system settings for the user to grant the permission.
   static Future<bool> requestFullScreenIntentPermission() async {
     try {
-      final bool? result = await _channel.invokeMethod('requestFullScreenIntentPermission');
+      final bool? result =
+          await _channel.invokeMethod('requestFullScreenIntentPermission');
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] Full-screen intent permission: ${result == true ? "Granted" : "Denied"}');
+        debugPrint(
+            '[NotificationMethodChannel] Full-screen intent permission: ${result == true ? "Granted" : "Denied"}');
       }
       return result ?? false;
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] L Error requesting full-screen intent: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] L Error requesting full-screen intent: ${e.message}');
       }
       return false;
     }
@@ -237,7 +261,8 @@ class NotificationMethodChannel {
   /// - canUseFullScreenIntent (Android 14+)
   static Future<Map<String, bool>> getAllPermissionStatuses() async {
     try {
-      final Map<dynamic, dynamic>? result = await _channel.invokeMethod('getAllPermissionStatuses');
+      final Map<dynamic, dynamic>? result =
+          await _channel.invokeMethod('getAllPermissionStatuses');
       if (result == null) {
         return {
           'batteryOptimizationDisabled': false,
@@ -247,14 +272,18 @@ class NotificationMethodChannel {
         };
       }
       return {
-        'batteryOptimizationDisabled': result['batteryOptimizationDisabled'] as bool? ?? false,
+        'batteryOptimizationDisabled':
+            result['batteryOptimizationDisabled'] as bool? ?? false,
         'canBypassDnd': result['canBypassDnd'] as bool? ?? false,
-        'canScheduleExactAlarms': result['canScheduleExactAlarms'] as bool? ?? false,
-        'canUseFullScreenIntent': result['canUseFullScreenIntent'] as bool? ?? false,
+        'canScheduleExactAlarms':
+            result['canScheduleExactAlarms'] as bool? ?? false,
+        'canUseFullScreenIntent':
+            result['canUseFullScreenIntent'] as bool? ?? false,
       };
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] L Error getting permission statuses: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] L Error getting permission statuses: ${e.message}');
       }
       return {
         'batteryOptimizationDisabled': false,
@@ -270,7 +299,8 @@ class NotificationMethodChannel {
   /// Returns a map with keys: orderId, notificationType, action
   static Future<Map<String, String?>?> getIntentData() async {
     try {
-      final Map<dynamic, dynamic>? result = await _intentChannel.invokeMethod('getIntentData');
+      final Map<dynamic, dynamic>? result =
+          await _intentChannel.invokeMethod('getIntentData');
       if (result == null) return null;
 
       return {
@@ -280,7 +310,8 @@ class NotificationMethodChannel {
       };
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] Error getting intent data: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] Error getting intent data: ${e.message}');
       }
       return null;
     }
@@ -292,7 +323,8 @@ class NotificationMethodChannel {
       await _intentChannel.invokeMethod('clearIntentData');
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationMethodChannel] Error clearing intent data: ${e.message}');
+        debugPrint(
+            '[NotificationMethodChannel] Error clearing intent data: ${e.message}');
       }
     }
   }

@@ -12,10 +12,10 @@ class DashboardScreen extends ConsumerWidget {
 
   // ── Quick-action: Add Driver ─────────────────────────────────────
   void _showAddDriverDialog(BuildContext context) {
-    final nameCtrl    = TextEditingController();
-    final phoneCtrl   = TextEditingController();
+    final nameCtrl = TextEditingController();
+    final phoneCtrl = TextEditingController();
     final vehicleCtrl = TextEditingController();
-    final formKey     = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
@@ -125,10 +125,10 @@ class DashboardScreen extends ConsumerWidget {
 
   // ── Quick-action: Add Client ─────────────────────────────────────
   void _showAddClientDialog(BuildContext context) {
-    final nameCtrl  = TextEditingController();
+    final nameCtrl = TextEditingController();
     final phoneCtrl = TextEditingController();
     final emailCtrl = TextEditingController();
-    final formKey   = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
@@ -258,14 +258,14 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ),
         data: (stats) {
-          final orderStats  = stats['orders']  as Map<String, int>? ?? {};
+          final orderStats = stats['orders'] as Map<String, int>? ?? {};
           final driverStats = stats['drivers'] as Map<String, int>? ?? {};
 
-          final totalDrivers   = driverStats['total'] ?? 0;
-          final onlineDrivers  = driverStats['online'] ?? 0;
-          final activeOrders   = (orderStats['assigning'] ?? 0) +
-                                 (orderStats['accepted']  ?? 0) +
-                                 (orderStats['on_route']  ?? 0);
+          final totalDrivers = driverStats['total'] ?? 0;
+          final onlineDrivers = driverStats['online'] ?? 0;
+          final activeOrders = (orderStats['assigning'] ?? 0) +
+              (orderStats['accepted'] ?? 0) +
+              (orderStats['on_route'] ?? 0);
           final completedToday = orderStats['completed'] ?? 0;
           final cancelledToday = orderStats['cancelled'] ?? 0;
 
@@ -460,8 +460,10 @@ class DashboardScreen extends ConsumerWidget {
         ),
         Text(
           time,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AdminAppColors.textSecondaryLight),
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(color: AdminAppColors.textSecondaryLight),
         ),
       ],
     );

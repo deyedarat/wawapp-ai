@@ -20,7 +20,8 @@ class NotificationLogger {
     String? escalationLevel,
   }) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    debugPrint('[NotificationLogger] log() called — uid=$uid, event=$eventType, type=$notificationType, state=$appState');
+    debugPrint(
+        '[NotificationLogger] log() called — uid=$uid, event=$eventType, type=$notificationType, state=$appState');
     if (uid == null) {
       debugPrint('[NotificationLogger] uid is null — skipping write');
       return;
@@ -40,7 +41,8 @@ class NotificationLogger {
         'androidVersion': Platform.operatingSystemVersion,
         'timestamp': FieldValue.serverTimestamp(),
       });
-      debugPrint('[NotificationLogger] ✅ Written to notification_logs/$uid/events');
+      debugPrint(
+          '[NotificationLogger] ✅ Written to notification_logs/$uid/events');
     } on Object catch (e) {
       debugPrint('[NotificationLogger] ❌ Failed to log: $e');
     }

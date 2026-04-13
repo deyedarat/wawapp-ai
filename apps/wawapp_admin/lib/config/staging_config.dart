@@ -25,7 +25,8 @@ class StagingConfig extends AppConfig {
   bool get showDevTools => true; // And dev tools for testing
 
   @override
-  String get firebaseProjectId => 'wawapp-staging-952d6'; // Staging project (if exists)
+  String get firebaseProjectId =>
+      'wawapp-staging-952d6'; // Staging project (if exists)
 
   @override
   String? get apiBaseUrl => null; // Use default Firebase Functions

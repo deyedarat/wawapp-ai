@@ -63,8 +63,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> sendOtp(String phone) async {
     if (kDebugMode) print('[AuthNotifier] sendOtp() called with phone=$phone');
 
-    if (state.otpStage == OtpStage.sending || state.otpStage == OtpStage.codeSent) {
-      if (kDebugMode) print('[AuthNotifier] sendOtp() aborted - already in stage ${state.otpStage}');
+    if (state.otpStage == OtpStage.sending ||
+        state.otpStage == OtpStage.codeSent) {
+      if (kDebugMode)
+        print(
+            '[AuthNotifier] sendOtp() aborted - already in stage ${state.otpStage}');
       return;
     }
 
@@ -78,7 +81,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await Future.delayed(const Duration(milliseconds: 100));
 
     try {
-      if (kDebugMode) print('[AuthNotifier] Calling ensurePhoneSession() for phone=$phone');
+      if (kDebugMode)
+        print('[AuthNotifier] Calling ensurePhoneSession() for phone=$phone');
       await _authService.ensurePhoneSession(phone);
 
       state = state.copyWith(
@@ -91,7 +95,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (kDebugMode) print('[AuthNotifier] ensurePhoneSession() completed');
     } catch (e, stackTrace) {
       if (kDebugMode) {
-        print('[AuthNotifier] ensurePhoneSession() FAILED: ${e.runtimeType} - $e');
+        print(
+            '[AuthNotifier] ensurePhoneSession() FAILED: ${e.runtimeType} - $e');
         print('[AuthNotifier] Stacktrace: $stackTrace');
       }
       // CRITICAL FIX: Reset otpStage to failed when CAPTCHA fails
@@ -99,7 +104,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
-        otpStage: OtpStage.failed,  // ADDED: Reset stage to failed
+        otpStage: OtpStage.failed, // ADDED: Reset stage to failed
         otpFlowActive: false,
         isStreamsSafeToRun: true,
       );
@@ -118,7 +123,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isStreamsSafeToRun: true,
       );
     } on Object catch (e) {
-      if (kDebugMode) print('[AuthNotifier] verifyOtp FAILED: ${e.runtimeType} - $e');
+      if (kDebugMode)
+        print('[AuthNotifier] verifyOtp FAILED: ${e.runtimeType} - $e');
 
       String errorMessage = e.toString();
       if (e is FirebaseFunctionsException) {
@@ -147,7 +153,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // ✅ loginByPin: يستخدم PIN مباشرة عبر Cloud Function - لا يرسل OTP
   Future<void> loginByPin(String pin, String phoneE164) async {
-    if (kDebugMode) print('[AuthNotifier] loginByPin() called for phone=$phoneE164');
+    if (kDebugMode)
+      print('[AuthNotifier] loginByPin() called for phone=$phoneE164');
     state = state.copyWith(isLoading: true, error: null);
 
     try {

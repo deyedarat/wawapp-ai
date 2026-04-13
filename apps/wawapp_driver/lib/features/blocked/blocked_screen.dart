@@ -52,7 +52,8 @@ class BlockedScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(DriverAppSpacing.md),
                   decoration: BoxDecoration(
                     color: DriverAppColors.errorLight.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(DriverAppSpacing.radiusMd),
+                    borderRadius:
+                        BorderRadius.circular(DriverAppSpacing.radiusMd),
                     border: Border.all(
                       color: DriverAppColors.errorLight.withOpacity(0.3),
                     ),

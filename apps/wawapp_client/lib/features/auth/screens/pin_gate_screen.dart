@@ -52,7 +52,9 @@ class PinGateScreen extends ConsumerWidget {
               const CircularProgressIndicator(),
               const SizedBox(height: 24),
               Text(
-                isError ? 'تعذر التحقق من الـ PIN. حاول مرة أخرى.' : 'جارٍ التحقق من إعداد الـ PIN…',
+                isError
+                    ? 'تعذر التحقق من الـ PIN. حاول مرة أخرى.'
+                    : 'جارٍ التحقق من إعداد الـ PIN…',
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 16),
               ),

@@ -32,7 +32,8 @@ import 'navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   // CRITICAL FIX: Create refresh stream FIRST to store current state
-  final refreshStream = _GoRouterRefreshStream(ref.read(authProvider.notifier).stream);
+  final refreshStream =
+      _GoRouterRefreshStream(ref.read(authProvider.notifier).stream);
 
   return GoRouter(
     navigatorKey: appNavigatorKey,
@@ -169,7 +170,8 @@ String? _redirect(GoRouterState s, AuthState st) {
   // During OtpStage.sending, Firebase is still running RecaptchaActivity.
   // Redirecting to /otp too early causes RecaptchaActivity to open ON TOP of the OTP screen.
   final isSending = st.otpStage == OtpStage.sending;
-  final canOtp = ((st.otpFlowActive || st.otpStage == OtpStage.codeSent) && !isSending);
+  final canOtp =
+      ((st.otpFlowActive || st.otpStage == OtpStage.codeSent) && !isSending);
   final isLoading = st.isLoading;
   final userId = st.user?.uid;
 
@@ -189,7 +191,8 @@ String? _redirect(GoRouterState s, AuthState st) {
   // This prevents RecaptchaActivity from being covered by premature OTP redirect.
   // CRITICAL FIX: Force redirect to /login during reCAPTCHA to prevent navigation conflicts
   if (isSending) {
-    debugPrint('[Router] ⏳ OTP sending (CAPTCHA in progress) – staying on /login');
+    debugPrint(
+        '[Router] ⏳ OTP sending (CAPTCHA in progress) – staying on /login');
     if (s.matchedLocation != '/login') {
       debugPrint('[Router] → Redirecting to /login (CAPTCHA in progress)');
       return '/login';
@@ -202,7 +205,8 @@ String? _redirect(GoRouterState s, AuthState st) {
   if (canOtp) {
     if (s.matchedLocation != '/otp') {
       debugPrint('[Router] → Redirecting to /otp (OTP flow active)');
-      AuthLogger.logRouterRedirect(s.matchedLocation, '/otp', 'OTP flow active', userId);
+      AuthLogger.logRouterRedirect(
+          s.matchedLocation, '/otp', 'OTP flow active', userId);
       return '/otp';
     }
     debugPrint('[Router] ✓ Already on /otp');
@@ -216,7 +220,9 @@ String? _redirect(GoRouterState s, AuthState st) {
   }
 
   // 3. WAIT: Still loading initial auth state (prevent premature redirects)
-  if (isLoading && s.matchedLocation != '/login' && s.matchedLocation != '/otp') {
+  if (isLoading &&
+      s.matchedLocation != '/login' &&
+      s.matchedLocation != '/otp') {
     debugPrint('[Router] ⏳ Auth loading - staying on current route');
     return null;
   }
@@ -225,7 +231,8 @@ String? _redirect(GoRouterState s, AuthState st) {
   if (!loggedIn) {
     if (s.matchedLocation != '/login') {
       debugPrint('[Router] → Redirecting to /login (not authenticated)');
-      AuthLogger.logRouterRedirect(s.matchedLocation, '/login', 'Not authenticated', null);
+      AuthLogger.logRouterRedirect(
+          s.matchedLocation, '/login', 'Not authenticated', null);
       return '/login';
     }
     debugPrint('[Router] ✓ Already on /login');
@@ -234,10 +241,13 @@ String? _redirect(GoRouterState s, AuthState st) {
 
   // 5. PRIORITY 3 - PIN STATUS GATE: Resolve unknown/loading/error states
   // Redirect to /pin-gate UNLESS we're already there or in a known state
-  if (pinStatus == PinStatus.unknown || pinStatus == PinStatus.loading || pinStatus == PinStatus.error) {
+  if (pinStatus == PinStatus.unknown ||
+      pinStatus == PinStatus.loading ||
+      pinStatus == PinStatus.error) {
     if (s.matchedLocation != '/pin-gate') {
       debugPrint('[Router] → Redirecting to /pin-gate (pinStatus=$pinStatus)');
-      AuthLogger.logRouterRedirect(s.matchedLocation, '/pin-gate', 'PinStatus=$pinStatus', userId);
+      AuthLogger.logRouterRedirect(
+          s.matchedLocation, '/pin-gate', 'PinStatus=$pinStatus', userId);
       return '/pin-gate';
     }
     debugPrint('[Router] ✓ Already on /pin-gate');
@@ -248,7 +258,8 @@ String? _redirect(GoRouterState s, AuthState st) {
   if (loggedIn && pinStatus == PinStatus.noPin) {
     if (s.matchedLocation != '/create-pin') {
       debugPrint('[Router] → Redirecting to /create-pin (user has no PIN)');
-      AuthLogger.logRouterRedirect(s.matchedLocation, '/create-pin', 'No PIN set', userId);
+      AuthLogger.logRouterRedirect(
+          s.matchedLocation, '/create-pin', 'No PIN set', userId);
       return '/create-pin';
     }
     debugPrint('[Router] ✓ Already on /create-pin');
@@ -262,11 +273,14 @@ String? _redirect(GoRouterState s, AuthState st) {
         s.matchedLocation == '/otp' ||
         s.matchedLocation == '/create-pin' ||
         s.matchedLocation == '/pin-gate') {
-      debugPrint('[Router] → Redirecting to / (authenticated with PIN, leaving auth screen)');
-      AuthLogger.logRouterRedirect(s.matchedLocation, '/', 'Authenticated with PIN', userId);
+      debugPrint(
+          '[Router] → Redirecting to / (authenticated with PIN, leaving auth screen)');
+      AuthLogger.logRouterRedirect(
+          s.matchedLocation, '/', 'Authenticated with PIN', userId);
       return '/';
     }
-    debugPrint('[Router] ✓ Authenticated - allowing access to ${s.matchedLocation}');
+    debugPrint(
+        '[Router] ✓ Authenticated - allowing access to ${s.matchedLocation}');
     return null;
   }
 
@@ -283,7 +297,8 @@ class _GoRouterRefreshStream extends ChangeNotifier {
 
     // Add debouncing to prevent rapid redirect conflicts
     // CRITICAL FIX: Skip debounce for critical OTP state changes to ensure immediate navigation
-    _subscription = stream.asBroadcastStream().transform(StreamTransformer.fromHandlers(
+    _subscription =
+        stream.asBroadcastStream().transform(StreamTransformer.fromHandlers(
       handleData: (AuthState data, EventSink<AuthState> sink) {
         // CRITICAL FIX: Store current state immediately (before debounce)
         // This ensures redirect() always reads the latest state
@@ -295,7 +310,7 @@ class _GoRouterRefreshStream extends ChangeNotifier {
         // CRITICAL: Skip debounce for OTP critical states (codeSent, failed)
         // These need immediate navigation to prevent "about:blank" or stuck screens
         final isCriticalOtpState = data.otpStage == OtpStage.codeSent ||
-                                   data.otpStage == OtpStage.failed;
+            data.otpStage == OtpStage.failed;
 
         if (isCriticalOtpState) {
           // Emit immediately for critical OTP states

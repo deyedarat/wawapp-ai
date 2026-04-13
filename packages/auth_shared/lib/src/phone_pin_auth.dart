@@ -48,16 +48,19 @@ class PhonePinAuth {
 
     /// Optional structured log callback. Receives (event, maskedPhone, errorCode, errorMessage).
     /// Avoids a reverse dependency: auth_shared → client services.
-    void Function(String event, String? phone, String? code, String? msg)? onLog,
+    void Function(String event, String? phone, String? code, String? msg)?
+        onLog,
   }) async {
     // Track last phone for bug-report screen
     _lastPhoneE164 = phoneE164;
 
-    final maskedPhone =
-        phoneE164.length > 5 ? '${phoneE164.substring(0, 4)}******${phoneE164.substring(phoneE164.length - 3)}' : '***';
+    final maskedPhone = phoneE164.length > 5
+        ? '${phoneE164.substring(0, 4)}******${phoneE164.substring(phoneE164.length - 3)}'
+        : '***';
 
     if (kDebugMode) {
-      print('[PhonePinAuth] ensurePhoneSession() starting for phone=$maskedPhone');
+      print(
+          '[PhonePinAuth] ensurePhoneSession() starting for phone=$maskedPhone');
     }
     // Always-on Crashlytics breadcrumb
     FirebaseCrashlytics.instance.log('OTP_SEND_START: phone=$maskedPhone');
@@ -67,11 +70,14 @@ class PhonePinAuth {
       final callable = FirebaseFunctions.instance.httpsCallable('sendOtp');
       await callable.call({'phone': phoneE164});
 
-      if (kDebugMode) print('[PhonePinAuth] ensurePhoneSession() completed successfully');
+      if (kDebugMode)
+        print('[PhonePinAuth] ensurePhoneSession() completed successfully');
       FirebaseCrashlytics.instance.log('OTP_SEND_SUCCESS');
       onLog?.call('otp_send_success', phoneE164, null, null);
     } on FirebaseFunctionsException catch (e) {
-      if (kDebugMode) print('[PhonePinAuth] ensurePhoneSession() FAILED: ${e.code} - ${e.message}');
+      if (kDebugMode)
+        print(
+            '[PhonePinAuth] ensurePhoneSession() FAILED: ${e.code} - ${e.message}');
       FirebaseCrashlytics.instance.recordError(
         'OTP Send Failed',
         StackTrace.current,
@@ -104,7 +110,8 @@ class PhonePinAuth {
 
       if (customToken == null) throw Exception('No custom token returned');
 
-      if (kDebugMode) print('[PhonePinAuth] OTP verified, signing in with custom token');
+      if (kDebugMode)
+        print('[PhonePinAuth] OTP verified, signing in with custom token');
       await _auth.signInWithCustomToken(customToken);
       if (kDebugMode) print('[PhonePinAuth] Sign-in successful!');
 
@@ -128,8 +135,9 @@ class PhonePinAuth {
 
   Future<bool> verifyPin(String pin, String phoneE164) async {
     if (kDebugMode) {
-      final maskedPhone =
-          phoneE164.length > 5 ? '${phoneE164.substring(0, 3)}...${phoneE164.substring(phoneE164.length - 2)}' : '***';
+      final maskedPhone = phoneE164.length > 5
+          ? '${phoneE164.substring(0, 3)}...${phoneE164.substring(phoneE164.length - 2)}'
+          : '***';
       print('[PhonePinAuth] Verifying PIN for phone: $maskedPhone');
     }
 
@@ -139,12 +147,14 @@ class PhonePinAuth {
 
     final currentUser = _auth.currentUser;
     if (currentUser != null && currentUser.phoneNumber == phoneE164) {
-      if (kDebugMode) print('[PhonePinAuth] User already signed in with matching phone');
+      if (kDebugMode)
+        print('[PhonePinAuth] User already signed in with matching phone');
       return true;
     }
 
     try {
-      final callable = FirebaseFunctions.instance.httpsCallable('createCustomToken');
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('createCustomToken');
       final userType = userCollection == 'drivers' ? 'driver' : 'user';
       final result = await callable.call({
         'phoneE164': phoneE164,
@@ -156,16 +166,20 @@ class PhonePinAuth {
       final uid = result.data['uid'] as String?;
 
       if (token == null) {
-        if (kDebugMode) print('[PhonePinAuth] No token returned from createCustomToken');
+        if (kDebugMode)
+          print('[PhonePinAuth] No token returned from createCustomToken');
         return false;
       }
 
-      if (kDebugMode) print('[PhonePinAuth] Custom token received, signing in user: $uid');
+      if (kDebugMode)
+        print('[PhonePinAuth] Custom token received, signing in user: $uid');
       await _auth.signInWithCustomToken(token);
-      if (kDebugMode) print('[PhonePinAuth] Successfully signed in with custom token');
+      if (kDebugMode)
+        print('[PhonePinAuth] Successfully signed in with custom token');
       return true;
     } on FirebaseFunctionsException catch (e) {
-      if (kDebugMode) print('[PhonePinAuth] Cloud Function error: ${e.code} - ${e.message}');
+      if (kDebugMode)
+        print('[PhonePinAuth] Cloud Function error: ${e.code} - ${e.message}');
       return false;
     } on Object catch (e) {
       if (kDebugMode) print('[PhonePinAuth] Error verifying PIN: $e');
@@ -181,7 +195,8 @@ class PhonePinAuth {
 
   Future<bool> phoneExists(String phoneE164) async {
     try {
-      final callable = FirebaseFunctions.instance.httpsCallable('checkPhoneExists');
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('checkPhoneExists');
       final userType = userCollection == 'drivers' ? 'driver' : 'user';
       final result = await callable.call({
         'phoneE164': phoneE164,
@@ -189,10 +204,13 @@ class PhonePinAuth {
       });
       return result.data['exists'] as bool? ?? false;
     } on FirebaseFunctionsException catch (e) {
-      if (kDebugMode) print('[PhonePinAuth] Cloud Function error checking phone: ${e.code} - ${e.message}');
+      if (kDebugMode)
+        print(
+            '[PhonePinAuth] Cloud Function error checking phone: ${e.code} - ${e.message}');
       return false;
     } on Object catch (e) {
-      if (kDebugMode) print('[PhonePinAuth] Error checking phone existence: $e');
+      if (kDebugMode)
+        print('[PhonePinAuth] Error checking phone existence: $e');
       return false;
     }
   }

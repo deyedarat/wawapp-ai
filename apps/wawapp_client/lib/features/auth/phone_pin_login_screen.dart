@@ -15,10 +15,12 @@ import 'providers/auth_service_provider.dart';
 class PhonePinLoginScreen extends ConsumerStatefulWidget {
   const PhonePinLoginScreen({super.key});
   @override
-  ConsumerState<PhonePinLoginScreen> createState() => _PhonePinLoginScreenState();
+  ConsumerState<PhonePinLoginScreen> createState() =>
+      _PhonePinLoginScreenState();
 }
 
-class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with WidgetsBindingObserver {
+class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen>
+    with WidgetsBindingObserver {
   final _phone = TextEditingController();
   final _pin = TextEditingController();
   bool _isNewUser = false;
@@ -59,17 +61,20 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed && _waitingForCaptchaReturn) {
-      debugPrint('[LoginScreen] App resumed after reCAPTCHA – checking OTP stage');
+      debugPrint(
+          '[LoginScreen] App resumed after reCAPTCHA – checking OTP stage');
       _waitingForCaptchaReturn = false;
 
       // Give Firebase 500 ms to process the CAPTCHA result, then check state
       Future.delayed(const Duration(milliseconds: 500), () {
         if (!mounted) return;
         final authState = ref.read(authProvider);
-        debugPrint('[LoginScreen] Post-CAPTCHA resume: otpStage=${authState.otpStage}');
+        debugPrint(
+            '[LoginScreen] Post-CAPTCHA resume: otpStage=${authState.otpStage}');
         if (authState.otpStage == OtpStage.codeSent && !_navigatedThisAttempt) {
           _navigatedThisAttempt = true;
-          debugPrint('[LoginScreen] ✓ codeSent confirmed after resume – forcing GoRouter redirect');
+          debugPrint(
+              '[LoginScreen] ✓ codeSent confirmed after resume – forcing GoRouter redirect');
           setState(() {});
         }
       });
@@ -166,7 +171,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
       _phoneError = null;
     });
 
-    final exists = await ref.read(authProvider.notifier).checkPhoneExists(phoneE164);
+    final exists =
+        await ref.read(authProvider.notifier).checkPhoneExists(phoneE164);
     setState(() {
       _checkingPhone = false;
       _isNewUser = !exists;
@@ -213,7 +219,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
       }
     }
 
-    debugPrint('[LoginScreen] _createAccount() called for phone=${LogService.instance.maskPhone(phone)}');
+    debugPrint(
+        '[LoginScreen] _createAccount() called for phone=${LogService.instance.maskPhone(phone)}');
 
     // Reset per-attempt navigation guard
     _navigatedThisAttempt = false;
@@ -230,7 +237,9 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
 
       // Use shouldOfferBugReport typed flag (not string-matching) to trigger dialog.
       // Guard with _bugReportShownForCurrentError prevents double-fire on rebuild.
-      if (mounted && ref.read(authProvider).shouldOfferBugReport && !_bugReportShownForCurrentError) {
+      if (mounted &&
+          ref.read(authProvider).shouldOfferBugReport &&
+          !_bugReportShownForCurrentError) {
         _bugReportShownForCurrentError = true;
         _showBugReportDialog(context);
       }
@@ -242,7 +251,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
         errorCode: 'exception',
         errorMessage: e.runtimeType.toString(),
       );
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, fatal: false, printDetails: false);
+      FirebaseCrashlytics.instance
+          .recordError(e, stackTrace, fatal: false, printDetails: false);
     } finally {
       if (mounted) setState(() => _isRequesting = false);
     }
@@ -263,7 +273,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
         }
       } else {
         if (!MauritaniaPhoneUtils.isValidMauritaniaLocalNumber(phone)) {
-          setState(() => _phoneError = MauritaniaPhoneUtils.getValidationError(phone));
+          setState(() =>
+              _phoneError = MauritaniaPhoneUtils.getValidationError(phone));
           return;
         }
         phone = MauritaniaPhoneUtils.toMauritaniaE164(phone);
@@ -275,7 +286,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
     }
 
     setState(() => _phoneError = null);
-    debugPrint('[LoginScreen] Starting PIN reset flow for phone: ${LogService.instance.maskPhone(phone)}');
+    debugPrint(
+        '[LoginScreen] Starting PIN reset flow for phone: ${LogService.instance.maskPhone(phone)}');
 
     // Reset per-attempt navigation guard
     _navigatedThisAttempt = false;
@@ -292,7 +304,9 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
       await ref.read(authProvider.notifier).sendOtp(phone);
       debugPrint('[LoginScreen] OTP sent for PIN reset');
 
-      if (mounted && ref.read(authProvider).shouldOfferBugReport && !_bugReportShownForCurrentError) {
+      if (mounted &&
+          ref.read(authProvider).shouldOfferBugReport &&
+          !_bugReportShownForCurrentError) {
         _bugReportShownForCurrentError = true;
         _showBugReportDialog(context);
       }
@@ -320,13 +334,17 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
       // OTP code sent: add 800ms delay before letting GoRouter redirect to /otp
       // This prevents the about:blank race condition when returning from reCAPTCHA
       // IMPROVED FIX: Increased delay for slow devices and to ensure WebView fully closes
-      if (next.otpStage == OtpStage.codeSent && prev?.otpStage != OtpStage.codeSent && !_navigatedThisAttempt) {
+      if (next.otpStage == OtpStage.codeSent &&
+          prev?.otpStage != OtpStage.codeSent &&
+          !_navigatedThisAttempt) {
         _navigatedThisAttempt = true;
         _waitingForCaptchaReturn = false;
-        debugPrint('[LoginScreen] ✓ OTP codeSent – waiting 800ms for WebView to close before GoRouter redirect');
+        debugPrint(
+            '[LoginScreen] ✓ OTP codeSent – waiting 800ms for WebView to close before GoRouter redirect');
         Future.delayed(const Duration(milliseconds: 800), () {
           if (mounted) {
-            debugPrint('[LoginScreen] ✓ 800ms delay done – GoRouter will redirect to /otp');
+            debugPrint(
+                '[LoginScreen] ✓ 800ms delay done – GoRouter will redirect to /otp');
             // Force a state refresh so GoRouter re-evaluates the redirect
             setState(() {});
           }
@@ -337,7 +355,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
       if (next.user != null && prev?.user == null && !_navigationInProgress) {
         _navigationInProgress = true;
 
-        debugPrint('[LoginScreen] ✓ User authenticated - initializing services');
+        debugPrint(
+            '[LoginScreen] ✓ User authenticated - initializing services');
 
         // Crashlytics breadcrumb
         FirebaseCrashlytics.instance.log('[LoginScreen] PIN login successful');
@@ -352,7 +371,8 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
             // Initialize FCM for push notifications
             FCMService.instance.initialize(context);
 
-            debugPrint('[LoginScreen] Services initialized - GoRouter will handle navigation');
+            debugPrint(
+                '[LoginScreen] Services initialized - GoRouter will handle navigation');
           }
         });
       }
@@ -386,7 +406,9 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _checkingPhone ? null : _checkPhone,
-              child: _checkingPhone ? const CircularProgressIndicator() : Text(l10n.check_phone),
+              child: _checkingPhone
+                  ? const CircularProgressIndicator()
+                  : Text(l10n.check_phone),
             ),
             const SizedBox(height: 16),
             if (_isNewUser) ...[
@@ -404,7 +426,9 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
                 ),
               ElevatedButton(
                 // Disabled during cooldown or active request
-                onPressed: (authState.isLoading || !canRequest) ? null : _createAccount,
+                onPressed: (authState.isLoading || !canRequest)
+                    ? null
+                    : _createAccount,
                 child: Text(l10n.create_account),
               ),
             ] else if (!_isNewUser && _phone.text.isNotEmpty) ...[
@@ -432,7 +456,9 @@ class _PhonePinLoginScreenState extends ConsumerState<PhonePinLoginScreen> with 
                   ),
                 ),
               TextButton(
-                onPressed: (authState.isLoading || !canRequest) ? null : _handleForgotPin,
+                onPressed: (authState.isLoading || !canRequest)
+                    ? null
+                    : _handleForgotPin,
                 child: const Text(
                   'نسيت الرمز السري؟',
                   style: TextStyle(

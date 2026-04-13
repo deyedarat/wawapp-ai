@@ -41,7 +41,8 @@ class ClientProfileScreen extends ConsumerWidget {
             loading: () => const WawLoadingIndicator(),
             error: (error, stack) => Center(
               child: Padding(
-                padding: const EdgeInsetsDirectional.all(WawAppSpacing.screenPadding),
+                padding: const EdgeInsetsDirectional.all(
+                    WawAppSpacing.screenPadding),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -101,7 +102,8 @@ class ClientProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileView(BuildContext context, AppLocalizations l10n, ClientProfile profile, WidgetRef ref) {
+  Widget _buildProfileView(BuildContext context, AppLocalizations l10n,
+      ClientProfile profile, WidgetRef ref) {
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
@@ -118,7 +120,9 @@ class ClientProfileScreen extends ConsumerWidget {
                 CircleAvatar(
                   radius: 50,
                   backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                  backgroundImage: profile.photoUrl != null ? NetworkImage(profile.photoUrl!) : null,
+                  backgroundImage: profile.photoUrl != null
+                      ? NetworkImage(profile.photoUrl!)
+                      : null,
                   child: profile.photoUrl == null
                       ? Icon(
                           Icons.person,
@@ -199,8 +203,8 @@ class ClientProfileScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: WawAppSpacing.md),
-                _buildInfoRow(
-                    context, l10n, Icons.language, l10n.language, _getLanguageLabel(l10n, profile.preferredLanguage)),
+                _buildInfoRow(context, l10n, Icons.language, l10n.language,
+                    _getLanguageLabel(l10n, profile.preferredLanguage)),
               ],
             ),
           ),
@@ -273,7 +277,8 @@ class ClientProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+  Widget _buildLogoutButton(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     return OutlinedButton.icon(
       onPressed: () => _showLogoutConfirmation(context, ref, l10n),
       icon: const Icon(Icons.logout),
@@ -288,12 +293,14 @@ class ClientProfileScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showLogoutConfirmation(BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+  Future<void> _showLogoutConfirmation(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.logout ?? 'Logout'),
-        content: Text(l10n.logout_confirmation ?? 'Are you sure you want to logout?'),
+        content: Text(
+            l10n.logout_confirmation ?? 'Are you sure you want to logout?'),
         actions: [
           TextButton(
             onPressed: () => context.safeDialogPop(false),
@@ -329,7 +336,8 @@ class ClientProfileScreen extends ConsumerWidget {
     }
   }
 
-  Widget _buildStatColumn(BuildContext context, String label, String value, IconData icon) {
+  Widget _buildStatColumn(
+      BuildContext context, String label, String value, IconData icon) {
     final theme = Theme.of(context);
     return Column(
       children: [
@@ -353,10 +361,12 @@ class ClientProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, AppLocalizations l10n, IconData icon, String label, String value) {
+  Widget _buildInfoRow(BuildContext context, AppLocalizations l10n,
+      IconData icon, String label, String value) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsetsDirectional.symmetric(vertical: WawAppSpacing.xs),
+      padding:
+          const EdgeInsetsDirectional.symmetric(vertical: WawAppSpacing.xs),
       child: Row(
         children: [
           Icon(icon, size: 20, color: theme.colorScheme.primary),
@@ -397,14 +407,16 @@ class ClientProfileScreen extends ConsumerWidget {
   }) {
     final theme = Theme.of(context);
     final isRTL = Directionality.of(context) == TextDirection.rtl;
-    final iconColor = isDestructive ? context.errorColor : theme.colorScheme.primary;
+    final iconColor =
+        isDestructive ? context.errorColor : theme.colorScheme.primary;
     final titleColor = isDestructive ? context.errorColor : null;
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(WawAppSpacing.radiusSm),
       child: Padding(
-        padding: const EdgeInsetsDirectional.symmetric(vertical: WawAppSpacing.xs),
+        padding:
+            const EdgeInsetsDirectional.symmetric(vertical: WawAppSpacing.xs),
         child: Row(
           children: [
             Container(
@@ -459,7 +471,8 @@ class ClientProfileScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _showDeleteAccountDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+  Future<void> _showDeleteAccountDialog(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -552,7 +565,8 @@ class ClientProfileScreen extends ConsumerWidget {
     }
   }
 
-  Widget _buildContactSupportTile(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+  Widget _buildContactSupportTile(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     final config = ref.watch(cachedConfigProvider);
 
     // ALWAYS show button with official support number as fallback

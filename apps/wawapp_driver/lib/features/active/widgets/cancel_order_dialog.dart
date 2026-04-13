@@ -50,7 +50,8 @@ class _CancelOrderDialogState extends State<_CancelOrderDialog> {
           onPressed: _selected != null
               ? () => Navigator.of(context).pop(_selected)
               : null,
-          style: TextButton.styleFrom(foregroundColor: DriverAppColors.accentRed),
+          style:
+              TextButton.styleFrom(foregroundColor: DriverAppColors.accentRed),
           child: const Text('تأكيد الإلغاء'),
         ),
       ],

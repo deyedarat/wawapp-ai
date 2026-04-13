@@ -121,7 +121,8 @@ class _StuckOrdersPanelState extends ConsumerState<StuckOrdersPanel> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: AdminAppColors.errorLight),
+                  const Icon(Icons.error_outline,
+                      size: 64, color: AdminAppColors.errorLight),
                   const SizedBox(height: 16),
                   Text('خطأ: ${snapshot.error}'),
                   const SizedBox(height: 16),
@@ -142,11 +143,15 @@ class _StuckOrdersPanelState extends ConsumerState<StuckOrdersPanel> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.check_circle_outline, size: 64, color: AdminAppColors.successLight),
+                  Icon(Icons.check_circle_outline,
+                      size: 64, color: AdminAppColors.successLight),
                   const SizedBox(height: 16),
-                  const Text('لا توجد طلبات عالقة', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                  const Text('لا توجد طلبات عالقة',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 8),
-                  Text('جميع الطلبات المقبولة تسير بشكل طبيعي', style: TextStyle(color: Colors.grey[600])),
+                  Text('جميع الطلبات المقبولة تسير بشكل طبيعي',
+                      style: TextStyle(color: Colors.grey[600])),
                 ],
               ),
             );
@@ -164,7 +169,8 @@ class _StuckOrdersPanelState extends ConsumerState<StuckOrdersPanel> {
                     padding: const EdgeInsets.all(AdminSpacing.md),
                     child: Row(
                       children: [
-                        Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700, size: 32),
+                        Icon(Icons.warning_amber_rounded,
+                            color: Colors.orange.shade700, size: 32),
                         const SizedBox(width: AdminSpacing.md),
                         Expanded(
                           child: Column(
@@ -172,7 +178,8 @@ class _StuckOrdersPanelState extends ConsumerState<StuckOrdersPanel> {
                             children: [
                               Text(
                                 'عدد الطلبات العالقة: ${stuckOrders.length}',
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 4),
                               const Text(
@@ -193,7 +200,8 @@ class _StuckOrdersPanelState extends ConsumerState<StuckOrdersPanel> {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: DataTable(
-                      headingRowColor: WidgetStateProperty.all(AdminAppColors.backgroundLight),
+                      headingRowColor: WidgetStateProperty.all(
+                          AdminAppColors.backgroundLight),
                       columns: const [
                         DataColumn(label: Text('رقم الطلب')),
                         DataColumn(label: Text('السائق')),
@@ -210,7 +218,9 @@ class _StuckOrdersPanelState extends ConsumerState<StuckOrdersPanel> {
                         return DataRow(cells: [
                           DataCell(Text(
                             '#${order.id?.substring(0, 6) ?? 'N/A'}',
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'monospace'),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'monospace'),
                           )),
                           DataCell(FutureBuilder<String>(
                             future: _getDriverName(order.assignedDriverId),
@@ -221,15 +231,20 @@ class _StuckOrdersPanelState extends ConsumerState<StuckOrdersPanel> {
                             builder: (_, snap) => Text(snap.data ?? '...'),
                           )),
                           DataCell(Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: color.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(AdminSpacing.radiusXs),
+                              borderRadius:
+                                  BorderRadius.circular(AdminSpacing.radiusXs),
                               border: Border.all(color: color),
                             ),
                             child: Text(
                               '$minutes دقيقة',
-                              style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13),
+                              style: TextStyle(
+                                  color: color,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13),
                             ),
                           )),
                           DataCell(SizedBox(
@@ -242,7 +257,9 @@ class _StuckOrdersPanelState extends ConsumerState<StuckOrdersPanel> {
                           )),
                           DataCell(Text(
                             '${order.price.toStringAsFixed(0)} MRU',
-                            style: const TextStyle(fontWeight: FontWeight.w600, color: AdminAppColors.primaryGreen),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: AdminAppColors.primaryGreen),
                           )),
                           DataCell(Row(
                             mainAxisSize: MainAxisSize.min,
@@ -253,7 +270,9 @@ class _StuckOrdersPanelState extends ConsumerState<StuckOrdersPanel> {
                                 color: AdminAppColors.infoLight,
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('عرض تفاصيل الطلب #${order.id?.substring(0, 6)}')),
+                                    SnackBar(
+                                        content: Text(
+                                            'عرض تفاصيل الطلب #${order.id?.substring(0, 6)}')),
                                   );
                                 },
                               ),
@@ -263,7 +282,8 @@ class _StuckOrdersPanelState extends ConsumerState<StuckOrdersPanel> {
                                 color: AdminAppColors.primaryGreen,
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('الاتصال بالسائق')),
+                                    const SnackBar(
+                                        content: Text('الاتصال بالسائق')),
                                   );
                                 },
                               ),

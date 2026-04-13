@@ -37,7 +37,11 @@ class CrashlyticsObserver {
   }
 
   /// Log breadcrumb with standard format
-  static void logBreadcrumb(String name, {String? screen, String? route, String? action, Map<String, String>? extra}) {
+  static void logBreadcrumb(String name,
+      {String? screen,
+      String? route,
+      String? action,
+      Map<String, String>? extra}) {
     final parts = <String>[name];
     if (screen != null) parts.add('screen:$screen');
     if (route != null) parts.add('route:$route');
@@ -67,7 +71,12 @@ class CrashlyticsObserver {
 
     logBreadcrumb(
       'NAV_$action',
-      extra: {'from': from, if (to != null) 'to': to, 'canPop': canPop.toString(), 'mounted': mounted.toString()},
+      extra: {
+        'from': from,
+        if (to != null) 'to': to,
+        'canPop': canPop.toString(),
+        'mounted': mounted.toString()
+      },
     );
   }
 
@@ -79,13 +88,17 @@ class CrashlyticsObserver {
     String? screen,
   }) {
     FirebaseCrashlytics.instance.setCustomKey('map_ready', mapReady.toString());
-    FirebaseCrashlytics.instance.setCustomKey('controller_ready', controllerReady.toString());
+    FirebaseCrashlytics.instance
+        .setCustomKey('controller_ready', controllerReady.toString());
     FirebaseCrashlytics.instance.setCustomKey('camera_action', action);
 
     logBreadcrumb(
       'MAP_$action',
       screen: screen,
-      extra: {'mapReady': mapReady.toString(), 'controllerReady': controllerReady.toString()},
+      extra: {
+        'mapReady': mapReady.toString(),
+        'controllerReady': controllerReady.toString()
+      },
     );
   }
 

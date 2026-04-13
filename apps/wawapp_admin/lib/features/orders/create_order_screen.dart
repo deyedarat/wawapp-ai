@@ -89,7 +89,8 @@ extension AdminShipmentTypeExt on AdminShipmentType {
     }
   }
 
-  static AdminShipmentType get defaultType => AdminShipmentType.generalGoodsAndBoxes;
+  static AdminShipmentType get defaultType =>
+      AdminShipmentType.generalGoodsAndBoxes;
 }
 
 /// Cargo weight – same as client app
@@ -187,7 +188,8 @@ class AdminPricingConfig {
     final afterShipment = rawTotal * multiplier;
     final afterAntigravity = afterShipment * antigravityMultiplier;
 
-    final withMin = afterAntigravity < minFare ? minFare.toDouble() : afterAntigravity;
+    final withMin =
+        afterAntigravity < minFare ? minFare.toDouble() : afterAntigravity;
     final rounded = roundTo5(withMin);
 
     final weightCost = cargoWeight.costMRU;
@@ -206,8 +208,10 @@ class AdminPricingConfig {
 
   /// Calculate distance using Haversine
   static double calculateDistance(
-    double lat1, double lng1,
-    double lat2, double lng2,
+    double lat1,
+    double lng1,
+    double lat2,
+    double lng2,
   ) {
     const Distance distance = Distance();
     return distance.as(
@@ -305,8 +309,10 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
   void _recalculateDistance() {
     if (_pickupLocation != null && _dropoffLocation != null) {
       final distance = AdminPricingConfig.calculateDistance(
-        _pickupLocation!.latitude, _pickupLocation!.longitude,
-        _dropoffLocation!.latitude, _dropoffLocation!.longitude,
+        _pickupLocation!.latitude,
+        _pickupLocation!.longitude,
+        _dropoffLocation!.latitude,
+        _dropoffLocation!.longitude,
       );
       setState(() => _distanceKm = distance);
     } else {
@@ -339,7 +345,9 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
         dropoffLng: _dropoffLocation!.longitude,
         weightTons: _cargoWeight.tons,
         shipmentType: _shipmentType.name,
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
       );
 
       if (mounted) {
@@ -390,7 +398,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
                 labelText: 'رقم هاتف العميل',
                 prefixText: '+222 ',
                 prefixIcon: const Icon(Icons.phone),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Colors.grey[50],
               ),
@@ -451,7 +460,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
               decoration: InputDecoration(
                 labelText: 'ملاحظات (اختياري)',
                 prefixIcon: const Icon(Icons.note_outlined),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Colors.grey[50],
               ),
@@ -467,17 +477,21 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
                 backgroundColor: AdminAppColors.primaryGreen,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 18),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 elevation: 2,
               ),
               child: _isCreating
                   ? const SizedBox(
-                      height: 20, width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
                     )
                   : const Text(
                       'إنشاء الطلب',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
             ),
             const SizedBox(height: 24),
@@ -515,7 +529,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: location != null ? color : Colors.grey[300]!, width: 2),
+          border: Border.all(
+              color: location != null ? color : Colors.grey[300]!, width: 2),
           borderRadius: BorderRadius.circular(12),
           color: location != null ? color.withOpacity(0.05) : Colors.white,
         ),
@@ -536,14 +551,18 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey[700]),
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[700]),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     location?.address ?? 'اضغط لتحديد الموقع على الخريطة',
                     style: TextStyle(
                       fontSize: 13,
-                      color: location != null ? Colors.black87 : Colors.grey[500],
+                      color:
+                          location != null ? Colors.black87 : Colors.grey[500],
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -578,7 +597,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected ? type.color.withOpacity(0.15) : Colors.grey[50],
+              color:
+                  isSelected ? type.color.withOpacity(0.15) : Colors.grey[50],
               border: Border.all(
                 color: isSelected ? type.color : Colors.grey[300]!,
                 width: isSelected ? 2 : 1,
@@ -588,20 +608,24 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(type.icon, size: 18, color: isSelected ? type.color : Colors.grey[600]),
+                Icon(type.icon,
+                    size: 18,
+                    color: isSelected ? type.color : Colors.grey[600]),
                 const SizedBox(width: 6),
                 Text(
                   type.arabicLabel,
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                     color: isSelected ? type.color : Colors.grey[700],
                   ),
                 ),
                 if (type.multiplier != 1.0) ...[
                   const SizedBox(width: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                     decoration: BoxDecoration(
                       color: type.color.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(6),
@@ -641,7 +665,9 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
                     ? AdminAppColors.primaryGreen.withOpacity(0.12)
                     : Colors.grey[50],
                 border: Border.all(
-                  color: isSelected ? AdminAppColors.primaryGreen : Colors.grey[300]!,
+                  color: isSelected
+                      ? AdminAppColors.primaryGreen
+                      : Colors.grey[300]!,
                   width: isSelected ? 2 : 1,
                 ),
                 borderRadius: BorderRadius.circular(10),
@@ -652,7 +678,9 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
                   Icon(
                     w.icon,
                     size: 22,
-                    color: isSelected ? AdminAppColors.primaryGreen : Colors.grey[500],
+                    color: isSelected
+                        ? AdminAppColors.primaryGreen
+                        : Colors.grey[500],
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -660,8 +688,11 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      color: isSelected ? AdminAppColors.primaryGreen : Colors.grey[700],
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected
+                          ? AdminAppColors.primaryGreen
+                          : Colors.grey[700],
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -669,8 +700,11 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
                     '+${w.costMRU} MRU',
                     style: TextStyle(
                       fontSize: 10,
-                      color: isSelected ? AdminAppColors.primaryGreen : Colors.grey[500],
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected
+                          ? AdminAppColors.primaryGreen
+                          : Colors.grey[500],
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                 ],
@@ -706,7 +740,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AdminAppColors.primaryGreen.withOpacity(0.3), width: 1.5),
+        border: Border.all(
+            color: AdminAppColors.primaryGreen.withOpacity(0.3), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -739,7 +774,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
           const SizedBox(height: 6),
           _breakdownRow('السعر الأساسي', '${bd.base} MRU'),
           const SizedBox(height: 6),
-          _breakdownRow('تكلفة المسافة (${_distanceKm!.toStringAsFixed(2)} كم)', '${bd.distancePart} MRU'),
+          _breakdownRow('تكلفة المسافة (${_distanceKm!.toStringAsFixed(2)} كم)',
+              '${bd.distancePart} MRU'),
           if (bd.multiplier != 1.0) ...[
             const SizedBox(height: 6),
             _breakdownRow(
@@ -771,7 +807,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
     );
   }
 
-  Widget _breakdownRow(String label, String value, {bool isBold = false, Color? valueColor}) {
+  Widget _breakdownRow(String label, String value,
+      {bool isBold = false, Color? valueColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -788,7 +825,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-            color: valueColor ?? (isBold ? AdminAppColors.primaryGreen : Colors.black87),
+            color: valueColor ??
+                (isBold ? AdminAppColors.primaryGreen : Colors.black87),
           ),
         ),
       ],

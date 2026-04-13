@@ -209,7 +209,8 @@ extension DriverProfileValidation on DriverProfile {
     final missing = <String>[];
     if (name.isEmpty) missing.add('الاسم');
     if (vehicleType == null || vehicleType!.isEmpty) missing.add('نوع السيارة');
-    if (vehiclePlate == null || vehiclePlate!.isEmpty) missing.add('رقم اللوحة');
+    if (vehiclePlate == null || vehiclePlate!.isEmpty)
+      missing.add('رقم اللوحة');
     if (city == null || city!.isEmpty) missing.add('المدينة');
     return missing;
   }

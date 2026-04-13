@@ -12,7 +12,8 @@ class AdminRegisterScreen extends ConsumerStatefulWidget {
   const AdminRegisterScreen({super.key});
 
   @override
-  ConsumerState<AdminRegisterScreen> createState() => _AdminRegisterScreenState();
+  ConsumerState<AdminRegisterScreen> createState() =>
+      _AdminRegisterScreenState();
 }
 
 class _AdminRegisterScreenState extends ConsumerState<AdminRegisterScreen> {
@@ -128,7 +129,8 @@ class _AdminRegisterScreenState extends ConsumerState<AdminRegisterScreen> {
                         'وضع التطوير - للتجربة فقط',
                         textAlign: TextAlign.center,
                         style: AdminAppTextStyles.bodyMedium.copyWith(
-                          color: AdminAppColors.textSecondaryLight.withOpacity(0.7),
+                          color: AdminAppColors.textSecondaryLight
+                              .withOpacity(0.7),
                         ),
                       ),
 
@@ -140,12 +142,15 @@ class _AdminRegisterScreenState extends ConsumerState<AdminRegisterScreen> {
                           padding: EdgeInsets.all(AdminSpacing.md),
                           decoration: BoxDecoration(
                             color: AdminAppColors.errorLight.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-                            border: Border.all(color: AdminAppColors.errorLight),
+                            borderRadius:
+                                BorderRadius.circular(AdminSpacing.radiusSm),
+                            border:
+                                Border.all(color: AdminAppColors.errorLight),
                           ),
                           child: Text(
                             _errorMessage!,
-                            style: const TextStyle(color: AdminAppColors.errorLight),
+                            style: const TextStyle(
+                                color: AdminAppColors.errorLight),
                           ),
                         ),
                         SizedBox(height: AdminSpacing.md),
@@ -160,7 +165,8 @@ class _AdminRegisterScreenState extends ConsumerState<AdminRegisterScreen> {
                           labelText: 'البريد الإلكتروني',
                           prefixIcon: const Icon(Icons.email_outlined),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
+                            borderRadius:
+                                BorderRadius.circular(AdminSpacing.radiusSm),
                           ),
                         ),
                         validator: (value) {
@@ -186,7 +192,9 @@ class _AdminRegisterScreenState extends ConsumerState<AdminRegisterScreen> {
                           prefixIcon: const Icon(Icons.lock_outlined),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                              _obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
                             onPressed: () {
                               setState(() {
@@ -195,7 +203,8 @@ class _AdminRegisterScreenState extends ConsumerState<AdminRegisterScreen> {
                             },
                           ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
+                            borderRadius:
+                                BorderRadius.circular(AdminSpacing.radiusSm),
                           ),
                         ),
                         validator: (value) {
@@ -221,16 +230,20 @@ class _AdminRegisterScreenState extends ConsumerState<AdminRegisterScreen> {
                           prefixIcon: const Icon(Icons.lock_outlined),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                              _obscureConfirmPassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
                             onPressed: () {
                               setState(() {
-                                _obscureConfirmPassword = !_obscureConfirmPassword;
+                                _obscureConfirmPassword =
+                                    !_obscureConfirmPassword;
                               });
                             },
                           ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
+                            borderRadius:
+                                BorderRadius.circular(AdminSpacing.radiusSm),
                           ),
                         ),
                         validator: (value) {
@@ -248,9 +261,11 @@ class _AdminRegisterScreenState extends ConsumerState<AdminRegisterScreen> {
                         onPressed: _isLoading ? null : _handleRegister,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AdminAppColors.primaryGreen,
-                          padding: EdgeInsets.symmetric(vertical: AdminSpacing.md),
+                          padding:
+                              EdgeInsets.symmetric(vertical: AdminSpacing.md),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
+                            borderRadius:
+                                BorderRadius.circular(AdminSpacing.radiusSm),
                           ),
                         ),
                         child: _isLoading
@@ -259,7 +274,8 @@ class _AdminRegisterScreenState extends ConsumerState<AdminRegisterScreen> {
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                               )
                             : Text(

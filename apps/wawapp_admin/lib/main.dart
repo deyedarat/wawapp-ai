@@ -24,8 +24,7 @@ void main() async {
 
     // CRITICAL: Safety check for production builds
     if (!config.useStrictAuth && kReleaseMode) {
-      throw Exception(
-          '🚨 CRITICAL SECURITY ERROR 🚨\n'
+      throw Exception('🚨 CRITICAL SECURITY ERROR 🚨\n'
           'Dev auth bypass is enabled in release mode!\n'
           'This is a severe security violation.\n'
           'Build MUST use: flutter build web --release --dart-define=ENVIRONMENT=prod');
@@ -127,7 +126,7 @@ void _logEnvironmentInfo(AppConfig config) {
   print('🔧 Dev Tools: ${config.showDevTools}');
   print('🏢 Firebase Project: ${config.firebaseProjectId}');
   print('=' * 70);
-  
+
   // CRITICAL: Show prominent warning if dev mode
   if (!config.useStrictAuth) {
     print('\n');
@@ -153,6 +152,6 @@ void _logEnvironmentInfo(AppConfig config) {
     print('✅ Production mode: Strict authentication enforced');
     print('✅ Admin access requires isAdmin custom claim');
   }
-  
+
   print('\n');
 }

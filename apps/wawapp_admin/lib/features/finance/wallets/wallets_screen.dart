@@ -40,7 +40,9 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
 
           // Platform wallet summary
           platformWalletAsync.when(
-            data: (wallet) => wallet != null ? _buildPlatformWalletCard(wallet) : const SizedBox.shrink(),
+            data: (wallet) => wallet != null
+                ? _buildPlatformWalletCard(wallet)
+                : const SizedBox.shrink(),
             loading: () => const LinearProgressIndicator(),
             error: (_, __) => const SizedBox.shrink(),
           ),
@@ -71,7 +73,8 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
       padding: const EdgeInsets.all(AdminSpacing.md),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        border: const Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
+        border:
+            const Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
       ),
       child: Row(
         children: [
@@ -117,7 +120,8 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.account_balance_wallet, size: 48, color: Colors.white),
+          const Icon(Icons.account_balance_wallet,
+              size: 48, color: Colors.white),
           const SizedBox(width: AdminSpacing.md),
           Expanded(
             child: Column(
@@ -170,7 +174,8 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.wallet, size: 64, color: AdminAppColors.textSecondaryLight),
+            Icon(Icons.wallet,
+                size: 64, color: AdminAppColors.textSecondaryLight),
             SizedBox(height: AdminSpacing.md),
             Text('لا توجد محافظ'),
           ],
@@ -185,60 +190,63 @@ class _WalletsScreenState extends ConsumerState<WalletsScreen> {
         controller: _tableHorizontalController,
         scrollDirection: Axis.horizontal,
         child: ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: 1000),
-        child: Container(
-        margin: const EdgeInsets.all(AdminSpacing.md),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
-          border: Border.all(color: AdminAppColors.borderLight),
-        ),
-        child: DataTable(
-          headingRowColor: WidgetStateProperty.all(AdminAppColors.backgroundLight),
-          columns: const [
-            DataColumn(label: Text('معرف السائق')),
-            DataColumn(label: Text('الرصيد المتاح')),
-            DataColumn(label: Text('معلق')),
-            DataColumn(label: Text('إجمالي الأرباح')),
-            DataColumn(label: Text('إجمالي المسحوبات')),
-            DataColumn(label: Text('الإجراءات')),
-          ],
-          rows: wallets.map((wallet) {
-            return DataRow(
-              cells: [
-                DataCell(Text(wallet.ownerId ?? wallet.id)),
-                DataCell(
-                  Text(
-                    '${_formatCurrency(wallet.availableBalance)} MRU',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
-                  ),
-                ),
-                DataCell(
-                  wallet.pendingPayout > 0
-                      ? Text(
-                          '${_formatCurrency(wallet.pendingPayout)} MRU',
-                          style: const TextStyle(color: Colors.orange),
-                        )
-                      : const Text('-'),
-                ),
-                DataCell(Text('${_formatCurrency(wallet.totalCredited)} MRU')),
-                DataCell(Text('${_formatCurrency(wallet.totalDebited)} MRU')),
-                DataCell(
-                  IconButton(
-                    icon: const Icon(Icons.visibility),
-                    onPressed: () => _showWalletDetails(wallet),
-                    tooltip: 'عرض التفاصيل',
-                  ),
-                ),
+          constraints: const BoxConstraints(minWidth: 1000),
+          child: Container(
+            margin: const EdgeInsets.all(AdminSpacing.md),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
+              border: Border.all(color: AdminAppColors.borderLight),
+            ),
+            child: DataTable(
+              headingRowColor:
+                  WidgetStateProperty.all(AdminAppColors.backgroundLight),
+              columns: const [
+                DataColumn(label: Text('معرف السائق')),
+                DataColumn(label: Text('الرصيد المتاح')),
+                DataColumn(label: Text('معلق')),
+                DataColumn(label: Text('إجمالي الأرباح')),
+                DataColumn(label: Text('إجمالي المسحوبات')),
+                DataColumn(label: Text('الإجراءات')),
               ],
-            );
-          }).toList(),
+              rows: wallets.map((wallet) {
+                return DataRow(
+                  cells: [
+                    DataCell(Text(wallet.ownerId ?? wallet.id)),
+                    DataCell(
+                      Text(
+                        '${_formatCurrency(wallet.availableBalance)} MRU',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      wallet.pendingPayout > 0
+                          ? Text(
+                              '${_formatCurrency(wallet.pendingPayout)} MRU',
+                              style: const TextStyle(color: Colors.orange),
+                            )
+                          : const Text('-'),
+                    ),
+                    DataCell(
+                        Text('${_formatCurrency(wallet.totalCredited)} MRU')),
+                    DataCell(
+                        Text('${_formatCurrency(wallet.totalDebited)} MRU')),
+                    DataCell(
+                      IconButton(
+                        icon: const Icon(Icons.visibility),
+                        onPressed: () => _showWalletDetails(wallet),
+                        tooltip: 'عرض التفاصيل',
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
         ),
-      ),
-      ),
       ),
     );
   }
@@ -294,7 +302,8 @@ class _WalletDetailsDialog extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.receipt_long, color: AdminAppColors.primaryGreen),
+                const Icon(Icons.receipt_long,
+                    color: AdminAppColors.primaryGreen),
                 const SizedBox(width: AdminSpacing.sm),
                 Text(
                   'سجل المعاملات',
@@ -353,7 +362,9 @@ class _WalletDetailsDialog extends ConsumerWidget {
       ),
       title: Text(txn.note ?? _getSourceLabel(txn.source)),
       subtitle: Text(
-        txn.createdAt != null ? DateFormat('dd/MM/yyyy HH:mm').format(txn.createdAt!) : '-',
+        txn.createdAt != null
+            ? DateFormat('dd/MM/yyyy HH:mm').format(txn.createdAt!)
+            : '-',
       ),
       trailing: Text(
         '${isCredit ? '+' : '-'}${formatter.format(txn.amount)} MRU',
@@ -388,7 +399,9 @@ class _WalletDetailsDialog extends ConsumerWidget {
       }
 
       // Extract driver ID from wallet ID if applicable
-      final driverId = walletId.startsWith('driver_') ? walletId.replaceFirst('driver_', '') : null;
+      final driverId = walletId.startsWith('driver_')
+          ? walletId.replaceFirst('driver_', '')
+          : null;
 
       CsvExportUtil.exportTransactions(
         transactions,

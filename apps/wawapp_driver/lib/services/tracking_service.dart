@@ -30,7 +30,8 @@ class TrackingService {
   DateTime? _lastWriteTime; // Track last Firestore write time
 
   static const String _logTag = '[TRACKING_SERVICE]';
-  static const int _maxStaleSeconds = 180; // Force write every 3 minutes even if stationary
+  static const int _maxStaleSeconds =
+      180; // Force write every 3 minutes even if stationary
 
   Future<void> startTracking() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -198,15 +199,18 @@ class TrackingService {
                 ? DateTime.now().difference(_lastWriteTime!).inSeconds
                 : _maxStaleSeconds;
 
-            if (_consecutiveSmallMoves > 3 && timeSinceLastWrite < _maxStaleSeconds) {
+            if (_consecutiveSmallMoves > 3 &&
+                timeSinceLastWrite < _maxStaleSeconds) {
               if (kDebugMode) {
-                debugPrint('$_logTag Skipping write due to minimal movement (last write ${timeSinceLastWrite}s ago)');
+                debugPrint(
+                    '$_logTag Skipping write due to minimal movement (last write ${timeSinceLastWrite}s ago)');
               }
               return;
             }
 
             if (timeSinceLastWrite >= _maxStaleSeconds && kDebugMode) {
-              debugPrint('$_logTag Force writing stale location (${timeSinceLastWrite}s since last write)');
+              debugPrint(
+                  '$_logTag Force writing stale location (${timeSinceLastWrite}s since last write)');
             }
           } else {
             _consecutiveSmallMoves = 0; // Reset on significant movement

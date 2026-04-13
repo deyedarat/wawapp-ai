@@ -23,9 +23,10 @@ class WalletData {
 }
 
 /// Provider for driver wallet data
-final walletDataProvider = StreamProvider.family<WalletData, String>((ref, driverId) {
+final walletDataProvider =
+    StreamProvider.family<WalletData, String>((ref, driverId) {
   final firestore = FirebaseFirestore.instance;
-  
+
   return firestore
       .collection('wallets')
       .doc(driverId)
@@ -64,11 +65,12 @@ class DailySummary {
 
 /// Provider for daily summary (for home screen)
 /// Uses existing index: driverId ASC, status ASC, completedAt DESC
-final dailySummaryProvider = StreamProvider.family<DailySummary, String>((ref, driverId) {
+final dailySummaryProvider =
+    StreamProvider.family<DailySummary, String>((ref, driverId) {
   final firestore = FirebaseFirestore.instance;
   final today = DateTime.now();
   final startOfDay = DateTime(today.year, today.month, today.day);
-  
+
   return firestore
       .collection('orders')
       .where('driverId', isEqualTo: driverId)
@@ -112,7 +114,8 @@ class WalletTransaction {
     required this.createdAt,
   });
 
-  factory WalletTransaction.fromFirestore(Map<String, dynamic> data, String id) {
+  factory WalletTransaction.fromFirestore(
+      Map<String, dynamic> data, String id) {
     return WalletTransaction(
       id: id,
       type: data['type'] as String? ?? 'credit',

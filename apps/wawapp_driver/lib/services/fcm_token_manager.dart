@@ -35,7 +35,8 @@ class FcmTokenManager {
     await _refreshToken();
 
     // Listen for token refresh
-    _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh.listen(
+    _tokenRefreshSubscription =
+        FirebaseMessaging.instance.onTokenRefresh.listen(
       _onTokenRefresh,
       onError: (error) {
         if (kDebugMode) {
@@ -52,7 +53,8 @@ class FcmTokenManager {
   /// Handle token refresh events.
   Future<void> _onTokenRefresh(String newToken) async {
     if (kDebugMode) {
-      debugPrint('[FcmTokenManager] 🔄 Token refreshed: ${_maskToken(newToken)}');
+      debugPrint(
+          '[FcmTokenManager] 🔄 Token refreshed: ${_maskToken(newToken)}');
     }
 
     _currentToken = newToken;
@@ -85,7 +87,8 @@ class FcmTokenManager {
       final lastToken = await _getLocalToken();
       if (lastToken != token) {
         if (kDebugMode) {
-          debugPrint('[FcmTokenManager] 🔄 Token changed, syncing to Firestore');
+          debugPrint(
+              '[FcmTokenManager] 🔄 Token changed, syncing to Firestore');
         }
         await _saveTokenLocally(token);
         await _syncTokenToFirestore(token);
@@ -106,7 +109,8 @@ class FcmTokenManager {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_kTokenKey, token);
-      await prefs.setInt(_kTokenTimestampKey, DateTime.now().millisecondsSinceEpoch);
+      await prefs.setInt(
+          _kTokenTimestampKey, DateTime.now().millisecondsSinceEpoch);
 
       if (kDebugMode) {
         debugPrint('[FcmTokenManager] 💾 Token saved locally');
@@ -136,7 +140,8 @@ class FcmTokenManager {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       if (kDebugMode) {
-        debugPrint('[FcmTokenManager] ⚠️ No user logged in, skipping Firestore sync');
+        debugPrint(
+            '[FcmTokenManager] ⚠️ No user logged in, skipping Firestore sync');
       }
       return;
     }

@@ -16,8 +16,7 @@ class SettingsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── General Settings ──────────────────────────────────
-            Text('إعدادات عامة',
-                style: Theme.of(context).textTheme.titleLarge),
+            Text('إعدادات عامة', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: AdminSpacing.md),
             Card(
               child: Padding(
@@ -29,10 +28,8 @@ class SettingsScreen extends StatelessWidget {
                       icon: Icons.language,
                       title: 'اللغة',
                       subtitle: 'العربية',
-                      trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: AdminAppColors.textSecondaryLight),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: AdminAppColors.textSecondaryLight),
                       onTap: () => _showComingSoon(context),
                     ),
                     const Divider(height: AdminSpacing.lg),
@@ -41,10 +38,8 @@ class SettingsScreen extends StatelessWidget {
                       icon: Icons.dark_mode,
                       title: 'السمة',
                       subtitle: 'فاتحة',
-                      trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: AdminAppColors.textSecondaryLight),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: AdminAppColors.textSecondaryLight),
                       onTap: () => _showComingSoon(context),
                     ),
                     const Divider(height: AdminSpacing.lg),
@@ -53,10 +48,8 @@ class SettingsScreen extends StatelessWidget {
                       icon: Icons.notifications,
                       title: 'الإشعارات',
                       subtitle: 'مفعلة',
-                      trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: AdminAppColors.textSecondaryLight),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: AdminAppColors.textSecondaryLight),
                       onTap: () => _showComingSoon(context),
                     ),
                   ],
@@ -80,10 +73,8 @@ class SettingsScreen extends StatelessWidget {
                       icon: Icons.monetization_on,
                       title: 'أسعار التوصيل',
                       subtitle: 'إدارة أسعار الخدمات',
-                      trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: AdminAppColors.textSecondaryLight),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: AdminAppColors.textSecondaryLight),
                       onTap: () => context.go('/settings/pricing'),
                     ),
                     const Divider(height: AdminSpacing.lg),
@@ -92,10 +83,8 @@ class SettingsScreen extends StatelessWidget {
                       icon: Icons.map,
                       title: 'المناطق المخدومة',
                       subtitle: 'إدارة مناطق التغطية',
-                      trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: AdminAppColors.textSecondaryLight),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: AdminAppColors.textSecondaryLight),
                       onTap: () => context.go('/settings/zones'),
                     ),
                     const Divider(height: AdminSpacing.lg),
@@ -104,10 +93,8 @@ class SettingsScreen extends StatelessWidget {
                       icon: Icons.timer,
                       title: 'أوقات العمل',
                       subtitle: 'تحديد أوقات الخدمة',
-                      trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: AdminAppColors.textSecondaryLight),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: AdminAppColors.textSecondaryLight),
                       onTap: () => context.go('/settings/hours'),
                     ),
                   ],
@@ -131,10 +118,8 @@ class SettingsScreen extends StatelessWidget {
                       icon: Icons.backup,
                       title: 'النسخ الاحتياطي',
                       subtitle: 'آخر نسخة: 2024-12-09',
-                      trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: AdminAppColors.textSecondaryLight),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: AdminAppColors.textSecondaryLight),
                       onTap: () => _showComingSoon(context),
                     ),
                     const Divider(height: AdminSpacing.lg),
@@ -143,10 +128,8 @@ class SettingsScreen extends StatelessWidget {
                       icon: Icons.security,
                       title: 'الأمان والخصوصية',
                       subtitle: 'إعدادات الحماية',
-                      trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: AdminAppColors.textSecondaryLight),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: AdminAppColors.textSecondaryLight),
                       onTap: () => context.go('/settings/security'),
                     ),
                     const Divider(height: AdminSpacing.lg),
@@ -155,10 +138,8 @@ class SettingsScreen extends StatelessWidget {
                       icon: Icons.info,
                       title: 'عن التطبيق',
                       subtitle: 'الإصدار 1.0.0',
-                      trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: AdminAppColors.textSecondaryLight),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          size: 16, color: AdminAppColors.textSecondaryLight),
                       onTap: () => _showAboutDialog(context),
                     ),
                   ],
@@ -211,24 +192,23 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(AdminSpacing.sm),
               decoration: BoxDecoration(
                 color: AdminAppColors.primaryGreen.withOpacity(0.1),
-                borderRadius:
-                    BorderRadius.circular(AdminSpacing.radiusSm),
+                borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
               ),
-              child: Icon(icon,
-                  color: AdminAppColors.primaryGreen, size: 24),
+              child: Icon(icon, color: AdminAppColors.primaryGreen, size: 24),
             ),
             const SizedBox(width: AdminSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: Theme.of(context).textTheme.titleMedium),
+                  Text(title, style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: AdminSpacing.xxs),
                   Text(
                     subtitle,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AdminAppColors.textSecondaryLight),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AdminAppColors.textSecondaryLight),
                   ),
                 ],
               ),

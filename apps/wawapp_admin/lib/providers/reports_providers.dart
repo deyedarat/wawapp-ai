@@ -14,7 +14,8 @@ final reportsFilterProvider = StateProvider<ReportsFilterState>((ref) {
 // ─── Firestore Fallback Helpers ──────────────────────────────────────────────
 
 /// Builds overview data directly from Firestore when Functions aren't deployed.
-Future<OverviewReportData> _fetchOverviewFromFirestore(ReportsFilterState filter) async {
+Future<OverviewReportData> _fetchOverviewFromFirestore(
+    ReportsFilterState filter) async {
   final fs = FirebaseFirestore.instance;
   final startTs = Timestamp.fromDate(filter.startDate);
   final endTs = Timestamp.fromDate(filter.endDate);
@@ -42,7 +43,8 @@ Future<OverviewReportData> _fetchOverviewFromFirestore(ReportsFilterState filter
   final avgValue = total > 0 ? (sumPrice / total).round() : 0;
 
   // Active drivers (isOnline = true)
-  final driversSnap = await fs.collection('drivers').where('isOnline', isEqualTo: true).get();
+  final driversSnap =
+      await fs.collection('drivers').where('isOnline', isEqualTo: true).get();
 
   // New clients in period
   final clientsSnap = await fs
@@ -65,7 +67,8 @@ Future<OverviewReportData> _fetchOverviewFromFirestore(ReportsFilterState filter
 }
 
 /// Builds financial data directly from Firestore when Functions aren't deployed.
-Future<FinancialReportData> _fetchFinancialFromFirestore(ReportsFilterState filter) async {
+Future<FinancialReportData> _fetchFinancialFromFirestore(
+    ReportsFilterState filter) async {
   final fs = FirebaseFirestore.instance;
   final startTs = Timestamp.fromDate(filter.startDate);
   final endTs = Timestamp.fromDate(filter.endDate);
@@ -94,7 +97,9 @@ Future<FinancialReportData> _fetchFinancialFromFirestore(ReportsFilterState filt
       grossRevenue: grossRevenue,
       totalDriverEarnings: driverEarnings,
       totalPlatformCommission: platformCommission > 0 ? platformCommission : 0,
-      averageCommissionRate: grossRevenue > 0 ? ((platformCommission / grossRevenue) * 100).round() : 0,
+      averageCommissionRate: grossRevenue > 0
+          ? ((platformCommission / grossRevenue) * 100).round()
+          : 0,
     ),
     dailyBreakdown: [],
     periodStart: filter.startDate.toIso8601String(),
@@ -103,7 +108,8 @@ Future<FinancialReportData> _fetchFinancialFromFirestore(ReportsFilterState filt
 }
 
 /// Builds driver performance data directly from Firestore.
-Future<DriverPerformanceReportData> _fetchDriverPerfFromFirestore(ReportsFilterState filter) async {
+Future<DriverPerformanceReportData> _fetchDriverPerfFromFirestore(
+    ReportsFilterState filter) async {
   final fs = FirebaseFirestore.instance;
   final startTs = Timestamp.fromDate(filter.startDate);
   final endTs = Timestamp.fromDate(filter.endDate);
@@ -131,19 +137,24 @@ Future<DriverPerformanceReportData> _fetchDriverPerfFromFirestore(ReportsFilterS
               'totalRating': 0.0,
               'ratingCount': 0,
             });
-    byDriver[driverId]!['completedOrders'] = (byDriver[driverId]!['completedOrders'] as int) + 1;
+    byDriver[driverId]!['completedOrders'] =
+        (byDriver[driverId]!['completedOrders'] as int) + 1;
     byDriver[driverId]!['totalEarnings'] =
-        (byDriver[driverId]!['totalEarnings'] as int) + ((data['driverEarning'] ?? 0) as num).toInt();
+        (byDriver[driverId]!['totalEarnings'] as int) +
+            ((data['driverEarning'] ?? 0) as num).toInt();
     final rating = (data['rating'] ?? 0) as num;
     if (rating > 0) {
-      byDriver[driverId]!['totalRating'] = (byDriver[driverId]!['totalRating'] as double) + rating.toDouble();
-      byDriver[driverId]!['ratingCount'] = (byDriver[driverId]!['ratingCount'] as int) + 1;
+      byDriver[driverId]!['totalRating'] =
+          (byDriver[driverId]!['totalRating'] as double) + rating.toDouble();
+      byDriver[driverId]!['ratingCount'] =
+          (byDriver[driverId]!['ratingCount'] as int) + 1;
     }
   }
 
   final drivers = byDriver.values.map((d) {
     final rc = d['ratingCount'] as int;
-    final avgRating = rc > 0 ? ((d['totalRating'] as double) / rc * 10).round() / 10 : 5.0;
+    final avgRating =
+        rc > 0 ? ((d['totalRating'] as double) / rc * 10).round() / 10 : 5.0;
     return DriverPerformance(
       driverId: d['driverId'] as String,
       name: d['driverName'] as String,
@@ -175,7 +186,8 @@ final overviewReportProvider = FutureProvider<OverviewReportData?>((ref) async {
 
   // Try Firebase Functions
   try {
-    final callable = FirebaseFunctions.instance.httpsCallable('getReportsOverview');
+    final callable =
+        FirebaseFunctions.instance.httpsCallable('getReportsOverview');
     final result = await callable.call<Map<String, dynamic>>({
       'startDate': filter.startDate.toIso8601String(),
       'endDate': filter.endDate.toIso8601String(),
@@ -197,11 +209,13 @@ final overviewReportProvider = FutureProvider<OverviewReportData?>((ref) async {
 });
 
 /// Financial report — tries Firebase Functions first, falls back to Firestore.
-final financialReportProvider = FutureProvider<FinancialReportData?>((ref) async {
+final financialReportProvider =
+    FutureProvider<FinancialReportData?>((ref) async {
   final filter = ref.watch(reportsFilterProvider);
 
   try {
-    final callable = FirebaseFunctions.instance.httpsCallable('getFinancialReport');
+    final callable =
+        FirebaseFunctions.instance.httpsCallable('getFinancialReport');
     final result = await callable.call<Map<String, dynamic>>({
       'startDate': filter.startDate.toIso8601String(),
       'endDate': filter.endDate.toIso8601String(),
@@ -222,11 +236,13 @@ final financialReportProvider = FutureProvider<FinancialReportData?>((ref) async
 });
 
 /// Driver performance report — tries Firebase Functions first, falls back to Firestore.
-final driverPerformanceReportProvider = FutureProvider<DriverPerformanceReportData?>((ref) async {
+final driverPerformanceReportProvider =
+    FutureProvider<DriverPerformanceReportData?>((ref) async {
   final filter = ref.watch(reportsFilterProvider);
 
   try {
-    final callable = FirebaseFunctions.instance.httpsCallable('getDriverPerformanceReport');
+    final callable =
+        FirebaseFunctions.instance.httpsCallable('getDriverPerformanceReport');
     final result = await callable.call<Map<String, dynamic>>({
       'startDate': filter.startDate.toIso8601String(),
       'endDate': filter.endDate.toIso8601String(),

@@ -196,8 +196,7 @@ class DeliveryPricingScreen extends ConsumerWidget {
                           Switch(
                             value: config.isActive,
                             activeColor: AdminAppColors.primaryGreen,
-                            onChanged: (val) =>
-                                _togglePricing(config.id, val),
+                            onChanged: (val) => _togglePricing(config.id, val),
                           ),
                         ),
                         _tableCellWidget(Row(
@@ -213,8 +212,7 @@ class DeliveryPricingScreen extends ConsumerWidget {
                             IconButton(
                               icon: const Icon(Icons.delete, size: 18),
                               color: AdminAppColors.errorLight,
-                              onPressed: () =>
-                                  _confirmDelete(context, config),
+                              onPressed: () => _confirmDelete(context, config),
                               tooltip: 'حذف',
                             ),
                           ],
@@ -235,8 +233,7 @@ class DeliveryPricingScreen extends ConsumerWidget {
       child: Text(
         text,
         style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AdminAppColors.primaryGreen),
+            fontWeight: FontWeight.bold, color: AdminAppColors.primaryGreen),
       ),
     );
   }
@@ -267,13 +264,13 @@ class DeliveryPricingScreen extends ConsumerWidget {
     _showPricingDialog(context, null);
   }
 
-  void _showEditPricingDialog(BuildContext context, DeliveryPriceConfig config) {
+  void _showEditPricingDialog(
+      BuildContext context, DeliveryPriceConfig config) {
     _showPricingDialog(context, config);
   }
 
   void _showPricingDialog(BuildContext context, DeliveryPriceConfig? existing) {
-    final nameCtrl =
-        TextEditingController(text: existing?.name ?? '');
+    final nameCtrl = TextEditingController(text: existing?.name ?? '');
     final baseFareCtrl = TextEditingController(
         text: existing?.baseFare.toStringAsFixed(0) ?? '');
     final perKmCtrl = TextEditingController(
@@ -296,8 +293,7 @@ class DeliveryPricingScreen extends ConsumerWidget {
                 TextFormField(
                   controller: nameCtrl,
                   decoration: const InputDecoration(
-                      labelText: 'اسم التسعيرة',
-                      hintText: 'مثال: توصيل عادي'),
+                      labelText: 'اسم التسعيرة', hintText: 'مثال: توصيل عادي'),
                   validator: (v) =>
                       v == null || v.isEmpty ? 'الاسم مطلوب' : null,
                 ),
@@ -343,8 +339,7 @@ class DeliveryPricingScreen extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('إلغاء')),
+              onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: AdminAppColors.primaryGreen,
@@ -387,8 +382,7 @@ class DeliveryPricingScreen extends ConsumerWidget {
         content: Text('هل أنت متأكد من حذف تسعيرة "${config.name}"؟'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('إلغاء')),
+              onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {

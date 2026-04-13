@@ -126,7 +126,8 @@ abstract class BaseAnalyticsService {
   }) async {
     // No-op: Analytics disabled for AdServices compliance
     if (kDebugMode) {
-      debugPrint('[Analytics NO-OP] notification_tapped: $notificationType ($appState)');
+      debugPrint(
+          '[Analytics NO-OP] notification_tapped: $notificationType ($appState)');
     }
   }
 
@@ -164,6 +165,7 @@ abstract class BaseAnalyticsService {
     required String value,
   }) async {
     // No-op: Analytics disabled for AdServices compliance
-    if (kDebugMode) debugPrint('[Analytics NO-OP] User property set: $name = $value');
+    if (kDebugMode)
+      debugPrint('[Analytics NO-OP] User property set: $name = $value');
   }
 }

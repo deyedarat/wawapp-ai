@@ -99,7 +99,8 @@ class NotificationHealthMonitor {
   /// Check notification permission status.
   Future<bool> _checkNotificationPermission() async {
     try {
-      final settings = await FirebaseMessaging.instance.getNotificationSettings();
+      final settings =
+          await FirebaseMessaging.instance.getNotificationSettings();
       return settings.authorizationStatus == AuthorizationStatus.authorized;
     } catch (e) {
       if (kDebugMode) {
@@ -125,7 +126,8 @@ class NotificationHealthMonitor {
   /// Check exact alarm permission.
   Future<bool> _checkExactAlarmPermission() async {
     try {
-      final result = await _channel.invokeMethod<bool>('canScheduleExactAlarms');
+      final result =
+          await _channel.invokeMethod<bool>('canScheduleExactAlarms');
       return result ?? false;
     } on PlatformException catch (e) {
       if (kDebugMode) {
@@ -140,11 +142,13 @@ class NotificationHealthMonitor {
     final recommendations = <String>[];
 
     if (checks['fcm_token'] == false) {
-      recommendations.add('FCM Token missing - reinitialize Firebase Messaging');
+      recommendations
+          .add('FCM Token missing - reinitialize Firebase Messaging');
     }
 
     if (checks['battery_exempt'] == false) {
-      recommendations.add('Disable battery optimization for reliable notifications');
+      recommendations
+          .add('Disable battery optimization for reliable notifications');
     }
 
     if (checks['notification_permission'] == false) {
@@ -156,7 +160,8 @@ class NotificationHealthMonitor {
     }
 
     if (checks['exact_alarm'] == false) {
-      recommendations.add('Grant exact alarm permission for timely notifications');
+      recommendations
+          .add('Grant exact alarm permission for timely notifications');
     }
 
     return recommendations;

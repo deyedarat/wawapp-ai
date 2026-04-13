@@ -11,7 +11,7 @@ class AdminAppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      
+
       // Color scheme
       colorScheme: ColorScheme.light(
         primary: AdminAppColors.primaryGreen,
@@ -114,7 +114,8 @@ class AdminAppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-          borderSide: const BorderSide(color: AdminAppColors.primaryGreen, width: 2),
+          borderSide:
+              const BorderSide(color: AdminAppColors.primaryGreen, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
@@ -143,7 +144,7 @@ class AdminAppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      
+
       // Color scheme
       colorScheme: ColorScheme.dark(
         primary: AdminAppColors.primaryGreen,
@@ -207,7 +208,8 @@ class AdminAppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-          borderSide: const BorderSide(color: AdminAppColors.primaryGreen, width: 2),
+          borderSide:
+              const BorderSide(color: AdminAppColors.primaryGreen, width: 2),
         ),
         contentPadding: EdgeInsets.all(AdminSpacing.md),
       ),

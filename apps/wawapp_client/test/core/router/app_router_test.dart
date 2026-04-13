@@ -5,7 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// Tests the critical reCAPTCHA flow and state transitions
 void main() {
   group('GoRouter Redirect Logic - reCAPTCHA Flow', () {
-    test('should stay on /login during OtpStage.sending (CAPTCHA in progress)', () {
+    test('should stay on /login during OtpStage.sending (CAPTCHA in progress)',
+        () {
       // Simulate the state during reCAPTCHA verification
       const authState = AuthState(
         user: null,
@@ -22,10 +23,14 @@ void main() {
 
       // During sending, canOtp should be false because isSending=true
       final isSending = authState.otpStage == OtpStage.sending;
-      final canOtp = ((authState.otpFlowActive || authState.otpStage == OtpStage.codeSent) && !isSending);
+      final canOtp = ((authState.otpFlowActive ||
+              authState.otpStage == OtpStage.codeSent) &&
+          !isSending);
 
-      expect(isSending, isTrue, reason: 'Should be in sending state during reCAPTCHA');
-      expect(canOtp, isFalse, reason: 'Should NOT allow OTP navigation during sending');
+      expect(isSending, isTrue,
+          reason: 'Should be in sending state during reCAPTCHA');
+      expect(canOtp, isFalse,
+          reason: 'Should NOT allow OTP navigation during sending');
     });
 
     test('should allow navigation to /otp only after OtpStage.codeSent', () {
@@ -39,10 +44,14 @@ void main() {
       );
 
       final isSending = authState.otpStage == OtpStage.sending;
-      final canOtp = ((authState.otpFlowActive || authState.otpStage == OtpStage.codeSent) && !isSending);
+      final canOtp = ((authState.otpFlowActive ||
+              authState.otpStage == OtpStage.codeSent) &&
+          !isSending);
 
-      expect(isSending, isFalse, reason: 'Should NOT be sending after code is sent');
-      expect(canOtp, isTrue, reason: 'Should allow OTP navigation after codeSent');
+      expect(isSending, isFalse,
+          reason: 'Should NOT be sending after code is sent');
+      expect(canOtp, isTrue,
+          reason: 'Should allow OTP navigation after codeSent');
     });
 
     test('should redirect to /login when not authenticated', () {
@@ -56,7 +65,9 @@ void main() {
 
       final loggedIn = authState.user != null;
       final isSending = authState.otpStage == OtpStage.sending;
-      final canOtp = ((authState.otpFlowActive || authState.otpStage == OtpStage.codeSent) && !isSending);
+      final canOtp = ((authState.otpFlowActive ||
+              authState.otpStage == OtpStage.codeSent) &&
+          !isSending);
 
       expect(loggedIn, isFalse);
       expect(canOtp, isFalse);
@@ -150,7 +161,9 @@ void main() {
       );
 
       final isSending = authState.otpStage == OtpStage.sending;
-      final canOtp = ((authState.otpFlowActive || authState.otpStage == OtpStage.codeSent) && !isSending);
+      final canOtp = ((authState.otpFlowActive ||
+              authState.otpStage == OtpStage.codeSent) &&
+          !isSending);
 
       expect(canOtp, isTrue, reason: 'OTP flow should take priority');
       // Router should redirect to /otp even if user appears to be logged in
@@ -201,7 +214,8 @@ void main() {
   });
 
   group('Edge Cases and Race Conditions', () {
-    test('should prevent race condition: simultaneous sending and codeSent', () {
+    test('should prevent race condition: simultaneous sending and codeSent',
+        () {
       // This should never happen, but test the guard
       const invalidState = AuthState(
         otpStage: OtpStage.codeSent,
@@ -225,7 +239,8 @@ void main() {
 
       // Debouncing should handle rapid changes
       for (final state in states) {
-        expect(state.otpStage, isIn([OtpStage.idle, OtpStage.sending, OtpStage.codeSent]));
+        expect(state.otpStage,
+            isIn([OtpStage.idle, OtpStage.sending, OtpStage.codeSent]));
       }
     });
 

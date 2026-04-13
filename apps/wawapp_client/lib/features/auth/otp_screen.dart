@@ -76,8 +76,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
       // Log OTP verification success for debugging
       if (next.user != null && prev?.user == null) {
-        FirebaseCrashlytics.instance.log('[OtpScreen] OTP verified successfully');
-        debugPrint('[OtpScreen] ✓ OTP verified - GoRouter will handle navigation');
+        FirebaseCrashlytics.instance
+            .log('[OtpScreen] OTP verified successfully');
+        debugPrint(
+            '[OtpScreen] ✓ OTP verified - GoRouter will handle navigation');
       }
     });
 
@@ -87,7 +89,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     return Scaffold(
       key: const ValueKey('screen_otp'),
       appBar: AppBar(
-        title: Text(widget.isPhoneChange ? 'تحقق من الهاتف' : 'أدخل رمز التحقق'),
+        title:
+            Text(widget.isPhoneChange ? 'تحقق من الهاتف' : 'أدخل رمز التحقق'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -105,11 +108,14 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               maxLength: 6,
               decoration: const InputDecoration(labelText: 'OTP Code'),
             ),
-            if (authState.error != null) Text(authState.error!, style: const TextStyle(color: Colors.red)),
+            if (authState.error != null)
+              Text(authState.error!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: authState.isLoading ? null : _verify,
-              child: authState.isLoading ? const CircularProgressIndicator() : const Text('Verify'),
+              child: authState.isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('Verify'),
             ),
           ],
         ),

@@ -53,7 +53,8 @@ class ForceUpdateScreen extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: _download,
                   icon: const Icon(Icons.download),
-                  label: const Text('تحميل التحديث', style: TextStyle(fontSize: 18)),
+                  label: const Text('تحميل التحديث',
+                      style: TextStyle(fontSize: 18)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber.shade700,
                     foregroundColor: Colors.white,

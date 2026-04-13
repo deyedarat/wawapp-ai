@@ -16,8 +16,8 @@ class AddressUtils {
     LatLng? latLng,
   }) {
     final trimmed = userInput?.trim() ?? '';
-    final isValidInput = trimmed.isNotEmpty &&
-        !_errorPrefixes.any((p) => trimmed.startsWith(p));
+    final isValidInput =
+        trimmed.isNotEmpty && !_errorPrefixes.any((p) => trimmed.startsWith(p));
 
     if (isValidInput) return trimmed;
     if (plusCode != null && plusCode.trim().isNotEmpty) {

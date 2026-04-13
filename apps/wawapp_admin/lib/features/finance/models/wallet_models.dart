@@ -108,7 +108,8 @@ class PayoutModel {
   final int amount;
   final String currency;
   final String method; // 'manual', 'bank_transfer', etc.
-  final String status; // 'requested', 'approved', 'processing', 'completed', 'rejected'
+  final String
+      status; // 'requested', 'approved', 'processing', 'completed', 'rejected'
   final String requestedByAdminId;
   final String? processedByAdminId;
   final String? transactionId;

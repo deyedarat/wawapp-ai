@@ -205,13 +205,13 @@ class DriverProfileScreen extends ConsumerWidget {
         // 2. Delete user's wallet data
         // 3. Anonymize completed orders
         // 4. Delete Firebase Auth account
-        // 
+        //
         // For now, we'll call logout and show a message
         // The admin must manually complete the deletion process
-        
+
         // Call backend to request account deletion
         // await ref.read(authProvider.notifier).requestAccountDeletion();
-        
+
         // For P0: Just logout and notify admin
         await ref.read(authProvider.notifier).logout();
 
@@ -221,7 +221,8 @@ class DriverProfileScreen extends ConsumerWidget {
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('تم إرسال طلب حذف الحساب. سيتم مراجعته من قبل الإدارة.'),
+              content:
+                  Text('تم إرسال طلب حذف الحساب. سيتم مراجعته من قبل الإدارة.'),
               duration: Duration(seconds: 5),
             ),
           );

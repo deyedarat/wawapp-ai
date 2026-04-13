@@ -29,8 +29,9 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final payoutsAsync =
-        _statusFilter == 'all' ? ref.watch(payoutsProvider) : ref.watch(payoutsByStatusProvider(_statusFilter));
+    final payoutsAsync = _statusFilter == 'all'
+        ? ref.watch(payoutsProvider)
+        : ref.watch(payoutsByStatusProvider(_statusFilter));
 
     return AdminScaffold(
       title: 'إدارة الدفعات',
@@ -70,7 +71,8 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
       padding: const EdgeInsets.all(AdminSpacing.md),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        border: const Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
+        border:
+            const Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
       ),
       child: Row(
         children: [
@@ -124,7 +126,8 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.payment, size: 64, color: AdminAppColors.textSecondaryLight),
+            Icon(Icons.payment,
+                size: 64, color: AdminAppColors.textSecondaryLight),
             SizedBox(height: AdminSpacing.md),
             Text('لا توجد دفعات'),
           ],
@@ -139,79 +142,84 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
         controller: _tableHorizontalController,
         scrollDirection: Axis.horizontal,
         child: ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: 1000),
-        child: Container(
-        margin: const EdgeInsets.all(AdminSpacing.md),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
-          border: Border.all(color: AdminAppColors.borderLight),
-        ),
-        child: DataTable(
-          headingRowColor: WidgetStateProperty.all(AdminAppColors.backgroundLight),
-          columns: const [
-            DataColumn(label: Text('التاريخ')),
-            DataColumn(label: Text('معرف السائق')),
-            DataColumn(label: Text('المبلغ')),
-            DataColumn(label: Text('الطريقة')),
-            DataColumn(label: Text('الحالة')),
-            DataColumn(label: Text('الإجراءات')),
-          ],
-          rows: payouts.map((payout) {
-            return DataRow(
-              cells: [
-                DataCell(
-                  Text(
-                    payout.createdAt != null ? DateFormat('dd/MM/yyyy').format(payout.createdAt!) : '-',
-                  ),
-                ),
-                DataCell(Text(payout.driverId)),
-                DataCell(
-                  Text(
-                    '${_formatCurrency(payout.amount)} MRU',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                DataCell(Text(_getMethodLabel(payout.method))),
-                DataCell(_buildStatusBadge(payout.status)),
-                DataCell(
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.visibility),
-                        onPressed: () => _showPayoutDetails(payout),
-                        tooltip: 'عرض',
-                      ),
-                      if (payout.status == 'requested' || payout.status == 'approved')
-                        PopupMenuButton<String>(
-                          icon: const Icon(Icons.more_vert),
-                          onSelected: (value) => _updatePayoutStatus(payout.id, value),
-                          itemBuilder: (context) => [
-                            if (payout.status == 'requested')
-                              const PopupMenuItem(
-                                value: 'approved',
-                                child: Text('اعتماد'),
-                              ),
-                            const PopupMenuItem(
-                              value: 'completed',
-                              child: Text('إتمام'),
-                            ),
-                            const PopupMenuItem(
-                              value: 'rejected',
-                              child: Text('رفض'),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
+          constraints: const BoxConstraints(minWidth: 1000),
+          child: Container(
+            margin: const EdgeInsets.all(AdminSpacing.md),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
+              border: Border.all(color: AdminAppColors.borderLight),
+            ),
+            child: DataTable(
+              headingRowColor:
+                  WidgetStateProperty.all(AdminAppColors.backgroundLight),
+              columns: const [
+                DataColumn(label: Text('التاريخ')),
+                DataColumn(label: Text('معرف السائق')),
+                DataColumn(label: Text('المبلغ')),
+                DataColumn(label: Text('الطريقة')),
+                DataColumn(label: Text('الحالة')),
+                DataColumn(label: Text('الإجراءات')),
               ],
-            );
-          }).toList(),
+              rows: payouts.map((payout) {
+                return DataRow(
+                  cells: [
+                    DataCell(
+                      Text(
+                        payout.createdAt != null
+                            ? DateFormat('dd/MM/yyyy').format(payout.createdAt!)
+                            : '-',
+                      ),
+                    ),
+                    DataCell(Text(payout.driverId)),
+                    DataCell(
+                      Text(
+                        '${_formatCurrency(payout.amount)} MRU',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    DataCell(Text(_getMethodLabel(payout.method))),
+                    DataCell(_buildStatusBadge(payout.status)),
+                    DataCell(
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.visibility),
+                            onPressed: () => _showPayoutDetails(payout),
+                            tooltip: 'عرض',
+                          ),
+                          if (payout.status == 'requested' ||
+                              payout.status == 'approved')
+                            PopupMenuButton<String>(
+                              icon: const Icon(Icons.more_vert),
+                              onSelected: (value) =>
+                                  _updatePayoutStatus(payout.id, value),
+                              itemBuilder: (context) => [
+                                if (payout.status == 'requested')
+                                  const PopupMenuItem(
+                                    value: 'approved',
+                                    child: Text('اعتماد'),
+                                  ),
+                                const PopupMenuItem(
+                                  value: 'completed',
+                                  child: Text('إتمام'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'rejected',
+                                  child: Text('رفض'),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
         ),
-        ),
-      ),
       ),
     );
   }
@@ -276,11 +284,13 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
             children: [
               _buildDetailRow('معرف الدفعة', payout.id),
               _buildDetailRow('معرف السائق', payout.driverId),
-              _buildDetailRow('المبلغ', '${_formatCurrency(payout.amount)} MRU'),
+              _buildDetailRow(
+                  'المبلغ', '${_formatCurrency(payout.amount)} MRU'),
               _buildDetailRow('الطريقة', _getMethodLabel(payout.method)),
               _buildDetailRow('الحالة', payout.status),
               if (payout.note != null) _buildDetailRow('ملاحظة', payout.note!),
-              if (payout.rejectionReason != null) _buildDetailRow('سبب الرفض', payout.rejectionReason!),
+              if (payout.rejectionReason != null)
+                _buildDetailRow('سبب الرفض', payout.rejectionReason!),
             ],
           ),
         ),
@@ -352,9 +362,11 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
                   border: OutlineInputBorder(),
                 ),
                 items: const [
-                  DropdownMenuItem(value: 'bank_transfer', child: Text('تحويل بنكي')),
+                  DropdownMenuItem(
+                      value: 'bank_transfer', child: Text('تحويل بنكي')),
                   DropdownMenuItem(value: 'manual', child: Text('يدوي')),
-                  DropdownMenuItem(value: 'mobile_money', child: Text('محفظة إلكترونية')),
+                  DropdownMenuItem(
+                      value: 'mobile_money', child: Text('محفظة إلكترونية')),
                 ],
                 onChanged: (value) {
                   if (value != null) selectedMethod = value;
@@ -385,7 +397,8 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
 
               if (driverId.isEmpty || amount == null || amount <= 0) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('يرجى ملء جميع الحقول بشكل صحيح')),
+                  const SnackBar(
+                      content: Text('يرجى ملء جميع الحقول بشكل صحيح')),
                 );
                 return;
               }
@@ -421,7 +434,9 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
 
   Future<void> _updatePayoutStatus(String payoutId, String newStatus) async {
     try {
-      await ref.read(payoutServiceProvider).updatePayoutStatus(payoutId: payoutId, newStatus: newStatus);
+      await ref
+          .read(payoutServiceProvider)
+          .updatePayoutStatus(payoutId: payoutId, newStatus: newStatus);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -460,8 +475,9 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
   }
 
   void _exportPayoutsCsv() {
-    final payoutsAsync =
-        _statusFilter == 'all' ? ref.read(payoutsProvider) : ref.read(payoutsByStatusProvider(_statusFilter));
+    final payoutsAsync = _statusFilter == 'all'
+        ? ref.read(payoutsProvider)
+        : ref.read(payoutsByStatusProvider(_statusFilter));
 
     payoutsAsync.whenData((payouts) {
       if (payouts.isEmpty) {
@@ -494,13 +510,14 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
                 padding: const EdgeInsets.all(AdminSpacing.md),
                 child: Row(
                   children: [
-                    const Icon(Icons.request_page, color: AdminAppColors.primaryGreen),
+                    const Icon(Icons.request_page,
+                        color: AdminAppColors.primaryGreen),
                     const SizedBox(width: AdminSpacing.sm),
                     Text(
                       'طلبات السحب من السائقين',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const Spacer(),
                     Text('${requests.length} طلب'),
@@ -509,47 +526,56 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
               ),
               const Divider(height: 1),
               ...requests.map((req) => ListTile(
-                leading: const Icon(Icons.request_page),
-                title: Text('سائق: ${req.driverId.length >= 8 ? req.driverId.substring(0, 8) : req.driverId}'),
-                subtitle: Text('${req.requestedAt.day}/${req.requestedAt.month}/${req.requestedAt.year}'),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    leading: const Icon(Icons.request_page),
+                    title: Text(
+                        'سائق: ${req.driverId.length >= 8 ? req.driverId.substring(0, 8) : req.driverId}'),
+                    subtitle: Text(
+                        '${req.requestedAt.day}/${req.requestedAt.month}/${req.requestedAt.year}'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          '${req.amount.toStringAsFixed(0)} MRU',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${req.amount.toStringAsFixed(0)} MRU',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 4),
+                            Chip(
+                              label: Text(
+                                _topupStatusLabel(req.status),
+                                style: const TextStyle(
+                                    fontSize: 11, color: Colors.white),
+                              ),
+                              backgroundColor: _topupStatusColor(req.status),
+                              padding: EdgeInsets.zero,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 4),
-                        Chip(
-                          label: Text(
-                            _topupStatusLabel(req.status),
-                            style: const TextStyle(fontSize: 11, color: Colors.white),
+                        if (req.status == 'pending')
+                          PopupMenuButton<String>(
+                            icon: const Icon(Icons.more_vert),
+                            onSelected: (value) {
+                              if (value == 'approve')
+                                _approveTopupRequest(req.id);
+                              if (value == 'reject')
+                                _rejectTopupRequest(req.id);
+                            },
+                            itemBuilder: (context) => const [
+                              PopupMenuItem(
+                                  value: 'approve', child: Text('موافقة')),
+                              PopupMenuItem(
+                                  value: 'reject', child: Text('رفض')),
+                            ],
                           ),
-                          backgroundColor: _topupStatusColor(req.status),
-                          padding: EdgeInsets.zero,
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
                       ],
                     ),
-                    if (req.status == 'pending')
-                      PopupMenuButton<String>(
-                        icon: const Icon(Icons.more_vert),
-                        onSelected: (value) {
-                          if (value == 'approve') _approveTopupRequest(req.id);
-                          if (value == 'reject') _rejectTopupRequest(req.id);
-                        },
-                        itemBuilder: (context) => const [
-                          PopupMenuItem(value: 'approve', child: Text('موافقة')),
-                          PopupMenuItem(value: 'reject', child: Text('رفض')),
-                        ],
-                      ),
-                  ],
-                ),
-              )),
+                  )),
             ],
           ),
         );
@@ -559,25 +585,34 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
 
   Color _topupStatusColor(String status) {
     switch (status) {
-      case 'pending': return Colors.orange;
-      case 'approved': return Colors.green;
-      case 'rejected': return Colors.red;
-      default: return Colors.grey;
+      case 'pending':
+        return Colors.orange;
+      case 'approved':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      default:
+        return Colors.grey;
     }
   }
 
   String _topupStatusLabel(String status) {
     switch (status) {
-      case 'pending': return 'قيد الانتظار';
-      case 'approved': return 'موافق';
-      case 'rejected': return 'مرفوض';
-      default: return status;
+      case 'pending':
+        return 'قيد الانتظار';
+      case 'approved':
+        return 'موافق';
+      case 'rejected':
+        return 'مرفوض';
+      default:
+        return status;
     }
   }
 
   Future<void> _approveTopupRequest(String requestId) async {
     try {
-      final callable = FirebaseFunctions.instance.httpsCallable('approveTopupRequest');
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('approveTopupRequest');
       await callable.call<Map<String, dynamic>>({'requestId': requestId});
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -598,7 +633,10 @@ class _PayoutsScreenState extends ConsumerState<PayoutsScreen> {
       await FirebaseFirestore.instance
           .collection('topup_requests')
           .doc(requestId)
-          .update({'status': 'rejected', 'processedAt': FieldValue.serverTimestamp()});
+          .update({
+        'status': 'rejected',
+        'processedAt': FieldValue.serverTimestamp()
+      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('تم رفض الطلب')),

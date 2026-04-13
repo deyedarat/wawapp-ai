@@ -6,9 +6,11 @@ import '../../../core/config/testlab_flags.dart';
 import '../../../core/config/testlab_mock_data.dart';
 import '../../../services/orders_service.dart';
 
-final nearbyOrdersProvider = FutureProvider.family.autoDispose<List<Order>, Position>((ref, position) async {
+final nearbyOrdersProvider = FutureProvider.family
+    .autoDispose<List<Order>, Position>((ref, position) async {
   print('[NEARBY_PROVIDER] 🚀 Provider callback STARTED');
-  print('[NEARBY_PROVIDER] 📍 Position: lat=${position.latitude.toStringAsFixed(6)}, lng=${position.longitude.toStringAsFixed(6)}');
+  print(
+      '[NEARBY_PROVIDER] 📍 Position: lat=${position.latitude.toStringAsFixed(6)}, lng=${position.longitude.toStringAsFixed(6)}');
 
   // Return mock nearby orders for Test Lab mode
   if (TestLabFlags.safeEnabled) {
@@ -22,14 +24,16 @@ final nearbyOrdersProvider = FutureProvider.family.autoDispose<List<Order>, Posi
 
   final orders = await ordersService.getNearbyOrders(position);
 
-  print('[NEARBY_PROVIDER] ✅ Received ${orders.length} orders from Cloud Function');
+  print(
+      '[NEARBY_PROVIDER] ✅ Received ${orders.length} orders from Cloud Function');
 
   // Filter out orders already assigned to a driver
   final availableOrders = orders.where((order) {
     return order.assignedDriverId == null && order.status == 'matching';
   }).toList();
 
-  print('[NEARBY_PROVIDER] 🔍 Filtered to ${availableOrders.length} available orders');
+  print(
+      '[NEARBY_PROVIDER] 🔍 Filtered to ${availableOrders.length} available orders');
 
   return availableOrders;
 });

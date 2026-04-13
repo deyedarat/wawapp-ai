@@ -24,7 +24,8 @@ class SafeNavigation {
   }
 
   /// Safely pop with result, fallback to home if stack is empty
-  static void safePopWithResult<T>(BuildContext context, T result, {String fallbackRoute = '/'}) {
+  static void safePopWithResult<T>(BuildContext context, T result,
+      {String fallbackRoute = '/'}) {
     final currentRoute = GoRouterState.of(context).matchedLocation;
 
     CrashlyticsObserver.logNavigation(
@@ -80,7 +81,8 @@ extension SafeNavigationExtension on BuildContext {
 
   /// Safely pop with result
   void safePopWithResult<T>(T result, {String fallbackRoute = '/'}) {
-    SafeNavigation.safePopWithResult(this, result, fallbackRoute: fallbackRoute);
+    SafeNavigation.safePopWithResult(this, result,
+        fallbackRoute: fallbackRoute);
   }
 
   /// Safely close dialog

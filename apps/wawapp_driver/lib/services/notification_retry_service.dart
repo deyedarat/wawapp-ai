@@ -35,7 +35,8 @@ class NotificationRetryService {
   ) async {
     if (_retryQueue.length >= _maxQueueSize) {
       if (kDebugMode) {
-        debugPrint('[NotificationRetry] ⚠️ Queue full, dropping oldest notification');
+        debugPrint(
+            '[NotificationRetry] ⚠️ Queue full, dropping oldest notification');
       }
       _retryQueue.removeFirst();
     }
@@ -52,7 +53,8 @@ class NotificationRetryService {
     _retryQueue.add(notification);
 
     if (kDebugMode) {
-      debugPrint('[NotificationRetry] 📥 Added to queue: $notificationId (queue size: ${_retryQueue.length})');
+      debugPrint(
+          '[NotificationRetry] 📥 Added to queue: $notificationId (queue size: ${_retryQueue.length})');
     }
 
     await _persistQueue();
@@ -115,7 +117,8 @@ class NotificationRetryService {
 
       if (success) {
         if (kDebugMode) {
-          debugPrint('[NotificationRetry] ✅ Retry successful for ${notification.id}');
+          debugPrint(
+              '[NotificationRetry] ✅ Retry successful for ${notification.id}');
         }
         _retryQueue.removeFirst();
         _activeTimers.remove(notification.id);
@@ -130,7 +133,8 @@ class NotificationRetryService {
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationRetry] ❌ Retry error for ${notification.id}: $e');
+        debugPrint(
+            '[NotificationRetry] ❌ Retry error for ${notification.id}: $e');
       }
       await _persistQueue();
     }

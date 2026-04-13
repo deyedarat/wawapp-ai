@@ -333,6 +333,45 @@ service cloud.firestore {
       allow read: if isAdmin();
     }
 
+    // driver_notifications: written by Cloud Functions, read/updated by driver
+    match /driver_notifications/{notificationId} {
+      // Admins can read all
+      allow read: if isAdmin();
+
+      // Driver can only read their own notifications
+      allow read: if isSignedIn()
+        && resource.data.driverId == request.auth.uid;
+
+      // Driver can only mark as delivered (no other field changes)
+      allow update: if isSignedIn()
+        && resource.data.driverId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['delivered', 'deliveredAt']);
+
+      // Cloud Functions create — no client create/delete
+      allow create, delete: if false;
+    }
+
+    // driver_notification_health: driver writes their own health report
+    match /driver_notification_health/{driverId} {
+      // Admins can read all
+      allow read: if isAdmin();
+
+      // Driver reads/writes only their own doc
+      allow read: if isSignedIn() && request.auth.uid == driverId;
+      allow write: if isSignedIn() && request.auth.uid == driverId;
+    }
+
+    // driver_order_notifications: Cloud Functions only
+    match /driver_order_notifications/{docId} {
+      allow read, write: if false;
+    }
+
+    // notification_log: Cloud Functions only
+    match /notification_log/{docId} {
+      allow read, write: if false;
+    }
+
     // Bug reports: write-only, no auth required (OTP errors happen before login).
     // Abuse prevention: require minimal schema + strict size/type validation.
     match /bug_reports/{docId} {

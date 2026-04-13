@@ -26,7 +26,7 @@ class AdminAuthService {
       // Get fresh ID token to check custom claims
       final idTokenResult = await user.getIdTokenResult(true);
       final claims = idTokenResult.claims;
-      
+
       // Check for isAdmin custom claim
       return claims?['isAdmin'] == true;
     } catch (e) {

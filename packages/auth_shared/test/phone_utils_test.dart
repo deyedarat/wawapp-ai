@@ -5,39 +5,56 @@ void main() {
   group('MauritaniaPhoneUtils - Local Number Validation', () {
     test('validates correct 8-digit numbers starting with 2, 3, or 4', () {
       // Chinguitel (starts with 2)
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('22123456'), true);
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('29876543'), true);
-      
+      expect(
+          MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('22123456'), true);
+      expect(
+          MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('29876543'), true);
+
       // Mattel (starts with 3)
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('33456789'), true);
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('38765432'), true);
-      
+      expect(
+          MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('33456789'), true);
+      expect(
+          MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('38765432'), true);
+
       // Mauritel (starts with 4)
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('45678901'), true);
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('49876543'), true);
+      expect(
+          MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('45678901'), true);
+      expect(
+          MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('49876543'), true);
     });
 
     test('rejects numbers with wrong length', () {
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('2212345'), false); // 7 digits
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('221234567'), false); // 9 digits
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('22'), false); // 2 digits
+      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('2212345'),
+          false); // 7 digits
+      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('221234567'),
+          false); // 9 digits
+      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('22'),
+          false); // 2 digits
     });
 
     test('rejects numbers with invalid first digit', () {
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('12345678'), false); // starts with 1
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('52345678'), false); // starts with 5
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('92345678'), false); // starts with 9
+      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('12345678'),
+          false); // starts with 1
+      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('52345678'),
+          false); // starts with 5
+      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('92345678'),
+          false); // starts with 9
     });
 
     test('rejects non-digit characters', () {
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('2234567a'), false);
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('22-34-56-78'), false);
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('22.345.678'), false);
+      expect(
+          MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('2234567a'), false);
+      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('22-34-56-78'),
+          false);
+      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('22.345.678'),
+          false);
     });
 
     test('handles whitespace in input', () {
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('  22123456  '), true);
-      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('22 12 34 56'), true);
+      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('  22123456  '),
+          true);
+      expect(MauritaniaPhoneUtils.isValidMauritaniaLocalNumber('22 12 34 56'),
+          true);
     });
   });
 
@@ -50,13 +67,17 @@ void main() {
 
     test('rejects E.164 without +222 prefix', () {
       expect(MauritaniaPhoneUtils.isValidMauritaniaE164('22222123456'), false);
-      expect(MauritaniaPhoneUtils.isValidMauritaniaE164('+22122123456'), false); // wrong country code
+      expect(MauritaniaPhoneUtils.isValidMauritaniaE164('+22122123456'),
+          false); // wrong country code
     });
 
     test('rejects E.164 with invalid local part', () {
-      expect(MauritaniaPhoneUtils.isValidMauritaniaE164('+22212345678'), false); // starts with 1
-      expect(MauritaniaPhoneUtils.isValidMauritaniaE164('+2222212345'), false); // too short
-      expect(MauritaniaPhoneUtils.isValidMauritaniaE164('+222221234567'), false); // too long
+      expect(MauritaniaPhoneUtils.isValidMauritaniaE164('+22212345678'),
+          false); // starts with 1
+      expect(MauritaniaPhoneUtils.isValidMauritaniaE164('+2222212345'),
+          false); // too short
+      expect(MauritaniaPhoneUtils.isValidMauritaniaE164('+222221234567'),
+          false); // too long
     });
   });
 
@@ -68,8 +89,10 @@ void main() {
     });
 
     test('returns E.164 if already in that format', () {
-      expect(MauritaniaPhoneUtils.toMauritaniaE164('+22222123456'), '+22222123456');
-      expect(MauritaniaPhoneUtils.toMauritaniaE164('+22233456789'), '+22233456789');
+      expect(MauritaniaPhoneUtils.toMauritaniaE164('+22222123456'),
+          '+22222123456');
+      expect(MauritaniaPhoneUtils.toMauritaniaE164('+22233456789'),
+          '+22233456789');
     });
 
     test('throws on invalid local number', () {
@@ -125,7 +148,8 @@ void main() {
     });
 
     test('identifies operators from E.164 numbers', () {
-      expect(MauritaniaPhoneUtils.getOperatorName('+22222123456'), 'Chinguitel');
+      expect(
+          MauritaniaPhoneUtils.getOperatorName('+22222123456'), 'Chinguitel');
       expect(MauritaniaPhoneUtils.getOperatorName('+22233456789'), 'Mattel');
       expect(MauritaniaPhoneUtils.getOperatorName('+22245678901'), 'Mauritel');
     });
@@ -139,11 +163,16 @@ void main() {
 
   group('MauritaniaPhoneUtils - Error Messages', () {
     test('provides appropriate error messages', () {
-      expect(MauritaniaPhoneUtils.getValidationError(''), contains('إدخال رقم'));
-      expect(MauritaniaPhoneUtils.getValidationError('223456'), contains('8 أرقام'));
-      expect(MauritaniaPhoneUtils.getValidationError('223456789'), contains('8 أرقام'));
-      expect(MauritaniaPhoneUtils.getValidationError('2234567a'), contains('أرقام فقط'));
-      expect(MauritaniaPhoneUtils.getValidationError('12345678'), contains('يبدأ بـ'));
+      expect(
+          MauritaniaPhoneUtils.getValidationError(''), contains('إدخال رقم'));
+      expect(MauritaniaPhoneUtils.getValidationError('223456'),
+          contains('8 أرقام'));
+      expect(MauritaniaPhoneUtils.getValidationError('223456789'),
+          contains('8 أرقام'));
+      expect(MauritaniaPhoneUtils.getValidationError('2234567a'),
+          contains('أرقام فقط'));
+      expect(MauritaniaPhoneUtils.getValidationError('12345678'),
+          contains('يبدأ بـ'));
     });
   });
 }

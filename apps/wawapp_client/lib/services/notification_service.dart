@@ -13,7 +13,8 @@ class NotificationService {
   NotificationService._internal();
 
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
 
   BuildContext? _context;
   String? _pendingRoute;
@@ -27,7 +28,8 @@ class NotificationService {
   }
 
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings();
 
     await _localNotifications.initialize(
@@ -96,7 +98,9 @@ class NotificationService {
           channelId,
           channelName,
           importance: importance,
-          priority: importance == Importance.high ? Priority.high : Priority.defaultPriority,
+          priority: importance == Importance.high
+              ? Priority.high
+              : Priority.defaultPriority,
           enableVibration: true,
           playSound: true,
         ),

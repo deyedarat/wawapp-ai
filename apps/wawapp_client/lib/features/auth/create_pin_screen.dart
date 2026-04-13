@@ -50,8 +50,10 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
 
       // Log PIN creation success for debugging
       if (next.hasPin && !prev!.hasPin) {
-        FirebaseCrashlytics.instance.log('[CreatePinScreen] PIN created successfully');
-        debugPrint('[CreatePinScreen] ✓ PIN created - GoRouter will handle navigation');
+        FirebaseCrashlytics.instance
+            .log('[CreatePinScreen] PIN created successfully');
+        debugPrint(
+            '[CreatePinScreen] ✓ PIN created - GoRouter will handle navigation');
       }
     });
 
@@ -83,11 +85,15 @@ class _CreatePinScreenState extends ConsumerState<CreatePinScreen> {
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Confirm PIN'),
               ),
-              if (authState.error != null) Text(authState.error!, style: const TextStyle(color: Colors.red)),
+              if (authState.error != null)
+                Text(authState.error!,
+                    style: const TextStyle(color: Colors.red)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: authState.isLoading ? null : _createPin,
-                child: authState.isLoading ? const CircularProgressIndicator() : const Text('Create PIN'),
+                child: authState.isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text('Create PIN'),
               ),
             ],
           ),

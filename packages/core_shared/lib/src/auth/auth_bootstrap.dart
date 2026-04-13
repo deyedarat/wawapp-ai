@@ -94,7 +94,8 @@ class AuthBootstrap {
       // Driver app: totalTrips, averageRating, isVerified
       // Client app: basic properties
       if (userProperties != null) {
-        debugPrint('[AuthBootstrap] Setting user properties: ${userProperties.keys.join(', ')}');
+        debugPrint(
+            '[AuthBootstrap] Setting user properties: ${userProperties.keys.join(', ')}');
         // Note: Actual property setting depends on BaseAnalyticsService implementation
         // Driver app will call setUserProperties with specific fields
       }
@@ -105,9 +106,11 @@ class AuthBootstrap {
       // Log auth completion
       await analyticsService.logAuthCompleted(method: 'phone_pin');
 
-      debugPrint('[AuthBootstrap] ✅ Authenticated services initialized for $userId');
+      debugPrint(
+          '[AuthBootstrap] ✅ Authenticated services initialized for $userId');
     } catch (e, stackTrace) {
-      debugPrint('[AuthBootstrap] ❌ Error initializing authenticated services: $e');
+      debugPrint(
+          '[AuthBootstrap] ❌ Error initializing authenticated services: $e');
       debugPrint('[AuthBootstrap] Stack trace: $stackTrace');
       // Don't throw - allow app to continue
     }

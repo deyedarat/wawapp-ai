@@ -10,10 +10,10 @@ class LocationService {
 
   Position? _lastPosition;
   StreamSubscription<Position>? _positionStreamSubscription;
-  
+
   // Make controller private and add proper cleanup
   StreamController<Position>? _positionController;
-  
+
   StreamController<Position> get _controller {
     _positionController ??= StreamController<Position>.broadcast();
     return _positionController!;
@@ -171,7 +171,8 @@ class LocationService {
           notificationTitle: 'WawApp Driver',
           notificationText: 'يتم تتبع موقعك لاستقبال الطلبات',
           // ✅ Use vector drawable instead of mipmap to fix "broken notification" warning
-          notificationIcon: AndroidResource(name: 'ic_notification', defType: 'drawable'),
+          notificationIcon:
+              AndroidResource(name: 'ic_notification', defType: 'drawable'),
           enableWakeLock: true,
           // ✅ Add color for Material Design compliance (Android 14+)
           color: Color(0xFF4CAF50),

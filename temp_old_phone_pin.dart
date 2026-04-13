@@ -32,7 +32,9 @@ class _PhonePinLoginScreenState extends State<PhonePinLoginScreen> {
       if (FirebaseAuth.instance.currentUser == null) {
         if (mounted)
           Navigator.push(
-              context, MaterialPageRoute(builder: (_) => const OtpScreen()));
+            context,
+            MaterialPageRoute(builder: (_) => const OtpScreen()),
+          );
         return;
       }
 
@@ -63,37 +65,40 @@ class _PhonePinLoginScreenState extends State<PhonePinLoginScreen> {
         child: Column(
           children: [
             TextField(
-                controller: _phone,
-                keyboardType: TextInputType.phone,
-                decoration:
-                    const InputDecoration(labelText: 'Phone (+222...)')),
+              controller: _phone,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(labelText: 'Phone (+222...)'),
+            ),
             const SizedBox(height: 12),
             TextField(
-                controller: _pin,
-                maxLength: 4,
-                keyboardType: TextInputType.number,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'PIN (4 digits)')),
+              controller: _pin,
+              maxLength: 4,
+              keyboardType: TextInputType.number,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'PIN (4 digits)'),
+            ),
             if (_err != null)
               Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child:
-                      Text(_err!, style: const TextStyle(color: Colors.red))),
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(_err!, style: const TextStyle(color: Colors.red)),
+              ),
             const SizedBox(height: 8),
             ElevatedButton(
-                onPressed: _busy ? null : _continue,
-                child: const Text('Continue')),
+              onPressed: _busy ? null : _continue,
+              child: const Text('Continue'),
+            ),
             TextButton(
               onPressed: _busy
                   ? null
                   : () async {
-                      await PhonePinAuth.instance
-                          .ensurePhoneSession(_phone.text.trim());
+                      await PhonePinAuth.instance.ensurePhoneSession(
+                        _phone.text.trim(),
+                      );
                       if (mounted)
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const OtpScreen()));
+                          context,
+                          MaterialPageRoute(builder: (_) => const OtpScreen()),
+                        );
                     },
               child: const Text('New device or forgot PIN? Verify by SMS'),
             ),

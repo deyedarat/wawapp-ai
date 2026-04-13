@@ -14,10 +14,12 @@ class AuthLogger {
   static const Duration _minLogInterval = Duration(milliseconds: 100);
 
   /// Log PIN status transition
-  static void logPinStatusChange(String oldStatus, String newStatus, String? userId) {
+  static void logPinStatusChange(
+      String oldStatus, String newStatus, String? userId) {
     if (!_shouldLog()) return;
 
-    final msg = '$_prefix [PIN] Status: $oldStatus → $newStatus | uid=${userId ?? 'null'}';
+    final msg =
+        '$_prefix [PIN] Status: $oldStatus → $newStatus | uid=${userId ?? 'null'}';
 
     if (kDebugMode) {
       debugPrint(msg);
@@ -32,10 +34,12 @@ class AuthLogger {
   }
 
   /// Log router redirect decision
-  static void logRouterRedirect(String from, String to, String reason, String? userId) {
+  static void logRouterRedirect(
+      String from, String to, String reason, String? userId) {
     if (!_shouldLog()) return;
 
-    final msg = '$_prefix [ROUTER] $from → $to | Reason: $reason | uid=${userId ?? 'null'}';
+    final msg =
+        '$_prefix [ROUTER] $from → $to | Reason: $reason | uid=${userId ?? 'null'}';
 
     if (kDebugMode) {
       debugPrint(msg);
@@ -64,7 +68,8 @@ class AuthLogger {
   /// Rate limiting: prevent log spam
   static bool _shouldLog() {
     final now = DateTime.now();
-    if (_lastLogTime != null && now.difference(_lastLogTime!) < _minLogInterval) {
+    if (_lastLogTime != null &&
+        now.difference(_lastLogTime!) < _minLogInterval) {
       return false;
     }
     _lastLogTime = now;

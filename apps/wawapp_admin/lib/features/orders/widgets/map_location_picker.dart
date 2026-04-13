@@ -76,7 +76,8 @@ class _HotSpot {
   final String category;
   final String icon;
 
-  const _HotSpot(this.nameAr, this.nameFr, this.position, this.category, this.icon);
+  const _HotSpot(
+      this.nameAr, this.nameFr, this.position, this.category, this.icon);
 }
 
 // ============================================================================
@@ -89,102 +90,153 @@ const _kGreen = Color(0xFF00C853);
 const _hotSpots = <_HotSpot>[
   // مواقف المشاكل (أماكن انتظار السائقين)
   _HotSpot('موقف المشاكل - السوق الخماسي', 'Station Marché 5',
-    LatLng(18.0845, -15.9815), 'موقف', '🚖'),
+      LatLng(18.0845, -15.9815), 'موقف', '🚖'),
   _HotSpot('موقف المشاكل - السوق المركزي', 'Station Marché Central',
-    LatLng(18.0800, -15.9755), 'موقف', '🚖'),
-  _HotSpot('موقف المشاكل - المطار', 'Station Aéroport',
-    LatLng(18.125, -15.960), 'موقف', '🚖'),
-  _HotSpot('موقف المشاكل - الميناء', 'Station Port',
-    LatLng(18.130, -15.970), 'موقف', '🚖'),
+      LatLng(18.0800, -15.9755), 'موقف', '🚖'),
+  _HotSpot('موقف المشاكل - المطار', 'Station Aéroport', LatLng(18.125, -15.960),
+      'موقف', '🚖'),
+  _HotSpot('موقف المشاكل - الميناء', 'Station Port', LatLng(18.130, -15.970),
+      'موقف', '🚖'),
   _HotSpot('موقف المشاكل - الجامعة', 'Station Université',
-    LatLng(18.0860, -15.9700), 'موقف', '🚖'),
+      LatLng(18.0860, -15.9700), 'موقف', '🚖'),
   _HotSpot('موقف المشاكل - المستشفى الوطني', 'Station Hôpital',
-    LatLng(18.0885, -15.9750), 'موقف', '🚖'),
+      LatLng(18.0885, -15.9750), 'موقف', '🚖'),
   _HotSpot('موقف المشاكل - محطة الحافلات', 'Station Gare Routière',
-    LatLng(18.082, -15.978), 'موقف', '🚖'),
+      LatLng(18.082, -15.978), 'موقف', '🚖'),
   _HotSpot('موقف المشاكل - السوق الكبير', 'Station Grand Marché',
-    LatLng(18.085, -15.980), 'موقف', '🚖'),
+      LatLng(18.085, -15.980), 'موقف', '🚖'),
 
   // النقاط الساخنة (مناطق ذروة الطلب)
   _HotSpot('نقطة ساخنة - تفرغ زينة', 'Hot Spot Tevragh-Zeina',
-    LatLng(18.105, -15.972), 'نقطة ساخنة', '🔥'),
-  _HotSpot('نقطة ساخنة - الميناء', 'Hot Spot El-Mina',
-    LatLng(18.075, -15.975), 'نقطة ساخنة', '🔥'),
-  _HotSpot('نقطة ساخنة - السبخة', 'Hot Spot Sebkha',
-    LatLng(18.045, -15.975), 'نقطة ساخنة', '🔥'),
-  _HotSpot('نقطة ساخنة - عرفات', 'Hot Spot Arafat',
-    LatLng(18.020, -15.957), 'نقطة ساخنة', '🔥'),
-  _HotSpot('نقطة ساخنة - الرياض', 'Hot Spot Riadh',
-    LatLng(18.055, -15.950), 'نقطة ساخنة', '🔥'),
+      LatLng(18.105, -15.972), 'نقطة ساخنة', '🔥'),
+  _HotSpot('نقطة ساخنة - الميناء', 'Hot Spot El-Mina', LatLng(18.075, -15.975),
+      'نقطة ساخنة', '🔥'),
+  _HotSpot('نقطة ساخنة - السبخة', 'Hot Spot Sebkha', LatLng(18.045, -15.975),
+      'نقطة ساخنة', '🔥'),
+  _HotSpot('نقطة ساخنة - عرفات', 'Hot Spot Arafat', LatLng(18.020, -15.957),
+      'نقطة ساخنة', '🔥'),
+  _HotSpot('نقطة ساخنة - الرياض', 'Hot Spot Riadh', LatLng(18.055, -15.950),
+      'نقطة ساخنة', '🔥'),
 ];
 
 const _districts = <_District>[
   _District('تفرغ زينة', 'Tevragh-Zeina', Color(0xFFFF6B6B), [
-    LatLng(18.115, -15.990), LatLng(18.115, -15.955),
-    LatLng(18.095, -15.945), LatLng(18.085, -15.950), LatLng(18.085, -15.990),
+    LatLng(18.115, -15.990),
+    LatLng(18.115, -15.955),
+    LatLng(18.095, -15.945),
+    LatLng(18.085, -15.950),
+    LatLng(18.085, -15.990),
   ]),
   _District('الميناء', 'El-Mina', Color(0xFF45B7D1), [
-    LatLng(18.085, -15.990), LatLng(18.085, -15.960),
-    LatLng(18.065, -15.960), LatLng(18.055, -15.975), LatLng(18.055, -15.990),
+    LatLng(18.085, -15.990),
+    LatLng(18.085, -15.960),
+    LatLng(18.065, -15.960),
+    LatLng(18.055, -15.975),
+    LatLng(18.055, -15.990),
   ]),
   _District('تيارت', 'Teyarett', Color(0xFF96CEB4), [
-    LatLng(18.095, -15.960), LatLng(18.095, -15.945),
-    LatLng(18.075, -15.940), LatLng(18.065, -15.945), LatLng(18.065, -15.960),
+    LatLng(18.095, -15.960),
+    LatLng(18.095, -15.945),
+    LatLng(18.075, -15.940),
+    LatLng(18.065, -15.945),
+    LatLng(18.065, -15.960),
   ]),
   _District('توجنين', 'Toujounine', Color(0xFFFFEAA7), [
-    LatLng(18.085, -15.945), LatLng(18.085, -15.920),
-    LatLng(18.065, -15.920), LatLng(18.055, -15.930),
-    LatLng(18.055, -15.945), LatLng(18.065, -15.945),
+    LatLng(18.085, -15.945),
+    LatLng(18.085, -15.920),
+    LatLng(18.065, -15.920),
+    LatLng(18.055, -15.930),
+    LatLng(18.055, -15.945),
+    LatLng(18.065, -15.945),
   ]),
   _District('دار النعيم', 'Dar-Naim', Color(0xFFDDA0DD), [
-    LatLng(18.095, -15.920), LatLng(18.095, -15.890),
-    LatLng(18.065, -15.890), LatLng(18.065, -15.920),
+    LatLng(18.095, -15.920),
+    LatLng(18.095, -15.890),
+    LatLng(18.065, -15.890),
+    LatLng(18.065, -15.920),
   ]),
   _District('لكصر', 'Kébé', Color(0xFF4ECDC4), [
-    LatLng(18.115, -15.955), LatLng(18.115, -15.920),
-    LatLng(18.095, -15.920), LatLng(18.085, -15.930),
-    LatLng(18.085, -15.945), LatLng(18.095, -15.945),
+    LatLng(18.115, -15.955),
+    LatLng(18.115, -15.920),
+    LatLng(18.095, -15.920),
+    LatLng(18.085, -15.930),
+    LatLng(18.085, -15.945),
+    LatLng(18.095, -15.945),
   ]),
   _District('السبخة', 'Sebkha', Color(0xFF98D8C8), [
-    LatLng(18.065, -15.990), LatLng(18.065, -15.960),
-    LatLng(18.035, -15.960), LatLng(18.025, -15.975), LatLng(18.025, -15.990),
+    LatLng(18.065, -15.990),
+    LatLng(18.065, -15.960),
+    LatLng(18.035, -15.960),
+    LatLng(18.025, -15.975),
+    LatLng(18.025, -15.990),
   ]),
   _District('عرفات', 'Arafat', Color(0xFF87CEEB), [
-    LatLng(18.035, -15.975), LatLng(18.035, -15.940),
-    LatLng(18.005, -15.940), LatLng(18.000, -15.960), LatLng(18.000, -15.975),
+    LatLng(18.035, -15.975),
+    LatLng(18.035, -15.940),
+    LatLng(18.005, -15.940),
+    LatLng(18.000, -15.960),
+    LatLng(18.000, -15.975),
   ]),
   _District('الرياض', 'Riadh', Color(0xFFF0A500), [
-    LatLng(18.065, -15.960), LatLng(18.065, -15.940),
-    LatLng(18.045, -15.940), LatLng(18.035, -15.950), LatLng(18.035, -15.960),
+    LatLng(18.065, -15.960),
+    LatLng(18.065, -15.940),
+    LatLng(18.045, -15.940),
+    LatLng(18.035, -15.950),
+    LatLng(18.035, -15.960),
   ]),
 ];
 
 const _pois = <_Poi>[
-  _Poi('مطعم النخيل', 'Restaurant Najmat', LatLng(18.0868, -15.9703), '🍽️', Color(0xFFE74C3C)),
-  _Poi('مطعم الدبلوماسي', 'Le Diplomate', LatLng(18.0845, -15.9721), '🍽️', Color(0xFFE74C3C)),
-  _Poi('مطعم الأمير', 'Restaurant Al-Amir', LatLng(18.0912, -15.9680), '🍽️', Color(0xFFE74C3C)),
-  _Poi('مطعم السنجق', 'Restaurant Sanjak', LatLng(18.0830, -15.9755), '🍽️', Color(0xFFE74C3C)),
-  _Poi('مطعم الجزيرة', 'Restaurant Al-Jazira', LatLng(18.110, -15.958), '🍽️', Color(0xFFE74C3C)),
-  _Poi('فندق نواكشوط', 'Hôtel Novotel', LatLng(18.0935, -15.9655), '🏨', Color(0xFF9B59B6)),
-  _Poi('فندق الشيراتون', 'Hôtel Sheraton', LatLng(18.100, -15.960), '🏨', Color(0xFF9B59B6)),
-  _Poi('السوق الخماسي', 'Marché Cinquième', LatLng(18.0842, -15.9810), '🛒', Color(0xFF27AE60)),
-  _Poi('السوق المركزي', 'Marché Central', LatLng(18.0795, -15.9750), '🛒', Color(0xFF27AE60)),
-  _Poi('سوبرماركت نجمة', 'Supermarchée Najma', LatLng(18.0925, -15.9730), '🏪', Color(0xFF27AE60)),
-  _Poi('محطة وقود توتال', 'Station Total', LatLng(18.0900, -15.9690), '⛽', Color(0xFFF39C12)),
-  _Poi('محطة وقود الأمل', 'Station Shell', LatLng(18.0820, -15.9720), '⛽', Color(0xFFF39C12)),
-  _Poi('المستشفى الوطني', 'Hôpital National', LatLng(18.0880, -15.9745), '🏥', Color(0xFFE91E63)),
-  _Poi('مستشفى ابن سينا', 'Hôpital Ibn Sina', LatLng(18.080, -15.920), '🏥', Color(0xFFE91E63)),
-  _Poi('جامعة نواكشوط', 'Université de Nouakchott', LatLng(18.0855, -15.9695), '🎓', Color(0xFF3498DB)),
-  _Poi('بنك موريتانيا', 'Banque de Mauritanie', LatLng(18.0875, -15.9715), '🏦', Color(0xFF1ABC9C)),
-  _Poi('بنك BIM', 'BIM Bank', LatLng(18.0912, -15.9668), '🏦', Color(0xFF1ABC9C)),
-  _Poi('مسجد الرحمة', 'Mosquée Rahma', LatLng(18.0865, -15.9770), '🕌', Color(0xFF2ECC71)),
-  _Poi('مسجد النور', 'Mosquée Nour', LatLng(18.0920, -15.9700), '🕌', Color(0xFF2ECC71)),
-  _Poi('القصر الرئاسي', 'Palais Présidentiel', LatLng(18.0895, -15.9660), '🏛️', Color(0xFF8E44AD)),
-  _Poi('سفارة فرنسا', 'Ambassade de France', LatLng(18.105, -15.975), '🏛️', Color(0xFF8E44AD)),
-  _Poi('ملعب الأمير', 'Stade Olympique', LatLng(18.0840, -15.9600), '🏟️', Color(0xFFE67E22)),
-  _Poi('شاطئ المدينة', 'Plage de Nouakchott', LatLng(18.090, -16.005), '🏖️', Color(0xFFE74C3C)),
-  _Poi('ميناء نواكشوط', 'Port de Nouakchott', LatLng(18.130, -15.970), '⚓', Color(0xFFE74C3C)),
-  _Poi('مطار نواكشوط', 'Aéroport International', LatLng(18.125, -15.960), '✈️', Color(0xFFE74C3C)),
+  _Poi('مطعم النخيل', 'Restaurant Najmat', LatLng(18.0868, -15.9703), '🍽️',
+      Color(0xFFE74C3C)),
+  _Poi('مطعم الدبلوماسي', 'Le Diplomate', LatLng(18.0845, -15.9721), '🍽️',
+      Color(0xFFE74C3C)),
+  _Poi('مطعم الأمير', 'Restaurant Al-Amir', LatLng(18.0912, -15.9680), '🍽️',
+      Color(0xFFE74C3C)),
+  _Poi('مطعم السنجق', 'Restaurant Sanjak', LatLng(18.0830, -15.9755), '🍽️',
+      Color(0xFFE74C3C)),
+  _Poi('مطعم الجزيرة', 'Restaurant Al-Jazira', LatLng(18.110, -15.958), '🍽️',
+      Color(0xFFE74C3C)),
+  _Poi('فندق نواكشوط', 'Hôtel Novotel', LatLng(18.0935, -15.9655), '🏨',
+      Color(0xFF9B59B6)),
+  _Poi('فندق الشيراتون', 'Hôtel Sheraton', LatLng(18.100, -15.960), '🏨',
+      Color(0xFF9B59B6)),
+  _Poi('السوق الخماسي', 'Marché Cinquième', LatLng(18.0842, -15.9810), '🛒',
+      Color(0xFF27AE60)),
+  _Poi('السوق المركزي', 'Marché Central', LatLng(18.0795, -15.9750), '🛒',
+      Color(0xFF27AE60)),
+  _Poi('سوبرماركت نجمة', 'Supermarchée Najma', LatLng(18.0925, -15.9730), '🏪',
+      Color(0xFF27AE60)),
+  _Poi('محطة وقود توتال', 'Station Total', LatLng(18.0900, -15.9690), '⛽',
+      Color(0xFFF39C12)),
+  _Poi('محطة وقود الأمل', 'Station Shell', LatLng(18.0820, -15.9720), '⛽',
+      Color(0xFFF39C12)),
+  _Poi('المستشفى الوطني', 'Hôpital National', LatLng(18.0880, -15.9745), '🏥',
+      Color(0xFFE91E63)),
+  _Poi('مستشفى ابن سينا', 'Hôpital Ibn Sina', LatLng(18.080, -15.920), '🏥',
+      Color(0xFFE91E63)),
+  _Poi('جامعة نواكشوط', 'Université de Nouakchott', LatLng(18.0855, -15.9695),
+      '🎓', Color(0xFF3498DB)),
+  _Poi('بنك موريتانيا', 'Banque de Mauritanie', LatLng(18.0875, -15.9715), '🏦',
+      Color(0xFF1ABC9C)),
+  _Poi('بنك BIM', 'BIM Bank', LatLng(18.0912, -15.9668), '🏦',
+      Color(0xFF1ABC9C)),
+  _Poi('مسجد الرحمة', 'Mosquée Rahma', LatLng(18.0865, -15.9770), '🕌',
+      Color(0xFF2ECC71)),
+  _Poi('مسجد النور', 'Mosquée Nour', LatLng(18.0920, -15.9700), '🕌',
+      Color(0xFF2ECC71)),
+  _Poi('القصر الرئاسي', 'Palais Présidentiel', LatLng(18.0895, -15.9660), '🏛️',
+      Color(0xFF8E44AD)),
+  _Poi('سفارة فرنسا', 'Ambassade de France', LatLng(18.105, -15.975), '🏛️',
+      Color(0xFF8E44AD)),
+  _Poi('ملعب الأمير', 'Stade Olympique', LatLng(18.0840, -15.9600), '🏟️',
+      Color(0xFFE67E22)),
+  _Poi('شاطئ المدينة', 'Plage de Nouakchott', LatLng(18.090, -16.005), '🏖️',
+      Color(0xFFE74C3C)),
+  _Poi('ميناء نواكشوط', 'Port de Nouakchott', LatLng(18.130, -15.970), '⚓',
+      Color(0xFFE74C3C)),
+  _Poi('مطار نواكشوط', 'Aéroport International', LatLng(18.125, -15.960), '✈️',
+      Color(0xFFE74C3C)),
 ];
 
 // ============================================================================
@@ -256,7 +308,8 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
           .get();
       if (doc.exists && doc.data()?['locations'] != null) {
         setState(() {
-          _savedLocations = List<Map<String, dynamic>>.from(doc.data()!['locations']);
+          _savedLocations =
+              List<Map<String, dynamic>>.from(doc.data()!['locations']);
         });
       }
     } catch (e) {
@@ -266,18 +319,26 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
 
   Future<void> _saveCurrentLocation() async {
     if (_selectedPosition == null) return;
-    final nameController = TextEditingController(text: '\u0645\u0648\u0642\u0639 ${_savedLocations.length + 1}');
+    final nameController = TextEditingController(
+        text: '\u0645\u0648\u0642\u0639 ${_savedLocations.length + 1}');
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('\u062d\u0641\u0638 \u0627\u0644\u0645\u0648\u0642\u0639'),
+        title: const Text(
+            '\u062d\u0641\u0638 \u0627\u0644\u0645\u0648\u0642\u0639'),
         content: TextField(
           controller: nameController,
-          decoration: const InputDecoration(labelText: '\u0627\u0633\u0645 \u0627\u0644\u0645\u0648\u0642\u0639', hintText: '\u0645\u062b\u0627\u0644: \u0645\u0643\u062a\u0628 \u0627\u0644\u0645\u0628\u064a\u0639\u0627\u062a'),
+          decoration: const InputDecoration(
+              labelText:
+                  '\u0627\u0633\u0645 \u0627\u0644\u0645\u0648\u0642\u0639',
+              hintText:
+                  '\u0645\u062b\u0627\u0644: \u0645\u0643\u062a\u0628 \u0627\u0644\u0645\u0628\u064a\u0639\u0627\u062a'),
           textDirection: TextDirection.rtl,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('\u0625\u0644\u063a\u0627\u0621')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('\u0625\u0644\u063a\u0627\u0621')),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(backgroundColor: _kGreen),
@@ -306,13 +367,19 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       setState(() => _savedLocations = updated);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('\u062a\u0645 \u062d\u0641\u0638 \u0627\u0644\u0645\u0648\u0642\u0639 \u0628\u0646\u062c\u0627\u062d'), backgroundColor: _kGreen),
+          const SnackBar(
+              content: Text(
+                  '\u062a\u0645 \u062d\u0641\u0638 \u0627\u0644\u0645\u0648\u0642\u0639 \u0628\u0646\u062c\u0627\u062d'),
+              backgroundColor: _kGreen),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('\u062e\u0637\u0623 \u0641\u064a \u062d\u0641\u0638 \u0627\u0644\u0645\u0648\u0642\u0639: $e'), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text(
+                  '\u062e\u0637\u0623 \u0641\u064a \u062d\u0641\u0638 \u0627\u0644\u0645\u0648\u0642\u0639: $e'),
+              backgroundColor: Colors.red),
         );
       }
     }
@@ -327,12 +394,18 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('\u0627\u0644\u0645\u0648\u0627\u0642\u0639 \u0627\u0644\u0645\u062d\u0641\u0648\u0638\u0629', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+            const Text(
+                '\u0627\u0644\u0645\u0648\u0627\u0642\u0639 \u0627\u0644\u0645\u062d\u0641\u0648\u0638\u0629',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center),
             const Divider(),
             if (_savedLocations.isEmpty)
               const Padding(
                 padding: EdgeInsets.all(32),
-                child: Text('\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0648\u0627\u0642\u0639 \u0645\u062d\u0641\u0648\u0638\u0629', style: TextStyle(color: Colors.grey), textAlign: TextAlign.center),
+                child: Text(
+                    '\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0648\u0627\u0642\u0639 \u0645\u062d\u0641\u0648\u0638\u0629',
+                    style: TextStyle(color: Colors.grey),
+                    textAlign: TextAlign.center),
               )
             else
               Flexible(
@@ -342,16 +415,21 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                   itemBuilder: (_, index) {
                     final loc = _savedLocations[index];
                     return ListTile(
-                      leading: const CircleAvatar(backgroundColor: _kGreen, child: Icon(Icons.bookmark, color: Colors.white, size: 20)),
+                      leading: const CircleAvatar(
+                          backgroundColor: _kGreen,
+                          child: Icon(Icons.bookmark,
+                              color: Colors.white, size: 20)),
                       title: Text(loc['name'] as String),
-                      subtitle: Text(loc['address'] as String, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      subtitle: Text(loc['address'] as String,
+                          maxLines: 1, overflow: TextOverflow.ellipsis),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () => _deleteSavedLocation(index),
                       ),
                       onTap: () {
                         Navigator.pop(ctx);
-                        final pos = LatLng(loc['latitude'] as double, loc['longitude'] as double);
+                        final pos = LatLng(loc['latitude'] as double,
+                            loc['longitude'] as double);
                         _mapController.move(pos, 16);
                         setState(() {
                           _selectedPosition = pos;
@@ -372,7 +450,8 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return;
-      final updated = List<Map<String, dynamic>>.from(_savedLocations)..removeAt(index);
+      final updated = List<Map<String, dynamic>>.from(_savedLocations)
+        ..removeAt(index);
       await FirebaseFirestore.instance
           .collection('admin_saved_locations')
           .doc(user.uid)
@@ -410,7 +489,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ في تحديد الموقع: $e'), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text('خطأ في تحديد الموقع: $e'),
+              backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -423,7 +504,8 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       final url = Uri.parse(
         'https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lng&accept-language=ar',
       );
-      final response = await http.get(url, headers: {'User-Agent': 'WawApp-Admin/1.0'});
+      final response =
+          await http.get(url, headers: {'User-Agent': 'WawApp-Admin/1.0'});
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return data['display_name'] ?? 'عنوان غير معروف';
@@ -438,16 +520,23 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     HapticFeedback.mediumImpact();
     setState(() {
       _selectedPosition = position;
-      _selectedAddress = '\u062c\u0627\u0631 \u062a\u062d\u062f\u064a\u062f \u0627\u0644\u0639\u0646\u0648\u0627\u0646...';
+      _selectedAddress =
+          '\u062c\u0627\u0631 \u062a\u062d\u062f\u064a\u062f \u0627\u0644\u0639\u0646\u0648\u0627\u0646...';
       _isLoadingAddress = true;
     });
     _mapController.move(position, _mapController.camera.zoom);
-    final address = await _getAddressFromLatLng(position.latitude, position.longitude);
+    final address =
+        await _getAddressFromLatLng(position.latitude, position.longitude);
     if (mounted) {
       setState(() {
         _selectedAddress = address;
         _isLoadingAddress = false;
-        _recentLocations.insert(0, LocationData(address: address, latitude: position.latitude, longitude: position.longitude));
+        _recentLocations.insert(
+            0,
+            LocationData(
+                address: address,
+                latitude: position.latitude,
+                longitude: position.longitude));
         if (_recentLocations.length > 5) _recentLocations.removeLast();
       });
     }
@@ -456,7 +545,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
   void _confirmSelection() {
     if (_selectedPosition == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('الرجاء تحديد موقع على الخريطة'), backgroundColor: Colors.red),
+        const SnackBar(
+            content: Text('الرجاء تحديد موقع على الخريطة'),
+            backgroundColor: Colors.red),
       );
       return;
     }
@@ -475,14 +566,18 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
         'format=json&limit=5&countrycodes=mr&accept-language=ar&'
         'bounded=1&viewbox=-16.05,18.15,-15.85,18.00',
       );
-      final response = await http.get(url, headers: {'User-Agent': 'WawApp-Admin/1.0'});
+      final response =
+          await http.get(url, headers: {'User-Agent': 'WawApp-Admin/1.0'});
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        return data.map((item) => _SearchResult(
-          item['display_name'] as String,
-          LatLng(double.parse(item['lat'] as String), double.parse(item['lon'] as String)),
-          'nominatim',
-        )).toList();
+        return data
+            .map((item) => _SearchResult(
+                  item['display_name'] as String,
+                  LatLng(double.parse(item['lat'] as String),
+                      double.parse(item['lon'] as String)),
+                  'nominatim',
+                ))
+            .toList();
       }
     } catch (e) {
       debugPrint('Nominatim search error: $e');
@@ -506,10 +601,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
           h.nameFr.toLowerCase().contains(q) ||
           h.category.contains(qAr)) {
         results.add(_SearchResult(
-          '${h.icon} ${h.nameAr} (${h.category})',
-          h.position,
-          'hotspot'
-        ));
+            '${h.icon} ${h.nameAr} (${h.category})', h.position, 'hotspot'));
       }
     }
 
@@ -533,10 +625,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       final address = saved['address'] as String;
       if (name.contains(qAr) || address.contains(qAr)) {
         results.add(_SearchResult(
-          '📌 $name',
-          LatLng(saved['latitude'] as double, saved['longitude'] as double),
-          'saved'
-        ));
+            '📌 $name',
+            LatLng(saved['latitude'] as double, saved['longitude'] as double),
+            'saved'));
       }
     }
 
@@ -611,62 +702,76 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               // District polygons
               if (_showDistricts)
                 PolygonLayer(
-                  polygons: _districts.map((d) => Polygon(
-                    points: d.coords,
-                    color: d.color.withOpacity(0.08),
-                    borderColor: d.color.withOpacity(0.5),
-                    borderStrokeWidth: 1.5,
-                    isFilled: true,
-                  )).toList(),
+                  polygons: _districts
+                      .map((d) => Polygon(
+                            points: d.coords,
+                            color: d.color.withOpacity(0.08),
+                            borderColor: d.color.withOpacity(0.5),
+                            borderStrokeWidth: 1.5,
+                            isFilled: true,
+                          ))
+                      .toList(),
                 ),
               // District labels
               if (_showDistricts)
                 MarkerLayer(
-                  markers: _districts.map((d) => Marker(
-                    point: d.center,
-                    width: 120,
-                    height: 36,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.75),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: d.color.withOpacity(0.6), width: 1),
-                      ),
-                      child: Text(
-                        '${d.nameAr}\n${d.nameFr}',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                          color: d.color.withOpacity(0.9),
-                          height: 1.2,
-                        ),
-                      ),
-                    ),
-                  )).toList(),
+                  markers: _districts
+                      .map((d) => Marker(
+                            point: d.center,
+                            width: 120,
+                            height: 36,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.75),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                    color: d.color.withOpacity(0.6), width: 1),
+                              ),
+                              child: Text(
+                                '${d.nameAr}\n${d.nameFr}',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  color: d.color.withOpacity(0.9),
+                                  height: 1.2,
+                                ),
+                              ),
+                            ),
+                          ))
+                      .toList(),
                 ),
               // POI markers
               if (_showPois)
                 MarkerLayer(
-                  markers: _pois.map((p) => Marker(
-                    point: p.position,
-                    width: 32,
-                    height: 32,
-                    child: GestureDetector(
-                      onTap: () => _showPoiInfo(p),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: p.color, width: 2),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 4, offset: const Offset(0, 2))],
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(p.icon, style: const TextStyle(fontSize: 16)),
-                      ),
-                    ),
-                  )).toList(),
+                  markers: _pois
+                      .map((p) => Marker(
+                            point: p.position,
+                            width: 32,
+                            height: 32,
+                            child: GestureDetector(
+                              onTap: () => _showPoiInfo(p),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: p.color, width: 2),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black.withOpacity(0.3),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2))
+                                  ],
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(p.icon,
+                                    style: const TextStyle(fontSize: 16)),
+                              ),
+                            ),
+                          ))
+                      .toList(),
                 ),
               // Selected position marker (draggable)
               if (_selectedPosition != null)
@@ -680,23 +785,28 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       child: GestureDetector(
                         onPanStart: (_) => setState(() {
                           _isDragging = true;
-                          _selectedAddress = '\u062c\u0627\u0631 \u062a\u062d\u062f\u064a\u062f \u0627\u0644\u0639\u0646\u0648\u0627\u0646...';
+                          _selectedAddress =
+                              '\u062c\u0627\u0631 \u062a\u062d\u062f\u064a\u062f \u0627\u0644\u0639\u0646\u0648\u0627\u0646...';
                         }),
                         onPanUpdate: (details) {
                           final camera = _mapController.camera;
-                          final pt = camera.latLngToScreenPoint(_selectedPosition!);
-                          final newPt = Point<double>(pt.x + details.delta.dx, pt.y + details.delta.dy);
+                          final pt =
+                              camera.latLngToScreenPoint(_selectedPosition!);
+                          final newPt = Point<double>(
+                              pt.x + details.delta.dx, pt.y + details.delta.dy);
                           final newLatLng = camera.pointToLatLng(newPt);
                           setState(() {
                             _selectedPosition = newLatLng;
-                            _selectedAddress = '\u0627\u0644\u0625\u062d\u062f\u0627\u062b\u064a\u0627\u062a: ${newLatLng.latitude.toStringAsFixed(5)}, ${newLatLng.longitude.toStringAsFixed(5)}';
+                            _selectedAddress =
+                                '\u0627\u0644\u0625\u062d\u062f\u0627\u062b\u064a\u0627\u062a: ${newLatLng.latitude.toStringAsFixed(5)}, ${newLatLng.longitude.toStringAsFixed(5)}';
                           });
                         },
                         onPanEnd: (_) async {
                           setState(() {
                             _isDragging = false;
                             _isLoadingAddress = true;
-                            _selectedAddress = '\u062c\u0627\u0631 \u062a\u062d\u062f\u064a\u062f \u0627\u0644\u0639\u0646\u0648\u0627\u0646...';
+                            _selectedAddress =
+                                '\u062c\u0627\u0631 \u062a\u062d\u062f\u064a\u062f \u0627\u0644\u0639\u0646\u0648\u0627\u0646...';
                           });
                           final address = await _getAddressFromLatLng(
                             _selectedPosition!.latitude,
@@ -721,17 +831,20 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: _kGreen,
-                                  border: Border.all(color: Colors.white, width: 3),
+                                  border:
+                                      Border.all(color: Colors.white, width: 3),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: _kGreen.withOpacity(_isDragging ? 0.8 : 0.5),
+                                      color: _kGreen
+                                          .withOpacity(_isDragging ? 0.8 : 0.5),
                                       blurRadius: _isDragging ? 20 : 12,
                                       spreadRadius: _isDragging ? 4 : 2,
                                       offset: const Offset(0, 4),
                                     ),
                                   ],
                                 ),
-                                child: const Icon(Icons.location_on, color: Colors.white, size: 24),
+                                child: const Icon(Icons.location_on,
+                                    color: Colors.white, size: 24),
                               ),
                               CustomPaint(
                                 size: const Size(14, 10),
@@ -747,7 +860,8 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               RichAttributionWidget(
                 animationConfig: const ScaleRAWA(),
                 attributions: [
-                  TextSourceAttribution('© OpenStreetMap contributors', onTap: () {}),
+                  TextSourceAttribution('© OpenStreetMap contributors',
+                      onTap: () {}),
                 ],
               ),
             ],
@@ -765,20 +879,31 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 6, offset: const Offset(0, 2))],
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2))
+                    ],
                   ),
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'ابحث عن موقع...',
                       hintStyle: const TextStyle(fontSize: 12),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
                       border: InputBorder.none,
-                      prefixIcon: const Icon(Icons.search, size: 20, color: _kGreen),
+                      prefixIcon:
+                          const Icon(Icons.search, size: 20, color: _kGreen),
                       suffixIcon: _isSearching
                           ? const Padding(
                               padding: EdgeInsets.all(10),
-                              child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+                              child: SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2)),
                             )
                           : null,
                     ),
@@ -786,7 +911,8 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     style: const TextStyle(fontSize: 12),
                     onChanged: (value) {
                       _searchDebounce?.cancel();
-                      _searchDebounce = Timer(const Duration(milliseconds: 500), () {
+                      _searchDebounce =
+                          Timer(const Duration(milliseconds: 500), () {
                         _performSearch(value);
                       });
                     },
@@ -816,7 +942,10 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8)],
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black.withOpacity(0.2), blurRadius: 8)
+                      ],
                     ),
                     constraints: const BoxConstraints(maxHeight: 200),
                     child: ListView.builder(
@@ -828,30 +957,37 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                         return ListTile(
                           dense: true,
                           leading: Icon(
-                            r.type == 'hotspot' ? Icons.local_taxi
-                                : r.type == 'district' ? Icons.map
-                                : r.type == 'poi' ? Icons.place
-                                : r.type == 'saved' ? Icons.bookmark
-                                : Icons.location_on,
-                            color: r.type == 'hotspot' ? Colors.orange
-                                : r.type == 'saved' ? _kGreen
-                                : _kGreen,
+                            r.type == 'hotspot'
+                                ? Icons.local_taxi
+                                : r.type == 'district'
+                                    ? Icons.map
+                                    : r.type == 'poi'
+                                        ? Icons.place
+                                        : r.type == 'saved'
+                                            ? Icons.bookmark
+                                            : Icons.location_on,
+                            color: r.type == 'hotspot'
+                                ? Colors.orange
+                                : r.type == 'saved'
+                                    ? _kGreen
+                                    : _kGreen,
                             size: 20,
                           ),
-                          title: Text(
-                            r.displayName,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: r.type == 'hotspot' ? FontWeight.bold : FontWeight.normal
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis
-                          ),
+                          title: Text(r.displayName,
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: r.type == 'hotspot'
+                                      ? FontWeight.bold
+                                      : FontWeight.normal),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis),
                           onTap: () async {
                             // تكبير أكبر للنقاط الساخنة
-                            final zoom = r.type == 'hotspot' ? 17.0
-                                : r.type == 'district' ? 14.0
-                                : 16.0;
+                            final zoom = r.type == 'hotspot'
+                                ? 17.0
+                                : r.type == 'district'
+                                    ? 14.0
+                                    : 16.0;
 
                             _mapController.move(r.position, zoom);
                             setState(() {
@@ -863,9 +999,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                             _searchController.clear();
 
                             final address = await _getAddressFromLatLng(
-                              r.position.latitude,
-                              r.position.longitude
-                            );
+                                r.position.latitude, r.position.longitude);
 
                             if (mounted) {
                               setState(() {
@@ -890,14 +1024,18 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             child: IgnorePointer(
               child: Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                   decoration: BoxDecoration(
                     color: const Color(0xDD006400),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
                     '🏙️ خريطة نواكشوط التفاعلية',
-                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -911,15 +1049,18 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             child: Column(
               children: [
                 _zoomButton(Icons.add, 'تكبير', () {
-                  _mapController.move(_mapController.camera.center, _mapController.camera.zoom + 1);
+                  _mapController.move(_mapController.camera.center,
+                      _mapController.camera.zoom + 1);
                 }),
                 const SizedBox(height: 6),
                 _zoomButton(Icons.remove, 'تصغير', () {
-                  _mapController.move(_mapController.camera.center, _mapController.camera.zoom - 1);
+                  _mapController.move(_mapController.camera.center,
+                      _mapController.camera.zoom - 1);
                 }),
                 const SizedBox(height: 6),
                 _zoomButton(Icons.my_location, 'الموقع المحدد', () {
-                  if (_selectedPosition != null) _mapController.move(_selectedPosition!, 16);
+                  if (_selectedPosition != null)
+                    _mapController.move(_selectedPosition!, 16);
                 }, color: _kGreen, iconColor: Colors.white),
                 const SizedBox(height: 6),
                 _zoomButton(
@@ -941,14 +1082,18 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               right: 0,
               child: Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.black87,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     '${_selectedPosition!.latitude.toStringAsFixed(5)}, ${_selectedPosition!.longitude.toStringAsFixed(5)}',
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'monospace'),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontFamily: 'monospace'),
                   ),
                 ),
               ),
@@ -972,7 +1117,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       child: ActionChip(
                         avatar: const Icon(Icons.history, size: 16),
                         label: Text(
-                          loc.address.length > 30 ? '${loc.address.substring(0, 27)}...' : loc.address,
+                          loc.address.length > 30
+                              ? '${loc.address.substring(0, 27)}...'
+                              : loc.address,
                           style: const TextStyle(fontSize: 11),
                         ),
                         onPressed: () {
@@ -1005,8 +1152,14 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 8, offset: const Offset(0, -2))],
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(16)),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, -2))
+                ],
               ),
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -1021,13 +1174,17 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('الموقع المحدد', style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+                            Text('الموقع المحدد',
+                                style: TextStyle(
+                                    fontSize: 11, color: Colors.grey[600])),
                             const SizedBox(height: 2),
                             _isLoadingAddress
                                 ? _buildAddressShimmer()
                                 : Text(
                                     _selectedAddress,
-                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                    style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -1035,7 +1192,10 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                         ),
                       ),
                       if (_isLoadingAddress)
-                        const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+                        const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2)),
                     ],
                   ),
                   if (_selectedPosition != null) ...[
@@ -1052,16 +1212,20 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       backgroundColor: _kGreen,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text('تأكيد الموقع', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    child: const Text('تأكيد الموقع',
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.bold)),
                   ),
                   if (_selectedPosition != null) ...[
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: _saveCurrentLocation,
                       icon: const Icon(Icons.bookmark_add, size: 18),
-                      label: const Text('حفظ هذا الموقع', style: TextStyle(fontSize: 13)),
+                      label: const Text('حفظ هذا الموقع',
+                          style: TextStyle(fontSize: 13)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: _kGreen,
                         side: const BorderSide(color: _kGreen),
@@ -1105,7 +1269,8 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
         child: Container(
           height: 16,
           width: double.infinity,
-          decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(4)),
+          decoration: BoxDecoration(
+              color: Colors.grey[300], borderRadius: BorderRadius.circular(4)),
         ),
       ),
       onEnd: () {
@@ -1114,21 +1279,31 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     );
   }
 
-  Widget _zoomButton(IconData icon, String tooltip, VoidCallback onPressed, {Color color = Colors.white, Color iconColor = Colors.black87}) {
+  Widget _zoomButton(IconData icon, String tooltip, VoidCallback onPressed,
+      {Color color = Colors.white, Color iconColor = Colors.black87}) {
     return Container(
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(8),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2))
+        ],
       ),
-      child: IconButton(icon: Icon(icon, color: iconColor), onPressed: onPressed, tooltip: tooltip),
+      child: IconButton(
+          icon: Icon(icon, color: iconColor),
+          onPressed: onPressed,
+          tooltip: tooltip),
     );
   }
 
   void _showPoiInfo(_Poi poi) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${poi.icon} ${poi.nameAr} — ${poi.nameFr}', textDirection: TextDirection.rtl),
+        content: Text('${poi.icon} ${poi.nameAr} — ${poi.nameFr}',
+            textDirection: TextDirection.rtl),
         backgroundColor: poi.color,
         duration: const Duration(seconds: 2),
       ),
@@ -1171,12 +1346,14 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('🗺️ دليل الخريطة',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 11)),
                       IconButton(
                         icon: const Icon(Icons.close, size: 16),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
-                        onPressed: () => setState(() => _legendExpanded = false),
+                        onPressed: () =>
+                            setState(() => _legendExpanded = false),
                       ),
                     ],
                   ),
@@ -1184,37 +1361,40 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
 
                   // Districts
                   const Text('المقاطعات:',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
                   const SizedBox(height: 2),
                   ..._districts.map((d) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 1),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: d.color,
-                            borderRadius: BorderRadius.circular(2)
-                          )
+                        padding: const EdgeInsets.symmetric(vertical: 1),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                    color: d.color,
+                                    borderRadius: BorderRadius.circular(2))),
+                            const SizedBox(width: 4),
+                            Text(d.nameAr, style: const TextStyle(fontSize: 9)),
+                          ],
                         ),
-                        const SizedBox(width: 4),
-                        Text(d.nameAr, style: const TextStyle(fontSize: 9)),
-                      ],
-                    ),
-                  )),
+                      )),
 
                   const SizedBox(height: 4),
 
                   // POIs
                   const Text('نقاط الاهتمام:',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
                   const SizedBox(height: 2),
-                  const Text('🍽️ مطاعم  🏨 فنادق', style: TextStyle(fontSize: 9)),
+                  const Text('🍽️ مطاعم  🏨 فنادق',
+                      style: TextStyle(fontSize: 9)),
                   const Text('🛒 أسواق  ⛽ وقود', style: TextStyle(fontSize: 9)),
-                  const Text('🏥 مستشفيات  🎓 تعليم', style: TextStyle(fontSize: 9)),
-                  const Text('🏦 بنوك  🕌 مساجد', style: TextStyle(fontSize: 9)),
+                  const Text('🏥 مستشفيات  🎓 تعليم',
+                      style: TextStyle(fontSize: 9)),
+                  const Text('🏦 بنوك  🕌 مساجد',
+                      style: TextStyle(fontSize: 9)),
                 ],
               ),
             ),

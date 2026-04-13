@@ -22,7 +22,7 @@ final appConfigProvider = Provider<AppConfig>((ref) {
 /// Automatically selects dev or production service based on environment
 final adminAuthServiceProvider = Provider<dynamic>((ref) {
   final config = ref.watch(appConfigProvider);
-  
+
   if (config.useStrictAuth) {
     // PRODUCTION/STAGING: Use strict auth with isAdmin claim check
     return AdminAuthService();

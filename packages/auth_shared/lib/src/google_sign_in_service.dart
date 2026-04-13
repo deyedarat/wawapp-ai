@@ -49,9 +49,11 @@ class GoogleSignInService {
     // This is critical to prevent SignInHubActivity crashes
     if (_isSigningIn) {
       if (kDebugMode) {
-        print('[GoogleSignIn] Sign-in already in progress, ignoring duplicate call');
+        print(
+            '[GoogleSignIn] Sign-in already in progress, ignoring duplicate call');
       }
-      FirebaseCrashlytics.instance.log('Prevented concurrent Google Sign-In attempt');
+      FirebaseCrashlytics.instance
+          .log('Prevented concurrent Google Sign-In attempt');
       return null;
     }
 
@@ -88,7 +90,8 @@ class GoogleSignInService {
       }
 
       // STEP 3: Get authentication tokens
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // GUARD 3: Verify tokens are present
       // Missing tokens can cause downstream crashes
@@ -115,13 +118,16 @@ class GoogleSignInService {
       );
 
       // STEP 5: Sign in to Firebase
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
 
       if (kDebugMode) {
-        print('[GoogleSignIn] ✓ Successfully signed in: ${userCredential.user?.email}');
+        print(
+            '[GoogleSignIn] ✓ Successfully signed in: ${userCredential.user?.email}');
       }
 
-      FirebaseCrashlytics.instance.log('Google Sign-In successful: ${userCredential.user?.uid}');
+      FirebaseCrashlytics.instance
+          .log('Google Sign-In successful: ${userCredential.user?.uid}');
 
       return userCredential;
     } on PlatformException catch (e) {

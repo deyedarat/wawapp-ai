@@ -100,7 +100,8 @@ void main() async {
     await BatteryOptimizationManager().isExemptFromBatteryOptimization();
 
     if (kDebugMode) {
-      print('✅ Firebase initialized, Crashlytics ready, FCM token manager started');
+      print(
+          '✅ Firebase initialized, Crashlytics ready, FCM token manager started');
     }
 
     // ❌ REMOVED: Dart background handler conflicts with Native MyFirebaseMessagingService
@@ -210,7 +211,8 @@ class _MyAppState extends ConsumerState<MyApp> {
           // Auto-repair if health is critical
           if (report.isCritical) {
             if (kDebugMode) {
-              debugPrint('[Main] 🔴 Critical notification health, running auto-repair');
+              debugPrint(
+                  '[Main] 🔴 Critical notification health, running auto-repair');
             }
             await monitor.autoRepair();
           }

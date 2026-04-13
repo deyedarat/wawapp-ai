@@ -173,7 +173,8 @@ class _NotificationsDropdownState extends State<NotificationsDropdown>
                     top: -4,
                     right: -4,
                     child: Container(
-                      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                      constraints:
+                          const BoxConstraints(minWidth: 18, minHeight: 18),
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       decoration: BoxDecoration(
                         color: unreadCount > 9 ? Colors.orange : Colors.red,
@@ -265,7 +266,8 @@ class _NotificationsOverlayState extends State<_NotificationsOverlay>
 
     double left = buttonOffset.dx - panelWidth + buttonSize.width + 8;
     if (left < 8) left = 8;
-    if (left + panelWidth > screenWidth - 8) left = screenWidth - panelWidth - 8;
+    if (left + panelWidth > screenWidth - 8)
+      left = screenWidth - panelWidth - 8;
     final top = buttonOffset.dy + buttonSize.height + 8;
 
     return GestureDetector(
@@ -309,8 +311,7 @@ class _NotificationsOverlayState extends State<_NotificationsOverlay>
                               _buildEmptyBody()
                             else
                               Flexible(child: _buildNotificationsList()),
-                            if (widget.notifications.isNotEmpty)
-                              _buildFooter(),
+                            if (widget.notifications.isNotEmpty) _buildFooter(),
                           ],
                         ),
                       ),
@@ -333,7 +334,8 @@ class _NotificationsOverlayState extends State<_NotificationsOverlay>
       ),
       child: Row(
         children: [
-          const Icon(Icons.notifications_rounded, color: AdminAppColors.primaryGreen, size: 20),
+          const Icon(Icons.notifications_rounded,
+              color: AdminAppColors.primaryGreen, size: 20),
           const SizedBox(width: 8),
           const Text(
             'الإشعارات',
@@ -362,7 +364,8 @@ class _NotificationsOverlayState extends State<_NotificationsOverlay>
             borderRadius: BorderRadius.circular(6),
             child: const Padding(
               padding: EdgeInsets.all(4),
-              child: Icon(Icons.close, size: 18, color: AdminAppColors.textSecondaryLight),
+              child: Icon(Icons.close,
+                  size: 18, color: AdminAppColors.textSecondaryLight),
             ),
           ),
         ],
@@ -422,7 +425,8 @@ class _NotificationsOverlayState extends State<_NotificationsOverlay>
                     n.title,
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight: n.isRead ? FontWeight.normal : FontWeight.bold,
+                      fontWeight:
+                          n.isRead ? FontWeight.normal : FontWeight.bold,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

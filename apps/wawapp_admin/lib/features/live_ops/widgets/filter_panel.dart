@@ -34,8 +34,8 @@ class FilterPanel extends ConsumerWidget {
           Text(
             'الفلاتر والخيارات',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           SizedBox(height: AdminSpacing.md),
 
@@ -305,9 +305,9 @@ class FilterPanel extends ConsumerWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: AdminAppColors.primaryLight,
-          ),
+                fontWeight: FontWeight.w600,
+                color: AdminAppColors.primaryLight,
+              ),
         ),
         SizedBox(height: AdminSpacing.sm),
         Card(

@@ -144,7 +144,8 @@ class _ChangePinScreenState extends ConsumerState<ChangePinScreen> {
                             : Icons.visibility_off_outlined,
                       ),
                       onPressed: () {
-                        setState(() => _obscureCurrentPin = !_obscureCurrentPin);
+                        setState(
+                            () => _obscureCurrentPin = !_obscureCurrentPin);
                       },
                     ),
                   ),
@@ -221,8 +222,8 @@ class _ChangePinScreenState extends ConsumerState<ChangePinScreen> {
                             : Icons.visibility_off_outlined,
                       ),
                       onPressed: () {
-                        setState(() =>
-                            _obscureConfirmPin = !_obscureConfirmPin);
+                        setState(
+                            () => _obscureConfirmPin = !_obscureConfirmPin);
                       },
                     ),
                   ),

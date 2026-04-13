@@ -10,7 +10,8 @@ import '../utils/csv_export.dart';
 
 enum DriverSortBy { earnings, trips, rating }
 
-final driverSortByProvider = StateProvider<DriverSortBy>((ref) => DriverSortBy.earnings);
+final driverSortByProvider =
+    StateProvider<DriverSortBy>((ref) => DriverSortBy.earnings);
 
 class DriverPerformanceReportTab extends ConsumerWidget {
   const DriverPerformanceReportTab({super.key});
@@ -32,18 +33,21 @@ class DriverPerformanceReportTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, WidgetRef ref, data, DriverSortBy sortBy) {
+  Widget _buildContent(
+      BuildContext context, WidgetRef ref, data, DriverSortBy sortBy) {
     // Sort drivers based on selected criterion
     final sortedDrivers = List.from(data.drivers);
     switch (sortBy) {
       case DriverSortBy.earnings:
-        sortedDrivers.sort((a, b) => b.totalEarnings.compareTo(a.totalEarnings));
+        sortedDrivers
+            .sort((a, b) => b.totalEarnings.compareTo(a.totalEarnings));
         break;
       case DriverSortBy.trips:
         sortedDrivers.sort((a, b) => b.totalTrips.compareTo(a.totalTrips));
         break;
       case DriverSortBy.rating:
-        sortedDrivers.sort((a, b) => b.averageRating.compareTo(a.averageRating));
+        sortedDrivers
+            .sort((a, b) => b.averageRating.compareTo(a.averageRating));
         break;
     }
 
@@ -93,7 +97,8 @@ class DriverPerformanceReportTab extends ConsumerWidget {
               Row(
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () => CsvExportUtil.exportDriverPerformanceReport(data),
+                    onPressed: () =>
+                        CsvExportUtil.exportDriverPerformanceReport(data),
                     icon: const Icon(Icons.file_download),
                     label: const Text('تصدير CSV'),
                     style: ElevatedButton.styleFrom(
@@ -123,7 +128,8 @@ class DriverPerformanceReportTab extends ConsumerWidget {
             decoration: BoxDecoration(
               color: AdminAppColors.primaryGreen.withOpacity(0.1),
               borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
-              border: Border.all(color: AdminAppColors.primaryGreen.withOpacity(0.3)),
+              border: Border.all(
+                  color: AdminAppColors.primaryGreen.withOpacity(0.3)),
             ),
             child: Text(
               'إجمالي السائقين: ${data.totalDrivers} | عرض أفضل ${sortedDrivers.length} سائق',
@@ -148,114 +154,122 @@ class DriverPerformanceReportTab extends ConsumerWidget {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 1200),
-                child: DataTable(
-                headingRowColor: MaterialStateProperty.all(
-                  AdminAppColors.backgroundLight,
-                ),
-                columns: const [
-                  DataColumn(label: Text('الرقم')),
-                  DataColumn(label: Text('الاسم')),
-                  DataColumn(label: Text('الهاتف')),
-                  DataColumn(label: Text('المشغل')),
-                  DataColumn(label: Text('إجمالي الرحلات')),
-                  DataColumn(label: Text('رحلات مكتملة')),
-                  DataColumn(label: Text('إجمالي الأرباح')),
-                  DataColumn(label: Text('التقييم')),
-                  DataColumn(label: Text('معدل الإلغاء')),
-                ],
-                rows: sortedDrivers.asMap().entries.map<DataRow>((entry) {
-                  final index = entry.key + 1;
-                  final driver = entry.value;
-
-                  return DataRow(
-                    cells: [
-                      DataCell(
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: AdminSpacing.sm,
-                            vertical: AdminSpacing.xs,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _getRankColor(index),
-                            borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-                          ),
-                          child: Text(
-                            '#$index',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          driver.name,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                      DataCell(Text(driver.phone)),
-                      DataCell(
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: AdminSpacing.sm,
-                            vertical: AdminSpacing.xs,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _getOperatorColor(driver.operator).withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-                            border: Border.all(
-                              color: _getOperatorColor(driver.operator),
-                            ),
-                          ),
-                          child: Text(
-                            driver.operator,
-                            style: TextStyle(
-                              color: _getOperatorColor(driver.operator),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                      DataCell(Text(driver.totalTrips.toString())),
-                      DataCell(Text(driver.completedTrips.toString())),
-                      DataCell(
-                        Text(
-                          '${_formatCurrency(driver.totalEarnings)} MRU',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green,
-                          ),
-                        ),
-                      ),
-                      DataCell(
-                        Row(
-                          children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 16),
-                            SizedBox(width: 4),
-                            Text(
-                              driver.averageRating.toStringAsFixed(1),
-                              style: const TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                      ),
-                      DataCell(
-                        Text(
-                          '${driver.cancellationRate}%',
-                          style: TextStyle(
-                            color: driver.cancellationRate > 20 ? Colors.red : Colors.orange,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                  constraints: const BoxConstraints(minWidth: 1200),
+                  child: DataTable(
+                    headingRowColor: MaterialStateProperty.all(
+                      AdminAppColors.backgroundLight,
+                    ),
+                    columns: const [
+                      DataColumn(label: Text('الرقم')),
+                      DataColumn(label: Text('الاسم')),
+                      DataColumn(label: Text('الهاتف')),
+                      DataColumn(label: Text('المشغل')),
+                      DataColumn(label: Text('إجمالي الرحلات')),
+                      DataColumn(label: Text('رحلات مكتملة')),
+                      DataColumn(label: Text('إجمالي الأرباح')),
+                      DataColumn(label: Text('التقييم')),
+                      DataColumn(label: Text('معدل الإلغاء')),
                     ],
-                  );
-                }).toList(),
+                    rows: sortedDrivers.asMap().entries.map<DataRow>((entry) {
+                      final index = entry.key + 1;
+                      final driver = entry.value;
+
+                      return DataRow(
+                        cells: [
+                          DataCell(
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: AdminSpacing.sm,
+                                vertical: AdminSpacing.xs,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _getRankColor(index),
+                                borderRadius: BorderRadius.circular(
+                                    AdminSpacing.radiusSm),
+                              ),
+                              child: Text(
+                                '#$index',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          DataCell(
+                            Text(
+                              driver.name,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          DataCell(Text(driver.phone)),
+                          DataCell(
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: AdminSpacing.sm,
+                                vertical: AdminSpacing.xs,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _getOperatorColor(driver.operator)
+                                    .withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(
+                                    AdminSpacing.radiusSm),
+                                border: Border.all(
+                                  color: _getOperatorColor(driver.operator),
+                                ),
+                              ),
+                              child: Text(
+                                driver.operator,
+                                style: TextStyle(
+                                  color: _getOperatorColor(driver.operator),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                          DataCell(Text(driver.totalTrips.toString())),
+                          DataCell(Text(driver.completedTrips.toString())),
+                          DataCell(
+                            Text(
+                              '${_formatCurrency(driver.totalEarnings)} MRU',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ),
+                          DataCell(
+                            Row(
+                              children: [
+                                const Icon(Icons.star,
+                                    color: Colors.amber, size: 16),
+                                SizedBox(width: 4),
+                                Text(
+                                  driver.averageRating.toStringAsFixed(1),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
+                          DataCell(
+                            Text(
+                              '${driver.cancellationRate}%',
+                              style: TextStyle(
+                                color: driver.cancellationRate > 20
+                                    ? Colors.red
+                                    : Colors.orange,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
-              ),
-            ),
             ),
           ),
         ],
@@ -288,7 +302,9 @@ class DriverPerformanceReportTab extends ConsumerWidget {
           child: Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: isSelected ? Colors.white : AdminAppColors.textPrimaryLight,
+                  color: isSelected
+                      ? Colors.white
+                      : AdminAppColors.textPrimaryLight,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
           ),

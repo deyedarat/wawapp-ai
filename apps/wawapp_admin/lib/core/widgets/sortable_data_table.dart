@@ -130,13 +130,16 @@ class _SortableDataTableState<T> extends State<SortableDataTable<T>> {
     if (!widget.enablePagination) return _filteredData;
 
     final startIndex = _currentPage * widget.rowsPerPage;
-    final endIndex = (startIndex + widget.rowsPerPage).clamp(0, _filteredData.length);
+    final endIndex =
+        (startIndex + widget.rowsPerPage).clamp(0, _filteredData.length);
 
     if (startIndex >= _filteredData.length) return [];
     return _filteredData.sublist(startIndex, endIndex);
   }
 
-  int get _totalPages => widget.enablePagination ? (_filteredData.length / widget.rowsPerPage).ceil() : 1;
+  int get _totalPages => widget.enablePagination
+      ? (_filteredData.length / widget.rowsPerPage).ceil()
+      : 1;
 
   @override
   Widget build(BuildContext context) {
@@ -198,12 +201,16 @@ class _SortableDataTableState<T> extends State<SortableDataTable<T>> {
                                   fontSize: 14,
                                 ),
                               ),
-                              onSort: column.sortable ? (_, __) => _onSort(index) : null,
+                              onSort: column.sortable
+                                  ? (_, __) => _onSort(index)
+                                  : null,
                             );
                           }).toList(),
                           rows: paginatedData.map((item) {
                             return DataRow(
-                              onSelectChanged: widget.onRowTap != null ? (_) => widget.onRowTap!(item) : null,
+                              onSelectChanged: widget.onRowTap != null
+                                  ? (_) => widget.onRowTap!(item)
+                                  : null,
                               cells: widget.columns.map((column) {
                                 return DataCell(
                                   column.buildCell != null
@@ -236,7 +243,9 @@ class _SortableDataTableState<T> extends State<SortableDataTable<T>> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.chevron_right),
-                      onPressed: _currentPage > 0 ? () => setState(() => _currentPage--) : null,
+                      onPressed: _currentPage > 0
+                          ? () => setState(() => _currentPage--)
+                          : null,
                       tooltip: 'الصفحة السابقة',
                     ),
                     Text(
@@ -245,7 +254,9 @@ class _SortableDataTableState<T> extends State<SortableDataTable<T>> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.chevron_left),
-                      onPressed: _currentPage < _totalPages - 1 ? () => setState(() => _currentPage++) : null,
+                      onPressed: _currentPage < _totalPages - 1
+                          ? () => setState(() => _currentPage++)
+                          : null,
                       tooltip: 'الصفحة التالية',
                     ),
                   ],

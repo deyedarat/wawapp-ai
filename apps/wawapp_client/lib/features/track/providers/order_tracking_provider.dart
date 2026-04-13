@@ -2,8 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-final orderTrackingProvider = StreamProvider.family.autoDispose<DocumentSnapshot?, String>((ref, orderId) {
-  return FirebaseFirestore.instance.collection('orders').doc(orderId).snapshots();
+final orderTrackingProvider = StreamProvider.family
+    .autoDispose<DocumentSnapshot?, String>((ref, orderId) {
+  return FirebaseFirestore.instance
+      .collection('orders')
+      .doc(orderId)
+      .snapshots();
 });
 
 class DriverLocation {
@@ -18,9 +22,14 @@ class DriverLocation {
 
 // DEPRECATED: Direct driver location access is insecure.
 // Use order-based tracking instead.
-final driverLocationProvider = StreamProvider.family.autoDispose<DriverLocation?, String>((ref, orderId) {
+final driverLocationProvider =
+    StreamProvider.family.autoDispose<DriverLocation?, String>((ref, orderId) {
   // P0-FATAL FIX: Read location from the order document, not driver_locations
-  return FirebaseFirestore.instance.collection('orders').doc(orderId).snapshots().map((snapshot) {
+  return FirebaseFirestore.instance
+      .collection('orders')
+      .doc(orderId)
+      .snapshots()
+      .map((snapshot) {
     try {
       if (!snapshot.exists) return null;
 

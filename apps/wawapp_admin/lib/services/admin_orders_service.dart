@@ -16,15 +16,20 @@ class AdminOrdersService {
     String? statusFilter,
     int limit = 50,
   }) {
-    Query<Map<String, dynamic>> query =
-        _firestore.collection('orders').orderBy('createdAt', descending: true).limit(limit);
+    Query<Map<String, dynamic>> query = _firestore
+        .collection('orders')
+        .orderBy('createdAt', descending: true)
+        .limit(limit);
 
     if (statusFilter != null && statusFilter.isNotEmpty) {
       query = query.where('status', isEqualTo: statusFilter);
     }
 
     return query.snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => core_shared.Order.fromFirestoreWithId(doc.id, doc.data())).toList();
+      return snapshot.docs
+          .map((doc) =>
+              core_shared.Order.fromFirestoreWithId(doc.id, doc.data()))
+          .toList();
     });
   }
 

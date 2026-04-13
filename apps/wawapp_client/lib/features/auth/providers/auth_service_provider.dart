@@ -18,7 +18,8 @@ final phonePinAuthServiceProvider = Provider<PhonePinAuth>((ref) {
 
 // AuthNotifier - manages authentication state
 class ClientAuthNotifier extends StateNotifier<AuthState> {
-  ClientAuthNotifier(this._authService, this._firebaseAuth) : super(const AuthState()) {
+  ClientAuthNotifier(this._authService, this._firebaseAuth)
+      : super(const AuthState()) {
     // Listen to Firebase auth state changes
     _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
       if (kDebugMode) {
@@ -65,7 +66,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
 
     try {
       if (kDebugMode) {
-        print('[ClientAuthNotifier] Checking if user has PIN, isPinResetFlow=${state.isPinResetFlow}');
+        print(
+            '[ClientAuthNotifier] Checking if user has PIN, isPinResetFlow=${state.isPinResetFlow}');
       }
 
       // Try to preload from cache for faster startup
@@ -76,7 +78,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
             print('[ClientAuthNotifier] Using cached PIN status: $cached');
           }
           state = state.copyWith(pinStatus: cached);
-          AuthLogger.logPinStatusChange(oldStatus.toString(), cached.toString(), user.uid);
+          AuthLogger.logPinStatusChange(
+              oldStatus.toString(), cached.toString(), user.uid);
         }
       }
 
@@ -86,15 +89,18 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         final hasPinHash = await _authService.hasPinHash();
 
         // During PIN reset flow, force noPin to ensure router navigates to create-pin
-        final effectiveStatus =
-            state.isPinResetFlow ? PinStatus.noPin : (hasPinHash ? PinStatus.hasPin : PinStatus.noPin);
+        final effectiveStatus = state.isPinResetFlow
+            ? PinStatus.noPin
+            : (hasPinHash ? PinStatus.hasPin : PinStatus.noPin);
 
         if (kDebugMode && state.isPinResetFlow) {
-          print('[ClientAuthNotifier] PIN reset flow active - forcing noPin (actual hasPinHash=$hasPinHash)');
+          print(
+              '[ClientAuthNotifier] PIN reset flow active - forcing noPin (actual hasPinHash=$hasPinHash)');
         }
 
         if (kDebugMode) {
-          print('[ClientAuthNotifier] hasPinHash=$hasPinHash, effectiveStatus=$effectiveStatus');
+          print(
+              '[ClientAuthNotifier] hasPinHash=$hasPinHash, effectiveStatus=$effectiveStatus');
         }
 
         state = state.copyWith(
@@ -106,10 +112,12 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         await PinStatusCache.set(user.uid, effectiveStatus);
 
         // Log PIN status change
-        AuthLogger.logPinStatusChange(oldStatus.toString(), effectiveStatus.toString(), user.uid);
+        AuthLogger.logPinStatusChange(
+            oldStatus.toString(), effectiveStatus.toString(), user.uid);
       } else {
         state = state.copyWith(pinStatus: PinStatus.unknown);
-        AuthLogger.logPinStatusChange(oldStatus.toString(), PinStatus.unknown.toString(), null);
+        AuthLogger.logPinStatusChange(
+            oldStatus.toString(), PinStatus.unknown.toString(), null);
       }
     } on Object catch (e) {
       if (kDebugMode) {
@@ -121,16 +129,19 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         final cached = await PinStatusCache.get(user.uid);
         if (cached != null) {
           if (kDebugMode) {
-            print('[ClientAuthNotifier] Network error, using cached PIN status: $cached');
+            print(
+                '[ClientAuthNotifier] Network error, using cached PIN status: $cached');
           }
           state = state.copyWith(pinStatus: cached);
-          AuthLogger.logPinStatusChange(oldStatus.toString(), cached.toString(), user.uid);
+          AuthLogger.logPinStatusChange(
+              oldStatus.toString(), cached.toString(), user.uid);
           return;
         }
       }
 
       state = state.copyWith(pinStatus: PinStatus.error);
-      AuthLogger.logPinStatusChange(oldStatus.toString(), PinStatus.error.toString(), user?.uid);
+      AuthLogger.logPinStatusChange(
+          oldStatus.toString(), PinStatus.error.toString(), user?.uid);
     }
   }
 
@@ -170,16 +181,19 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
           isLoading: false,
         );
         if (kDebugMode) {
-          print('[ClientAuthNotifier] sendOtp rate limited. Remaining: ${remaining}s');
+          print(
+              '[ClientAuthNotifier] sendOtp rate limited. Remaining: ${remaining}s');
         }
         return;
       }
     }
 
     // Guard: prevent duplicate calls
-    if (state.otpStage == OtpStage.sending || state.otpStage == OtpStage.codeSent) {
+    if (state.otpStage == OtpStage.sending ||
+        state.otpStage == OtpStage.codeSent) {
       if (kDebugMode) {
-        print('[ClientAuthNotifier] sendOtp blocked: already ${state.otpStage}');
+        print(
+            '[ClientAuthNotifier] sendOtp blocked: already ${state.otpStage}');
       }
       return;
     }
@@ -220,13 +234,15 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
     } on FirebaseFunctionsException catch (e) {
       String arabicMessage;
       if (e.code == 'resource-exhausted') {
-        arabicMessage = 'لقد تجاوزت الحد المسموح. يرجى الانتظار قبل المحاولة مجدداً';
+        arabicMessage =
+            'لقد تجاوزت الحد المسموح. يرجى الانتظار قبل المحاولة مجدداً';
       } else if (e.code == 'invalid-argument') {
         arabicMessage = 'رقم الهاتف غير صالح. يرجى التحقق منه والمحاولة مجدداً';
       } else {
         arabicMessage = 'حدث خطأ أثناء إرسال رمز التحقق. يرجى المحاولة مجدداً';
       }
-      if (kDebugMode) print('[ClientAuthNotifier] Cloud Function error: code=${e.code}');
+      if (kDebugMode)
+        print('[ClientAuthNotifier] Cloud Function error: code=${e.code}');
       LogService.instance.addLog(
         event: 'otp_send_failed',
         phone: phone,
@@ -242,7 +258,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         shouldOfferBugReport: false,
       );
     } on Object catch (e) {
-      if (kDebugMode) print('[ClientAuthNotifier] Send OTP error: ${e.runtimeType}');
+      if (kDebugMode)
+        print('[ClientAuthNotifier] Send OTP error: ${e.runtimeType}');
       LogService.instance.addLog(
         event: 'otp_send_failed',
         phone: phone,
@@ -255,7 +272,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         otpFlowActive: false,
         otpStage: OtpStage.failed,
         isPinResetFlow: false,
-        shouldOfferBugReport: true, // Unknown non-Firebase errors also warrant a report
+        shouldOfferBugReport:
+            true, // Unknown non-Firebase errors also warrant a report
       );
     }
   }
@@ -269,7 +287,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       }
       await _authService.confirmOtp(code);
       if (kDebugMode) {
-        print('[ClientAuthNotifier] OTP verified, user should update via authStateChanges');
+        print(
+            '[ClientAuthNotifier] OTP verified, user should update via authStateChanges');
       }
       state = state.copyWith(
         isLoading: false,
@@ -287,7 +306,9 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       } else {
         errorMessage = 'حدث خطأ أثناء التحقق، يرجى المحاولة مجدداً.';
       }
-      if (kDebugMode) print('[ClientAuthNotifier] Verify OTP Cloud Function error: ${e.code}');
+      if (kDebugMode)
+        print(
+            '[ClientAuthNotifier] Verify OTP Cloud Function error: ${e.code}');
       state = state.copyWith(isLoading: false, error: errorMessage);
     } on Object catch (e) {
       if (kDebugMode) print('[ClientAuthNotifier] Verify OTP error: $e');
@@ -304,7 +325,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
     try {
       await _authService.setPin(pin);
       if (kDebugMode) {
-        print('[ClientAuthNotifier] PIN created successfully, clearing isPinResetFlow flag');
+        print(
+            '[ClientAuthNotifier] PIN created successfully, clearing isPinResetFlow flag');
       }
 
       final user = _firebaseAuth.currentUser;
@@ -359,7 +381,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
         // PIN verified successfully, user is now signed in with custom token
         // The authStateChanges listener will update the state automatically
         if (kDebugMode) {
-          print('[ClientAuthNotifier] PIN verified, user signed in successfully');
+          print(
+              '[ClientAuthNotifier] PIN verified, user signed in successfully');
         }
         state = state.copyWith(
           isLoading: false,
@@ -440,7 +463,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       await PinStatusCache.clearAll();
 
       await _authService.signOut();
-      state = const AuthState(); // Reset to initial state (clears isPinResetFlow)
+      state =
+          const AuthState(); // Reset to initial state (clears isPinResetFlow)
       if (kDebugMode) {
         print('[ClientAuthNotifier] Logout complete');
       }
@@ -477,7 +501,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       }
 
       // Call Cloud Function to delete server-side data
-      final callable = FirebaseFunctions.instance.httpsCallable('deleteAccount');
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('deleteAccount');
       final result = await callable.call();
 
       // Validate response
@@ -501,7 +526,8 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       }
     } on FirebaseFunctionsException catch (e) {
       if (kDebugMode) {
-        print('[ClientAuthNotifier] Delete account error (Firebase): ${e.code} - ${e.message}');
+        print(
+            '[ClientAuthNotifier] Delete account error (Firebase): ${e.code} - ${e.message}');
       }
       state = state.copyWith(
         isLoading: false,

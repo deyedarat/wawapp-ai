@@ -85,7 +85,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       if (mounted) context.go('/active-order');
     } on Object catch (e) {
       if (!mounted) return;
-      final msg = e.toString().contains('already taken') || e.toString().contains('failed-precondition')
+      final msg = e.toString().contains('already taken') ||
+              e.toString().contains('failed-precondition')
           ? 'تم أخذ الطلب بالفعل'
           : 'تعذّر قبول الطلب، حاول مرة أخرى';
       ScaffoldMessenger.of(context).showSnackBar(

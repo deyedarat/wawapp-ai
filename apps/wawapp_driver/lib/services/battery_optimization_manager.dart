@@ -25,17 +25,20 @@ class BatteryOptimizationManager {
   /// Check if app is exempt from battery optimization.
   Future<bool> isExemptFromBatteryOptimization() async {
     try {
-      final result = await _channel.invokeMethod<bool>('isBatteryOptimizationDisabled');
+      final result =
+          await _channel.invokeMethod<bool>('isBatteryOptimizationDisabled');
       _isExempt = result ?? false;
 
       if (kDebugMode) {
-        debugPrint('[BatteryOptimization] Status: ${_isExempt! ? "✅ Exempt" : "❌ Not exempt"}');
+        debugPrint(
+            '[BatteryOptimization] Status: ${_isExempt! ? "✅ Exempt" : "❌ Not exempt"}');
       }
 
       return _isExempt!;
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[BatteryOptimization] ❌ Error checking status: ${e.message}');
+        debugPrint(
+            '[BatteryOptimization] ❌ Error checking status: ${e.message}');
       }
       return false;
     }
@@ -58,7 +61,8 @@ class BatteryOptimizationManager {
 
     try {
       // Request exemption (opens system settings)
-      final result = await _channel.invokeMethod<bool>('requestBatteryOptimizationExemption');
+      final result = await _channel
+          .invokeMethod<bool>('requestBatteryOptimizationExemption');
 
       // Mark that we've requested exemption
       await _markExemptionRequested();
@@ -72,7 +76,8 @@ class BatteryOptimizationManager {
       return await isExemptFromBatteryOptimization();
     } on PlatformException catch (e) {
       if (kDebugMode) {
-        debugPrint('[BatteryOptimization] ❌ Error requesting exemption: ${e.message}');
+        debugPrint(
+            '[BatteryOptimization] ❌ Error requesting exemption: ${e.message}');
       }
       return false;
     }
@@ -91,8 +96,7 @@ class BatteryOptimizationManager {
     // Check if we asked recently
     final lastCheck = await _getLastCheckTimestamp();
     if (lastCheck != null) {
-      final hoursSinceLastCheck =
-          DateTime.now().difference(lastCheck).inHours;
+      final hoursSinceLastCheck = DateTime.now().difference(lastCheck).inHours;
       if (hoursSinceLastCheck < 24) {
         if (kDebugMode) {
           debugPrint(

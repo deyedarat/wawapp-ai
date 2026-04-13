@@ -22,7 +22,9 @@ class OrdersService {
   static Map<String, dynamic> _deepCastMap(Map map) {
     return map.map((key, value) {
       if (value is Map) return MapEntry(key.toString(), _deepCastMap(value));
-      if (value is List) return MapEntry(key.toString(), value.map((e) => e is Map ? _deepCastMap(e) : e).toList());
+      if (value is List)
+        return MapEntry(key.toString(),
+            value.map((e) => e is Map ? _deepCastMap(e) : e).toList());
       return MapEntry(key.toString(), value);
     });
   }
@@ -45,7 +47,8 @@ class OrdersService {
     }
 
     try {
-      final callable = FirebaseFunctions.instance.httpsCallable('getNearbyOrders');
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('getNearbyOrders');
       final result = await callable.call({
         'lat': driverPosition.latitude,
         'lng': driverPosition.longitude,
@@ -55,7 +58,8 @@ class OrdersService {
       final rawOrders = (data['orders'] as List<dynamic>?) ?? [];
 
       if (kDebugMode) {
-        dev.log('[Matching] ✅ Cloud Function returned ${rawOrders.length} orders');
+        dev.log(
+            '[Matching] ✅ Cloud Function returned ${rawOrders.length} orders');
       }
 
       final orders = rawOrders.map((o) {
@@ -64,12 +68,14 @@ class OrdersService {
         // Handle Timestamp conversion if necessary
         // Cloud Functions might return ISO strings or Maps for Timestamps
         if (orderMap['createdAt'] is String) {
-          orderMap['createdAt'] = Timestamp.fromDate(DateTime.parse(orderMap['createdAt']));
+          orderMap['createdAt'] =
+              Timestamp.fromDate(DateTime.parse(orderMap['createdAt']));
         } else if (orderMap['createdAt'] is Map) {
           // Handle {_seconds: ..., _nanoseconds: ...} structure if present
           final t = orderMap['createdAt'];
           if (t['_seconds'] != null) {
-            orderMap['createdAt'] = Timestamp(t['_seconds'], t['_nanoseconds'] ?? 0);
+            orderMap['createdAt'] =
+                Timestamp(t['_seconds'], t['_nanoseconds'] ?? 0);
           }
         }
 
@@ -93,7 +99,9 @@ class OrdersService {
   Future<void> acceptOrder(String orderId) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw const AppError(type: AppErrorType.permissionDenied, message: 'Driver not authenticated');
+      throw const AppError(
+          type: AppErrorType.permissionDenied,
+          message: 'Driver not authenticated');
     }
 
     // Set acceptance lock immediately (before server call) to prevent race condition
@@ -118,7 +126,9 @@ class OrdersService {
       await AcceptanceLockManager.clearLock();
 
       if (e.code == 'failed-precondition') {
-        throw const AppError(type: AppErrorType.permissionDenied, message: 'Order was already taken');
+        throw const AppError(
+            type: AppErrorType.permissionDenied,
+            message: 'Order was already taken');
       }
       throw AppError.from(e);
     } on Object catch (e) {
@@ -137,13 +147,17 @@ class OrdersService {
         final orderDoc = await transaction.get(orderRef);
 
         if (!orderDoc.exists) {
-          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+          throw const AppError(
+              type: AppErrorType.notFound, message: 'Order not found');
         }
 
-        final currentStatus = OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
+        final currentStatus =
+            OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
 
         if (!currentStatus.canTransitionTo(to)) {
-          throw const AppError(type: AppErrorType.permissionDenied, message: 'Invalid status transition');
+          throw const AppError(
+              type: AppErrorType.permissionDenied,
+              message: 'Invalid status transition');
         }
 
         final update = to.createTransitionUpdate();
@@ -160,10 +174,13 @@ class OrdersService {
     }
   }
 
-  Future<void> cancelOrder(String orderId, {required CancelReason reason}) async {
+  Future<void> cancelOrder(String orderId,
+      {required CancelReason reason}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw const AppError(type: AppErrorType.permissionDenied, message: 'Driver not authenticated');
+      throw const AppError(
+          type: AppErrorType.permissionDenied,
+          message: 'Driver not authenticated');
     }
 
     try {
@@ -172,20 +189,26 @@ class OrdersService {
         final orderDoc = await transaction.get(orderRef);
 
         if (!orderDoc.exists) {
-          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
+          throw const AppError(
+              type: AppErrorType.notFound, message: 'Order not found');
         }
 
         final data = orderDoc.data()!;
         final driverId = data['driverId'] as String?;
 
         if (driverId != user.uid) {
-          throw const AppError(type: AppErrorType.permissionDenied, message: 'Not authorized to cancel this order');
+          throw const AppError(
+              type: AppErrorType.permissionDenied,
+              message: 'Not authorized to cancel this order');
         }
 
-        final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
+        final currentStatus =
+            OrderStatus.fromFirestore(data['status'] as String);
 
         if (!currentStatus.canDriverCancel) {
-          throw const AppError(type: AppErrorType.permissionDenied, message: 'Cannot cancel order in current status');
+          throw const AppError(
+              type: AppErrorType.permissionDenied,
+              message: 'Cannot cancel order in current status');
         }
 
         transaction.update(
@@ -208,7 +231,8 @@ class OrdersService {
   Stream<List<Order>> getDriverActiveOrders(String driverId) {
     if (kDebugMode) {
       dev.log('[Matching] getDriverActiveOrders called for driver: $driverId');
-      dev.log('[Matching] Query intent: driverId=$driverId, status IN [accepted, onRoute]');
+      dev.log(
+          '[Matching] Query intent: driverId=$driverId, status IN [accepted, onRoute]');
     }
 
     // REQUIRED COMPOSITE INDEX: orders [driverId ASC, status ASC]
@@ -224,7 +248,8 @@ class OrdersService {
         .snapshots()
         .map((snapshot) {
           if (kDebugMode) {
-            dev.log('[Matching] Active orders snapshot: ${snapshot.docs.length} documents');
+            dev.log(
+                '[Matching] Active orders snapshot: ${snapshot.docs.length} documents');
           }
 
           final orders = <Order>[];
@@ -252,7 +277,8 @@ class OrdersService {
                   .map((o) =>
                       '${o.id != null && o.id!.length > 6 ? o.id!.substring(o.id!.length - 6) : o.id ?? 'N/A'}:${o.status}')
                   .join(', ');
-              dev.log('[Matching] Final active orders for driver $driverId: [$orderStatuses]');
+              dev.log(
+                  '[Matching] Final active orders for driver $driverId: [$orderStatuses]');
             } else {
               dev.log('[Matching] No active orders for driver $driverId');
             }

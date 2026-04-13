@@ -59,7 +59,8 @@ class _BugReportScreenState extends ConsumerState<BugReportScreen> {
 
       // Masked phone from authService.lastPhoneE164 (never from log buffer)
       final authService = ref.read(phonePinAuthServiceProvider);
-      final rawPhone = authService.lastPhoneE164 ?? currentUser?.phoneNumber ?? '';
+      final rawPhone =
+          authService.lastPhoneE164 ?? currentUser?.phoneNumber ?? '';
       final maskedPhone = LogService.instance.maskPhone(rawPhone);
 
       // ── 3. Collect logs ───────────────────────────────────────────────────
@@ -70,7 +71,8 @@ class _BugReportScreenState extends ConsumerState<BugReportScreen> {
       final tzOffset = DateTime.now().timeZoneOffset;
       final tzSign = tzOffset.isNegative ? '-' : '+';
       final tzHours = tzOffset.inHours.abs().toString().padLeft(2, '0');
-      final tzMinutes = (tzOffset.inMinutes.abs() % 60).toString().padLeft(2, '0');
+      final tzMinutes =
+          (tzOffset.inMinutes.abs() % 60).toString().padLeft(2, '0');
       final tzString = '$tzSign$tzHours:$tzMinutes';
 
       await FirebaseFirestore.instance.collection('bug_reports').add({
@@ -89,7 +91,8 @@ class _BugReportScreenState extends ConsumerState<BugReportScreen> {
       });
 
       // ── 5. Crashlytics breadcrumb ─────────────────────────────────────────
-      FirebaseCrashlytics.instance.log('Manual bug report submitted by uid=$uid');
+      FirebaseCrashlytics.instance
+          .log('Manual bug report submitted by uid=$uid');
 
       // ── 6. Log to LogService buffer ───────────────────────────────────────
       LogService.instance.addLog(

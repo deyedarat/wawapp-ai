@@ -66,14 +66,18 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                                 const SizedBox(width: AdminSpacing.sm),
                                 Text(
                                   'إجمالي العملاء',
-                                  style: Theme.of(context).textTheme.titleMedium,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                               ],
                             ),
                             const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$totalClients',
-                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineLarge
+                                  ?.copyWith(
                                     color: AdminAppColors.primaryGreen,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -101,14 +105,18 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                                 const SizedBox(width: AdminSpacing.sm),
                                 Text(
                                   'موثّقون',
-                                  style: Theme.of(context).textTheme.titleMedium,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                               ],
                             ),
                             const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$verifiedClients',
-                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineLarge
+                                  ?.copyWith(
                                     color: AdminAppColors.activeBlue,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -136,14 +144,18 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                                 const SizedBox(width: AdminSpacing.sm),
                                 Text(
                                   'محظورون',
-                                  style: Theme.of(context).textTheme.titleMedium,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
                               ],
                             ),
                             const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$blockedClients',
-                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineLarge
+                                  ?.copyWith(
                                     color: AdminAppColors.errorLight,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -211,12 +223,14 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const Icon(Icons.error_outline,
+                        size: 64, color: Colors.red),
                     const SizedBox(height: 16),
                     Text('خطأ في تحميل العملاء: $error'),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => ref.refresh(clientsStreamProvider(_verifiedFilter)),
+                      onPressed: () =>
+                          ref.refresh(clientsStreamProvider(_verifiedFilter)),
                       child: const Text('إعادة المحاولة'),
                     ),
                   ],
@@ -254,195 +268,236 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                             controller: _tableHorizontalController,
                             scrollDirection: Axis.horizontal,
                             child: ConstrainedBox(
-                            constraints: const BoxConstraints(minWidth: 1200),
-                            child: DataTable(
-                              headingRowColor: WidgetStateProperty.all(
-                                AdminAppColors.backgroundLight,
-                              ),
-                              columns: [
-                                DataColumn(
-                                  label: Text(
-                                    'الاسم',
-                                    style: Theme.of(context).textTheme.titleSmall,
-                                  ),
+                              constraints: const BoxConstraints(minWidth: 1200),
+                              child: DataTable(
+                                headingRowColor: WidgetStateProperty.all(
+                                  AdminAppColors.backgroundLight,
                                 ),
-                                DataColumn(
-                                  label: Text(
-                                    'الهاتف',
-                                    style: Theme.of(context).textTheme.titleSmall,
+                                columns: [
+                                  DataColumn(
+                                    label: Text(
+                                      'الاسم',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
                                   ),
-                                ),
-                                DataColumn(
-                                  label: Text(
-                                    'موثّق',
-                                    style: Theme.of(context).textTheme.titleSmall,
+                                  DataColumn(
+                                    label: Text(
+                                      'الهاتف',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
                                   ),
-                                ),
-                                DataColumn(
-                                  label: Text(
-                                    'إجمالي الطلبات',
-                                    style: Theme.of(context).textTheme.titleSmall,
+                                  DataColumn(
+                                    label: Text(
+                                      'موثّق',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
                                   ),
-                                ),
-                                DataColumn(
-                                  label: Text(
-                                    'التقييم',
-                                    style: Theme.of(context).textTheme.titleSmall,
+                                  DataColumn(
+                                    label: Text(
+                                      'إجمالي الطلبات',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
                                   ),
-                                ),
-                                DataColumn(
-                                  label: Text(
-                                    'اللغة المفضلة',
-                                    style: Theme.of(context).textTheme.titleSmall,
+                                  DataColumn(
+                                    label: Text(
+                                      'التقييم',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
                                   ),
-                                ),
-                                DataColumn(
-                                  label: Text(
-                                    'تاريخ التسجيل',
-                                    style: Theme.of(context).textTheme.titleSmall,
+                                  DataColumn(
+                                    label: Text(
+                                      'اللغة المفضلة',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
                                   ),
-                                ),
-                                DataColumn(
-                                  label: Text(
-                                    'الإجراءات',
-                                    style: Theme.of(context).textTheme.titleSmall,
+                                  DataColumn(
+                                    label: Text(
+                                      'تاريخ التسجيل',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
                                   ),
-                                ),
-                              ],
-                              rows: clients.map((client) {
-                                final clientData = client.toJson();
-                                final isBlocked = clientData['isBlocked'] == true;
-                                final isVerified = clientData['isVerified'] == true;
+                                  DataColumn(
+                                    label: Text(
+                                      'الإجراءات',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
+                                  ),
+                                ],
+                                rows: clients.map((client) {
+                                  final clientData = client.toJson();
+                                  final isBlocked =
+                                      clientData['isBlocked'] == true;
+                                  final isVerified =
+                                      clientData['isVerified'] == true;
 
-                                return DataRow(
-                                  cells: [
-                                    DataCell(
-                                      Text(
-                                        client.name,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: isBlocked ? AdminAppColors.textSecondaryLight : null,
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(
+                                        Text(
+                                          client.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: isBlocked
+                                                ? AdminAppColors
+                                                    .textSecondaryLight
+                                                : null,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    DataCell(Text(client.phone)),
-                                    DataCell(
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          if (isVerified)
-                                            const StatusBadge(
-                                              label: 'موثّق',
-                                              color: AdminAppColors.successLight,
-                                            )
-                                          else
-                                            const StatusBadge(
-                                              label: 'غير موثّق',
-                                              color: AdminAppColors.textSecondaryLight,
+                                      DataCell(Text(client.phone)),
+                                      DataCell(
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            if (isVerified)
+                                              const StatusBadge(
+                                                label: 'موثّق',
+                                                color:
+                                                    AdminAppColors.successLight,
+                                              )
+                                            else
+                                              const StatusBadge(
+                                                label: 'غير موثّق',
+                                                color: AdminAppColors
+                                                    .textSecondaryLight,
+                                              ),
+                                            if (isBlocked) ...[
+                                              const SizedBox(
+                                                  width: AdminSpacing.xs),
+                                              const StatusBadge(
+                                                label: 'محظور',
+                                                color:
+                                                    AdminAppColors.errorLight,
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          '${client.totalTrips}',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                              Icons.star,
+                                              size: 16,
+                                              color:
+                                                  AdminAppColors.goldenYellow,
                                             ),
-                                          if (isBlocked) ...[
-                                            const SizedBox(width: AdminSpacing.xs),
-                                            const StatusBadge(
-                                              label: 'محظور',
-                                              color: AdminAppColors.errorLight,
+                                            const SizedBox(
+                                                width: AdminSpacing.xxs),
+                                            Text(
+                                              client.averageRating
+                                                  .toStringAsFixed(1),
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                             ),
                                           ],
-                                        ],
-                                      ),
-                                    ),
-                                    DataCell(
-                                      Text(
-                                        '${client.totalTrips}',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                    ),
-                                    DataCell(
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.star,
-                                            size: 16,
-                                            color: AdminAppColors.goldenYellow,
-                                          ),
-                                          const SizedBox(width: AdminSpacing.xxs),
-                                          Text(
-                                            client.averageRating.toStringAsFixed(1),
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
+                                      DataCell(
+                                        Text(
+                                          _getLanguageLabel(
+                                              client.preferredLanguage),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Text(
+                                          _formatDate(client.createdAt),
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon:
+                                                  const Icon(Icons.visibility),
+                                              onPressed: () {
+                                                _showClientDetails(
+                                                    context, client);
+                                              },
+                                              tooltip: 'عرض التفاصيل',
+                                              color: AdminAppColors.infoLight,
                                             ),
-                                          ),
-                                        ],
+                                            if (!isVerified)
+                                              IconButton(
+                                                icon:
+                                                    const Icon(Icons.verified),
+                                                onPressed: () {
+                                                  _showVerifyDialog(
+                                                      context, client);
+                                                },
+                                                tooltip: 'توثيق العميل',
+                                                color:
+                                                    AdminAppColors.successLight,
+                                              )
+                                            else
+                                              IconButton(
+                                                icon: const Icon(Icons.cancel),
+                                                onPressed: () {
+                                                  _showUnverifyDialog(
+                                                      context, client);
+                                                },
+                                                tooltip: 'إلغاء التوثيق',
+                                                color:
+                                                    AdminAppColors.warningLight,
+                                              ),
+                                            if (!isBlocked)
+                                              IconButton(
+                                                icon: const Icon(Icons.block),
+                                                onPressed: () {
+                                                  _showBlockDialog(
+                                                      context, client);
+                                                },
+                                                tooltip: 'حظر العميل',
+                                                color:
+                                                    AdminAppColors.errorLight,
+                                              )
+                                            else
+                                              IconButton(
+                                                icon: const Icon(
+                                                    Icons.check_circle),
+                                                onPressed: () {
+                                                  _showUnblockDialog(
+                                                      context, client);
+                                                },
+                                                tooltip: 'إلغاء الحظر',
+                                                color:
+                                                    AdminAppColors.successLight,
+                                              ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    DataCell(
-                                      Text(
-                                        _getLanguageLabel(client.preferredLanguage),
-                                      ),
-                                    ),
-                                    DataCell(
-                                      Text(
-                                        _formatDate(client.createdAt),
-                                        style: const TextStyle(fontSize: 12),
-                                      ),
-                                    ),
-                                    DataCell(
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          IconButton(
-                                            icon: const Icon(Icons.visibility),
-                                            onPressed: () {
-                                              _showClientDetails(context, client);
-                                            },
-                                            tooltip: 'عرض التفاصيل',
-                                            color: AdminAppColors.infoLight,
-                                          ),
-                                          if (!isVerified)
-                                            IconButton(
-                                              icon: const Icon(Icons.verified),
-                                              onPressed: () {
-                                                _showVerifyDialog(context, client);
-                                              },
-                                              tooltip: 'توثيق العميل',
-                                              color: AdminAppColors.successLight,
-                                            )
-                                          else
-                                            IconButton(
-                                              icon: const Icon(Icons.cancel),
-                                              onPressed: () {
-                                                _showUnverifyDialog(context, client);
-                                              },
-                                              tooltip: 'إلغاء التوثيق',
-                                              color: AdminAppColors.warningLight,
-                                            ),
-                                          if (!isBlocked)
-                                            IconButton(
-                                              icon: const Icon(Icons.block),
-                                              onPressed: () {
-                                                _showBlockDialog(context, client);
-                                              },
-                                              tooltip: 'حظر العميل',
-                                              color: AdminAppColors.errorLight,
-                                            )
-                                          else
-                                            IconButton(
-                                              icon: const Icon(Icons.check_circle),
-                                              onPressed: () {
-                                                _showUnblockDialog(context, client);
-                                              },
-                                              tooltip: 'إلغاء الحظر',
-                                              color: AdminAppColors.successLight,
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }).toList(),
-                            ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
                             ),
                           ),
                         ),
@@ -518,7 +573,8 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                   'اللغة المفضلة:',
                   _getLanguageLabel(client.preferredLanguage),
                 ),
-                _buildDetailRow('تاريخ التسجيل:', _formatDate(client.createdAt)),
+                _buildDetailRow(
+                    'تاريخ التسجيل:', _formatDate(client.createdAt)),
                 _buildDetailRow('آخر تحديث:', _formatDate(client.updatedAt)),
               ],
             ),
@@ -578,16 +634,21 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
               );
 
               final service = ref.read(adminClientsServiceProvider);
-              final success = await service.setClientVerification(client.id, true);
+              final success =
+                  await service.setClientVerification(client.id, true);
 
               if (mounted) {
                 messenger.hideCurrentSnackBar();
                 messenger.showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? 'تم توثيق العميل \${client.name}' : 'فشل توثيق العميل',
+                      success
+                          ? 'تم توثيق العميل \${client.name}'
+                          : 'فشل توثيق العميل',
                     ),
-                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                    backgroundColor: success
+                        ? AdminAppColors.successLight
+                        : AdminAppColors.errorLight,
                   ),
                 );
               }
@@ -622,16 +683,21 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
               );
 
               final service = ref.read(adminClientsServiceProvider);
-              final success = await service.setClientVerification(client.id, false);
+              final success =
+                  await service.setClientVerification(client.id, false);
 
               if (mounted) {
                 messenger.hideCurrentSnackBar();
                 messenger.showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? 'تم إلغاء توثيق العميل \${client.name}' : 'فشل إلغاء التوثيق',
+                      success
+                          ? 'تم إلغاء توثيق العميل \${client.name}'
+                          : 'فشل إلغاء التوثيق',
                     ),
-                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                    backgroundColor: success
+                        ? AdminAppColors.successLight
+                        : AdminAppColors.errorLight,
                   ),
                 );
               }
@@ -685,7 +751,9 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
               final service = ref.read(adminClientsServiceProvider);
               final success = await service.blockClient(
                 client.id,
-                reason: reasonController.text.isNotEmpty ? reasonController.text : null,
+                reason: reasonController.text.isNotEmpty
+                    ? reasonController.text
+                    : null,
               );
 
               if (mounted) {
@@ -693,9 +761,13 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                 messenger.showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? 'تم حظر العميل \${client.name}' : 'فشل حظر العميل',
+                      success
+                          ? 'تم حظر العميل \${client.name}'
+                          : 'فشل حظر العميل',
                     ),
-                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                    backgroundColor: success
+                        ? AdminAppColors.successLight
+                        : AdminAppColors.errorLight,
                   ),
                 );
               }
@@ -737,9 +809,13 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                 messenger.showSnackBar(
                   SnackBar(
                     content: Text(
-                      success ? 'تم إلغاء حظر العميل \${client.name}' : 'فشل إلغاء الحظر',
+                      success
+                          ? 'تم إلغاء حظر العميل \${client.name}'
+                          : 'فشل إلغاء الحظر',
                     ),
-                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                    backgroundColor: success
+                        ? AdminAppColors.successLight
+                        : AdminAppColors.errorLight,
                   ),
                 );
               }

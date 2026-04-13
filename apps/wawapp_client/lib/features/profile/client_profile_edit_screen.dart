@@ -133,7 +133,8 @@ class _ClientProfileEditScreenState
       // Bug #5 FIX: Detect phone number change and require OTP verification
       final originalPhone = currentProfile?.phone ?? '';
       final newPhone = _phoneController.text.trim();
-      final phoneChanged = originalPhone.isNotEmpty && originalPhone != newPhone;
+      final phoneChanged =
+          originalPhone.isNotEmpty && originalPhone != newPhone;
 
       if (phoneChanged) {
         // Phone number changed - require OTP verification

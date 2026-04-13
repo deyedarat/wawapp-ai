@@ -43,8 +43,7 @@ class _NotificationHealthScreenState
       final monitor = NotificationHealthMonitor();
       final report = await monitor.checkHealth();
       final retryStats = NotificationRetryService().getStatistics();
-      final recoveryStats =
-          await MissedNotificationRecovery().getStatistics();
+      final recoveryStats = await MissedNotificationRecovery().getStatistics();
 
       setState(() {
         _report = report;
@@ -313,7 +312,8 @@ class _NotificationHealthScreenState
             ),
             const Divider(),
             if (_retryStats != null) ...[
-              _buildStatItem('قائمة إعادة المحاولة', '${_retryStats!.queueSize}'),
+              _buildStatItem(
+                  'قائمة إعادة المحاولة', '${_retryStats!.queueSize}'),
               _buildStatItem(
                 'إعادة محاولات حديثة',
                 '${_retryStats!.recentRetries}',

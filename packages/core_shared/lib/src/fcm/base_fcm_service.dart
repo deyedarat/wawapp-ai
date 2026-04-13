@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 /// Base FCM service providing common Firebase Cloud Messaging infrastructure
 /// for both client and driver apps.
@@ -108,7 +107,6 @@ abstract class BaseFCMService {
   /// 3. Save token to Firestore
   /// 4. Setup token refresh listener
   /// 5. Setup notification handlers
-  /// 6. Initialize dynamic links
   Future<void> initialize(BuildContext context) async {
     try {
       final permission = await requestPermission();
@@ -138,9 +136,6 @@ abstract class BaseFCMService {
 
       // Setup notification tap handlers
       setupNotificationHandlers(context);
-
-      // Initialize dynamic links
-      await _initDynamicLinks(context);
     } on Object catch (e) {
       if (kDebugMode) {
         debugPrint('[FCM] Initialization error: $e');
@@ -294,40 +289,6 @@ abstract class BaseFCMService {
         }
       }
     });
-  }
-
-  /// Initialize Firebase Dynamic Links.
-  ///
-  /// Handles deep links when:
-  /// - App opens from terminated state via deep link
-  /// - App receives deep link while running
-  Future<void> _initDynamicLinks(BuildContext context) async {
-    try {
-      // Handle initial link (app opened from terminated state via deep link)
-      final PendingDynamicLinkData? initialLink =
-          await FirebaseDynamicLinks.instance.getInitialLink();
-      if (initialLink != null && context.mounted) {
-        handleDeepLink(context, initialLink.link);
-      }
-
-      // Handle links while app is running (foreground/background)
-      FirebaseDynamicLinks.instance.onLink.listen(
-        (dynamicLinkData) {
-          if (context.mounted) {
-            handleDeepLink(context, dynamicLinkData.link);
-          }
-        },
-        onError: (error) {
-          if (kDebugMode) {
-            debugPrint('[FCM] Dynamic link error: $error');
-          }
-        },
-      );
-    } on Object catch (e) {
-      if (kDebugMode) {
-        debugPrint('[FCM] Dynamic links initialization error: $e');
-      }
-    }
   }
 
   /// Extract order ID from deep link path.

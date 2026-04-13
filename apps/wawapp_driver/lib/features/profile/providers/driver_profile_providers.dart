@@ -9,11 +9,13 @@ import '../../../services/analytics_service.dart';
 import '../../auth/providers/auth_service_provider.dart';
 import '../data/driver_profile_repository.dart';
 
-final driverProfileRepositoryProvider = Provider<DriverProfileRepository>((ref) {
+final driverProfileRepositoryProvider =
+    Provider<DriverProfileRepository>((ref) {
   return DriverProfileRepository(firestore: FirebaseFirestore.instance);
 });
 
-final driverProfileStreamProvider = StreamProvider.autoDispose<DriverProfile?>((ref) {
+final driverProfileStreamProvider =
+    StreamProvider.autoDispose<DriverProfile?>((ref) {
   // Return mock profile for Test Lab mode
   if (TestLabFlags.safeEnabled) {
     return Stream.value(TestLabMockData.mockDriverProfile);
@@ -25,7 +27,8 @@ final driverProfileStreamProvider = StreamProvider.autoDispose<DriverProfile?>((
   // This flag is set to false BEFORE any auth transitions (OTP, PIN reset, logout)
   if (!authState.isStreamsSafeToRun || authState.user == null) {
     if (kDebugMode && !authState.isStreamsSafeToRun) {
-      print('[DriverProfile] Streams disabled by auth system - stopping Firestore stream');
+      print(
+          '[DriverProfile] Streams disabled by auth system - stopping Firestore stream');
     }
     return Stream.value(null);
   }
@@ -80,7 +83,8 @@ class DriverProfileUpdateState {
 class DriverProfileNotifier extends StateNotifier<DriverProfileUpdateState> {
   final DriverProfileRepository _repository;
 
-  DriverProfileNotifier(this._repository) : super(const DriverProfileUpdateState());
+  DriverProfileNotifier(this._repository)
+      : super(const DriverProfileUpdateState());
 
   Future<void> updateProfile(DriverProfile profile) async {
     state = state.copyWith(isLoading: true, error: null);
@@ -113,7 +117,9 @@ class DriverProfileNotifier extends StateNotifier<DriverProfileUpdateState> {
   }
 }
 
-final driverProfileNotifierProvider = StateNotifierProvider<DriverProfileNotifier, DriverProfileUpdateState>((ref) {
+final driverProfileNotifierProvider =
+    StateNotifierProvider<DriverProfileNotifier, DriverProfileUpdateState>(
+        (ref) {
   final repository = ref.watch(driverProfileRepositoryProvider);
   return DriverProfileNotifier(repository);
 });

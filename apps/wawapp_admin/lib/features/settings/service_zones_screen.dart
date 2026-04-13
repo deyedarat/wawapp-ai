@@ -141,7 +141,8 @@ class ServiceZonesScreen extends ConsumerWidget {
               childAspectRatio: 1.8,
             ),
             itemCount: zones.length,
-            itemBuilder: (context, index) => _buildZoneCard(context, zones[index]),
+            itemBuilder: (context, index) =>
+                _buildZoneCard(context, zones[index]),
           ),
         ],
       ),
@@ -168,11 +169,15 @@ class ServiceZonesScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(value,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold, color: color)),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold, color: color)),
                 Text(label,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AdminAppColors.textSecondaryLight)),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AdminAppColors.textSecondaryLight)),
               ],
             ),
           ],
@@ -197,8 +202,7 @@ class ServiceZonesScreen extends ConsumerWidget {
                             ? AdminAppColors.primaryGreen
                             : AdminAppColors.textSecondaryLight)
                         .withOpacity(0.1),
-                    borderRadius:
-                        BorderRadius.circular(AdminSpacing.radiusSm),
+                    borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
                   ),
                   child: Icon(
                     Icons.location_on,
@@ -245,8 +249,10 @@ class ServiceZonesScreen extends ConsumerWidget {
               const SizedBox(height: AdminSpacing.xs),
               Text(
                 zone.description,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AdminAppColors.textSecondaryLight),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: AdminAppColors.textSecondaryLight),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -257,16 +263,14 @@ class ServiceZonesScreen extends ConsumerWidget {
               children: [
                 TextButton.icon(
                   onPressed: () => _showZoneDialog(context, zone),
-                  icon:
-                      const Icon(Icons.edit, size: 16),
+                  icon: const Icon(Icons.edit, size: 16),
                   label: const Text('تعديل'),
                   style: TextButton.styleFrom(
                       foregroundColor: AdminAppColors.activeBlue),
                 ),
                 TextButton.icon(
                   onPressed: () => _confirmDelete(context, zone),
-                  icon:
-                      const Icon(Icons.delete, size: 16),
+                  icon: const Icon(Icons.delete, size: 16),
                   label: const Text('حذف'),
                   style: TextButton.styleFrom(
                       foregroundColor: AdminAppColors.errorLight),
@@ -289,15 +293,13 @@ class ServiceZonesScreen extends ConsumerWidget {
   void _showZoneDialog(BuildContext context, ServiceZone? existing) {
     final nameCtrl = TextEditingController(text: existing?.name ?? '');
     final cityCtrl = TextEditingController(text: existing?.city ?? '');
-    final descCtrl =
-        TextEditingController(text: existing?.description ?? '');
+    final descCtrl = TextEditingController(text: existing?.description ?? '');
     final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(
-            existing == null ? 'إضافة منطقة مخدومة' : 'تعديل المنطقة'),
+        title: Text(existing == null ? 'إضافة منطقة مخدومة' : 'تعديل المنطقة'),
         content: SizedBox(
           width: 400,
           child: Form(
@@ -317,14 +319,13 @@ class ServiceZonesScreen extends ConsumerWidget {
                 TextFormField(
                   controller: cityCtrl,
                   decoration: const InputDecoration(
-                      labelText: 'المدينة',
-                      hintText: 'مثال: نواكشوط'),
+                      labelText: 'المدينة', hintText: 'مثال: نواكشوط'),
                 ),
                 const SizedBox(height: AdminSpacing.md),
                 TextFormField(
                   controller: descCtrl,
-                  decoration: const InputDecoration(
-                      labelText: 'الوصف (اختياري)'),
+                  decoration:
+                      const InputDecoration(labelText: 'الوصف (اختياري)'),
                   maxLines: 2,
                 ),
               ],
@@ -333,8 +334,7 @@ class ServiceZonesScreen extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('إلغاء')),
+              onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: AdminAppColors.primaryGreen,
@@ -376,8 +376,7 @@ class ServiceZonesScreen extends ConsumerWidget {
         content: Text('هل أنت متأكد من حذف المنطقة "${zone.name}"؟'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('إلغاء')),
+              onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
@@ -387,8 +386,7 @@ class ServiceZonesScreen extends ConsumerWidget {
                   .delete();
               if (ctx.mounted) Navigator.pop(ctx);
             },
-            child:
-                const Text('حذف', style: TextStyle(color: Colors.white)),
+            child: const Text('حذف', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

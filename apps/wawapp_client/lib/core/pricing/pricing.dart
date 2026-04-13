@@ -68,7 +68,8 @@ class Pricing {
     final afterShipment = rawTotal * multiplier;
 
     // Apply antigravity factor ×2.2
-    final afterAntigravity = afterShipment * PricingConfig.antigravityMultiplier;
+    final afterAntigravity =
+        afterShipment * PricingConfig.antigravityMultiplier;
 
     // Apply minimum fare
     final withMin = afterAntigravity < PricingConfig.minFare

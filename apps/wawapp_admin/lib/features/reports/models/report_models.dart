@@ -80,7 +80,8 @@ class FinancialReportData {
 
   factory FinancialReportData.fromJson(Map<String, dynamic> json) {
     return FinancialReportData(
-      summary: FinancialSummary.fromJson(json['summary'] as Map<String, dynamic>? ?? {}),
+      summary: FinancialSummary.fromJson(
+          json['summary'] as Map<String, dynamic>? ?? {}),
       dailyBreakdown: (json['dailyBreakdown'] as List<dynamic>?)
               ?.map((e) => DailyFinancial.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -123,7 +124,8 @@ class FinancialSummary {
       averageCommissionRate: json['averageCommissionRate'] as int? ?? 0,
       // Phase 5.5: Wallet & Payout metrics
       totalPayoutsInPeriod: json['totalPayoutsInPeriod'] as int? ?? 0,
-      totalDriverOutstandingBalance: json['totalDriverOutstandingBalance'] as int? ?? 0,
+      totalDriverOutstandingBalance:
+          json['totalDriverOutstandingBalance'] as int? ?? 0,
       platformWalletBalance: json['platformWalletBalance'] as int? ?? 0,
     );
   }
@@ -188,7 +190,8 @@ class DriverPerformanceReportData {
   factory DriverPerformanceReportData.fromJson(Map<String, dynamic> json) {
     return DriverPerformanceReportData(
       drivers: (json['drivers'] as List<dynamic>?)
-              ?.map((e) => DriverPerformance.fromJson(e as Map<String, dynamic>))
+              ?.map(
+                  (e) => DriverPerformance.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       periodStart: json['periodStart'] as String? ?? '',

@@ -57,16 +57,16 @@ class NotificationService {
   /// - Android 12+ (API 31+): SCHEDULE_EXACT_ALARM
   /// - Android 14+ (API 34+): USE_FULL_SCREEN_INTENT (separate explicit grant)
   Future<void> _requestFullScreenIntentPermission() async {
-    final android = _localNotifications
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final android = _localNotifications.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
 
     if (android == null) return;
 
     // 1. Exact alarm permission (Android 12+ / API 31+)
     final canSchedule = await android.canScheduleExactNotifications() ?? false;
     if (kDebugMode) {
-      debugPrint('[NotificationService] canScheduleExactNotifications: $canSchedule');
+      debugPrint(
+          '[NotificationService] canScheduleExactNotifications: $canSchedule');
     }
     if (!canSchedule) {
       await android.requestExactAlarmsPermission();
@@ -78,7 +78,8 @@ class NotificationService {
     try {
       await android.requestFullScreenIntentPermission();
       if (kDebugMode) {
-        debugPrint('[NotificationService] requestFullScreenIntentPermission called');
+        debugPrint(
+            '[NotificationService] requestFullScreenIntentPermission called');
       }
     } catch (e) {
       // Permission request not supported on this Android version — safe to ignore
@@ -104,22 +105,32 @@ class NotificationService {
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationService] ⚠️ Native channel creation failed: $e');
+        debugPrint(
+            '[NotificationService] ⚠️ Native channel creation failed: $e');
       }
     }
 
     // Clean up legacy v1-v5 channels (one-time migration)
-    final android = _localNotifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
+    final android = _localNotifications.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
     if (android != null) {
       for (final id in [
-        'new_orders', 'new_orders_v2', 'new_orders_v3', 'new_orders_v4', 'new_orders_v5',
+        'new_orders',
+        'new_orders_v2',
+        'new_orders_v3',
+        'new_orders_v4',
+        'new_orders_v5',
         'new_orders_v6',
-        'unassigned_orders', 'unassigned_orders_v2', 'unassigned_orders_v3',
-        'unassigned_orders_v4', 'unassigned_orders_v5', 'unassigned_orders_v6',
-        'trip_reminders', 'trip_reminders_v5', 'trip_reminders_v6', 'trip_reminders_v7',
+        'unassigned_orders',
+        'unassigned_orders_v2',
+        'unassigned_orders_v3',
+        'unassigned_orders_v4',
+        'unassigned_orders_v5',
+        'unassigned_orders_v6',
+        'trip_reminders',
+        'trip_reminders_v5',
+        'trip_reminders_v6',
+        'trip_reminders_v7',
       ]) {
         await android.deleteNotificationChannel(id);
       }
@@ -160,9 +171,12 @@ class NotificationService {
 
   String _defaultTitle(String? type) {
     switch (type) {
-      case 'acceptance_confirmation': return 'تم قبول الطلب';
-      case 'order_update': return 'تحديث الطلب';
-      default: return '';
+      case 'acceptance_confirmation':
+        return 'تم قبول الطلب';
+      case 'order_update':
+        return 'تحديث الطلب';
+      default:
+        return '';
     }
   }
 
@@ -244,16 +258,14 @@ class NotificationService {
 
     // ── Other notification types → standard notification ──
     final notification = message.notification;
-    final title = notification?.title
-        ?? (data['title'] as String?)
-        ?? _defaultTitle(notificationType);
-    final body = notification?.body
-        ?? (data['body'] as String?)
-        ?? '';
+    final title = notification?.title ??
+        (data['title'] as String?) ??
+        _defaultTitle(notificationType);
+    final body = notification?.body ?? (data['body'] as String?) ?? '';
     if (title.isEmpty && body.isEmpty) return;
     final payload = jsonEncode(data);
-    final notificationId = orderId?.hashCode
-        ?? (orderId != null ? orderId.hashCode : payload.hashCode);
+    final notificationId = orderId?.hashCode ??
+        (orderId != null ? orderId.hashCode : payload.hashCode);
 
     String channelId;
     String channelName;
@@ -399,40 +411,6 @@ class NotificationService {
     _navigateToFullScreen(notificationData);
   }
 
-  /// Show full-screen notification using native Android code (PRIMARY METHOD).
-  /// This method uses MethodChannel to call Kotlin code directly, which ensures:
-  /// - Full-screen intent works even on lock screen
-  /// - Bypass DND mode
-  /// - Maximum priority (like phone calls)
-  /// - Sound repeats 3 times automatically
-  Future<void> _showFullScreenNotificationViaNative(
-    FullScreenNotificationData data,
-    String notificationType,
-  ) async {
-    try {
-      await NotificationMethodChannel.showFullScreenNotification(
-        orderId: data.orderId,
-        title: 'طلب جديد قريب منك',
-        body: '${data.pickupLabel} → ${data.dropoffLabel}',
-        pickupLabel: data.pickupLabel,
-        dropoffLabel: data.dropoffLabel,
-        price: data.price,
-        distance: data.distance,
-        createdAt: data.createdAtMs ?? DateTime.now().millisecondsSinceEpoch,
-        notificationType: notificationType,
-      );
-      if (kDebugMode) {
-        debugPrint('[NotificationService] ✅ Native full-screen notification sent');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('[NotificationService] ⚠️ Native notification failed: $e');
-        debugPrint('[NotificationService] ↪️ Falling back to flutter_local_notifications');
-      }
-      // Fallback is already handled by the code that follows this call
-    }
-  }
-
   /// Navigate to the full-screen notification screen via GoRouter.
   /// Improved with retry mechanism for better reliability.
   void _navigateToFullScreen(FullScreenNotificationData data) {
@@ -497,12 +475,11 @@ class NotificationService {
     }
 
     if (kDebugMode) {
-      debugPrint(
-          '[NotificationService] ✅ Navigating to /trip-start-reminder');
+      debugPrint('[NotificationService] ✅ Navigating to /trip-start-reminder');
     }
 
     try {
-      ctx.go('/trip-start-reminder', extra: data);
+      ctx.push('/trip-start-reminder', extra: data);
     } catch (e) {
       if (kDebugMode) {
         debugPrint('[NotificationService] ❌ Navigation error: $e');
@@ -638,7 +615,7 @@ class NotificationService {
   }
 
   /// Check if driver has an active trip (accepted or on_route).
-  /// IMPORTANT: Firestore stores status as 'accepted' and 'on_route' (with underscore)
+  /// IMPORTANT: Firestore stores status as 'accepted' and 'onRoute' (camelCase)
   Future<bool> _isDriverOnActiveTrip() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return false;
@@ -648,7 +625,7 @@ class NotificationService {
       var snapshot = await FirebaseFirestore.instance
           .collection('orders')
           .where('assignedDriverId', isEqualTo: user.uid)
-          .where('status', whereIn: ['accepted', 'on_route'])
+          .where('status', whereIn: ['accepted', 'onRoute'])
           .limit(1)
           .get();
 
@@ -656,7 +633,7 @@ class NotificationService {
         snapshot = await FirebaseFirestore.instance
             .collection('orders')
             .where('driverId', isEqualTo: user.uid)
-            .where('status', whereIn: ['accepted', 'on_route'])
+            .where('status', whereIn: ['accepted', 'onRoute'])
             .limit(1)
             .get();
       }
@@ -712,8 +689,7 @@ class NotificationService {
       // Handle pending trip start reminder
       if (_pendingTripReminderRoute == '/trip-start-reminder' &&
           _pendingTripReminderData != null) {
-        final data =
-            TripStartReminderData.tryParse(_pendingTripReminderData!);
+        final data = TripStartReminderData.tryParse(_pendingTripReminderData!);
         _pendingTripReminderRoute = null;
         _pendingTripReminderData = null;
         if (data != null) {
@@ -728,6 +704,16 @@ class NotificationService {
         _pendingRoute = null;
         _navigatorKey!.currentContext!.go(route);
       }
+    }
+  }
+
+  /// Called by MissedNotificationRecovery to display a recovered notification.
+  void recoverNotification(Map<String, dynamic> data) {
+    final notificationType = NotificationHelper.resolveType(data);
+    if (notificationType == 'trip_start_reminder') {
+      _showTripReminderNotification(data);
+    } else if (NotificationHelper.isFullScreenType(notificationType)) {
+      _showFullScreenNotification(data);
     }
   }
 }

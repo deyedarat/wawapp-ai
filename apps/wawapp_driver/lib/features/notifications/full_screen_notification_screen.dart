@@ -138,34 +138,46 @@ class _FullScreenNotificationScreenState
     }
   }
 
-  void _reject() async {
+  Future<void> _reject() async {
     _dismissNotification();
+    setState(() => _isLoading = true);
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
-      FirebaseFirestore.instance.collection('driver_rejected_orders').add({
-        'driverId': uid,
-        'orderId': widget.data.orderId,
-        'rejectedAt': FieldValue.serverTimestamp(),
-        'expiresAt': Timestamp.fromDate(
-          DateTime.now().add(const Duration(hours: 24)),
-        ),
-      });
-      if (kDebugMode) {
-        debugPrint('[FullScreenNotif] Order ${widget.data.orderId} rejected');
+      try {
+        await FirebaseFirestore.instance
+            .collection('driver_rejected_orders')
+            .add({
+          'driverId': uid,
+          'orderId': widget.data.orderId,
+          'rejectedAt': FieldValue.serverTimestamp(),
+          'expiresAt': Timestamp.fromDate(
+            DateTime.now().add(const Duration(hours: 24)),
+          ),
+        });
+        if (kDebugMode) {
+          debugPrint('[FullScreenNotif] Order ${widget.data.orderId} rejected');
+        }
+      } on Object catch (e) {
+        if (kDebugMode) {
+          debugPrint('[FullScreenNotif] Failed to write rejection: $e');
+        }
       }
     }
     if (!mounted) return;
+    setState(() => _isLoading = false);
     context.go('/');
   }
 
   void _snooze() {
     _dismissNotification();
     ref.read(snoozeProvider.notifier).scheduleReminder(
-          widget.data.orderId,
-          () {
-            // Callback will be handled by notification service
-          },
-        );
+      widget.data.orderId,
+      () {
+        if (mounted) {
+          context.push('/full-screen-notification', extra: widget.data);
+        }
+      },
+    );
     context.go('/');
   }
 
@@ -225,7 +237,8 @@ class _FullScreenNotificationScreenState
                           icon: const Icon(Icons.check_circle, size: 28),
                           label: const Text(
                             'قبول الطلب',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
@@ -246,7 +259,10 @@ class _FullScreenNotificationScreenState
                               child: ElevatedButton.icon(
                                 onPressed: _reject,
                                 icon: const Icon(Icons.close, size: 22),
-                                label: const Text('رفض', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                label: const Text('رفض',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold)),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFFE53935),
                                   foregroundColor: Colors.white,
@@ -264,7 +280,10 @@ class _FullScreenNotificationScreenState
                               child: ElevatedButton.icon(
                                 onPressed: _snooze,
                                 icon: const Icon(Icons.schedule, size: 22),
-                                label: const Text('لاحقاً', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                label: const Text('لاحقاً',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold)),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFFF59E0B),
                                   foregroundColor: Colors.white,

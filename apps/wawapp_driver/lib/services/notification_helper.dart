@@ -20,7 +20,8 @@ class NotificationHelper {
     String? role,
   }) {
     if (kDebugMode) {
-      print('[NotificationHelper] Processing notification: type=$type, role=$role');
+      print(
+          '[NotificationHelper] Processing notification: type=$type, role=$role');
     }
 
     if (type == null) {

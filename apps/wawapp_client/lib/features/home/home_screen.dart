@@ -62,7 +62,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (hasPermission) {
       await _getCurrentLocation();
     } else {
-      dev.log('Location permission denied, showing manual mode', name: 'WAWAPP_HOME');
+      dev.log('Location permission denied, showing manual mode',
+          name: 'WAWAPP_HOME');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -80,7 +81,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('لم يتمكن من تحديد موقعك الحالي. يرجى التأكد من تفعيل GPS'),
+          content:
+              Text('لم يتمكن من تحديد موقعك الحالي. يرجى التأكد من تفعيل GPS'),
           duration: Duration(seconds: 3),
         ),
       );
@@ -90,7 +92,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _handleLocationSelection(bool isPickup) async {
     final routeState = ref.read(routePickerProvider);
     final initialLoc = isPickup ? routeState.pickup : routeState.dropoff;
-    final initialLabel = isPickup ? routeState.pickupAddress : routeState.dropoffAddress;
+    final initialLabel =
+        isPickup ? routeState.pickupAddress : routeState.dropoffAddress;
 
     final result = await Navigator.push<SelectedLocation>(
       context,
@@ -109,9 +112,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
 
     if (result != null) {
-      ref
-          .read(routePickerProvider.notifier)
-          .setLocationExplicitly(LatLng(result.latitude, result.longitude), result.label, isPickup);
+      ref.read(routePickerProvider.notifier).setLocationExplicitly(
+          LatLng(result.latitude, result.longitude), result.label, isPickup);
     }
   }
 
@@ -168,8 +170,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     dev.log('Distance: ${km}km, Price: ${price}MRU', name: 'WAWAPP_LOC');
 
-    ref.read(quoteProvider.notifier).setPickup(quote_latlng.LatLng(pickup.latitude, pickup.longitude));
-    ref.read(quoteProvider.notifier).setDropoff(quote_latlng.LatLng(dropoff.latitude, dropoff.longitude));
+    ref
+        .read(quoteProvider.notifier)
+        .setPickup(quote_latlng.LatLng(pickup.latitude, pickup.longitude));
+    ref
+        .read(quoteProvider.notifier)
+        .setDropoff(quote_latlng.LatLng(dropoff.latitude, dropoff.longitude));
     ref.read(quoteProvider.notifier).setDistance(km);
     ref.read(quoteProvider.notifier).setPrice(price.round());
 
@@ -252,7 +258,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, AppLocalizations l10n) {
+  PreferredSizeWidget _buildAppBar(
+      BuildContext context, AppLocalizations l10n) {
     final unreadCount = ref.watch(unreadCountProvider);
 
     return AppBar(
@@ -267,7 +274,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onPressed: () => context.push('/notifications'),
               tooltip: 'الإشعارات',
             ),
-            if (unreadCount.asData?.value != null && unreadCount.asData!.value > 0)
+            if (unreadCount.asData?.value != null &&
+                unreadCount.asData!.value > 0)
               Positioned(
                 right: 8,
                 top: 8,
@@ -385,7 +393,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // 1. Try FirebaseAuth displayName first (fastest)
     final firebaseUser = FirebaseAuth.instance.currentUser;
-    if (firebaseUser?.displayName != null && firebaseUser!.displayName!.trim().isNotEmpty) {
+    if (firebaseUser?.displayName != null &&
+        firebaseUser!.displayName!.trim().isNotEmpty) {
       userName = firebaseUser.displayName!.trim();
     }
 
@@ -393,7 +402,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (userName == null) {
       final profileAsync = ref.read(clientProfileStreamProvider);
       final profile = profileAsync.asData?.value;
-      if (profile?.name != null && profile!.name.trim().isNotEmpty && profile.name != 'غير محدد') {
+      if (profile?.name != null &&
+          profile!.name.trim().isNotEmpty &&
+          profile.name != 'غير محدد') {
         userName = profile.name.trim();
       }
     }
@@ -521,7 +532,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               prefixIcon: IconButton(
                 icon: const Icon(Icons.my_location),
                 onPressed: () async {
-                  await ref.read(routePickerProvider.notifier).setCurrentLocation();
+                  await ref
+                      .read(routePickerProvider.notifier)
+                      .setCurrentLocation();
                 },
                 tooltip: 'الموقع الحالي',
               ),
@@ -561,7 +574,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
             readOnly: true,
-            onTap: routeState.mapsEnabled ? () => _handleLocationSelection(true) : null,
+            onTap: routeState.mapsEnabled
+                ? () => _handleLocationSelection(true)
+                : null,
           ),
 
           const SizedBox(height: WawAppSpacing.sm),
@@ -578,7 +593,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 tooltip: 'خيارات الموقع',
                 onSelected: (value) {
                   if (value == 'saved') {
-                    _showSavedLocationsSheet(SavedLocationSelectionMode.dropoff);
+                    _showSavedLocationsSheet(
+                        SavedLocationSelectionMode.dropoff);
                   } else if (value == 'search') {
                     _showPlacesSheet(false);
                   }
@@ -609,7 +625,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
             readOnly: true,
-            onTap: routeState.mapsEnabled ? () => _handleLocationSelection(false) : null,
+            onTap: routeState.mapsEnabled
+                ? () => _handleLocationSelection(false)
+                : null,
           ),
 
           const SizedBox(height: WawAppSpacing.md),
@@ -618,7 +636,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           WawActionButton(
             label: l10n.begin_shipment,
             icon: Icons.arrow_forward,
-            onPressed: (routeState.pickup != null && routeState.dropoff != null) ? _handleCalculatePrice : null,
+            onPressed: (routeState.pickup != null && routeState.dropoff != null)
+                ? _handleCalculatePrice
+                : null,
             isFullWidth: true,
           ),
         ],
@@ -685,10 +705,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Container(
                     width: 70,
                     decoration: BoxDecoration(
-                      color: isSelected ? categoryColor.withOpacity(0.1) : theme.colorScheme.surface,
-                      borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
+                      color: isSelected
+                          ? categoryColor.withOpacity(0.1)
+                          : theme.colorScheme.surface,
+                      borderRadius:
+                          BorderRadius.circular(WawAppSpacing.radiusMd),
                       border: Border.all(
-                        color: isSelected ? categoryColor : WawAppColors.borderLight,
+                        color: isSelected
+                            ? categoryColor
+                            : WawAppColors.borderLight,
                         width: isSelected ? 2 : 1,
                       ),
                     ),
@@ -698,7 +723,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         Icon(
                           type.icon,
                           size: 28,
-                          color: isSelected ? categoryColor : WawAppColors.textSecondaryLight,
+                          color: isSelected
+                              ? categoryColor
+                              : WawAppColors.textSecondaryLight,
                         ),
                         const SizedBox(height: WawAppSpacing.xxs),
                         if (isSelected)
@@ -722,7 +749,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildCurrentShipmentCard(BuildContext context, AppLocalizations l10n) {
+  Widget _buildCurrentShipmentCard(
+      BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
 
     // Placeholder: No active shipment

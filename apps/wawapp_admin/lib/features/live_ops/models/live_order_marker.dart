@@ -81,9 +81,9 @@ class LiveOrderMarker {
   /// Check if order is active (ongoing)
   bool get isActive {
     return status == 'matching' ||
-           status == 'assigning' ||
-           status == 'accepted' || 
-           status == 'onRoute';
+        status == 'assigning' ||
+        status == 'accepted' ||
+        status == 'onRoute';
   }
 
   /// Get order age in minutes
@@ -93,7 +93,8 @@ class LiveOrderMarker {
 
   /// Check if order is anomalous (stuck in assigning for too long)
   bool isAnomalous({int thresholdMinutes = 10}) {
-    return (status == 'matching' || status == 'assigning') && ageMinutes > thresholdMinutes;
+    return (status == 'matching' || status == 'assigning') &&
+        ageMinutes > thresholdMinutes;
   }
 
   /// Get assignment time in minutes (if assigned)

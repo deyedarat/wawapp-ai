@@ -6,7 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// Ensures PopupMenuButton prevents RenderFlex overflow errors
 void main() {
   group('HomeScreen TextField Overflow Prevention', () {
-    testWidgets('Pickup field should not overflow with PopupMenuButton', (tester) async {
+    testWidgets('Pickup field should not overflow with PopupMenuButton',
+        (tester) async {
       // Build a minimal TextField with the new PopupMenuButton suffix
       await tester.pumpWidget(
         MaterialApp(
@@ -52,12 +53,14 @@ void main() {
       );
 
       // Verify the TextField renders without overflow
-      expect(tester.takeException(), isNull, reason: 'Should not throw RenderFlex overflow');
+      expect(tester.takeException(), isNull,
+          reason: 'Should not throw RenderFlex overflow');
       expect(find.byType(TextField), findsOneWidget);
       expect(find.byType(PopupMenuButton<String>), findsOneWidget);
     });
 
-    testWidgets('Dropoff field should not overflow with PopupMenuButton', (tester) async {
+    testWidgets('Dropoff field should not overflow with PopupMenuButton',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -140,7 +143,8 @@ void main() {
       expect(find.text('Option 2'), findsOneWidget);
     });
 
-    testWidgets('TextField should work on small screen without overflow', (tester) async {
+    testWidgets('TextField should work on small screen without overflow',
+        (tester) async {
       // Simulate a small screen (320x568 - iPhone SE size)
       tester.view.physicalSize = const Size(320, 568);
       tester.view.devicePixelRatio = 1.0;
@@ -195,11 +199,13 @@ void main() {
       await tester.pumpAndSettle();
 
       // Should render without overflow even on small screen
-      expect(tester.takeException(), isNull, reason: 'Should not overflow on 320px screen');
+      expect(tester.takeException(), isNull,
+          reason: 'Should not overflow on 320px screen');
       expect(find.byType(TextField), findsNWidgets(2));
     });
 
-    testWidgets('OLD implementation (Row) would overflow - regression check', (tester) async {
+    testWidgets('OLD implementation (Row) would overflow - regression check',
+        (tester) async {
       // This test documents the OLD buggy implementation for reference
       // It should be kept as documentation but marked as expectedToFail
 
@@ -244,7 +250,8 @@ void main() {
       // (This test documents the bug that was fixed)
     }, skip: true); // Skip this test - it's just documentation of the old bug
 
-    testWidgets('PopupMenuButton should be accessible with Riverpod', (tester) async {
+    testWidgets('PopupMenuButton should be accessible with Riverpod',
+        (tester) async {
       // Test integration with Riverpod (as used in actual HomeScreen)
       final container = ProviderContainer();
       addTearDown(container.dispose);
@@ -279,7 +286,8 @@ void main() {
   });
 
   group('RTL Support', () {
-    testWidgets('PopupMenuButton should work correctly in RTL mode', (tester) async {
+    testWidgets('PopupMenuButton should work correctly in RTL mode',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Directionality(

@@ -97,7 +97,9 @@ class _HoverAnimatedContainerState extends State<HoverAnimatedContainer> {
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      cursor: widget.onTap != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      cursor: widget.onTap != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
       child: AnimatedScale(
         scale: _isHovered ? widget.hoverScale : 1.0,
         duration: widget.duration,
@@ -151,9 +153,11 @@ class _AnimatedButtonState extends State<AnimatedButton> {
       child: AnimatedContainer(
         duration: AdminAnimations.fast,
         curve: AdminAnimations.defaultCurve,
-        padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: widget.padding ??
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
-          color: widget.backgroundColor ?? Theme.of(context).colorScheme.primary,
+          color:
+              widget.backgroundColor ?? Theme.of(context).colorScheme.primary,
           borderRadius: widget.borderRadius ?? BorderRadius.circular(8),
           boxShadow: _isPressed
               ? []
@@ -197,7 +201,8 @@ class ShimmerLoading extends StatefulWidget {
   State<ShimmerLoading> createState() => _ShimmerLoadingState();
 }
 
-class _ShimmerLoadingState extends State<ShimmerLoading> with SingleTickerProviderStateMixin {
+class _ShimmerLoadingState extends State<ShimmerLoading>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -269,7 +274,8 @@ class SlideInAnimation extends StatefulWidget {
   State<SlideInAnimation> createState() => _SlideInAnimationState();
 }
 
-class _SlideInAnimationState extends State<SlideInAnimation> with SingleTickerProviderStateMixin {
+class _SlideInAnimationState extends State<SlideInAnimation>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;

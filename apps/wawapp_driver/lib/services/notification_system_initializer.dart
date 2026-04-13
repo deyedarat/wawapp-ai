@@ -19,13 +19,15 @@ class NotificationSystemInitializer {
   static Future<void> initializeAfterLogin() async {
     if (_initialized) {
       if (kDebugMode) {
-        debugPrint('[NotificationSystemInitializer] ✅ Already initialized, skipping');
+        debugPrint(
+            '[NotificationSystemInitializer] ✅ Already initialized, skipping');
       }
       return;
     }
 
     if (kDebugMode) {
-      debugPrint('[NotificationSystemInitializer] 🚀 Starting post-login initialization...');
+      debugPrint(
+          '[NotificationSystemInitializer] 🚀 Starting post-login initialization...');
     }
 
     try {
@@ -36,7 +38,8 @@ class NotificationSystemInitializer {
       final batteryManager = BatteryOptimizationManager();
       if (await batteryManager.shouldRequestExemption()) {
         if (kDebugMode) {
-          debugPrint('[NotificationSystemInitializer] 🔋 Requesting battery exemption...');
+          debugPrint(
+              '[NotificationSystemInitializer] 🔋 Requesting battery exemption...');
         }
         await batteryManager.requestExemption();
       }
@@ -47,13 +50,15 @@ class NotificationSystemInitializer {
       await monitor.logHealthToFirestore(report);
 
       if (kDebugMode) {
-        debugPrint('[NotificationSystemInitializer] 📊 Health score: ${report.score}/100');
+        debugPrint(
+            '[NotificationSystemInitializer] 📊 Health score: ${report.score}/100');
       }
 
       // 4. Auto-repair if needed
       if (report.needsAttention) {
         if (kDebugMode) {
-          debugPrint('[NotificationSystemInitializer] 🔧 Running auto-repair...');
+          debugPrint(
+              '[NotificationSystemInitializer] 🔧 Running auto-repair...');
         }
         await monitor.autoRepair();
       }
@@ -64,11 +69,13 @@ class NotificationSystemInitializer {
       _initialized = true;
 
       if (kDebugMode) {
-        debugPrint('[NotificationSystemInitializer] ✅ Post-login initialization complete');
+        debugPrint(
+            '[NotificationSystemInitializer] ✅ Post-login initialization complete');
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('[NotificationSystemInitializer] ❌ Initialization error: $e');
+        debugPrint(
+            '[NotificationSystemInitializer] ❌ Initialization error: $e');
       }
     }
   }

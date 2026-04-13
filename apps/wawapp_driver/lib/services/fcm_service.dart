@@ -29,8 +29,8 @@ class FCMService extends BaseFCMService {
   ) {
     try {
       final orderId = message.data['orderId'] as String?;
-      final type = message.data['notificationType'] as String?
-          ?? message.data['type'] as String?;
+      final type = message.data['notificationType'] as String? ??
+          message.data['type'] as String?;
 
       if (orderId == null || type == null) {
         if (kDebugMode) {

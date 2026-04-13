@@ -37,7 +37,8 @@ class ReportsFilterBar extends ConsumerWidget {
             decoration: BoxDecoration(
               color: AdminAppColors.primaryGreen.withOpacity(0.1),
               borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-              border: Border.all(color: AdminAppColors.primaryGreen.withOpacity(0.3)),
+              border: Border.all(
+                  color: AdminAppColors.primaryGreen.withOpacity(0.3)),
             ),
             child: Row(
               children: [
@@ -67,7 +68,8 @@ class ReportsFilterBar extends ConsumerWidget {
             label: const Text('نطاق مخصص'),
             style: OutlinedButton.styleFrom(
               foregroundColor: AdminAppColors.primaryGreen,
-              side: BorderSide(color: AdminAppColors.primaryGreen.withOpacity(0.5)),
+              side: BorderSide(
+                  color: AdminAppColors.primaryGreen.withOpacity(0.5)),
             ),
           ),
         ],
@@ -130,7 +132,9 @@ class ReportsFilterBar extends ConsumerWidget {
           child: Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: isSelected ? Colors.white : AdminAppColors.textPrimaryLight,
+                  color: isSelected
+                      ? Colors.white
+                      : AdminAppColors.textPrimaryLight,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
           ),

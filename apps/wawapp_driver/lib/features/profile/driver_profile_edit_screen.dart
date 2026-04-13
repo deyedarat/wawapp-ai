@@ -33,7 +33,7 @@ class _DriverProfileEditScreenState
     profileAsync.whenData((profile) {
       if (profile != null) {
         _nameController.text = profile.name;
-    
+
         _vehiclePlateController.text = profile.vehiclePlate ?? '';
         _vehicleColorController.text = profile.vehicleColor ?? '';
         _cityController.text = profile.city ?? '';
@@ -227,7 +227,6 @@ class _DriverProfileEditScreenState
               ]),
               const SizedBox(height: 24),
               _buildSection('معلومات السيارة', [
-
                 _buildTextField(
                   controller: _vehiclePlateController,
                   label: 'رقم اللوحة *',

@@ -94,7 +94,8 @@ class UpdateRequiredScreen extends StatelessWidget {
 
                 // Message
                 Text(
-                  message ?? 'يرجى تحديث التطبيق للحصول على أحدث الميزات والتحسينات',
+                  message ??
+                      'يرجى تحديث التطبيق للحصول على أحدث الميزات والتحسينات',
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
