@@ -13,11 +13,16 @@ import android.app.KeyguardManager
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.wawapp.driver/notifications"
     private val INTENT_CHANNEL = "com.wawapp.driver/intent_data"
+    private val FCM_FOREGROUND_CHANNEL = "com.wawapp.driver/fcm_foreground"
+    private val NEW_INTENT_CHANNEL = "com.wawapp.driver/new_intent"
+
+    private var newIntentEventSink: EventChannel.EventSink? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +44,29 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+
+        // FCM Foreground Bridge — streams foreground FCM data to Flutter.
+        // MyFirebaseMessagingService calls FcmForegroundBridge.sendMessage() when
+        // the app is in the foreground instead of returning silently.
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, FCM_FOREGROUND_CHANNEL)
+            .setStreamHandler(object : EventChannel.StreamHandler {
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                    FcmForegroundBridge.eventSink = events
+                }
+                override fun onCancel(arguments: Any?) {
+                    FcmForegroundBridge.eventSink = null
+                }
+            })
+
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, NEW_INTENT_CHANNEL)
+            .setStreamHandler(object : EventChannel.StreamHandler {
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                    newIntentEventSink = events
+                }
+                override fun onCancel(arguments: Any?) {
+                    newIntentEventSink = null
+                }
+            })
 
         // Setup Intent Data Channel (for handling notification accept action)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, INTENT_CHANNEL).setMethodCallHandler { call, result ->
@@ -244,7 +272,7 @@ class MainActivity : FlutterActivity() {
      */
     private fun getIntentExtras(): Map<String, String?>? {
         val action = intent?.getStringExtra("action")
-        if (action in listOf("open_order", "reject_order", "snooze_order")) {
+        if (action in listOf("accept_order", "view_order", "reject_order", "snooze_order")) {
             return mapOf(
                 "orderId" to intent?.getStringExtra("orderId"),
                 "notificationType" to intent?.getStringExtra("notificationType"),
@@ -270,11 +298,21 @@ class MainActivity : FlutterActivity() {
         intent?.removeExtra("action")
         intent?.removeExtra("orderId")
         intent?.removeExtra("notificationType")
+        intent?.removeExtra("pickupLabel")
+        intent?.removeExtra("destinationLabel")
+        intent?.removeExtra("elapsedMinutes")
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        // Update the intent so getIntentExtras() can access new data
         setIntent(intent)
+        val action = intent.getStringExtra("action")
+        if (action != null) {
+            newIntentEventSink?.success(mapOf(
+                "action" to action,
+                "orderId" to intent.getStringExtra("orderId"),
+                "notificationType" to intent.getStringExtra("notificationType")
+            ))
+        }
     }
 }

@@ -9,8 +9,11 @@ import android.app.Person
 import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -34,7 +37,9 @@ object NotificationHelper {
 
     private const val CHANNEL_ID_NEW_ORDERS = "new_orders_v7"
     private const val CHANNEL_ID_UNASSIGNED_ORDERS = "unassigned_orders_v7"
-    private const val CHANNEL_ID_TRIP_REMINDERS = "trip_reminders_v7"
+    private const val CHANNEL_ID_TRIP_REMINDERS = "trip_reminders_v8"
+    private const val CHANNEL_ID_ORDER_UPDATES = "order_updates_v1"
+    private const val CHANNEL_ID_ACCEPTANCE = "acceptance_confirmations_v1"
 
     private const val PREFS_NAME = "sound_repeat_prefs"
     private const val REPEAT_DELAY_1_MS = 2000L
@@ -78,6 +83,27 @@ object NotificationHelper {
                 maxChannel(CHANNEL_ID_TRIP_REMINDERS, "تذكيرات بدء الرحلة - أولوية قصوى",
                     "تذكيرات للسائق لبدء الرحلة بعد القبول")
             )
+
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    CHANNEL_ID_ORDER_UPDATES,
+                    "تحديثات الطلبات",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = "تحديثات حالة الطلب"
+                    enableVibration(true)
+                }
+            )
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    CHANNEL_ID_ACCEPTANCE,
+                    "تأكيد القبول",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = "تأكيدات قبول الطلبات"
+                    enableVibration(true)
+                }
+            )
         }
     }
 
@@ -88,7 +114,7 @@ object NotificationHelper {
             "new_orders_v6",
             "unassigned_orders", "unassigned_orders_v2", "unassigned_orders_v3",
             "unassigned_orders_v4", "unassigned_orders_v5", "unassigned_orders_v6",
-            "trip_reminders", "trip_reminders_v5", "trip_reminders_v6",
+            "trip_reminders", "trip_reminders_v5", "trip_reminders_v6", "trip_reminders_v7",
             "order_updates", "acceptance_confirmations"
         ).forEach { id ->
             try { nm.deleteNotificationChannel(id) } catch (_: Exception) {}
@@ -207,10 +233,10 @@ object NotificationHelper {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra("orderId", orderId)
             putExtra("notificationType", "new_order")
-            putExtra("action", "open_order")
+            putExtra("action", "view_order")
         }
         val contentPendingIntent = PendingIntent.getActivity(
-            context, orderId.hashCode(), contentIntent,
+            context, orderId.hashCode() + 3000, contentIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -299,16 +325,16 @@ object NotificationHelper {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationId = orderId.hashCode()
 
-        val tapIntent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        val tripIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
             putExtra("action", "trip_start_reminder")
             putExtra("orderId", orderId)
             putExtra("pickupLabel", pickupLabel)
             putExtra("destinationLabel", destinationLabel)
             putExtra("elapsedMinutes", elapsedMinutes.toString())
         }
-        val tapPendingIntent = PendingIntent.getActivity(
-            context, orderId.hashCode() + 6000, tapIntent,
+        val fullScreenPendingIntent = PendingIntent.getActivity(
+            context, orderId.hashCode() + 6000, tripIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -317,13 +343,15 @@ object NotificationHelper {
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setContentIntent(tapPendingIntent)
-            .setAutoCancel(true)
+            .setFullScreenIntent(fullScreenPendingIntent, true)
+            .setContentIntent(fullScreenPendingIntent)
+            .setAutoCancel(false)
+            .setOngoing(true)
             .setVibrate(longArrayOf(0, 500, 200, 500, 200, 500))
-            .setSound(Uri.parse("android.resource://${context.packageName}/raw/trip_reminder"))
             .setTimeoutAfter(60000)
+            .setDeleteIntent(createDeletePendingIntent(context, orderId))
             .build()
 
         nm.notify(notificationId, notification)
@@ -346,9 +374,9 @@ object NotificationHelper {
 
         // Use the same channels but without full-screen intent
         val channelId = when (notificationType) {
-            "acceptance_confirmation" -> CHANNEL_ID_NEW_ORDERS
-            "order_update" -> CHANNEL_ID_NEW_ORDERS
-            else -> CHANNEL_ID_NEW_ORDERS
+            "acceptance_confirmation" -> CHANNEL_ID_ACCEPTANCE
+            "order_update" -> CHANNEL_ID_ORDER_UPDATES
+            else -> CHANNEL_ID_ORDER_UPDATES
         }
 
         // Create tap intent to open MainActivity
@@ -356,10 +384,10 @@ object NotificationHelper {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra("orderId", orderId)
             putExtra("notificationType", notificationType)
-            putExtra("action", "open_order")
+            putExtra("action", "view_order")
         }
         val tapPendingIntent = PendingIntent.getActivity(
-            context, orderId.hashCode(), tapIntent,
+            context, orderId.hashCode() + 4000, tapIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -432,20 +460,77 @@ object NotificationHelper {
     // =========================================================================
 
     private fun scheduleSoundRepeats(context: Context, orderId: String, notificationId: Int) {
-        // Mark repeats as pending
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .edit()
+        val appContext = context.applicationContext
+
+        // Mark repeats as pending (both slots unplayed)
+        appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
             .putBoolean("pending_$orderId", true)
+            .putBoolean("played_1_$orderId", false)
+            .putBoolean("played_2_$orderId", false)
             .apply()
 
-        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        // PRIMARY: Handler.postDelayed fires reliably while process is alive
+        // (no SCHEDULE_EXACT_ALARM permission required).
+        val handler = Handler(Looper.getMainLooper())
+        handler.postDelayed({
+            if (consumePendingRepeat(appContext, orderId, 1)) {
+                Log.d(TAG, "Handler repeat 1 playing for order $orderId")
+                playSoundOnce(appContext)
+            }
+        }, REPEAT_DELAY_1_MS)
+        handler.postDelayed({
+            if (consumePendingRepeat(appContext, orderId, 2)) {
+                Log.d(TAG, "Handler repeat 2 playing for order $orderId")
+                playSoundOnce(appContext)
+            }
+        }, REPEAT_DELAY_2_MS)
 
-        // Schedule repeat 1 at +2s
-        scheduleOneRepeat(context, am, orderId, notificationId, REPEAT_DELAY_1_MS, requestCodeOffset = 1)
-        // Schedule repeat 2 at +4s
-        scheduleOneRepeat(context, am, orderId, notificationId, REPEAT_DELAY_2_MS, requestCodeOffset = 2)
+        // BACKUP: AlarmManager fires even if process is killed before +2s/+4s.
+        // Uses setExactAndAllowWhileIdle when SCHEDULE_EXACT_ALARM is granted,
+        // falls back to set() otherwise.
+        val am = appContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        scheduleOneRepeat(appContext, am, orderId, notificationId, REPEAT_DELAY_1_MS, repeatNum = 1)
+        scheduleOneRepeat(appContext, am, orderId, notificationId, REPEAT_DELAY_2_MS, repeatNum = 2)
 
-        Log.d(TAG, "Sound repeats scheduled for order $orderId at +${REPEAT_DELAY_1_MS}ms, +${REPEAT_DELAY_2_MS}ms")
+        Log.d(TAG, "Sound repeats scheduled (Handler + AlarmManager) for order $orderId")
+    }
+
+    /**
+     * Atomically consume a repeat slot. Returns true (and marks slot as played)
+     * if the slot was pending and not yet consumed. Returns false if already
+     * played (by Handler or AlarmManager) or if the order was cancelled.
+     */
+    fun consumePendingRepeat(context: Context, orderId: String, repeatNum: Int): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        if (!prefs.getBoolean("pending_$orderId", false)) return false  // cancelled
+        val playedKey = "played_${repeatNum}_$orderId"
+        if (prefs.getBoolean(playedKey, false)) return false  // already played
+        prefs.edit().putBoolean(playedKey, true).apply()
+        return true
+    }
+
+    /**
+     * Play trip_reminder.wav once using USAGE_ALARM to bypass DND.
+     */
+    fun playSoundOnce(context: Context) {
+        try {
+            val soundUri = Uri.parse("android.resource://${context.packageName}/raw/trip_reminder")
+            MediaPlayer().apply {
+                setDataSource(context, soundUri)
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .build()
+                )
+                setOnCompletionListener { it.release() }
+                setOnErrorListener { mp, _, _ -> mp.release(); true }
+                prepare()
+                start()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error playing sound: ${e.message}")
+        }
     }
 
     private fun scheduleOneRepeat(
@@ -454,14 +539,15 @@ object NotificationHelper {
         orderId: String,
         notificationId: Int,
         delayMs: Long,
-        requestCodeOffset: Int
+        repeatNum: Int
     ) {
         val intent = Intent(context, SoundRepeatReceiver::class.java).apply {
             action = SoundRepeatReceiver.ACTION
             putExtra(SoundRepeatReceiver.EXTRA_NOTIFICATION_ID, notificationId)
             putExtra(SoundRepeatReceiver.EXTRA_ORDER_ID, orderId)
+            putExtra(SoundRepeatReceiver.EXTRA_REPEAT_NUM, repeatNum)
         }
-        val requestCode = orderId.hashCode() + 20000 + requestCodeOffset
+        val requestCode = orderId.hashCode() + 20000 + repeatNum
         val pi = PendingIntent.getBroadcast(
             context, requestCode, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -491,10 +577,12 @@ object NotificationHelper {
      * Call when: notification tapped, dismissed, order accepted/rejected.
      */
     fun cancelSoundRepeats(context: Context, orderId: String) {
-        // Clear pending flag
+        // Clear pending flag and played flags
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .remove("pending_$orderId")
+            .remove("played_1_$orderId")
+            .remove("played_2_$orderId")
             .apply()
 
         // Cancel AlarmManager PendingIntents
@@ -512,19 +600,6 @@ object NotificationHelper {
             pi.cancel()
         }
 
-        // Also cancel any leftover repeat notifications (legacy cleanup)
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.cancel(orderId.hashCode() + 1)
-        nm.cancel(orderId.hashCode() + 2)
-
         Log.d(TAG, "Sound repeats cancelled for order $orderId")
-    }
-
-    /**
-     * Check if an order still has pending sound repeats.
-     */
-    fun hasPendingRepeats(context: Context, orderId: String): Boolean {
-        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .getBoolean("pending_$orderId", false)
     }
 }

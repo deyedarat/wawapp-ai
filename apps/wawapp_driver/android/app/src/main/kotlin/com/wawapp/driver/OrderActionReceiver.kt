@@ -38,7 +38,7 @@ class OrderActionReceiver : BroadcastReceiver() {
         val mainIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra("orderId", orderId)
-            putExtra("action", "open_order")
+            putExtra("action", "accept_order")
             putExtra("notificationType", "new_order_accepted")
         }
         context.startActivity(mainIntent)
@@ -54,7 +54,14 @@ class OrderActionReceiver : BroadcastReceiver() {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         nm.cancel(notificationId)
 
-        // Optionally: send decline event to Flutter (via MethodChannel or EventChannel)
+        // Open MainActivity so Flutter's AuthGate writes rejection to driver_rejected_orders.
+        // This mirrors FullScreenNotificationActivity.onRejectClicked() exactly.
+        val mainIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("orderId", orderId)
+            putExtra("action", "reject_order")
+        }
+        context.startActivity(mainIntent)
     }
 
     companion object {

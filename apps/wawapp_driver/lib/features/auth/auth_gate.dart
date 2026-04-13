@@ -46,14 +46,16 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 
     _lastInitializedUserId = userId;
 
-    // Process pending accept action from native notification (lock screen accept button).
-    // FullScreenNotificationActivity.onAcceptClicked() stores the orderId in Intent extras
-    // but Flutter never called getIntentData() — this is the fix.
-    _processPendingIntentAccept(context);
+    _processPendingIntentAccept();
+
+    NotificationMethodChannel.onNewIntent.listen((data) {
+      if (mounted) _processLiveIntent(data);
+    });
   }
 
-  Future<void> _processPendingIntentAccept(BuildContext context) async {
+  Future<void> _processPendingIntentAccept() async {
     final intentData = await NotificationMethodChannel.getIntentData();
+    if (!mounted) return;
     if (intentData == null) return;
 
     final action = intentData['action'];
@@ -61,25 +63,28 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     if (action == null || orderId == null || orderId.isEmpty) return;
 
     await NotificationMethodChannel.clearIntentData();
+    if (!mounted) return;
 
     switch (action) {
-      case 'open_order':
-        await _handleNativeAccept(context, orderId);
+      case 'accept_order':
+        await _handleNativeAccept(orderId);
+      case 'view_order':
+        _navigateToOrderDetails();
       case 'reject_order':
-        await _handleNativeReject(context, orderId);
+        await _handleNativeReject(orderId);
       case 'snooze_order':
-        _handleNativeSnooze(context);
+        _handleNativeSnooze();
       case 'trip_start_reminder':
-        _handleNativeTripReminder(context, intentData);
+        _handleNativeTripReminder(intentData);
     }
   }
 
-  Future<void> _handleNativeAccept(BuildContext context, String orderId) async {
+  Future<void> _handleNativeAccept(String orderId) async {
     try {
       await ref.read(ordersServiceProvider).acceptOrder(orderId);
-      if (mounted && context.mounted) context.go('/active-order');
+      if (mounted) context.go('/active-order');
     } on Object catch (e) {
-      if (!mounted || !context.mounted) return;
+      if (!mounted) return;
       final msg = e.toString().contains('already taken') || e.toString().contains('failed-precondition')
           ? 'تم أخذ الطلب بالفعل'
           : 'تعذّر قبول الطلب، حاول مرة أخرى';
@@ -89,7 +94,25 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     }
   }
 
-  Future<void> _handleNativeReject(BuildContext context, String orderId) async {
+  void _navigateToOrderDetails() {
+    if (mounted) context.go('/');
+  }
+
+  void _processLiveIntent(Map<String, dynamic> data) {
+    final action = data['action'] as String?;
+    final orderId = data['orderId'] as String? ?? '';
+    if (action == null || orderId.isEmpty) return;
+    switch (action) {
+      case 'accept_order':
+        _handleNativeAccept(orderId);
+      case 'reject_order':
+        _handleNativeReject(orderId);
+      case 'view_order':
+        _navigateToOrderDetails();
+    }
+  }
+
+  Future<void> _handleNativeReject(String orderId) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
       try {
@@ -110,17 +133,17 @@ class _AuthGateState extends ConsumerState<AuthGate> {
         if (kDebugMode) debugPrint('[AuthGate] Failed to write rejection: $e');
       }
     }
-    if (mounted && context.mounted) context.go('/');
+    if (mounted) context.go('/');
   }
 
-  void _handleNativeSnooze(BuildContext context) {
+  void _handleNativeSnooze() {
     // Backend will re-notify via unassigned_order_reminder FCM after its own timeout.
     // No local timer needed here since the app was just cold-started.
-    if (mounted && context.mounted) context.go('/');
+    if (mounted) context.go('/');
   }
 
-  void _handleNativeTripReminder(BuildContext context, Map<String, String?> data) {
-    if (!mounted || !context.mounted) return;
+  void _handleNativeTripReminder(Map<String, String?> data) {
+    if (!mounted) return;
     final reminderData = TripStartReminderData.tryParse(data);
     if (reminderData != null) {
       context.push('/trip-start-reminder', extra: reminderData);

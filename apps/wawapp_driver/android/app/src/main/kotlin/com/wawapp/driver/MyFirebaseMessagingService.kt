@@ -1,8 +1,9 @@
 package com.wawapp.driver
 
-import android.app.ActivityManager
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -43,7 +44,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 "trip_start_reminder"
             ) -> {
                 if (isAppInForeground()) {
-                    Log.d(TAG, "Critical notification in foreground → defer to Flutter")
+                    Log.d(TAG, "Critical notification in foreground → forwarding to Flutter via FcmForegroundBridge")
+                    FcmForegroundBridge.sendMessage(message.data)
                     return
                 }
                 handleCriticalNotification(message, type, orderId)
@@ -55,7 +57,25 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 "order_update"
             ) -> {
                 if (isAppInForeground()) {
-                    Log.d(TAG, "Non-critical notification in foreground → defer to Flutter")
+                    Log.d(TAG, "Non-critical notification in foreground → forwarding to Flutter via FcmForegroundBridge")
+                    FcmForegroundBridge.sendMessage(message.data)
+                    return
+                }
+                handleSimpleNotification(message, type, orderId)
+            }
+
+            // Informational notifications: show simple notification
+            type in listOf(
+                "order_cancelled",
+                "order_cancelled_by_client",
+                "timeout_expired",
+                "order_expired_driver",
+                "payment_received",
+                "order_completed",
+                "trip_cancelled_by_client"
+            ) -> {
+                if (isAppInForeground()) {
+                    FcmForegroundBridge.sendMessage(message.data)
                     return
                 }
                 handleSimpleNotification(message, type, orderId)
@@ -141,13 +161,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun isAppInForeground(): Boolean {
-        val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        val appProcesses = am.runningAppProcesses ?: return false
-        val packageName = applicationContext.packageName
-        return appProcesses.any {
-            it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &&
-                it.processName == packageName
-        }
+        // ProcessLifecycleOwner uses the same internal mechanism as Firebase SDK,
+        // ensuring Kotlin and Flutter always agree on foreground state.
+        return ProcessLifecycleOwner.get().lifecycle.currentState
+            .isAtLeast(Lifecycle.State.STARTED)
     }
 
     companion object {

@@ -119,7 +119,7 @@ class NotificationService {
         'new_orders_v6',
         'unassigned_orders', 'unassigned_orders_v2', 'unassigned_orders_v3',
         'unassigned_orders_v4', 'unassigned_orders_v5', 'unassigned_orders_v6',
-        'trip_reminders', 'trip_reminders_v5', 'trip_reminders_v6',
+        'trip_reminders', 'trip_reminders_v5', 'trip_reminders_v6', 'trip_reminders_v7',
       ]) {
         await android.deleteNotificationChannel(id);
       }
@@ -127,7 +127,16 @@ class NotificationService {
   }
 
   Future<void> _setupFirebaseMessaging() async {
+    // Fallback: firebase_messaging onMessage (may never fire if
+    // MyFirebaseMessagingService priority=10 intercepts all messages first).
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+
+    // Primary foreground path: FcmForegroundBridge (Kotlin) forwards the
+    // message here when the app is open, since our native service has
+    // priority=10 and the firebase_messaging plugin never receives it.
+    NotificationMethodChannel.onForegroundMessage.listen((data) {
+      _handleForegroundMessage(RemoteMessage(data: data));
+    });
   }
 
   /// Determine notification color based on type
@@ -146,6 +155,14 @@ class NotificationService {
       case 'order_update':
       default:
         return const Color(0xFF1976D2); // Blue
+    }
+  }
+
+  String _defaultTitle(String? type) {
+    switch (type) {
+      case 'acceptance_confirmation': return 'تم قبول الطلب';
+      case 'order_update': return 'تحديث الطلب';
+      default: return '';
     }
   }
 
@@ -188,20 +205,26 @@ class NotificationService {
       // Don't interrupt driver on active trip with new order alerts
       final isBusy = await _isDriverOnActiveTrip();
       if (isBusy) {
-        if (kDebugMode) {
-          debugPrint(
-            '[NotificationService] Driver has active order, skipping new order notification',
-          );
-        }
+        NotificationLogger.instance.log(
+          eventType: 'skipped',
+          notificationType: notificationType ?? 'unknown',
+          appState: 'foreground',
+          orderId: orderId,
+          escalationLevel: 'active_trip',
+        );
         return;
       }
 
       // Skip if driver already rejected this order
       final oid = data['orderId'] as String?;
       if (oid != null && await _isOrderRejected(oid)) {
-        if (kDebugMode) {
-          debugPrint('[NotificationService] Order $oid was rejected, skipping');
-        }
+        NotificationLogger.instance.log(
+          eventType: 'skipped',
+          notificationType: notificationType ?? 'unknown',
+          appState: 'foreground',
+          orderId: oid,
+          escalationLevel: 'rejected_order',
+        );
         return;
       }
 
@@ -221,10 +244,16 @@ class NotificationService {
 
     // ── Other notification types → standard notification ──
     final notification = message.notification;
-    if (notification == null) return;
-
+    final title = notification?.title
+        ?? (data['title'] as String?)
+        ?? _defaultTitle(notificationType);
+    final body = notification?.body
+        ?? (data['body'] as String?)
+        ?? '';
+    if (title.isEmpty && body.isEmpty) return;
     final payload = jsonEncode(data);
-    final notificationId = orderId?.hashCode ?? notification.hashCode;
+    final notificationId = orderId?.hashCode
+        ?? (orderId != null ? orderId.hashCode : payload.hashCode);
 
     String channelId;
     String channelName;
@@ -249,8 +278,8 @@ class NotificationService {
 
     _localNotifications.show(
       notificationId,
-      notification.title,
-      notification.body,
+      title,
+      body,
       NotificationDetails(
         android: AndroidNotificationDetails(
           channelId,
@@ -336,9 +365,13 @@ class NotificationService {
   void _showFullScreenNotification(Map<String, dynamic> data) {
     final notificationData = FullScreenNotificationData.tryParse(data);
     if (notificationData == null) {
-      if (kDebugMode) {
-        debugPrint('[NotificationService] ❌ Invalid notification data: $data');
-      }
+      NotificationLogger.instance.log(
+        eventType: 'error',
+        notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
+        appState: 'foreground',
+        orderId: data['orderId'] as String?,
+        escalationLevel: 'parse_failed',
+      );
       return;
     }
 
@@ -469,7 +502,7 @@ class NotificationService {
     }
 
     try {
-      ctx.push('/trip-start-reminder', extra: data);
+      ctx.go('/trip-start-reminder', extra: data);
     } catch (e) {
       if (kDebugMode) {
         debugPrint('[NotificationService] ❌ Navigation error: $e');
@@ -615,7 +648,7 @@ class NotificationService {
       var snapshot = await FirebaseFirestore.instance
           .collection('orders')
           .where('assignedDriverId', isEqualTo: user.uid)
-          .where('status', whereIn: ['accepted', 'onRoute'])
+          .where('status', whereIn: ['accepted', 'on_route'])
           .limit(1)
           .get();
 
@@ -623,7 +656,7 @@ class NotificationService {
         snapshot = await FirebaseFirestore.instance
             .collection('orders')
             .where('driverId', isEqualTo: user.uid)
-            .where('status', whereIn: ['accepted', 'onRoute'])
+            .where('status', whereIn: ['accepted', 'on_route'])
             .limit(1)
             .get();
       }

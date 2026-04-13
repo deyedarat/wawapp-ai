@@ -13,6 +13,28 @@ class NotificationMethodChannel {
   static const MethodChannel _channel = MethodChannel('com.wawapp.driver/notifications');
   static const MethodChannel _intentChannel = MethodChannel('com.wawapp.driver/intent_data');
 
+  /// Stream of foreground FCM messages forwarded by [FcmForegroundBridge] (Kotlin).
+  ///
+  /// MyFirebaseMessagingService (priority=10) intercepts ALL FCM messages before
+  /// the firebase_messaging plugin can receive them. When the app is in the
+  /// foreground the service posts the data here instead of returning silently,
+  /// ensuring Flutter always receives the message regardless of priority order.
+  static const EventChannel _fcmForegroundChannel =
+      EventChannel('com.wawapp.driver/fcm_foreground');
+
+  static Stream<Map<String, dynamic>> get onForegroundMessage =>
+      _fcmForegroundChannel
+          .receiveBroadcastStream()
+          .map((event) => Map<String, dynamic>.from(event as Map));
+
+  static const EventChannel _newIntentChannel =
+      EventChannel('com.wawapp.driver/new_intent');
+
+  static Stream<Map<String, dynamic>> get onNewIntent =>
+      _newIntentChannel
+          .receiveBroadcastStream()
+          .map((event) => Map<String, dynamic>.from(event as Map));
+
   /// Show a full-screen notification using native Android code.
   /// This ensures maximum reliability across all Android versions and manufacturers.
   ///
