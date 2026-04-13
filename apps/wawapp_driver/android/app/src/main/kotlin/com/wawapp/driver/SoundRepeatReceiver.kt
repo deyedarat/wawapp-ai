@@ -1,6 +1,5 @@
 package com.wawapp.driver
 
-import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -32,13 +31,7 @@ class SoundRepeatReceiver : BroadcastReceiver() {
         val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, 0)
         val orderId = intent.getStringExtra(EXTRA_ORDER_ID) ?: ""
 
-        // Check if main notification still exists (user didn't dismiss/tap)
-        if (!isNotificationActive(context, notificationId)) {
-            Log.d(TAG, "Main notification $notificationId dismissed, skipping sound repeat")
-            return
-        }
-
-        // Check if repeats were cancelled
+        // Check if repeats were cancelled (user accepted/rejected)
         if (!NotificationHelper.hasPendingRepeats(context, orderId)) {
             Log.d(TAG, "Sound repeats cancelled for order $orderId, skipping")
             return
@@ -46,15 +39,6 @@ class SoundRepeatReceiver : BroadcastReceiver() {
 
         Log.d(TAG, "Playing repeat sound for order $orderId")
         playSoundOnce(context)
-    }
-
-    private fun isNotificationActive(context: Context, notificationId: Int): Boolean {
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            nm.activeNotifications.any { it.id == notificationId }
-        } else {
-            true // Can't check on older APIs, assume active
-        }
     }
 
     private fun playSoundOnce(context: Context) {

@@ -69,11 +69,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     /**
      * Handle critical notifications with full-screen intent (background only).
+     * trip_start_reminder uses a heads-up notification so Flutter opens TripStartReminderScreen.
+     * new_order / unassigned_order_reminder use full-screen intent via FullScreenNotificationActivity.
      */
     private fun handleCriticalNotification(message: RemoteMessage, type: String, orderId: String) {
         Log.d(TAG, "Handling critical notification: type=$type, orderId=$orderId")
 
-        // Ensure channels exist (idempotent — safe to call multiple times)
         NotificationHelper.createNotificationChannels(applicationContext)
 
         val pickupLabel = message.data["pickupLabel"] ?: "موقع الاستلام"
@@ -81,33 +82,33 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             ?: message.data["destinationLabel"]
             ?: "الوجهة"
 
-        val isTripReminder = type == "trip_start_reminder"
-        val title = if (isTripReminder) {
-            message.data["title"] ?: "هل وصلت للعميل؟"
+        if (type == "trip_start_reminder") {
+            val elapsedMinutes = message.data["elapsedMinutes"]?.toIntOrNull() ?: 0
+            NotificationHelper.showTripReminderNotification(
+                context = applicationContext,
+                orderId = orderId,
+                title = message.data["title"] ?: "هل وصلت للعميل؟",
+                body = "مضى $elapsedMinutes دقائق منذ القبول — $pickupLabel",
+                pickupLabel = pickupLabel,
+                destinationLabel = dropoffLabel,
+                elapsedMinutes = elapsedMinutes
+            )
         } else {
-            message.data["title"] ?: "طلب جديد قريب منك"
-        }
-        val body = if (isTripReminder) {
-            "مضى ${message.data["elapsedMinutes"] ?: "?"} دقائق منذ القبول — $pickupLabel"
-        } else {
-            "$pickupLabel → $dropoffLabel"
+            NotificationHelper.showFullScreenNotification(
+                context = applicationContext,
+                orderId = orderId,
+                title = message.data["title"] ?: "طلب جديد قريب منك",
+                body = "$pickupLabel → $dropoffLabel",
+                pickupLabel = pickupLabel,
+                dropoffLabel = dropoffLabel,
+                price = message.data["price"]?.toDoubleOrNull() ?: 0.0,
+                distance = message.data["distance"]?.toDoubleOrNull() ?: 0.0,
+                createdAt = message.data["createdAt"]?.toLongOrNull() ?: System.currentTimeMillis(),
+                notificationType = type
+            )
         }
 
-        NotificationHelper.showFullScreenNotification(
-            context = applicationContext,
-            orderId = orderId,
-            title = title,
-            body = body,
-            pickupLabel = pickupLabel,
-            dropoffLabel = dropoffLabel,
-            price = message.data["price"]?.toDoubleOrNull() ?: 0.0,
-            distance = message.data["distance"]?.toDoubleOrNull() ?: 0.0,
-            createdAt = message.data["createdAt"]?.toLongOrNull()
-                ?: System.currentTimeMillis(),
-            notificationType = type
-        )
-
-        Log.d(TAG, "Full-screen notification shown for order $orderId")
+        Log.d(TAG, "Notification shown for order $orderId, type=$type")
     }
 
     /**

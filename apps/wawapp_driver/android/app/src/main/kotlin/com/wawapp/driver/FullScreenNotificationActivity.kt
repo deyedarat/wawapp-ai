@@ -128,19 +128,28 @@ class FullScreenNotificationActivity : Activity() {
     }
 
     private fun onRejectClicked() {
-        // Cancel sound repeats
         NotificationHelper.cancelSoundRepeats(this, orderId)
 
-        // Just close the activity
+        // Open MainActivity so Flutter can write to driver_rejected_orders
+        val intent = Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            putExtra("orderId", orderId)
+            putExtra("action", "reject_order")
+        }
+        startActivity(intent)
         finish()
     }
 
     private fun onLaterClicked() {
-        // Cancel sound repeats temporarily
         NotificationHelper.cancelSoundRepeats(this, orderId)
 
-        // Optionally: schedule reminder after 5 minutes
-        // For now: just close the activity
+        // Open MainActivity so Flutter can schedule a snooze reminder
+        val intent = Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            putExtra("orderId", orderId)
+            putExtra("action", "snooze_order")
+        }
+        startActivity(intent)
         finish()
 
         Log.d(TAG, "User chose 'Later' for order: $orderId")
@@ -148,8 +157,6 @@ class FullScreenNotificationActivity : Activity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Safety: cancel sound repeats if activity is destroyed
-        NotificationHelper.cancelSoundRepeats(this, orderId)
         Log.d(TAG, "Full-screen notification destroyed: orderId=$orderId")
     }
 

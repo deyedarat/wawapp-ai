@@ -239,16 +239,25 @@ class MainActivity : FlutterActivity() {
     }
 
     /**
-     * Get intent extras from notification accept action.
+     * Get intent extras from notification actions (accept / reject / snooze).
      * Returns null if no data or if already consumed.
      */
     private fun getIntentExtras(): Map<String, String?>? {
         val action = intent?.getStringExtra("action")
-        if (action == "open_order") {
+        if (action in listOf("open_order", "reject_order", "snooze_order")) {
             return mapOf(
                 "orderId" to intent?.getStringExtra("orderId"),
                 "notificationType" to intent?.getStringExtra("notificationType"),
                 "action" to action
+            )
+        }
+        if (action == "trip_start_reminder") {
+            return mapOf(
+                "action" to action,
+                "orderId" to intent?.getStringExtra("orderId"),
+                "pickupLabel" to intent?.getStringExtra("pickupLabel"),
+                "destinationLabel" to intent?.getStringExtra("destinationLabel"),
+                "elapsedMinutes" to intent?.getStringExtra("elapsedMinutes")
             )
         }
         return null

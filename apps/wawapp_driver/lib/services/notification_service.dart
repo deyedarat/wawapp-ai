@@ -116,9 +116,10 @@ class NotificationService {
     if (android != null) {
       for (final id in [
         'new_orders', 'new_orders_v2', 'new_orders_v3', 'new_orders_v4', 'new_orders_v5',
+        'new_orders_v6',
         'unassigned_orders', 'unassigned_orders_v2', 'unassigned_orders_v3',
-        'unassigned_orders_v4', 'unassigned_orders_v5',
-        'trip_reminders', 'trip_reminders_v5',
+        'unassigned_orders_v4', 'unassigned_orders_v5', 'unassigned_orders_v6',
+        'trip_reminders', 'trip_reminders_v5', 'trip_reminders_v6',
       ]) {
         await android.deleteNotificationChannel(id);
       }

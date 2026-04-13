@@ -133,7 +133,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="السعر"
-                        android:textColor="@color/text_secondary_dark"
+                        android:textColor="@color/text_on_card_secondary"
                         android:textSize="12sp"
                         android:layout_marginBottom="4dp" />
 
@@ -159,7 +159,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="المسافة"
-                        android:textColor="@color/text_secondary_dark"
+                        android:textColor="@color/text_on_card_secondary"
                         android:textSize="12sp"
                         android:layout_marginBottom="4dp" />
 
@@ -168,7 +168,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0.0 كم"
-                        android:textColor="@color/text_primary_dark"
+                        android:textColor="@color/text_on_card_primary"
                         android:textSize="18sp"
                         android:textStyle="bold" />
                 </LinearLayout>

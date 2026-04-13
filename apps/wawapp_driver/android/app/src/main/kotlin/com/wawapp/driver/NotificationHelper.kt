@@ -32,9 +32,9 @@ object NotificationHelper {
 
     private const val TAG = "NotificationHelper"
 
-    private const val CHANNEL_ID_NEW_ORDERS = "new_orders_v6"
-    private const val CHANNEL_ID_UNASSIGNED_ORDERS = "unassigned_orders_v6"
-    private const val CHANNEL_ID_TRIP_REMINDERS = "trip_reminders_v6"
+    private const val CHANNEL_ID_NEW_ORDERS = "new_orders_v7"
+    private const val CHANNEL_ID_UNASSIGNED_ORDERS = "unassigned_orders_v7"
+    private const val CHANNEL_ID_TRIP_REMINDERS = "trip_reminders_v7"
 
     private const val PREFS_NAME = "sound_repeat_prefs"
     private const val REPEAT_DELAY_1_MS = 2000L
@@ -85,9 +85,10 @@ object NotificationHelper {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         listOf(
             "new_orders", "new_orders_v2", "new_orders_v3", "new_orders_v4", "new_orders_v5",
+            "new_orders_v6",
             "unassigned_orders", "unassigned_orders_v2", "unassigned_orders_v3",
-            "unassigned_orders_v4", "unassigned_orders_v5",
-            "trip_reminders", "trip_reminders_v5",
+            "unassigned_orders_v4", "unassigned_orders_v5", "unassigned_orders_v6",
+            "trip_reminders", "trip_reminders_v5", "trip_reminders_v6",
             "order_updates", "acceptance_confirmations"
         ).forEach { id ->
             try { nm.deleteNotificationChannel(id) } catch (_: Exception) {}
@@ -133,7 +134,7 @@ object NotificationHelper {
         val notification = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             buildCallStyleNotification(
                 context, orderId, title, body, pickupLabel, dropoffLabel,
-                price, distance, channelId, notificationId
+                price, distance, createdAt, notificationType, channelId, notificationId
             )
         } else {
             // Fallback for Android < 12: use traditional full-screen intent
@@ -163,6 +164,8 @@ object NotificationHelper {
         dropoffLabel: String,
         price: Double,
         distance: Double,
+        createdAt: Long,
+        notificationType: String,
         channelId: String,
         notificationId: Int
     ): Notification {
@@ -194,6 +197,11 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // Full-screen intent → opens FullScreenNotificationActivity on lock screen
+        val fullScreenPendingIntent = createFullScreenPendingIntent(
+            context, orderId, pickupLabel, dropoffLabel, price, distance, createdAt, notificationType
+        )
+
         // Content tap intent → opens MainActivity (when user taps notification body)
         val contentIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -209,9 +217,7 @@ object NotificationHelper {
         // Delete intent
         val deleteIntent = createDeletePendingIntent(context, orderId)
 
-        // Build notification with CallStyle
-        // NOTE: CallStyle handles full-screen behavior automatically on locked screen
-        // No need for setFullScreenIntent() - it causes conflicts
+        // Build notification with CallStyle + full-screen intent
         return Notification.Builder(context, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("$pickupLabel → $dropoffLabel")
@@ -223,6 +229,7 @@ object NotificationHelper {
                     acceptPendingIntent
                 )
             )
+            .setFullScreenIntent(fullScreenPendingIntent, true)
             .setContentIntent(contentPendingIntent)
             .setCategory(Notification.CATEGORY_CALL)
             .setPriority(NotificationManager.IMPORTANCE_HIGH)
@@ -273,6 +280,55 @@ object NotificationHelper {
             .setSound(Uri.parse("android.resource://${context.packageName}/raw/trip_reminder"))
             .setTimeoutAfter(60000)
             .build()
+    }
+
+    /**
+     * Show trip start reminder notification.
+     * Uses high-priority heads-up (not full-screen) so Flutter handles navigation
+     * to TripStartReminderScreen when user taps it.
+     */
+    fun showTripReminderNotification(
+        context: Context,
+        orderId: String,
+        title: String,
+        body: String,
+        pickupLabel: String,
+        destinationLabel: String,
+        elapsedMinutes: Int
+    ) {
+        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationId = orderId.hashCode()
+
+        val tapIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("action", "trip_start_reminder")
+            putExtra("orderId", orderId)
+            putExtra("pickupLabel", pickupLabel)
+            putExtra("destinationLabel", destinationLabel)
+            putExtra("elapsedMinutes", elapsedMinutes.toString())
+        }
+        val tapPendingIntent = PendingIntent.getActivity(
+            context, orderId.hashCode() + 6000, tapIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_TRIP_REMINDERS)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setContentIntent(tapPendingIntent)
+            .setAutoCancel(true)
+            .setVibrate(longArrayOf(0, 500, 200, 500, 200, 500))
+            .setSound(Uri.parse("android.resource://${context.packageName}/raw/trip_reminder"))
+            .setTimeoutAfter(60000)
+            .build()
+
+        nm.notify(notificationId, notification)
+        scheduleSoundRepeats(context, orderId, notificationId)
+        Log.d(TAG, "✓ Trip reminder notification shown: orderId=$orderId")
     }
 
     /**
