@@ -362,6 +362,7 @@ async function sendDriverNotification(
       android: {
         priority: 'high',
         ttl: 60000, // 60s — stale notifications are useless and bypass busy-check
+        collapseKey: `order_${orderId}`,
       },
       apns: {
         payload: {
@@ -477,6 +478,7 @@ async function sendAcceptanceConfirmation(
       android: {
         priority: 'high',
         ttl: 300000, // 5 minutes TTL
+        collapseKey: `order_${orderId}`,
       },
       apns: {
         payload: {

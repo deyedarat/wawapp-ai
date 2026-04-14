@@ -229,6 +229,7 @@ async function sendDriverNotification(
       android: {
         priority: 'high',
         ttl: 60000, // 60s — stale notifications are useless and bypass busy-check
+        collapseKey: `order_${orderId}`,
       },
       apns: {
         payload: {

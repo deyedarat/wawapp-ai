@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:core_shared/core_shared.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -76,6 +77,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
         _handleNativeSnooze();
       case 'trip_start_reminder':
         _handleNativeTripReminder(intentData);
+      case 'start_trip':
+        await _handleNativeStartTrip(orderId);
     }
   }
 
@@ -89,6 +92,21 @@ class _AuthGateState extends ConsumerState<AuthGate> {
               e.toString().contains('failed-precondition')
           ? 'تم أخذ الطلب بالفعل'
           : 'تعذّر قبول الطلب، حاول مرة أخرى';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), backgroundColor: const Color(0xFFE53935)),
+      );
+    }
+  }
+
+  Future<void> _handleNativeStartTrip(String orderId) async {
+    try {
+      await ref.read(ordersServiceProvider).transition(orderId, OrderStatus.onRoute);
+      if (mounted) context.go('/active-order');
+    } on Object catch (e) {
+      if (!mounted) return;
+      final msg = e.toString().contains('Invalid status')
+          ? 'الرحلة بدأت بالفعل'
+          : 'تعذّر بدء الرحلة، حاول مرة أخرى';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(msg), backgroundColor: const Color(0xFFE53935)),
       );
@@ -110,6 +128,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
         _handleNativeReject(orderId);
       case 'view_order':
         _navigateToOrderDetails();
+      case 'start_trip':
+        _handleNativeStartTrip(orderId);
     }
   }
 

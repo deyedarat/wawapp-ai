@@ -58,6 +58,7 @@ async function sendToDriver(
       android: {
         priority: 'high',
         ttl: 120000,
+        collapseKey: data['orderId'] ? `order_${data['orderId']}` : undefined,
       },
       apns: { payload: { aps: { sound: 'trip_reminder.wav', badge: 1, contentAvailable: true } } },
     });
@@ -217,6 +218,7 @@ async function processAcceptedOrder(
           orderData.dropoff
         ),
         elapsedMinutes: String(Math.floor(elapsedMinutes)),
+        createdAt: String(Date.now()),
       },
       'trip_reminders_v9'
     );

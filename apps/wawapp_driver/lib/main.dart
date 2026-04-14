@@ -22,7 +22,6 @@ import 'l10n/app_localizations.dart';
 import 'services/acceptance_lock_manager.dart';
 import 'services/analytics_service.dart';
 import 'services/notification_logger.dart';
-import 'services/notification_performance_logger.dart';
 import 'features/update/force_update_provider.dart';
 import 'features/update/force_update_screen.dart';
 import 'services/connectivity_service.dart';
