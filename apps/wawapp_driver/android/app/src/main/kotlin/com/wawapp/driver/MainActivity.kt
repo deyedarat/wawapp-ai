@@ -122,6 +122,11 @@ class MainActivity : FlutterActivity() {
                     NotificationHelper.cancelSoundRepeats(this, orderId)
                     result.success(null)
                 }
+                "cancelOrderNotification" -> {
+                    val orderId = call.argument<String>("orderId") ?: ""
+                    NotificationHelper.cancelOrderNotification(this, orderId)
+                    result.success(null)
+                }
                 "requestBatteryOptimizationExemption" -> {
                     val granted = requestBatteryOptimizationExemption()
                     result.success(granted)

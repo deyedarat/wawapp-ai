@@ -75,7 +75,7 @@ abstract class BaseFCMService {
   /// - Extract notification data (orderId, type, etc.)
   /// - Navigate to appropriate screen
   /// - Log analytics events
-  void handleNotificationTap(
+  Future<void> handleNotificationTap(
     BuildContext context,
     RemoteMessage message,
     String appState,

@@ -4,8 +4,11 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import java.util.concurrent.TimeUnit
 
 /**
  * Native FCM handler that calls NotificationHelper.kt directly.
@@ -48,7 +51,18 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     FcmForegroundBridge.sendMessage(message.data)
                     return
                 }
-                handleCriticalNotification(message, type, orderId)
+                // Verify order is still matching before showing notification (race condition fix)
+                if (type != "trip_start_reminder" && orderId.isNotBlank()) {
+                    Thread {
+                        if (isOrderStillMatching(orderId)) {
+                            handleCriticalNotification(message, type, orderId)
+                        } else {
+                            Log.d(TAG, "Stale notification dropped: orderId=$orderId")
+                        }
+                    }.start()
+                } else {
+                    handleCriticalNotification(message, type, orderId)
+                }
             }
 
             // Non-critical notifications: Simple heads-up (all states)
@@ -161,6 +175,28 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // ensuring Kotlin and Flutter always agree on foreground state.
         return ProcessLifecycleOwner.get().lifecycle.currentState
             .isAtLeast(Lifecycle.State.STARTED)
+    }
+
+    /**
+     * One-time Firestore read to verify order is still in 'matching' status
+     * and unassigned. Runs on background thread. Fail-open on error.
+     */
+    private fun isOrderStillMatching(orderId: String): Boolean {
+        return try {
+            val task = FirebaseFirestore.getInstance()
+                .collection("orders")
+                .document(orderId)
+                .get()
+            val snapshot = Tasks.await(task, 5, TimeUnit.SECONDS)
+            val status = snapshot.getString("status")
+            val assignedDriverId = snapshot.getString("assignedDriverId")
+            val isMatching = status == "matching" && assignedDriverId == null
+            Log.d(TAG, "Order check: orderId=$orderId, status=$status, assigned=$assignedDriverId, isMatching=$isMatching")
+            isMatching
+        } catch (e: Exception) {
+            Log.w(TAG, "Order check failed (fail-open): orderId=$orderId, error=${e.message}")
+            true // fail open — show notification if check fails
+        }
     }
 
     companion object {
