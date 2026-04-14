@@ -79,6 +79,9 @@ dependencies {
     // Firebase Messaging — required by MyFirebaseMessagingService.kt
     implementation("com.google.firebase:firebase-messaging:24.1.0")
 
+    // Firebase Firestore — required by MyFirebaseMessagingService.kt for order status verification
+    implementation("com.google.firebase:firebase-firestore:25.1.1")
+
     // CRITICAL FIX: Force upgrade play-services-auth to fix SignInHubActivity NullPointerException
     // Root cause: Firebase Auth pulls in play-services-auth:20.7.0 transitively
     // Version 20.7.0 has known NPE issues in SignInHubActivity.onCreate() when Intent extras are null

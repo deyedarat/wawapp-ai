@@ -595,4 +595,15 @@ object NotificationHelper {
 
         Log.d(TAG, "Sound repeats cancelled for order $orderId")
     }
+
+    /**
+     * Cancel notification and sound repeats for an order.
+     * Call when order is no longer relevant (accepted, expired, etc.).
+     */
+    fun cancelOrderNotification(context: Context, orderId: String) {
+        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.cancel(orderId.hashCode())
+        cancelSoundRepeats(context, orderId)
+        Log.d(TAG, "Notification cancelled for order $orderId")
+    }
 }

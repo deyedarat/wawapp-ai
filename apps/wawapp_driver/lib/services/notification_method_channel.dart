@@ -217,6 +217,19 @@ class NotificationMethodChannel {
     }
   }
 
+  /// Cancel the native Android notification and all sound repeats for an order.
+  /// Call when order is accepted, rejected, snoozed, or notification is dismissed.
+  static Future<void> cancelOrderNotification(String orderId) async {
+    try {
+      await _channel.invokeMethod('cancelOrderNotification', {'orderId': orderId});
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] Error cancelling order notification: ${e.message}');
+      }
+    }
+  }
+
   /// Check if the app can use full-screen intent (Android 14+).
   /// This permission is required for full-screen notifications on Android 14+.
   static Future<bool> canUseFullScreenIntent() async {

@@ -8,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../services/notification_method_channel.dart';
 import '../../services/notification_service.dart';
 import '../../services/orders_service.dart';
 import 'providers/snooze_provider.dart';
@@ -115,6 +116,7 @@ class _FullScreenNotificationScreenState
 
   void _dismissNotification() {
     FlutterLocalNotificationsPlugin().cancel(widget.data.orderId.hashCode);
+    NotificationMethodChannel.cancelOrderNotification(widget.data.orderId);
   }
 
   Future<void> _accept() async {

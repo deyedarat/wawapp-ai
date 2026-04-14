@@ -26,11 +26,11 @@ class FCMService extends BaseFCMService {
   String getFirestoreCollection() => 'drivers';
 
   @override
-  void handleNotificationTap(
+  Future<void> handleNotificationTap(
     BuildContext context,
     RemoteMessage message,
     String appState,
-  ) {
+  ) async {
     try {
       final orderId = message.data['orderId'] as String?;
       final type = message.data['notificationType'] as String? ??
