@@ -304,6 +304,37 @@ async function sendDriverNotification(
     };
   }
 
+  // CRITICAL: Re-check order status right before sending notification
+  // This prevents race condition where order was accepted between query and send
+  try {
+    const freshOrderDoc = await admin.firestore().collection('orders').doc(orderId).get();
+    if (!freshOrderDoc.exists) {
+      return { success: false, error: 'order_not_found' };
+    }
+    const freshOrderData = freshOrderDoc.data()!;
+
+    // Skip if order is no longer in matching state or has been assigned
+    if (freshOrderData.status !== 'matching' || freshOrderData.assignedDriverId != null) {
+      console.log('[NotifyUnassignedOrders] Order status changed before notification', {
+        order_id: orderId,
+        driver_id: driver.driverId,
+        current_status: freshOrderData.status,
+        has_driver: freshOrderData.assignedDriverId != null,
+      });
+      return {
+        success: false,
+        error: 'order_already_assigned',
+      };
+    }
+  } catch (checkError: any) {
+    console.error('[NotifyUnassignedOrders] Failed to verify order status', {
+      order_id: orderId,
+      driver_id: driver.driverId,
+      error: checkError.message,
+    });
+    return { success: false, error: 'status_check_failed' };
+  }
+
   try {
     const pickupLabel = orderData.pickup?.label || (typeof orderData.pickupAddress === 'string' ? orderData.pickupAddress : orderData.pickupAddress?.label) || 'موقع الانطلاق';
     const dropoffLabel = orderData.dropoff?.label || (typeof orderData.dropoffAddress === 'string' ? orderData.dropoffAddress : orderData.dropoffAddress?.label) || 'الوجهة';

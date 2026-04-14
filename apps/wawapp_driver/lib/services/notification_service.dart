@@ -29,6 +29,14 @@ class NotificationService {
   String? _pendingTripReminderRoute;
   Map<String, dynamic>? _pendingTripReminderData;
 
+  // Local state to track recently accepted/rejected orders (prevents stale notifications)
+  final Map<String, DateTime> _recentlyProcessedOrders = {};
+  static const Duration _staleNotificationWindow = Duration(minutes: 2);
+
+  // Debouncing state to prevent duplicate notifications
+  final Map<String, DateTime> _recentlyShownNotifications = {};
+  static const Duration _notificationDebounceWindow = Duration(seconds: 10);
+
   Future<void> initialize() async {
     _navigatorKey = appNavigatorKey;
 
@@ -216,6 +224,18 @@ class NotificationService {
         return;
       }
 
+      // Filter stale notifications for recently accepted/rejected orders
+      if (orderId != null && _isStaleNotification(orderId)) {
+        NotificationLogger.instance.log(
+          eventType: 'skipped',
+          notificationType: notificationType ?? 'unknown',
+          appState: 'foreground',
+          orderId: orderId,
+          escalationLevel: 'stale_notification',
+        );
+        return;
+      }
+
       // Don't interrupt driver on active trip with new order alerts
       final isBusy = await _isDriverOnActiveTrip();
       if (isBusy) {
@@ -387,6 +407,18 @@ class NotificationService {
       return;
     }
 
+    // Apply debouncing to prevent duplicate notifications
+    if (_isDuplicateNotification(notificationData.orderId)) {
+      NotificationLogger.instance.log(
+        eventType: 'skipped',
+        notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
+        appState: 'foreground',
+        orderId: notificationData.orderId,
+        escalationLevel: 'duplicate_notification',
+      );
+      return;
+    }
+
     if (kDebugMode) {
       debugPrint(
         '[NotificationService] 🚀 Full-screen notification for order: ${notificationData.orderId}',
@@ -394,6 +426,9 @@ class NotificationService {
     }
 
     final type = NotificationHelper.resolveType(data);
+
+    // Mark notification as shown (for debouncing)
+    _markNotificationShown(notificationData.orderId);
 
     // FOREGROUND: Skip Native notification (Android shows it as heads-up, not full-screen).
     // Navigate directly to the full-screen Flutter UI instead.
@@ -596,6 +631,52 @@ class NotificationService {
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
+
+  /// Mark order as recently processed (accepted/rejected) to filter stale notifications.
+  void markOrderAsProcessed(String orderId) {
+    _recentlyProcessedOrders[orderId] = DateTime.now();
+    // Cleanup old entries (older than 5 minutes)
+    _recentlyProcessedOrders.removeWhere(
+      (key, timestamp) => DateTime.now().difference(timestamp) > const Duration(minutes: 5),
+    );
+  }
+
+  /// Check if this is a stale notification for a recently processed order.
+  bool _isStaleNotification(String orderId) {
+    final processedAt = _recentlyProcessedOrders[orderId];
+    if (processedAt == null) return false;
+    final elapsed = DateTime.now().difference(processedAt);
+    final isStale = elapsed < _staleNotificationWindow;
+    if (isStale && kDebugMode) {
+      debugPrint(
+        '[NotificationService] Filtering stale notification for order $orderId (processed ${elapsed.inSeconds}s ago)',
+      );
+    }
+    return isStale;
+  }
+
+  /// Check if this notification was recently shown (debouncing).
+  bool _isDuplicateNotification(String orderId) {
+    final shownAt = _recentlyShownNotifications[orderId];
+    if (shownAt == null) return false;
+    final elapsed = DateTime.now().difference(shownAt);
+    final isDuplicate = elapsed < _notificationDebounceWindow;
+    if (isDuplicate && kDebugMode) {
+      debugPrint(
+        '[NotificationService] Filtering duplicate notification for order $orderId (shown ${elapsed.inSeconds}s ago)',
+      );
+    }
+    return isDuplicate;
+  }
+
+  /// Mark notification as shown (for debouncing).
+  void _markNotificationShown(String orderId) {
+    _recentlyShownNotifications[orderId] = DateTime.now();
+    // Cleanup old entries (older than 1 minute)
+    _recentlyShownNotifications.removeWhere(
+      (key, timestamp) => DateTime.now().difference(timestamp) > const Duration(minutes: 1),
+    );
+  }
 
   /// Check if driver rejected this order.
   Future<bool> _isOrderRejected(String orderId) async {

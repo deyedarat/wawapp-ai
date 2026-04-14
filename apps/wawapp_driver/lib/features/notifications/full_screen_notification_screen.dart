@@ -8,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../services/notification_service.dart';
 import '../../services/orders_service.dart';
 import 'providers/snooze_provider.dart';
 import 'widgets/order_details_card.dart';
@@ -118,6 +119,8 @@ class _FullScreenNotificationScreenState
 
   Future<void> _accept() async {
     _dismissNotification();
+    // Mark order as processed to prevent stale notifications
+    NotificationService().markOrderAsProcessed(widget.data.orderId);
     setState(() => _isLoading = true);
     try {
       await ref.read(ordersServiceProvider).acceptOrder(widget.data.orderId);
@@ -140,6 +143,8 @@ class _FullScreenNotificationScreenState
 
   Future<void> _reject() async {
     _dismissNotification();
+    // Mark order as processed to prevent stale notifications
+    NotificationService().markOrderAsProcessed(widget.data.orderId);
     setState(() => _isLoading = true);
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {

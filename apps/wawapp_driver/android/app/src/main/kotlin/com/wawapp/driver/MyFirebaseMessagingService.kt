@@ -102,31 +102,27 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             ?: message.data["destinationLabel"]
             ?: "الوجهة"
 
-        if (type == "trip_start_reminder") {
-            val elapsedMinutes = message.data["elapsedMinutes"]?.toIntOrNull() ?: 0
-            NotificationHelper.showTripReminderNotification(
-                context = applicationContext,
-                orderId = orderId,
-                title = message.data["title"] ?: "هل وصلت للعميل؟",
-                body = "مضى $elapsedMinutes دقائق منذ القبول — $pickupLabel",
-                pickupLabel = pickupLabel,
-                destinationLabel = dropoffLabel,
-                elapsedMinutes = elapsedMinutes
-            )
-        } else {
-            NotificationHelper.showFullScreenNotification(
-                context = applicationContext,
-                orderId = orderId,
-                title = message.data["title"] ?: "طلب جديد قريب منك",
-                body = "$pickupLabel → $dropoffLabel",
-                pickupLabel = pickupLabel,
-                dropoffLabel = dropoffLabel,
-                price = message.data["price"]?.toDoubleOrNull() ?: 0.0,
-                distance = message.data["distance"]?.toDoubleOrNull() ?: 0.0,
-                createdAt = message.data["createdAt"]?.toLongOrNull() ?: System.currentTimeMillis(),
-                notificationType = type
-            )
-        }
+        // Use unified CallStyle full-screen notification for all critical types
+        NotificationHelper.showFullScreenNotification(
+            context = applicationContext,
+            orderId = orderId,
+            title = message.data["title"] ?: when (type) {
+                "trip_start_reminder" -> "هل وصلت للعميل؟"
+                else -> "طلب جديد قريب منك"
+            },
+            body = if (type == "trip_start_reminder") {
+                val elapsedMinutes = message.data["elapsedMinutes"]?.toIntOrNull() ?: 0
+                "مضى $elapsedMinutes دقائق منذ القبول — $pickupLabel"
+            } else {
+                "$pickupLabel → $dropoffLabel"
+            },
+            pickupLabel = pickupLabel,
+            dropoffLabel = dropoffLabel,
+            price = message.data["price"]?.toDoubleOrNull() ?: 0.0,
+            distance = message.data["distance"]?.toDoubleOrNull() ?: 0.0,
+            createdAt = message.data["createdAt"]?.toLongOrNull() ?: System.currentTimeMillis(),
+            notificationType = type
+        )
 
         Log.d(TAG, "Notification shown for order $orderId, type=$type")
     }
