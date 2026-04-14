@@ -51,13 +51,17 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     FcmForegroundBridge.sendMessage(message.data)
                     return
                 }
-                // Verify order is still matching before showing notification (race condition fix)
-                if (type != "trip_start_reminder" && orderId.isNotBlank()) {
+                // Verify order is still valid before showing notification (race condition fix)
+                if (orderId.isNotBlank()) {
                     Thread {
-                        if (isOrderStillMatching(orderId)) {
+                        val isValid = when (type) {
+                            "trip_start_reminder" -> isOrderStillAccepted(orderId)
+                            else -> isOrderStillMatching(orderId)
+                        }
+                        if (isValid) {
                             handleCriticalNotification(message, type, orderId)
                         } else {
-                            Log.d(TAG, "Stale notification dropped: orderId=$orderId")
+                            Log.d(TAG, "Stale notification dropped: orderId=$orderId, type=$type")
                         }
                     }.start()
                 } else {
@@ -195,6 +199,27 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             isMatching
         } catch (e: Exception) {
             Log.w(TAG, "Order check failed (fail-open): orderId=$orderId, error=${e.message}")
+            true // fail open — show notification if check fails
+        }
+    }
+
+    /**
+     * One-time Firestore read to verify order is still in 'accepted' status.
+     * Used for trip_start_reminder validation. Runs on background thread. Fail-open on error.
+     */
+    private fun isOrderStillAccepted(orderId: String): Boolean {
+        return try {
+            val task = FirebaseFirestore.getInstance()
+                .collection("orders")
+                .document(orderId)
+                .get()
+            val snapshot = Tasks.await(task, 5, TimeUnit.SECONDS)
+            val status = snapshot.getString("status")
+            val isAccepted = status == "accepted"
+            Log.d(TAG, "Trip reminder check: orderId=$orderId, status=$status, isAccepted=$isAccepted")
+            isAccepted
+        } catch (e: Exception) {
+            Log.w(TAG, "Trip reminder check failed (fail-open): orderId=$orderId, error=${e.message}")
             true // fail open — show notification if check fails
         }
     }
