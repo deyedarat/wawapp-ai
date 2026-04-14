@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:core_shared/core_shared.dart';
 import '../features/notifications/full_screen_notification_screen.dart';
@@ -15,6 +16,9 @@ class FCMService extends BaseFCMService {
   static final FCMService instance = FCMService._internal();
   factory FCMService() => instance;
   FCMService._internal() : super.internal();
+
+  /// Firestore instance for order verification
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   // ===== IMPLEMENT ABSTRACT METHODS =====
 
@@ -65,6 +69,16 @@ class FCMService extends BaseFCMService {
         case 'unassigned_order_reminder':
           final data = FullScreenNotificationData.tryParse(message.data);
           if (data != null) {
+            // Verify order is still valid before showing notification
+            if (type == 'unassigned_order_reminder') {
+              final isValid = await _verifyOrderStillMatching(data.orderId);
+              if (!isValid) {
+                if (kDebugMode) {
+                  debugPrint('[FCM] Order ${data.orderId} is no longer matching, skipping notification');
+                }
+                return;
+              }
+            }
             context.push('/full-screen-notification', extra: data);
           } else {
             context.go('/nearby');
@@ -126,6 +140,33 @@ class FCMService extends BaseFCMService {
     } else {
       // Default fallback
       context.go('/nearby');
+    }
+  }
+
+  /// Verify that an order is still in 'matching' status and unassigned.
+  /// Returns false if order is already accepted/assigned (prevents duplicate notifications).
+  Future<bool> _verifyOrderStillMatching(String orderId) async {
+    try {
+      final orderDoc = await firestore.collection('orders').doc(orderId).get();
+
+      if (!orderDoc.exists) {
+        return false; // Order doesn't exist
+      }
+
+      final data = orderDoc.data();
+      if (data == null) return false;
+
+      final status = data['status'] as String?;
+      final assignedDriverId = data['assignedDriverId'] as String?;
+
+      // Only show notification if order is still matching and unassigned
+      return status == 'matching' && assignedDriverId == null;
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[FCM] Error verifying order status: $e');
+      }
+      // On error, allow notification (fail-safe)
+      return true;
     }
   }
 }

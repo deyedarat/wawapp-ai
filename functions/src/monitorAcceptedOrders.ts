@@ -218,7 +218,7 @@ async function processAcceptedOrder(
         ),
         elapsedMinutes: String(Math.floor(elapsedMinutes)),
       },
-      'trip_reminders_v5'
+      'trip_reminders_v9'
     );
 
     if (sent) {

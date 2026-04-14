@@ -93,7 +93,8 @@
         <!-- FCM default notification channel for new orders -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="new_orders_v7" />
+            android:value="new_orders_v9" />
+        <!-- Note: All v9 channels (new_orders, unassigned_orders, trip_reminders) are created programmatically in NotificationHelper.kt -->
         <!-- Native FCM handler — calls NotificationHelper.kt for full-screen intent -->
         <!-- Higher priority than Flutter plugin's service (priority=10 vs default 0) -->
         <service

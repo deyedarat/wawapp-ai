@@ -32,3 +32,9 @@
 -keepattributes Signature
 -keepattributes InnerClasses
 -keepattributes EnclosingMethod
+
+# --- Keep raw resources (notification sounds) ---
+-keep class **.R$raw
+-keepclassmembers class **.R$raw { *; }
+-keep class **.R
+-keepclassmembers class **.R { *; }

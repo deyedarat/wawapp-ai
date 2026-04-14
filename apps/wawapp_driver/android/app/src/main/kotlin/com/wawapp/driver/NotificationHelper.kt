@@ -35,9 +35,9 @@ object NotificationHelper {
 
     private const val TAG = "NotificationHelper"
 
-    private const val CHANNEL_ID_NEW_ORDERS = "new_orders_v7"
-    private const val CHANNEL_ID_UNASSIGNED_ORDERS = "unassigned_orders_v7"
-    private const val CHANNEL_ID_TRIP_REMINDERS = "trip_reminders_v8"
+    private const val CHANNEL_ID_NEW_ORDERS = "new_orders_v9"
+    private const val CHANNEL_ID_UNASSIGNED_ORDERS = "unassigned_orders_v9"
+    private const val CHANNEL_ID_TRIP_REMINDERS = "trip_reminders_v9"
     private const val CHANNEL_ID_ORDER_UPDATES = "order_updates_v1"
     private const val CHANNEL_ID_ACCEPTANCE = "acceptance_confirmations_v1"
 
@@ -113,10 +113,10 @@ object NotificationHelper {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         listOf(
             "new_orders", "new_orders_v2", "new_orders_v3", "new_orders_v4", "new_orders_v5",
-            "new_orders_v6",
+            "new_orders_v6", "new_orders_v7", "new_orders_v8",
             "unassigned_orders", "unassigned_orders_v2", "unassigned_orders_v3",
-            "unassigned_orders_v4", "unassigned_orders_v5", "unassigned_orders_v6",
-            "trip_reminders", "trip_reminders_v5", "trip_reminders_v6", "trip_reminders_v7",
+            "unassigned_orders_v4", "unassigned_orders_v5", "unassigned_orders_v6", "unassigned_orders_v7", "unassigned_orders_v8",
+            "trip_reminders", "trip_reminders_v5", "trip_reminders_v6", "trip_reminders_v7", "trip_reminders_v8",
             "order_updates", "acceptance_confirmations"
         ).forEach { id ->
             try { nm.deleteNotificationChannel(id) } catch (_: Exception) {}

@@ -41,6 +41,9 @@ class FullScreenNotificationActivity : Activity() {
         loadNotificationData()
         setupButtons()
 
+        // Cancel the notification immediately when the full-screen activity opens
+        cancelNotification()
+
         Log.d(TAG, "Full-screen notification opened: orderId=$orderId, type=$notificationType")
     }
 
@@ -153,6 +156,13 @@ class FullScreenNotificationActivity : Activity() {
         finish()
 
         Log.d(TAG, "User chose 'Later' for order: $orderId")
+    }
+
+    private fun cancelNotification() {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+        val notificationId = orderId.hashCode()
+        notificationManager.cancel(notificationId)
+        Log.d(TAG, "Notification cancelled: id=$notificationId, orderId=$orderId")
     }
 
     override fun onDestroy() {

@@ -40,6 +40,9 @@ class MainActivity : FlutterActivity() {
                 WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
             )
         }
+
+        // Cancel notification if opened from full-screen intent
+        cancelNotificationIfNeeded()
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -306,6 +309,10 @@ class MainActivity : FlutterActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+
+        // Cancel notification if opened from full-screen intent
+        cancelNotificationIfNeeded()
+
         val action = intent.getStringExtra("action")
         if (action != null) {
             newIntentEventSink?.success(mapOf(
@@ -313,6 +320,19 @@ class MainActivity : FlutterActivity() {
                 "orderId" to intent.getStringExtra("orderId"),
                 "notificationType" to intent.getStringExtra("notificationType")
             ))
+        }
+    }
+
+    /**
+     * Cancel the notification when MainActivity is opened from a full-screen intent.
+     * This prevents the notification from lingering in the notification tray.
+     */
+    private fun cancelNotificationIfNeeded() {
+        val orderId = intent?.getStringExtra("orderId")
+        if (orderId != null) {
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationId = orderId.hashCode()
+            notificationManager.cancel(notificationId)
         }
     }
 }
