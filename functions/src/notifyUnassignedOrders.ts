@@ -475,10 +475,8 @@ async function sendAcceptanceConfirmation(
         clientName: orderData.clientName || 'عميل',
         price: String(orderData.price || 0),
         acceptedAt: String(orderData.acceptedAt?.toMillis() || Date.now()),
-        title: 'تأكيد قبول الطلب',
-        body: `تم قبول طلبك بنجاح. ${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'} → ${
-          orderData.dropoff?.label || orderData.dropoffAddress || 'الوجهة'
-        }`,
+        title: 'تذكير: انطلق للاستلام',
+        body: `اتجه الآن لموقع الاستلام: ${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'}`,
       },
       android: {
         priority: 'high',
@@ -489,10 +487,8 @@ async function sendAcceptanceConfirmation(
         payload: {
           aps: {
             alert: {
-              title: 'تأكيد قبول الطلب',
-              body: `تم قبول طلبك بنجاح. ${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'} → ${
-                orderData.dropoff?.label || orderData.dropoffAddress || 'الوجهة'
-              }`,
+              title: 'تذكير: انطلق للاستلام',
+              body: `اتجه الآن لموقع الاستلام: ${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'}`,
             },
             sound: 'default',
             badge: 1,

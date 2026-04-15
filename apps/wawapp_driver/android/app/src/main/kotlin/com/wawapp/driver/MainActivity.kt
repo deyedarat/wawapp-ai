@@ -280,7 +280,7 @@ class MainActivity : FlutterActivity() {
      */
     private fun getIntentExtras(): Map<String, String?>? {
         val action = intent?.getStringExtra("action")
-        if (action in listOf("accept_order", "view_order", "reject_order", "snooze_order")) {
+        if (action in listOf("accept_order", "view_order", "reject_order", "snooze_order", "start_trip")) {
             return mapOf(
                 "orderId" to intent?.getStringExtra("orderId"),
                 "notificationType" to intent?.getStringExtra("notificationType"),

@@ -35,7 +35,7 @@ class NotificationService {
 
   // Debouncing state to prevent duplicate notifications
   final Map<String, DateTime> _recentlyShownNotifications = {};
-  static const Duration _notificationDebounceWindow = Duration(seconds: 10);
+  static const Duration _notificationDebounceWindow = Duration(minutes: 2);
 
   // Navigation guard: prevents stacking multiple full-screen routes for the same order
   String? _activeFullScreenOrderId;
@@ -503,7 +503,7 @@ class NotificationService {
     }
 
     try {
-      ctx.push('/full-screen-notification', extra: data);
+      ctx.go('/full-screen-notification', extra: data);
     } catch (e) {
       if (kDebugMode) {
         debugPrint('[NotificationService] ❌ Navigation error: $e');
@@ -540,7 +540,7 @@ class NotificationService {
     }
 
     try {
-      ctx.push('/trip-start-reminder', extra: data);
+      ctx.go('/trip-start-reminder', extra: data);
     } catch (e) {
       if (kDebugMode) {
         debugPrint('[NotificationService] ❌ Navigation error: $e');
