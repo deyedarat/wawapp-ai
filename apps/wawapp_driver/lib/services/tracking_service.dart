@@ -55,7 +55,12 @@ class TrackingService {
             '[TRACKING] Online status changed: ${isOnline ? "ONLINE" : "OFFLINE"}');
       }
       if (isOnline) {
-        _startLocationUpdates(user.uid);
+        _startLocationUpdates(user.uid).catchError((Object e, StackTrace st) {
+          dev.log('[tracking] startLocationUpdates error: $e\n$st');
+          if (kDebugMode) {
+            debugPrint('$_logTag ❌ Failed to start location updates: $e');
+          }
+        });
       } else {
         _stopLocationUpdates();
       }
@@ -119,18 +124,17 @@ class TrackingService {
       await _writeLocationToFirestore(driverId, firstPosition);
       _lastPosition = firstPosition;
     } on TimeoutException catch (e) {
-      if (kDebugMode) {
-        debugPrint('$_logTag ❌ First fix timeout: $e');
-      }
       dev.log('[tracking] first-fix timeout: $e');
-      throw Exception(
-          'Could not obtain GPS fix within 20 seconds. Please check GPS signal.');
-    } on LocationServiceDisabledException {
       if (kDebugMode) {
-        debugPrint('$_logTag ❌ GPS disabled during first fix');
+        debugPrint('$_logTag ❌ First fix timeout — skipping location updates');
       }
+      return; // خروج هادئ، سيُعاد المحاولة عند تغيير الحالة التالي
+    } on LocationServiceDisabledException {
       dev.log('[tracking] gps-disabled');
-      throw Exception('GPS was disabled. Please enable location services.');
+      if (kDebugMode) {
+        debugPrint('$_logTag ❌ GPS disabled — skipping location updates');
+      }
+      return; // خروج هادئ
     } on Object catch (e) {
       if (kDebugMode) {
         debugPrint('$_logTag ❌ First fix error: $e');

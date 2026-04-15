@@ -37,6 +37,9 @@ class NotificationService {
   final Map<String, DateTime> _recentlyShownNotifications = {};
   static const Duration _notificationDebounceWindow = Duration(seconds: 10);
 
+  // Navigation guard: prevents stacking multiple full-screen routes for the same order
+  String? _activeFullScreenOrderId;
+
   Future<void> initialize() async {
     _navigatorKey = appNavigatorKey;
 
@@ -424,6 +427,23 @@ class NotificationService {
       return;
     }
 
+    // Navigation guard: prevent stacking multiple full-screen routes for the same order
+    if (_activeFullScreenOrderId == notificationData.orderId) {
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] ⛔ Full-screen already active for order: ${notificationData.orderId} — skipping push',
+        );
+      }
+      NotificationLogger.instance.log(
+        eventType: 'skipped',
+        notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
+        appState: 'foreground',
+        orderId: notificationData.orderId,
+        escalationLevel: 'duplicate_notification',
+      );
+      return;
+    }
+
     if (kDebugMode) {
       debugPrint(
         '[NotificationService] 🚀 Full-screen notification for order: ${notificationData.orderId}',
@@ -432,8 +452,9 @@ class NotificationService {
 
     final type = NotificationHelper.resolveType(data);
 
-    // Mark notification as shown (for debouncing)
+    // Mark notification as shown (for debouncing) and set navigation guard
     _markNotificationShown(notificationData.orderId);
+    _activeFullScreenOrderId = notificationData.orderId;
 
     // FOREGROUND: Skip Native notification (Android shows it as heads-up, not full-screen).
     // Navigate directly to the full-screen Flutter UI instead.
@@ -636,6 +657,12 @@ class NotificationService {
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
+
+  /// Clear the navigation guard when the full-screen notification is dismissed.
+  /// Must be called from accept / reject / snooze / dispose in FullScreenNotificationScreen.
+  void clearActiveFullScreen() {
+    _activeFullScreenOrderId = null;
+  }
 
   /// Mark order as recently processed (accepted/rejected) to filter stale notifications.
   void markOrderAsProcessed(String orderId) {

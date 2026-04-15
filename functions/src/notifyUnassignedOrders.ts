@@ -343,6 +343,7 @@ async function sendDriverNotification(
     const message: admin.messaging.Message = {
       token: driver.fcmToken,
       data: {
+        messageId: `${orderId}_unassigned_order_reminder_${Date.now()}`,
         notificationType: 'unassigned_order_reminder',
         type: 'unassigned_order_reminder',
         title: 'طلب جديد قريب منك',
@@ -462,15 +463,19 @@ async function sendAcceptanceConfirmation(
     const message: admin.messaging.Message = {
       token: fcmToken,
       data: {
+        messageId: `${orderId}_acceptance_confirmation_${Date.now()}`,
         notificationType: 'acceptance_confirmation',
         orderId: orderId,
+        pickupLabel: orderData.pickup?.label || (typeof orderData.pickupAddress === 'string' ? orderData.pickupAddress : orderData.pickupAddress?.label) || 'موقع الانطلاق',
+        dropoffLabel: orderData.dropoff?.label || (typeof orderData.dropoffAddress === 'string' ? orderData.dropoffAddress : orderData.dropoffAddress?.label) || 'الوجهة',
         pickupLat: String(orderData.pickup?.lat || 0),
         pickupLng: String(orderData.pickup?.lng || 0),
         dropoffLat: String(orderData.dropoff?.lat || 0),
         dropoffLng: String(orderData.dropoff?.lng || 0),
         clientName: orderData.clientName || 'عميل',
+        price: String(orderData.price || 0),
         acceptedAt: String(orderData.acceptedAt?.toMillis() || Date.now()),
-        title: 'تأكيد قبول الطلب', // Move to data for native handling
+        title: 'تأكيد قبول الطلب',
         body: `تم قبول طلبك بنجاح. ${orderData.pickup?.label || orderData.pickupAddress || 'موقع الانطلاق'} → ${
           orderData.dropoff?.label || orderData.dropoffAddress || 'الوجهة'
         }`,

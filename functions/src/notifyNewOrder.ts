@@ -210,6 +210,7 @@ async function sendDriverNotification(
     const message: admin.messaging.Message = {
       token: driver.fcmToken,
       data: {
+        messageId: `${orderId}_new_order_${Date.now()}`,
         notificationType: 'new_order',
         type: 'new_order',
         title: 'طلب جديد قريب منك',

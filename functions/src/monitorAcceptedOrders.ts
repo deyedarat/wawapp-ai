@@ -208,11 +208,12 @@ async function processAcceptedOrder(
       title,
       body,
       {
+        messageId: `${orderId}_trip_start_reminder_${Date.now()}`,
         notificationType: 'trip_start_reminder',
         orderId,
         escalationLevel: level,
         pickupLabel: formatAddress(orderData.pickupAddress || orderData.pickup),
-        destinationLabel: formatAddress(
+        dropoffLabel: formatAddress(
           orderData.destinationAddress ||
           orderData.dropoffAddress ||
           orderData.dropoff

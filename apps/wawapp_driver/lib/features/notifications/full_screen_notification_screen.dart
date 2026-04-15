@@ -91,6 +91,8 @@ class _FullScreenNotificationScreenState
   @override
   void dispose() {
     _elapsedTimer?.cancel();
+    // Release navigation guard so next notification for this order can show
+    NotificationService().clearActiveFullScreen();
     super.dispose();
   }
 
@@ -123,6 +125,8 @@ class _FullScreenNotificationScreenState
     _dismissNotification();
     // Mark order as processed to prevent stale notifications
     NotificationService().markOrderAsProcessed(widget.data.orderId);
+    // Release navigation guard before navigating away
+    NotificationService().clearActiveFullScreen();
     setState(() => _isLoading = true);
     try {
       await ref.read(ordersServiceProvider).acceptOrder(widget.data.orderId);
@@ -147,6 +151,8 @@ class _FullScreenNotificationScreenState
     _dismissNotification();
     // Mark order as processed to prevent stale notifications
     NotificationService().markOrderAsProcessed(widget.data.orderId);
+    // Release navigation guard before navigating away
+    NotificationService().clearActiveFullScreen();
     setState(() => _isLoading = true);
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
@@ -177,6 +183,8 @@ class _FullScreenNotificationScreenState
 
   void _snooze() {
     _dismissNotification();
+    // Release navigation guard before snoozing so reminder can re-show
+    NotificationService().clearActiveFullScreen();
     ref.read(snoozeProvider.notifier).scheduleReminder(
       widget.data.orderId,
       () {
