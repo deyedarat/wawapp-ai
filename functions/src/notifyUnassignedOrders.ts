@@ -304,6 +304,42 @@ async function sendDriverNotification(
     };
   }
 
+  // Check dispatch_offers status for this driver-order pair
+  const offerDocId = `${orderId}_${driver.driverId}`;
+  try {
+    const offerDoc = await admin.firestore().collection('dispatch_offers').doc(offerDocId).get();
+    if (offerDoc.exists) {
+      const offerStatus = offerDoc.data()?.status;
+      if (offerStatus && offerStatus !== 'sent') {
+        console.log('[NotifyUnassignedOrders] Skipping driver with non-sent offer', {
+          driver_id: driver.driverId,
+          order_id: orderId,
+          offer_status: offerStatus,
+        });
+        return { success: false, error: `offer_${offerStatus}` };
+      }
+    } else {
+      // Create offer document if it doesn't exist
+      await admin.firestore().collection('dispatch_offers').doc(offerDocId).set({
+        orderId,
+        driverId: driver.driverId,
+        status: 'sent',
+        round: 1,
+        sentAt: admin.firestore.FieldValue.serverTimestamp(),
+        expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 10 * 60 * 1000)),
+        reminderCount: 0,
+        lastReminderAt: null,
+        respondedAt: null,
+      });
+    }
+  } catch (offerCheckErr: any) {
+    console.warn('[NotifyUnassignedOrders] dispatch_offers check failed (proceeding)', {
+      driver_id: driver.driverId,
+      order_id: orderId,
+      error: offerCheckErr.message,
+    });
+  }
+
   // CRITICAL: Re-check order status right before sending notification
   // This prevents race condition where order was accepted between query and send
   try {
@@ -349,6 +385,7 @@ async function sendDriverNotification(
         title: 'طلب جديد قريب منك',
         body: `${pickupLabel} → ${dropoffLabel}`,
         orderId: orderId,
+        offerId: `${orderId}_${driver.driverId}`,
         pickupLabel: pickupLabel,
         dropoffLabel: dropoffLabel,
         pickupLat: String(orderData.pickup?.lat || orderData.pickupAddress?.latitude || 0),
@@ -381,6 +418,20 @@ async function sendDriverNotification(
 
     // Increment notification count for this driver-order pair
     await incrementNotificationCount(driver.driverId, orderId);
+
+    // Update dispatch_offers reminder tracking
+    try {
+      await admin.firestore().collection('dispatch_offers').doc(`${orderId}_${driver.driverId}`).update({
+        reminderCount: admin.firestore.FieldValue.increment(1),
+        lastReminderAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    } catch (offerUpdateErr: any) {
+      console.warn('[NotifyUnassignedOrders] Failed to update dispatch_offer reminder', {
+        driver_id: driver.driverId,
+        order_id: orderId,
+        error: offerUpdateErr.message,
+      });
+    }
 
     console.log('[NotifyUnassignedOrders] Notification sent to driver', {
       driver_id: driver.driverId,

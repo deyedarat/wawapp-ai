@@ -40,6 +40,9 @@ class NotificationService {
   // Navigation guard: prevents stacking multiple full-screen routes for the same order
   String? _activeFullScreenOrderId;
 
+  // Offer-level deduplication to prevent showing same offer twice
+  final Set<String> _seenOfferIds = {};
+
   Future<void> initialize() async {
     _navigatorKey = appNavigatorKey;
 
@@ -415,6 +418,13 @@ class NotificationService {
       return;
     }
 
+    // Offer-level deduplication
+    final offerId = data['offerId'] as String?;
+    if (offerId != null) {
+      if (_seenOfferIds.contains(offerId)) return;
+      _seenOfferIds.add(offerId);
+    }
+
     // Apply debouncing to prevent duplicate notifications
     if (_isDuplicateNotification(notificationData.orderId)) {
       NotificationLogger.instance.log(
@@ -671,6 +681,8 @@ class NotificationService {
     _recentlyProcessedOrders.removeWhere(
       (key, timestamp) => DateTime.now().difference(timestamp) > const Duration(minutes: 5),
     );
+    // Clear seen offer IDs for this order
+    _seenOfferIds.removeWhere((id) => id.startsWith(orderId));
   }
 
   /// Check if this is a stale notification for a recently processed order.

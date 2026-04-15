@@ -23,6 +23,7 @@ class FullScreenNotificationData {
     required this.price,
     required this.distance,
     this.createdAtMs,
+    this.offerId,
   });
 
   final String orderId;
@@ -31,6 +32,7 @@ class FullScreenNotificationData {
   final double price;
   final double distance;
   final int? createdAtMs;
+  final String? offerId;
 
   /// Parse from FCM notification data map with validation.
   static FullScreenNotificationData? tryParse(Map<String, dynamic>? data) {
@@ -45,6 +47,7 @@ class FullScreenNotificationData {
       price: _toDouble(data['price']),
       distance: _toDouble(data['distance']),
       createdAtMs: _toInt(data['createdAt']),
+      offerId: data['offerId'] as String?,
     );
   }
 
@@ -123,13 +126,13 @@ class _FullScreenNotificationScreenState
 
   Future<void> _accept() async {
     _dismissNotification();
-    // Mark order as processed to prevent stale notifications
-    NotificationService().markOrderAsProcessed(widget.data.orderId);
     // Release navigation guard before navigating away
     NotificationService().clearActiveFullScreen();
     setState(() => _isLoading = true);
     try {
       await ref.read(ordersServiceProvider).acceptOrder(widget.data.orderId);
+      // Mark order as processed AFTER successful accept to prevent stale notifications
+      NotificationService().markOrderAsProcessed(widget.data.orderId);
       if (!mounted) return;
       context.go('/active-order');
     } on Object catch (e) {

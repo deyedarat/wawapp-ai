@@ -327,6 +327,14 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // Dispatch offers (Cloud Functions only writes; drivers read their own)
+    match /dispatch_offers/{offerId} {
+      allow read: if request.auth != null &&
+        (resource.data.driverId == request.auth.uid ||
+         request.auth.token.isAdmin == true);
+      allow write: if false;
+    }
+
     // R1: Notification delivery logs (client-side event tracking per driver)
     match /notification_logs/{driverId}/events/{eventId} {
       allow write: if isSignedIn() && request.auth.uid == driverId;

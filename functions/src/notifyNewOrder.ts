@@ -216,6 +216,7 @@ async function sendDriverNotification(
         title: 'طلب جديد قريب منك',
         body: `${pickupLabel} → ${dropoffLabel}`,
         orderId: orderId,
+        offerId: `${orderId}_${driver.driverId}`,
         pickupLat: String(pLat),
         pickupLng: String(pLng),
         dropoffLat: String(dLat),
@@ -245,6 +246,27 @@ async function sendDriverNotification(
 
     // Send with automatic retry (Firebase SDK handles this)
     const response = await admin.messaging().send(message);
+
+    // Create dispatch_offers document (merge to avoid overwriting existing)
+    try {
+      await admin.firestore().collection('dispatch_offers').doc(`${orderId}_${driver.driverId}`).set({
+        orderId,
+        driverId: driver.driverId,
+        status: 'sent',
+        round: 1,
+        sentAt: admin.firestore.FieldValue.serverTimestamp(),
+        expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 10 * 60 * 1000)),
+        reminderCount: 0,
+        lastReminderAt: null,
+        respondedAt: null,
+      }, { merge: true });
+    } catch (offerErr: any) {
+      console.warn('[NotifyNewOrder] Failed to create dispatch_offer', {
+        order_id: orderId,
+        driver_id: driver.driverId,
+        error: offerErr.message,
+      });
+    }
 
     console.log('[NotifyNewOrder] Notification sent to driver', {
       driver_id: driver.driverId,

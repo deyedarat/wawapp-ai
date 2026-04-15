@@ -251,7 +251,8 @@ String? _redirect(GoRouterState s, AuthState st, DriverProfile? profile) {
     // The user is already authenticated (loggedIn check passed above).
     // Blocking these routes causes incoming order notifications to be silently lost.
     if (s.matchedLocation == '/full-screen-notification' ||
-        s.matchedLocation == '/trip-start-reminder') {
+        s.matchedLocation == '/trip-start-reminder' ||
+        s.matchedLocation == '/active-order') {
       if (kDebugMode) {
         debugPrint(
             '[ROUTER] ✓ Allowing notification route during PIN loading: ${s.matchedLocation}');

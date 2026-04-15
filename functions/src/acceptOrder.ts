@@ -8,6 +8,7 @@ export const acceptOrder = functions.https.onCall(async (data, context) => {
 
   const driverId = context.auth.uid;
   const { orderId } = data;
+  const offerId = data.offerId as string | undefined;
 
   if (!orderId || typeof orderId !== 'string') {
     throw new functions.https.HttpsError('invalid-argument', 'orderId is required');
@@ -76,6 +77,43 @@ export const acceptOrder = functions.https.onCall(async (data, context) => {
       driver_id: driverId,
       has_phone: customerPhone !== null,
     });
+
+    // Update dispatch_offers after successful acceptance (non-blocking)
+    if (offerId) {
+      try {
+        await db.collection('dispatch_offers').doc(offerId).update({
+          status: 'accepted',
+          respondedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        // Expire all other sent offers for this order
+        const otherOffers = await db.collection('dispatch_offers')
+          .where('orderId', '==', orderId)
+          .where('status', '==', 'sent')
+          .get();
+
+        if (!otherOffers.empty) {
+          const batch = db.batch();
+          for (const doc of otherOffers.docs) {
+            if (doc.id !== offerId) {
+              batch.update(doc.ref, { status: 'expired' });
+            }
+          }
+          await batch.commit();
+        }
+
+        console.log('[AcceptOrder] Dispatch offers updated', {
+          accepted_offer: offerId,
+          expired_count: otherOffers.size > 0 ? otherOffers.size - 1 : 0,
+        });
+      } catch (offerErr: any) {
+        console.warn('[AcceptOrder] Failed to update dispatch offers (non-critical)', {
+          offer_id: offerId,
+          error: offerErr.message,
+        });
+      }
+    }
+
     return { success: true };
   } catch (error: any) {
     if (error instanceof functions.https.HttpsError) throw error;
