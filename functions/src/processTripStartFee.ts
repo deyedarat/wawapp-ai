@@ -134,7 +134,18 @@ export const processTripStartFee = functions.firestore
       order_price: afterData.price,
     });
 
-    const orderPrice = afterData.price as number;
+    // PART 6: Safe numeric coercion — prevent NaN from reaching Firestore
+    const price = Number(afterData.price);
+    if (!Number.isFinite(price) || price <= 0) {
+      console.error('[TripStartFee] Invalid order price, skipping fee deduction', {
+        order_id: orderId,
+        raw_price: afterData.price,
+        coerced_price: price,
+      });
+      return null;
+    }
+
+    const orderPrice = price;
     const tripStartFee = calculateTripStartFee(orderPrice);
     const ledgerDocId = `${orderId}_start_fee`;
 

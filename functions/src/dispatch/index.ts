@@ -9,5 +9,7 @@
 
 export * from './types';
 export * from './engine';
+export * from './intake';
 export * from './selectors';
-export * from './notifications';
+export { sendOfferNotification, assertNormalizedPayload } from './notifications';
+export * from './counters';

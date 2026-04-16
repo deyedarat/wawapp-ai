@@ -28,8 +28,10 @@ import {
   DEFAULT_WAVES,
   DispatchMetrics,
 } from './types';
+import { NormalizedDispatchPayload, removeUndefinedDeep } from './intake';
 import { findEligibleDrivers } from './selectors';
 import { sendOfferNotification } from './notifications';
+import { emitMetric, DispatchMetricName } from './counters';
 
 const db = admin.firestore();
 
@@ -40,26 +42,132 @@ const db = admin.firestore();
 const LOCK_TTL_SECONDS = 30;
 
 // ============================================================================
+// CIRCUIT BREAKER STATE (in-memory, per Cloud Function instance)
+// ============================================================================
+
+/** Per-order consecutive failure tracker */
+const orderFailureCounts = new Map<string, number>();
+const ORDER_CIRCUIT_BREAKER_THRESHOLD = 3;
+
+/** Global circuit breaker: sliding window of failures */
+let globalFailureWindow: number[] = [];
+const GLOBAL_CB_WINDOW_MS = 60_000; // 1 minute
+const GLOBAL_CB_THRESHOLD = 10; // 10 failures in 1 minute
+let globalCircuitOpen = false;
+let globalCircuitOpenUntil = 0;
+const GLOBAL_CB_COOLDOWN_MS = 30_000; // pause 30s
+
+function recordOrderFailure(orderId: string): number {
+  const count = (orderFailureCounts.get(orderId) || 0) + 1;
+  orderFailureCounts.set(orderId, count);
+  return count;
+}
+
+function clearOrderFailure(orderId: string): void {
+  orderFailureCounts.delete(orderId);
+}
+
+function recordGlobalFailure(): void {
+  const now = Date.now();
+  globalFailureWindow.push(now);
+  // Prune old entries
+  globalFailureWindow = globalFailureWindow.filter((t) => now - t < GLOBAL_CB_WINDOW_MS);
+  if (globalFailureWindow.length >= GLOBAL_CB_THRESHOLD) {
+    globalCircuitOpen = true;
+    globalCircuitOpenUntil = now + GLOBAL_CB_COOLDOWN_MS;
+    console.error(JSON.stringify({
+      tag: 'CircuitBreaker',
+      level: 'CRITICAL',
+      result: 'global_circuit_opened',
+      failureCount: globalFailureWindow.length,
+      cooldownMs: GLOBAL_CB_COOLDOWN_MS,
+    }));
+  }
+}
+
+function isGlobalCircuitOpen(): boolean {
+  if (!globalCircuitOpen) return false;
+  if (Date.now() > globalCircuitOpenUntil) {
+    globalCircuitOpen = false;
+    globalFailureWindow = [];
+    console.log(JSON.stringify({
+      tag: 'CircuitBreaker',
+      result: 'global_circuit_closed',
+    }));
+    return false;
+  }
+  return true;
+}
+
+// ============================================================================
+// RETRY HELPER (exponential backoff, idempotent)
+// ============================================================================
+
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  opts: { maxAttempts?: number; label?: string; orderId?: string } = {}
+): Promise<T> {
+  const maxAttempts = opts.maxAttempts ?? 3;
+  let lastError: any;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      lastError = err;
+      // Non-retryable errors: don't retry
+      if (isNonRetryable(err)) throw err;
+      if (attempt < maxAttempts) {
+        const delayMs = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
+        console.warn(JSON.stringify({
+          tag: 'Retry',
+          label: opts.label,
+          orderId: opts.orderId,
+          attempt,
+          maxAttempts,
+          delayMs,
+          error: err.message,
+        }));
+        await sleep(delayMs);
+      }
+    }
+  }
+  throw lastError;
+}
+
+function isNonRetryable(err: any): boolean {
+  // Validation errors, permission errors, not-found are non-retryable
+  const code = err.code || '';
+  return (
+    code === 'not-found' ||
+    code === 'permission-denied' ||
+    code === 'invalid-argument' ||
+    err.message?.includes('validation_failed')
+  );
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// ============================================================================
 // DISPATCH QUEUE MANAGEMENT
 // ============================================================================
 
 /**
  * Add order to dispatch queue
  *
- * Called when a new order enters 'matching' status.
+ * Called ONLY via safeEnqueueOrder (intake boundary).
+ * Accepts a pre-validated, normalized payload — never raw order data.
  */
 export async function enqueueOrder(
-  orderId: string,
-  pickupLat: number,
-  pickupLng: number,
-  price: number,
-  clientName?: string
+  payload: NormalizedDispatchPayload
 ): Promise<void> {
+  const { orderId, pickupLat, pickupLng, price, clientName } = payload;
   const now = admin.firestore.Timestamp.now();
 
   const queueEntry: DispatchQueueEntry = {
     orderId,
-    currentWave: 0,               // Start before wave 1
+    currentWave: 0,
     totalOffersSent: 0,
 
     waveStartedAt: null,
@@ -69,19 +177,41 @@ export async function enqueueOrder(
     pickupLng,
     price,
     clientName,
+    pickupLabel: payload.pickupLabel ?? null,
+    dropoffLabel: payload.dropoffLabel ?? null,
+    dropoffLat: payload.dropoffLat ?? 0,
+    dropoffLng: payload.dropoffLng ?? 0,
 
     createdAt: now,
     updatedAt: now,
   };
 
-  await db.collection('dispatch_queue').doc(orderId).set(queueEntry);
+  // Idempotency: check if already in queue (prevents duplicate wave triggers)
+  const existingDoc = await db.collection('dispatch_queue').doc(orderId).get();
+  if (existingDoc.exists) {
+    const existing = existingDoc.data();
+    if (existing && existing.currentWave > 0) {
+      emitMetric('dispatch_queue_duplicate_skipped', { orderId });
+      console.warn(JSON.stringify({
+        tag: 'DispatchEngine',
+        stage: 'enqueue',
+        orderId,
+        result: 'duplicate_skipped',
+        existingWave: existing.currentWave,
+      }));
+      return;
+    }
+  }
+
+  await db.collection('dispatch_queue').doc(orderId).set(
+    removeUndefinedDeep(queueEntry)
+  );
 
   console.log('[DispatchEngine] Order enqueued', {
     order_id: orderId,
     pickup: { lat: pickupLat, lng: pickupLng },
   });
 
-  // Initialize dispatch metrics
   const metrics: DispatchMetrics = {
     orderId,
     waveMetrics: [],
@@ -94,7 +224,15 @@ export async function enqueueOrder(
     createdAt: now,
   };
 
-  await db.collection('dispatch_metrics').doc(orderId).set(metrics);
+  await db.collection('dispatch_metrics').doc(orderId).set(
+    removeUndefinedDeep(metrics)
+  ).catch((err: any) => {
+    // Metrics write failure is non-fatal — don't block dispatch
+    console.error('[DispatchEngine] Failed to write dispatch_metrics', {
+      order_id: orderId,
+      error: err.message,
+    });
+  });
 
   // Immediately trigger wave 1
   await processNextWave(orderId);
@@ -140,10 +278,14 @@ export async function processNextWave(orderId: string): Promise<void> {
 
       // Check if we have more waves available
       if (nextWaveNum > DEFAULT_WAVES.length) {
-        console.warn('[DispatchEngine] All waves exhausted, no driver found', {
-          order_id: orderId,
-          total_waves: DEFAULT_WAVES.length,
-        });
+        emitMetric('wave_all_exhausted', { orderId });
+        console.warn(JSON.stringify({
+          tag: 'DispatchEngine',
+          stage: 'wave_advance',
+          orderId,
+          result: 'all_waves_exhausted',
+          totalWaves: DEFAULT_WAVES.length,
+        }));
         // Don't dequeue yet — admin should handle manually
         return;
       }
@@ -162,22 +304,31 @@ export async function processNextWave(orderId: string): Promise<void> {
         updatedAt: now,
       });
 
-      console.log('[DispatchEngine] Starting wave', {
-        order_id: orderId,
+      emitMetric('wave_creation_started', { orderId, wave: nextWaveNum });
+      console.log(JSON.stringify({
+        tag: 'DispatchEngine',
+        stage: 'wave_start',
+        orderId,
         wave: nextWaveNum,
-        max_drivers: wave.maxDrivers,
-        ttl_seconds: wave.ttl,
-      });
+        maxDrivers: wave.maxDrivers,
+        ttlSeconds: wave.ttl,
+        maxDistance: wave.maxDistance,
+      }));
     });
 
     // After transaction: send offers (non-blocking for transaction)
     await sendWaveOffers(orderId);
+    emitMetric('wave_creation_succeeded', { orderId });
 
   } catch (error: any) {
-    console.error('[DispatchEngine] Error processing wave', {
-      order_id: orderId,
+    emitMetric('wave_creation_failed', { orderId, error: error.message });
+    console.error(JSON.stringify({
+      tag: 'DispatchEngine',
+      stage: 'wave_process',
+      orderId,
+      result: 'exception',
       error: error.message,
-    });
+    }));
   }
 }
 
@@ -203,6 +354,7 @@ async function sendWaveOffers(orderId: string): Promise<void> {
   );
 
   if (eligibleDrivers.length === 0) {
+    emitMetric('wave_no_eligible_drivers', { orderId, wave: queueData.currentWave });
     console.warn('[DispatchEngine] No eligible drivers for wave', {
       order_id: orderId,
       wave: queueData.currentWave,
@@ -246,36 +398,43 @@ async function sendWaveOffers(orderId: string): Promise<void> {
     };
 
     offers.push(offer);
-    batch.set(db.collection('dispatch_offers').doc(offerId), offer);
+    batch.set(db.collection('dispatch_offers').doc(offerId), removeUndefinedDeep(offer));
 
     // Update driver state (mark as having active offer)
-    batch.set(db.collection('driver_dispatch_state').doc(driver.driverId), {
+    batch.set(db.collection('driver_dispatch_state').doc(driver.driverId), removeUndefinedDeep({
       driverId: driver.driverId,
       activeOfferId: offerId,
       lastOfferAt: now,
       updatedAt: now,
-    }, { merge: true });
+    }), { merge: true });
   }
 
-  // Update metrics
-  batch.update(db.collection('dispatch_metrics').doc(orderId), {
-    [`waveMetrics`]: admin.firestore.FieldValue.arrayUnion({
-      round: queueData.currentWave,
-      driversSent: eligibleDrivers.length,
-      rejections: 0,
-      expirations: 0,
-      startedAt: now,
-      completedAt: null,
-    }),
-    totalDriversNotified: admin.firestore.FieldValue.increment(eligibleDrivers.length),
-  });
+  // Update metrics (non-fatal if metrics doc missing)
+  try {
+    batch.update(db.collection('dispatch_metrics').doc(orderId), {
+      [`waveMetrics`]: admin.firestore.FieldValue.arrayUnion(removeUndefinedDeep({
+        round: queueData.currentWave,
+        driversSent: eligibleDrivers.length,
+        rejections: 0,
+        expirations: 0,
+        startedAt: now,
+        completedAt: null,
+      })),
+      totalDriversNotified: admin.firestore.FieldValue.increment(eligibleDrivers.length),
+    });
+  } catch (metricsErr: any) {
+    console.warn('[DispatchEngine] Metrics update skipped', {
+      order_id: orderId,
+      error: metricsErr.message,
+    });
+  }
 
   // Update queue total offers sent
   batch.update(db.collection('dispatch_queue').doc(orderId), {
     totalOffersSent: admin.firestore.FieldValue.increment(eligibleDrivers.length),
   });
 
-  await batch.commit();
+  await withRetry(() => batch.commit(), { label: 'sendWaveOffers_batch', orderId });
 
   console.log('[DispatchEngine] Offers created', {
     order_id: orderId,
@@ -283,56 +442,89 @@ async function sendWaveOffers(orderId: string): Promise<void> {
     offers_sent: offers.length,
   });
 
-  // Send FCM notifications (non-blocking, fire-and-forget)
-  sendWaveNotifications(orderId, offers, eligibleDrivers);
+  // Send FCM notifications using queue data as single source of truth
+  // NEVER passes raw order data — only normalized queueData
+  sendWaveNotifications(orderId, offers, eligibleDrivers, queueData);
 }
 
 /**
- * Send FCM notifications for wave offers
+ * Send FCM notifications for wave offers.
  *
- * Runs asynchronously after offer documents are created.
+ * ARCHITECTURE: Uses dispatch_queue entry as single source of truth.
+ * NEVER fetches raw order documents.
+ *
+ * SAFETY:
+ * - Guards driver[i] index mismatch
+ * - Never throws (logs + skips on per-driver failure)
+ * - Aggregates failure metrics per wave
  */
 async function sendWaveNotifications(
   orderId: string,
   offers: DispatchOffer[],
-  drivers: EligibleDriver[]
+  drivers: EligibleDriver[],
+  queueData: DispatchQueueEntry
 ): Promise<void> {
-  // Fetch full order data for notification payload
-  const orderDoc = await db.collection('orders').doc(orderId).get();
-
-  if (!orderDoc.exists) {
-    console.error('[DispatchEngine] Order not found for notifications', { order_id: orderId });
-    return;
-  }
-
-  const orderData = orderDoc.data()!;
+  let successCount = 0;
+  let failCount = 0;
 
   const notificationPromises = offers.map(async (offer, index) => {
+    // Guard: driver index mismatch
     const driver = drivers[index];
+    if (!driver) {
+      failCount++;
+      console.error(JSON.stringify({
+        tag: 'DispatchEngine',
+        stage: 'notification',
+        orderId,
+        offerId: offer.offerId,
+        result: 'driver_index_mismatch',
+        index,
+        driversLength: drivers.length,
+        offersLength: offers.length,
+      }));
+      return;
+    }
 
-    try {
-      const result = await sendOfferNotification(offer, orderData, driver.fcmToken);
+    // sendOfferNotification NEVER throws — always returns structured result
+    const result = await sendOfferNotification(offer, queueData, driver.fcmToken);
 
-      if (result.success) {
-        // Update offer with FCM message ID
-        await db.collection('dispatch_offers').doc(offer.offerId).update({
-          fcmMessageId: result.messageId,
-        });
-      } else {
-        console.warn('[DispatchEngine] Failed to send notification', {
+    if (result.success) {
+      successCount++;
+      // Update offer with FCM message ID (non-fatal if fails)
+      await db.collection('dispatch_offers').doc(offer.offerId).update({
+        fcmMessageId: result.messageId,
+      }).catch((err: any) => {
+        console.warn('[DispatchEngine] Failed to update fcmMessageId', {
           offer_id: offer.offerId,
-          error: result.error,
+          error: err.message,
         });
-      }
-    } catch (error: any) {
-      console.error('[DispatchEngine] Notification error', {
-        offer_id: offer.offerId,
-        error: error.message,
       });
+    } else {
+      failCount++;
+      console.warn(JSON.stringify({
+        tag: 'DispatchEngine',
+        stage: 'notification',
+        orderId,
+        offerId: offer.offerId,
+        driverId: offer.driverId,
+        result: 'notification_failed',
+        error: result.error,
+      }));
     }
   });
 
   await Promise.allSettled(notificationPromises);
+
+  // Aggregated wave notification metrics
+  console.log(JSON.stringify({
+    tag: 'DispatchEngine',
+    stage: 'wave_notifications_summary',
+    orderId,
+    wave: queueData.currentWave,
+    totalOffers: offers.length,
+    successCount,
+    failCount,
+  }));
 }
 
 // ============================================================================
@@ -344,8 +536,22 @@ async function sendWaveNotifications(
  *
  * Finds all dispatch queue entries where waveExpiresAt < now
  * and triggers next wave.
+ *
+ * CIRCUIT BREAKERS:
+ * - Per-order: after N consecutive failures, moves order to dispatch_stuck_orders
+ * - Global: if failure rate exceeds threshold, pauses processing temporarily
  */
 export async function processExpiredWaves(): Promise<void> {
+  // Global circuit breaker check
+  if (isGlobalCircuitOpen()) {
+    console.warn(JSON.stringify({
+      tag: 'CircuitBreaker',
+      result: 'global_circuit_open_skipping',
+      reopensAt: new Date(globalCircuitOpenUntil).toISOString(),
+    }));
+    return;
+  }
+
   const now = admin.firestore.Timestamp.now();
 
   const expiredSnapshot = await db
@@ -365,42 +571,117 @@ export async function processExpiredWaves(): Promise<void> {
     const orderId = doc.id;
     const queueData = doc.data() as DispatchQueueEntry;
 
-    console.log('[DispatchEngine] Wave expired, moving to next', {
-      order_id: orderId,
-      expired_wave: queueData.currentWave,
-    });
-
-    // Mark current wave as completed in metrics
-    await db.collection('dispatch_metrics').doc(orderId).update({
-      [`waveMetrics.${queueData.currentWave - 1}.completedAt`]: now,
-    });
-
-    // Expire all sent offers from this wave
-    const sentOffers = await db
-      .collection('dispatch_offers')
-      .where('orderId', '==', orderId)
-      .where('round', '==', queueData.currentWave)
-      .where('status', '==', 'sent')
-      .get();
-
-    if (!sentOffers.empty) {
-      const batch = db.batch();
-      sentOffers.docs.forEach((offerDoc) => {
-        batch.update(offerDoc.ref, { status: 'expired', respondedAt: now });
-      });
-      await batch.commit();
-
-      console.log('[DispatchEngine] Expired sent offers', {
+    try {
+      console.log('[DispatchEngine] Wave expired, moving to next', {
         order_id: orderId,
-        count: sentOffers.size,
+        expired_wave: queueData.currentWave,
       });
-    }
 
-    // Trigger next wave
-    await processNextWave(orderId);
+      // Mark current wave as completed in metrics (non-fatal)
+      await db.collection('dispatch_metrics').doc(orderId).update({
+        [`waveMetrics.${queueData.currentWave - 1}.completedAt`]: now,
+      }).catch((err: any) => {
+        console.warn('[DispatchEngine] Metrics update failed (non-fatal)', {
+          order_id: orderId,
+          error: err.message,
+        });
+      });
+
+      // Expire all sent offers from this wave
+      const sentOffers = await db
+        .collection('dispatch_offers')
+        .where('orderId', '==', orderId)
+        .where('round', '==', queueData.currentWave)
+        .where('status', '==', 'sent')
+        .get();
+
+      if (!sentOffers.empty) {
+        const batch = db.batch();
+        sentOffers.docs.forEach((offerDoc) => {
+          batch.update(offerDoc.ref, { status: 'expired', respondedAt: now });
+        });
+        await batch.commit();
+
+        console.log('[DispatchEngine] Expired sent offers', {
+          order_id: orderId,
+          count: sentOffers.size,
+        });
+      }
+
+      // Trigger next wave
+      await processNextWave(orderId);
+
+      // Success — clear failure counter
+      clearOrderFailure(orderId);
+
+    } catch (err: any) {
+      // Per-order circuit breaker
+      const failCount = recordOrderFailure(orderId);
+      recordGlobalFailure();
+
+      console.error(JSON.stringify({
+        tag: 'DispatchEngine',
+        stage: 'expired_wave_processing',
+        orderId,
+        result: 'exception',
+        consecutiveFailures: failCount,
+        error: err.message,
+      }));
+
+      if (failCount >= ORDER_CIRCUIT_BREAKER_THRESHOLD) {
+        // Move to stuck orders — stop retrying this order
+        await moveToStuckOrders(orderId, queueData, failCount, err.message);
+        clearOrderFailure(orderId);
+      }
+    }
   });
 
   await Promise.allSettled(promises);
+}
+
+/**
+ * Move a repeatedly failing order to dispatch_stuck_orders.
+ * Removes from dispatch_queue to prevent infinite retry loops.
+ */
+async function moveToStuckOrders(
+  orderId: string,
+  queueData: DispatchQueueEntry,
+  failCount: number,
+  lastError: string
+): Promise<void> {
+  try {
+    await db.collection('dispatch_stuck_orders').doc(orderId).set(removeUndefinedDeep({
+      orderId,
+      currentWave: queueData.currentWave,
+      totalOffersSent: queueData.totalOffersSent,
+      consecutiveFailures: failCount,
+      lastError,
+      stuckAt: admin.firestore.Timestamp.now(),
+      pickupLat: queueData.pickupLat,
+      pickupLng: queueData.pickupLng,
+      price: queueData.price,
+    }));
+
+    await db.collection('dispatch_queue').doc(orderId).delete();
+
+    emitMetric('wave_creation_failed' as DispatchMetricName, { orderId, reason: 'circuit_breaker_tripped' });
+
+    console.error(JSON.stringify({
+      tag: 'CircuitBreaker',
+      level: 'CRITICAL',
+      result: 'order_moved_to_stuck',
+      orderId,
+      consecutiveFailures: failCount,
+      lastError,
+    }));
+  } catch (stuckErr: any) {
+    console.error(JSON.stringify({
+      tag: 'CircuitBreaker',
+      result: 'stuck_order_write_failed',
+      orderId,
+      error: stuckErr.message,
+    }));
+  }
 }
 
 // ============================================================================
@@ -505,13 +786,14 @@ export async function handleOfferAcceptance(
         updatedAt: now,
       }, { merge: true });
 
-      // 4. Update metrics
+      // 4. Update metrics (guard createdAt — may be missing on legacy orders)
       const metricsRef = db.collection('dispatch_metrics').doc(offer.orderId);
+      const createdAtMs = orderData.createdAt?.toMillis?.() ?? Date.now();
       transaction.update(metricsRef, {
         acceptedByDriverId: driverId,
         acceptedAtWave: offer.round,
         acceptedAt: now,
-        timeToAcceptSeconds: Math.floor((now.toMillis() - orderData.createdAt.toMillis()) / 1000),
+        timeToAcceptSeconds: Math.floor((now.toMillis() - createdAtMs) / 1000),
       });
 
       return { success: true };

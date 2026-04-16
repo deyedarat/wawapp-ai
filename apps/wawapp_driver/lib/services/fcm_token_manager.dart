@@ -34,6 +34,9 @@ class FcmTokenManager {
     // Get initial token
     await _refreshToken();
 
+    // Update lastSeen on every app open (even if token unchanged)
+    await updateLastSeen();
+
     // Listen for token refresh
     _tokenRefreshSubscription =
         FirebaseMessaging.instance.onTokenRefresh.listen(
@@ -136,6 +139,7 @@ class FcmTokenManager {
   }
 
   /// Sync token to Firestore (driver document).
+  /// Also updates lastSeen timestamp so backend knows the device is active.
   Future<void> _syncTokenToFirestore(String token) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -154,13 +158,14 @@ class FcmTokenManager {
         {
           'fcmToken': token,
           'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+          'lastSeen': FieldValue.serverTimestamp(),
           'platform': defaultTargetPlatform.name,
         },
         SetOptions(merge: true),
       );
 
       if (kDebugMode) {
-        debugPrint('[FcmTokenManager] ☁️ Token synced to Firestore');
+        debugPrint('[FcmTokenManager] ☁️ Token + lastSeen synced to Firestore');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -208,6 +213,22 @@ class FcmTokenManager {
   String _maskToken(String token) {
     if (token.length <= 16) return token;
     return '${token.substring(0, 8)}...${token.substring(token.length - 8)}';
+  }
+
+  /// Update lastSeen timestamp in Firestore.
+  /// Called on every app open to keep the backend aware of device activity.
+  Future<void> updateLastSeen() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    try {
+      await FirebaseFirestore.instance
+          .collection(_kDriversCollection)
+          .doc(user.uid)
+          .set(
+        {'lastSeen': FieldValue.serverTimestamp()},
+        SetOptions(merge: true),
+      );
+    } catch (_) {}
   }
 
   /// Dispose resources.

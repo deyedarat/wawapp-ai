@@ -167,6 +167,44 @@ class NotificationService {
     NotificationMethodChannel.onForegroundMessage.listen((data) {
       _handleForegroundMessage(RemoteMessage(data: data));
     });
+
+    // PART 2: Tap routing — background (app was in background, user taps)
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTapFromFCM);
+
+    // PART 2: Tap routing — killed (app was terminated, user taps)
+    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      _handleNotificationTapFromFCM(initialMessage);
+    }
+  }
+
+  /// Handle notification tap from FCM (background or killed state).
+  /// Routes to the correct screen based on notification type and orderId.
+  void _handleNotificationTapFromFCM(RemoteMessage message) {
+    final data = message.data;
+    final type = NotificationHelper.resolveType(data);
+    final orderId = data['orderId'] as String?;
+
+    if (kDebugMode) {
+      debugPrint(
+        '[NotificationService] Notification tapped → routing: '
+        'type=$type, orderId=$orderId',
+      );
+    }
+
+    NotificationLogger.instance.log(
+      eventType: 'tapped',
+      notificationType: type ?? 'unknown',
+      appState: 'background',
+      orderId: orderId,
+    );
+
+    // Cancel sound repeats for this order
+    if (orderId != null) {
+      NotificationMethodChannel.cancelSoundRepeats(orderId);
+    }
+
+    _navigateFromMessage(data);
   }
 
   /// Determine notification color based on type
@@ -204,19 +242,15 @@ class NotificationService {
   // ---------------------------------------------------------------------------
 
   void _handleForegroundMessage(RemoteMessage message) async {
-    if (kDebugMode) {
-      debugPrint(
-        '[NotificationService] 🔔 onMessage received: ${message.data}',
-      );
-    }
-
     final data = message.data;
     final notificationType = NotificationHelper.resolveType(data);
     final orderId = data['orderId'] as String?;
+    final hasSystemNotification = message.notification != null;
 
     if (kDebugMode) {
       debugPrint(
-        '[NotificationService] type=$notificationType, orderId=$orderId',
+        '[NotificationService] 🔔 onMessage: type=$notificationType, '
+        'orderId=$orderId, hasSystemNotification=$hasSystemNotification',
       );
     }
 
@@ -287,16 +321,31 @@ class NotificationService {
       return;
     }
 
-    // ── Other notification types → standard notification ──
-    final notification = message.notification;
-    final title = notification?.title ??
-        (data['title'] as String?) ??
-        _defaultTitle(notificationType);
-    final body = notification?.body ?? (data['body'] as String?) ?? '';
+    // ── Other notification types → standard local notification ──
+    // DUPLICATE PROTECTION: If the FCM message already has a notification block,
+    // Android displayed it in the system tray. Don't show a second local one.
+    if (hasSystemNotification) {
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] Skipping local notification (system handled) '
+          'type=$notificationType, orderId=$orderId',
+        );
+      }
+      return;
+    }
+
+    if (kDebugMode) {
+      debugPrint(
+        '[NotificationService] Showing local notification (data-only fallback) '
+        'type=$notificationType, orderId=$orderId',
+      );
+    }
+
+    final title = (data['title'] as String?) ?? _defaultTitle(notificationType);
+    final body = (data['body'] as String?) ?? '';
     if (title.isEmpty && body.isEmpty) return;
     final payload = jsonEncode(data);
-    final notificationId = orderId?.hashCode ??
-        (orderId != null ? orderId.hashCode : payload.hashCode);
+    final notificationId = orderId?.hashCode ?? payload.hashCode;
 
     String channelId;
     String channelName;

@@ -26,6 +26,14 @@ import java.util.concurrent.TimeUnit
  */
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
+    override fun onCreate() {
+        super.onCreate()
+        // Ensure notification channels exist before any message arrives.
+        // Critical for killed-state: Android uses channelId from FCM notification
+        // block and needs the channel to already exist.
+        NotificationHelper.createNotificationChannels(applicationContext)
+    }
+
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
@@ -35,19 +43,31 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val orderId = message.data["orderId"] ?: ""
 
-        Log.d(TAG, "Native FCM received: type=$type, orderId=$orderId, foreground=${isAppInForeground()}")
+        Log.d(TAG, "Native FCM received: type=$type, orderId=$orderId, foreground=${isAppInForeground()}, hasNotification=${message.notification != null}")
+
+        // When app is in foreground and message has a notification block,
+        // Android auto-displays it in the system tray. We suppress that here
+        // because Flutter handles foreground display directly (full-screen UI).
+        // For background/killed state, the notification block is the safety net.
 
         // Route notifications based on type and app state
         when {
             // Critical notifications: Full-screen (background only)
             type in listOf(
                 "new_order",
+                "wave_offer",
                 "new_order_nearby",
                 "unassigned_order_reminder",
                 "trip_start_reminder"
             ) -> {
                 if (isAppInForeground()) {
                     Log.d(TAG, "Critical notification in foreground → forwarding to Flutter via FcmForegroundBridge")
+                    // Cancel any system-displayed notification from the notification block
+                    // to prevent duplicate (Flutter handles foreground display directly)
+                    if (orderId.isNotBlank()) {
+                        val nm = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
+                        nm.cancel(orderId.hashCode())
+                    }
                     FcmForegroundBridge.sendMessage(message.data)
                     return
                 }
@@ -76,6 +96,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             ) -> {
                 if (isAppInForeground()) {
                     Log.d(TAG, "Non-critical notification in foreground → forwarding to Flutter via FcmForegroundBridge")
+                    if (orderId.isNotBlank()) {
+                        val nm = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
+                        nm.cancel(orderId.hashCode())
+                    }
                     FcmForegroundBridge.sendMessage(message.data)
                     return
                 }
@@ -93,6 +117,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 "trip_cancelled_by_client"
             ) -> {
                 if (isAppInForeground()) {
+                    if (orderId.isNotBlank()) {
+                        val nm = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
+                        nm.cancel(orderId.hashCode())
+                    }
                     FcmForegroundBridge.sendMessage(message.data)
                     return
                 }

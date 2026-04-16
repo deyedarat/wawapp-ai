@@ -137,11 +137,15 @@ export interface DispatchQueueEntry {
   createdAt: admin.firestore.Timestamp;
   updatedAt: admin.firestore.Timestamp;
 
-  // Order snapshot (for quick access)
+  // Order snapshot (normalized by intake — single source of truth for downstream)
   pickupLat: number;
   pickupLng: number;
+  dropoffLat?: number;
+  dropoffLng?: number;
   price: number;
-  clientName?: string;
+  clientName: string;       // Always populated by intake normalization
+  pickupLabel?: string | null;   // Normalized label for notifications
+  dropoffLabel?: string | null;  // Normalized label for notifications
 }
 
 // ============================================================================

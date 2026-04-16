@@ -18,7 +18,7 @@
  */
 
 import * as functions from 'firebase-functions/v1';
-import { enqueueOrder } from './dispatch';
+import { safeEnqueueOrder } from './dispatch';
 
 export const notifyNewOrderV2 = functions.firestore
   .document('orders/{orderId}')
@@ -41,7 +41,7 @@ export const notifyNewOrderV2 = functions.firestore
       return null;
     }
 
-    // Validate pickup location
+    // Validate pickup location (fast pre-check before full intake)
     const pickupLat = orderData.pickup?.lat;
     const pickupLng = orderData.pickup?.lng;
 
@@ -54,18 +54,18 @@ export const notifyNewOrderV2 = functions.firestore
     }
 
     try {
-      // Enqueue order in dispatch system
-      await enqueueOrder(
-        orderId,
-        pickupLat,
-        pickupLng,
-        orderData.price || 0,
-        orderData.clientName
-      );
+      // Safe intake: normalize → validate → enqueue (or quarantine)
+      const enqueued = await safeEnqueueOrder(orderId, orderData);
 
-      console.log('[NotifyNewOrderV2] Order enqueued for dispatch', {
-        order_id: orderId,
-      });
+      if (enqueued) {
+        console.log('[NotifyNewOrderV2] Order enqueued for dispatch', {
+          order_id: orderId,
+        });
+      } else {
+        console.warn('[NotifyNewOrderV2] Order quarantined — see dispatch_intake_failures', {
+          order_id: orderId,
+        });
+      }
 
       return null;
     } catch (error: any) {
