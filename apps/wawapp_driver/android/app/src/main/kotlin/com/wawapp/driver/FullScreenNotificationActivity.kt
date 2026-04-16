@@ -122,7 +122,7 @@ class FullScreenNotificationActivity : Activity() {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             putExtra("orderId", orderId)
             putExtra("notificationType", notificationType)
-            putExtra("action", "open_order")
+            putExtra("action", "accept_order")
         }
         startActivity(intent)
 

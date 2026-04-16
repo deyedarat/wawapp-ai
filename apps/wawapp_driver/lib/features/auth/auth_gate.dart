@@ -10,6 +10,7 @@ import '../../core/config/testlab_flags.dart';
 import '../../services/analytics_service.dart';
 import '../../services/fcm_service.dart';
 import '../../services/notification_method_channel.dart';
+import '../../services/notification_service.dart';
 import '../../services/notification_system_initializer.dart';
 import '../notifications/trip_start_reminder_screen.dart';
 import '../../services/orders_service.dart';
@@ -84,6 +85,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 
   Future<void> _handleNativeAccept(String orderId) async {
     try {
+      NotificationService().markOrderAsProcessed(orderId);
+      NotificationService().clearActiveFullScreen();
       await ref.read(ordersServiceProvider).acceptOrder(orderId);
       if (mounted) context.go('/active-order');
     } on Object catch (e) {
@@ -134,6 +137,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
   }
 
   Future<void> _handleNativeReject(String orderId) async {
+    NotificationService().markOrderAsProcessed(orderId);
+    NotificationService().clearActiveFullScreen();
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
       try {

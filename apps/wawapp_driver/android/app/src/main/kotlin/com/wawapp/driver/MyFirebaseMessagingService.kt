@@ -1,6 +1,7 @@
 package com.wawapp.driver
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -149,6 +150,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             ?: "الوجهة"
 
         // Use unified CallStyle full-screen notification for all critical types
+        val price = message.data["price"]?.toDoubleOrNull() ?: 0.0
+        val distance = message.data["distance"]?.toDoubleOrNull() ?: 0.0
+        val createdAt = message.data["createdAt"]?.toLongOrNull() ?: System.currentTimeMillis()
+
         NotificationHelper.showFullScreenNotification(
             context = applicationContext,
             orderId = orderId,
@@ -164,13 +169,52 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             },
             pickupLabel = pickupLabel,
             dropoffLabel = dropoffLabel,
-            price = message.data["price"]?.toDoubleOrNull() ?: 0.0,
-            distance = message.data["distance"]?.toDoubleOrNull() ?: 0.0,
-            createdAt = message.data["createdAt"]?.toLongOrNull() ?: System.currentTimeMillis(),
+            price = price,
+            distance = distance,
+            createdAt = createdAt,
             notificationType = type
         )
 
         Log.d(TAG, "Notification shown for order $orderId, type=$type")
+
+        // Force-launch FullScreenNotificationActivity directly for order types.
+        // Android shows heads-up instead of fullScreenIntent when screen is unlocked;
+        // this ensures the driver always sees the full-screen UI like a phone call.
+        // trip_start_reminder is excluded — it routes through MainActivity via fullScreenIntent.
+        if (type != "trip_start_reminder") {
+            try {
+                val fsIntent = Intent(applicationContext, FullScreenNotificationActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
+                    putExtra("orderId", orderId)
+                    putExtra("pickupLabel", pickupLabel)
+                    putExtra("dropoffLabel", dropoffLabel)
+                    putExtra("price", price)
+                    putExtra("distance", distance)
+                    putExtra("notificationType", type)
+                }
+                applicationContext.startActivity(fsIntent)
+                Log.d(TAG, "FullScreenNotificationActivity launched directly for order $orderId")
+            } catch (e: Exception) {
+                Log.w(TAG, "Direct activity launch failed (notification fallback active): ${e.message}")
+            }
+        } else {
+            // trip_start_reminder: launch MainActivity directly so Flutter shows TripStartReminderScreen
+            // Mirrors exactly what createFullScreenPendingIntent() does for this type.
+            try {
+                val reminderIntent = Intent(applicationContext, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
+                    putExtra("action", "trip_start_reminder")
+                    putExtra("orderId", orderId)
+                    putExtra("pickupLabel", pickupLabel)
+                    putExtra("destinationLabel", dropoffLabel)
+                    putExtra("createdAt", createdAt.toString())
+                }
+                applicationContext.startActivity(reminderIntent)
+                Log.d(TAG, "MainActivity launched directly for trip_start_reminder: $orderId")
+            } catch (e: Exception) {
+                Log.w(TAG, "Direct trip reminder launch failed (notification fallback active): ${e.message}")
+            }
+        }
     }
 
     /**

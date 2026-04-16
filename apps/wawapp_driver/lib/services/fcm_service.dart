@@ -79,6 +79,7 @@ class FCMService extends BaseFCMService {
                 return;
               }
             }
+            if (!context.mounted) return;
             context.push('/full-screen-notification', extra: data);
           } else {
             context.go('/nearby');

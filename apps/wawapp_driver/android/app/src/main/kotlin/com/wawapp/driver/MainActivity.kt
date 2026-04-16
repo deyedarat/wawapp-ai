@@ -284,7 +284,11 @@ class MainActivity : FlutterActivity() {
             return mapOf(
                 "orderId" to intent?.getStringExtra("orderId"),
                 "notificationType" to intent?.getStringExtra("notificationType"),
-                "action" to action
+                "action" to action,
+                "pickupLabel" to intent?.getStringExtra("pickupLabel"),
+                "dropoffLabel" to intent?.getStringExtra("dropoffLabel"),
+                "price" to intent?.extras?.getDouble("price", 0.0)?.toString(),
+                "distance" to intent?.extras?.getDouble("distance", 0.0)?.toString()
             )
         }
         if (action == "trip_start_reminder") {
@@ -307,8 +311,11 @@ class MainActivity : FlutterActivity() {
         intent?.removeExtra("orderId")
         intent?.removeExtra("notificationType")
         intent?.removeExtra("pickupLabel")
+        intent?.removeExtra("dropoffLabel")
         intent?.removeExtra("destinationLabel")
         intent?.removeExtra("elapsedMinutes")
+        intent?.removeExtra("price")
+        intent?.removeExtra("distance")
     }
 
     override fun onNewIntent(intent: Intent) {

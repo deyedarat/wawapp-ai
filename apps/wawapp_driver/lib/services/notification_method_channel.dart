@@ -320,6 +320,10 @@ class NotificationMethodChannel {
         'orderId': result['orderId'] as String?,
         'notificationType': result['notificationType'] as String?,
         'action': result['action'] as String?,
+        'pickupLabel': result['pickupLabel'] as String?,
+        'dropoffLabel': result['dropoffLabel'] as String?,
+        'price': result['price'] as String?,
+        'distance': result['distance'] as String?,
       };
     } on PlatformException catch (e) {
       if (kDebugMode) {
