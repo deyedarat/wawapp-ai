@@ -14,6 +14,8 @@ import '../../services/location_service.dart';
 import '../../services/orders_service.dart';
 import '../../widgets/error_screen.dart';
 import '../blocked/blocked_provider.dart';
+import '../orders/widgets/dispatch_offer_card.dart';
+import 'providers/dispatch_offers_provider.dart';
 import 'providers/nearby_orders_provider.dart';
 
 class NearbyScreen extends ConsumerStatefulWidget {
@@ -204,26 +206,89 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     });
 
     final ordersAsync = ref.watch(nearbyOrdersProvider(_currentPosition!));
+    final offersAsync = ref.watch(dispatchOffersProvider);
 
-    return ordersAsync.when(
-      loading: () {
-        if (kDebugMode) {
-          print('[NEARBY_SCREEN] ⏳ Provider loading...');
-        }
-        return const Center(child: CircularProgressIndicator());
-      },
-      error: (error, stack) {
-        if (kDebugMode) {
-          print('[NEARBY_SCREEN] ❌ Provider error: $error');
-          print('[NEARBY_SCREEN] Stack: $stack');
-        }
-        final appError = AppError.from(error);
-        return ErrorScreen(
-          message: appError.toUserMessage(),
-          onRetry: () => ref.refresh(nearbyOrdersProvider(_currentPosition!)),
-        );
-      },
-      data: (orders) {
+    return Column(
+      children: [
+        // ============================================================================
+        // SECTION 1: DISPATCH OFFERS (v2.0) - Priority display at top
+        // ============================================================================
+        offersAsync.when(
+          data: (offers) {
+            if (offers.isEmpty) return const SizedBox.shrink();
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header
+                Container(
+                  padding: EdgeInsets.all(DriverAppSpacing.md),
+                  color: DriverAppColors.primaryLight.withOpacity(0.1),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.notification_important,
+                        color: DriverAppColors.primaryLight,
+                      ),
+                      SizedBox(width: DriverAppSpacing.sm),
+                      Text(
+                        'عروض جديدة (${offers.length})',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: DriverAppColors.primaryLight,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Offers list
+                ...offers.map((offer) => DispatchOfferCard(offer: offer)),
+                // Divider
+                Divider(
+                  height: DriverAppSpacing.lg * 2,
+                  thickness: 8,
+                  color: DriverAppColors.backgroundLight,
+                ),
+              ],
+            );
+          },
+          loading: () => Padding(
+            padding: EdgeInsets.all(DriverAppSpacing.md),
+            child: const LinearProgressIndicator(),
+          ),
+          error: (e, st) => Padding(
+            padding: EdgeInsets.all(DriverAppSpacing.md),
+            child: Text(
+              'خطأ في تحميل العروض',
+              style: TextStyle(color: DriverAppColors.errorLight),
+            ),
+          ),
+        ),
+
+        // ============================================================================
+        // SECTION 2: NEARBY ORDERS (legacy - kept for compatibility)
+        // ============================================================================
+        Expanded(
+          child: ordersAsync.when(
+            loading: () {
+              if (kDebugMode) {
+                print('[NEARBY_SCREEN] ⏳ Provider loading...');
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
+            error: (error, stack) {
+              if (kDebugMode) {
+                print('[NEARBY_SCREEN] ❌ Provider error: $error');
+                print('[NEARBY_SCREEN] Stack: $stack');
+              }
+              final appError = AppError.from(error);
+              return ErrorScreen(
+                message: appError.toUserMessage(),
+                onRetry: () =>
+                    ref.refresh(nearbyOrdersProvider(_currentPosition!)),
+              );
+            },
+            data: (orders) {
         if (kDebugMode) {
           print('[NEARBY_SCREEN] ✅ Provider returned ${orders.length} orders');
           if (orders.isEmpty) {
@@ -240,150 +305,155 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
             }
           }
         }
-        if (orders.isEmpty) {
-          return const DriverEmptyState(
-            icon: Icons.inbox,
-            message: 'لا توجد طلبات قريبة في الوقت الحالي',
-          );
-        }
-        return ListView.builder(
-          padding: EdgeInsets.all(DriverAppSpacing.md),
-          itemCount: orders.length,
-          itemBuilder: (context, index) {
-            final order = orders[index];
-            final distance = _calculateDistance(
-              _currentPosition!.latitude,
-              _currentPosition!.longitude,
-              order.pickup.lat,
-              order.pickup.lng,
-            );
-            return DriverCard(
-              padding: EdgeInsets.all(DriverAppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(DriverAppSpacing.sm),
-                            decoration: BoxDecoration(
-                              color:
-                                  DriverAppColors.primaryLight.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.local_shipping,
-                              size: 24,
-                              color: DriverAppColors.primaryLight,
-                            ),
-                          ),
-                          SizedBox(width: DriverAppSpacing.sm),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
+              if (orders.isEmpty) {
+                return const DriverEmptyState(
+                  icon: Icons.inbox,
+                  message: 'لا توجد طلبات قريبة في الوقت الحالي',
+                );
+              }
+              return ListView.builder(
+                padding: EdgeInsets.all(DriverAppSpacing.md),
+                itemCount: orders.length,
+                itemBuilder: (context, index) {
+                  final order = orders[index];
+                  final distance = _calculateDistance(
+                    _currentPosition!.latitude,
+                    _currentPosition!.longitude,
+                    order.pickup.lat,
+                    order.pickup.lng,
+                  );
+                  return DriverCard(
+                    padding: EdgeInsets.all(DriverAppSpacing.md),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(DriverAppSpacing.sm),
+                                  decoration: BoxDecoration(
+                                    color: DriverAppColors.primaryLight
+                                        .withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.local_shipping,
+                                    size: 24,
+                                    color: DriverAppColors.primaryLight,
+                                  ),
+                                ),
+                                SizedBox(width: DriverAppSpacing.sm),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
-                              ),
-                              Text(
-                                'المسافة: ${distance.toStringAsFixed(1)} كم',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                      color: DriverAppColors.textSecondaryLight,
+                                    Text(
+                                      'المسافة: ${distance.toStringAsFixed(1)} كم',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: DriverAppColors
+                                                .textSecondaryLight,
+                                          ),
                                     ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: DriverAppSpacing.sm,
+                                vertical: DriverAppSpacing.xxs,
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: DriverAppSpacing.sm,
-                          vertical: DriverAppSpacing.xxs,
+                              decoration: BoxDecoration(
+                                color: DriverAppColors.successLight
+                                    .withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(
+                                    DriverAppSpacing.radiusFull),
+                              ),
+                              child: Text(
+                                '${order.price} MRU',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: DriverAppColors.successLight,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        decoration: BoxDecoration(
-                          color: DriverAppColors.successLight.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(
-                              DriverAppSpacing.radiusFull),
+                        SizedBox(height: DriverAppSpacing.md),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              size: 16,
+                              color: DriverAppColors.successLight,
+                            ),
+                            SizedBox(width: DriverAppSpacing.xs),
+                            Expanded(
+                              child: Text(
+                                order.pickup.label,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          '${order.price} MRU',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: DriverAppColors.successLight,
-                            fontSize: 16,
-                          ),
+                        SizedBox(height: DriverAppSpacing.xs),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.flag,
+                              size: 16,
+                              color: DriverAppColors.errorLight,
+                            ),
+                            SizedBox(width: DriverAppSpacing.xs),
+                            Expanded(
+                              child: Text(
+                                order.dropoff.label,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: DriverAppSpacing.md),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        size: 16,
-                        color: DriverAppColors.successLight,
-                      ),
-                      SizedBox(width: DriverAppSpacing.xs),
-                      Expanded(
-                        child: Text(
-                          order.pickup.label,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        SizedBox(height: DriverAppSpacing.md),
+                        DriverActionButton(
+                          label: 'قبول الطلب',
+                          icon: Icons.check_circle,
+                          onPressed: order.id != null
+                              ? () {
+                                  print(
+                                      '[NEARBY_SCREEN] 🟢 Accept button pressed for order: ${order.id}');
+                                  _acceptOrder(order.id!);
+                                }
+                              : null,
+                          isFullWidth: true,
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: DriverAppSpacing.xs),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.flag,
-                        size: 16,
-                        color: DriverAppColors.errorLight,
-                      ),
-                      SizedBox(width: DriverAppSpacing.xs),
-                      Expanded(
-                        child: Text(
-                          order.dropoff.label,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: DriverAppSpacing.md),
-                  DriverActionButton(
-                    label: 'قبول الطلب',
-                    icon: Icons.check_circle,
-                    onPressed: order.id != null
-                        ? () {
-                            print(
-                                '[NEARBY_SCREEN] 🟢 Accept button pressed for order: ${order.id}');
-                            _acceptOrder(order.id!);
-                          }
-                        : null,
-                    isFullWidth: true,
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
