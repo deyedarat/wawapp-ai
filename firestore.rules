@@ -327,11 +327,47 @@ service cloud.firestore {
       allow update: if false;
     }
 
-    // Dispatch offers (Cloud Functions only writes; drivers read their own)
+    // ========================================================================
+    // DISPATCH ENGINE v2.0 (Production-Grade Offer System)
+    // ========================================================================
+
+    // Dispatch offers: Cloud Functions write; drivers read their own
     match /dispatch_offers/{offerId} {
-      allow read: if request.auth != null &&
-        (resource.data.driverId == request.auth.uid ||
-         request.auth.token.isAdmin == true);
+      // Drivers can read only their own offers
+      // Admins can read all offers
+      allow read: if isSignedIn() &&
+        (resource.data.driverId == request.auth.uid || isAdmin());
+
+      // Only Cloud Functions can write
+      allow write: if false;
+    }
+
+    // Dispatch queue: Cloud Functions only (order dispatch state)
+    match /dispatch_queue/{orderId} {
+      // Admins can read for monitoring
+      allow read: if isAdmin();
+
+      // Only Cloud Functions can write
+      allow write: if false;
+    }
+
+    // Driver dispatch state: single source of truth per driver
+    match /driver_dispatch_state/{driverId} {
+      // Driver can read their own state
+      // Admins can read all states
+      allow read: if isSignedIn() &&
+        (request.auth.uid == driverId || isAdmin());
+
+      // Only Cloud Functions can write
+      allow write: if false;
+    }
+
+    // Dispatch metrics: analytics data per order
+    match /dispatch_metrics/{orderId} {
+      // Admins can read all metrics
+      allow read: if isAdmin();
+
+      // Only Cloud Functions can write
       allow write: if false;
     }
 

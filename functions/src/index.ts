@@ -13,6 +13,14 @@ admin.initializeApp();
 // Export Cloud Functions
 export { acceptOrder } from './acceptOrder';
 export { rejectDispatchOffer } from './rejectDispatchOffer';
+
+// ============================================================================
+// V2 DISPATCH ENGINE (Production-Grade Offer System)
+// ============================================================================
+export { acceptOrderV2 } from './acceptOrder.v2';
+export { notifyNewOrderV2 } from './notifyNewOrder.v2';
+export { rejectOffer } from './rejectOffer';
+export { processExpiredWaves } from './processExpiredWaves';
 export { aggregateDriverRating } from './aggregateDriverRating';
 export { approveTopupRequest, rejectTopupRequest } from './approveTopupRequest'; // Phase D: Admin top-up approval
 export { cleanStaleDriverLocations } from './cleanStaleDriverLocations';
@@ -21,7 +29,7 @@ export { enforceOrderExclusivity } from './enforceOrderExclusivity'; // Phase C:
 export { enforceWalletBalance } from './enforceWalletBalance'; // Phase D: Wallet balance enforcement
 export { expireStaleOrders } from './expireStaleOrders';
 export { getNearbyOrders } from './getNearbyOrders'; // FIX: Get nearby orders for drivers (bypasses Firestore Rules)
-export { notifyNewOrder } from './notifyNewOrder'; // FIX #1: Notify drivers on order creation
+// export { notifyNewOrder } from './notifyNewOrder'; // ❌ DISABLED: Replaced by notifyNewOrderV2
 export { notifyOrderEvents } from './notifyOrderEvents';
 export { notifyUnassignedOrders } from './notifyUnassignedOrders'; // Phase A: Repeated notifications for unassigned orders
 export { monitorAcceptedOrders } from './monitorAcceptedOrders'; // Phase D: Monitor accepted orders timeout & reminders
