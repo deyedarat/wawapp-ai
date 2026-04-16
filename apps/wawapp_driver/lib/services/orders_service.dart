@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../features/orders/models/dispatch_offer.dart';
 import 'acceptance_lock_manager.dart';
 import 'analytics_service.dart';
 
@@ -286,5 +287,162 @@ class OrdersService {
 
           return orders;
         });
+  }
+
+  // ============================================================================
+  // V2 DISPATCH ENGINE METHODS
+  // ============================================================================
+
+  /// Accept an offer (v2.0 - offer-based dispatch)
+  Future<void> acceptOfferV2({
+    required String offerId,
+    required String orderId,
+  }) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw const AppError(
+          type: AppErrorType.permissionDenied,
+          message: 'Driver not authenticated');
+    }
+
+    // Set acceptance lock immediately to prevent race condition
+    await AcceptanceLockManager.setAcceptanceLock(orderId);
+
+    try {
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('acceptOrderV2');
+      final result = await callable.call({
+        'orderId': orderId,
+        'offerId': offerId,
+      });
+
+      if (result.data['success'] != true) {
+        throw AppError(
+          type: AppErrorType.unknown,
+          message: result.data['message'] ?? 'فشل قبول العرض',
+        );
+      }
+
+      // Log analytics event after successful acceptance
+      AnalyticsService.instance.logOrderAcceptedByDriver(orderId: orderId);
+
+      // Clear lock after 5 seconds (successful acceptance)
+      Future.delayed(const Duration(seconds: 5), () {
+        AcceptanceLockManager.clearLock();
+      });
+    } on FirebaseFunctionsException catch (e) {
+      // Acceptance failed - clear lock immediately
+      await AcceptanceLockManager.clearLock();
+
+      // Map error codes to user-friendly messages
+      if (e.code == 'invalid-argument' &&
+          e.message?.contains('offerId') == true) {
+        throw const AppError(
+          type: AppErrorType.permissionDenied,
+          message: 'يرجى تحديث التطبيق للإصدار الأحدث',
+        );
+      } else if (e.message?.contains('offer_expired') == true) {
+        throw const AppError(
+          type: AppErrorType.permissionDenied,
+          message: 'انتهت صلاحية العرض',
+        );
+      } else if (e.message?.contains('already_accepted') == true) {
+        throw const AppError(
+          type: AppErrorType.permissionDenied,
+          message: 'تم قبول الطلب من قبل سائق آخر',
+        );
+      } else if (e.message?.contains('driver_busy') == true) {
+        throw const AppError(
+          type: AppErrorType.permissionDenied,
+          message: 'لديك طلب نشط بالفعل',
+        );
+      }
+      throw AppError.from(e);
+    } on Object catch (e) {
+      // Other error - clear lock immediately
+      await AcceptanceLockManager.clearLock();
+
+      if (e is AppError) rethrow;
+      throw AppError.from(e);
+    }
+  }
+
+  /// Reject an offer (v2.0)
+  Future<void> rejectOffer({required String offerId}) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw const AppError(
+          type: AppErrorType.permissionDenied,
+          message: 'Driver not authenticated');
+    }
+
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('rejectOffer');
+      final result = await callable.call({'offerId': offerId});
+
+      if (result.data['success'] != true) {
+        throw AppError(
+          type: AppErrorType.unknown,
+          message: result.data['message'] ?? 'فشل رفض العرض',
+        );
+      }
+    } on FirebaseFunctionsException catch (e) {
+      throw AppError.from(e);
+    } on Object catch (e) {
+      if (e is AppError) rethrow;
+      throw AppError.from(e);
+    }
+  }
+
+  /// Watch dispatch offers for this driver (v2.0)
+  Stream<List<DispatchOffer>> watchMyOffers(String driverId) {
+    if (kDebugMode) {
+      dev.log('[DispatchV2] watchMyOffers called for driver: $driverId');
+    }
+
+    // REQUIRED COMPOSITE INDEX: dispatch_offers [driverId ASC, status ASC, expiresAt ASC]
+    return _firestore
+        .collection('dispatch_offers')
+        .where('driverId', isEqualTo: driverId)
+        .where('status', isEqualTo: 'sent')
+        .orderBy('sentAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      if (kDebugMode) {
+        dev.log(
+            '[DispatchV2] Dispatch offers snapshot: ${snapshot.docs.length} documents');
+      }
+
+      final offers = <DispatchOffer>[];
+      for (final doc in snapshot.docs) {
+        try {
+          final offer = DispatchOffer.fromFirestore(doc);
+
+          // Filter out expired offers
+          if (offer.isValid) {
+            offers.add(offer);
+
+            if (kDebugMode) {
+              dev.log(
+                  '[DispatchV2] Offer ${offer.offerId}: orderId=${offer.orderId}, round=${offer.round}, remaining=${offer.remainingSeconds}s');
+            }
+          } else {
+            if (kDebugMode) {
+              dev.log('[DispatchV2] Filtered out expired offer: ${offer.offerId}');
+            }
+          }
+        } on Object catch (e) {
+          if (kDebugMode) {
+            dev.log('[DispatchV2] Error parsing offer ${doc.id}: $e');
+          }
+        }
+      }
+
+      if (kDebugMode) {
+        dev.log('[DispatchV2] Final valid offers: ${offers.length}');
+      }
+
+      return offers;
+    });
   }
 }
