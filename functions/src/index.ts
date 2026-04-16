@@ -31,7 +31,7 @@ export { expireStaleOrders } from './expireStaleOrders';
 export { getNearbyOrders } from './getNearbyOrders'; // FIX: Get nearby orders for drivers (bypasses Firestore Rules)
 // export { notifyNewOrder } from './notifyNewOrder'; // ❌ DISABLED: Replaced by notifyNewOrderV2
 export { notifyOrderEvents } from './notifyOrderEvents';
-export { notifyUnassignedOrders } from './notifyUnassignedOrders'; // Phase A: Repeated notifications for unassigned orders
+// export { notifyUnassignedOrders } from './notifyUnassignedOrders'; // ❌ DISABLED: v2.0 handles retries via processExpiredWaves
 export { monitorAcceptedOrders } from './monitorAcceptedOrders'; // Phase D: Monitor accepted orders timeout & reminders
 export { handleDriverCancellation } from './handleDriverCancellation'; // Phase D: Return cancelled orders to matching
 export { cleanupRejectedOrders } from './cleanupRejectedOrders'; // Cleanup expired driver rejection records
