@@ -144,6 +144,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         NotificationHelper.createNotificationChannels(applicationContext)
 
+        val messageId = message.data["messageId"]
         val pickupLabel = message.data["pickupLabel"] ?: "موقع الاستلام"
         val dropoffLabel = message.data["dropoffLabel"]
             ?: message.data["destinationLabel"]
@@ -157,6 +158,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         NotificationHelper.showFullScreenNotification(
             context = applicationContext,
             orderId = orderId,
+            messageId = messageId,
             title = message.data["title"] ?: when (type) {
                 "trip_start_reminder" -> "هل وصلت للعميل؟"
                 else -> "طلب جديد قريب منك"

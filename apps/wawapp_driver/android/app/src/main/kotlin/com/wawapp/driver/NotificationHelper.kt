@@ -130,6 +130,7 @@ object NotificationHelper {
     fun showFullScreenNotification(
         context: Context,
         orderId: String,
+        messageId: String?,
         title: String,
         body: String,
         pickupLabel: String,
@@ -147,7 +148,8 @@ object NotificationHelper {
             else -> CHANNEL_ID_NEW_ORDERS
         }
 
-        val notificationId = orderId.hashCode()
+        // Deterministic: same messageId → same notificationId → Android replaces on retry
+        val notificationId = (messageId ?: orderId).hashCode()
 
         // Check permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

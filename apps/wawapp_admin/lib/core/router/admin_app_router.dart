@@ -6,6 +6,7 @@ import '../../features/auth/admin_login_screen.dart';
 import '../../features/auth/admin_register_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
+import '../../features/analytics/notification_analytics_screen.dart';
 import '../../features/orders/orders_screen.dart';
 import '../../features/drivers/drivers_screen.dart';
 import '../../features/clients/clients_screen.dart';
@@ -132,6 +133,11 @@ final adminRouterProvider = Provider<GoRouter>((ref) {
         path: '/notifications',
         name: 'notifications',
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/notification-analytics',
+        name: 'notificationAnalytics',
+        builder: (context, state) => const NotificationAnalyticsScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

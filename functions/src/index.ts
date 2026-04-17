@@ -68,3 +68,6 @@ export { getReportsOverview } from './reports/getReportsOverview';
 export { adminCreatePayoutRequest, adminUpdatePayoutStatus } from './finance/adminPayouts';
 export { onOrderCompleted } from './finance/orderSettlement';
 
+// Export Analytics Functions
+export { aggregateNotificationMetrics } from './analytics/aggregateNotificationMetrics';
+

@@ -93,8 +93,11 @@ export async function sendOfferNotification(
     const expiresAtMs = offer.expiresAt?.toMillis?.() ?? Date.now();
     const distance = Number.isFinite(offer.distance) ? offer.distance : 0;
 
+    // Deterministic messageId: same value on retry → client-side dedup
+    const deterministicMessageId = `${offer.orderId}_${offer.offerId}_${offer.round}`;
+
     const notificationData: NotificationData = {
-      messageId: `${offer.orderId}_wave_offer_${offer.round}_${Date.now()}`,
+      messageId: deterministicMessageId,
       notificationType: offer.round === 1 ? 'new_order' : 'wave_offer',
       type: offer.round === 1 ? 'new_order' : 'wave_offer',
 

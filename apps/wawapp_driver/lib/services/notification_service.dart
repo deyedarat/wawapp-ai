@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import '../core/router/navigator.dart';
 import '../features/notifications/full_screen_notification_screen.dart';
 import '../features/notifications/trip_start_reminder_screen.dart';
+import 'notification_dedup_service.dart';
 import 'notification_helper.dart';
 import 'notification_logger.dart';
 import 'notification_method_channel.dart';
@@ -43,11 +44,19 @@ class NotificationService {
   // Offer-level deduplication to prevent showing same offer twice
   final Set<String> _seenOfferIds = {};
 
+  // Persistent dedup service (initialized via initDedup)
+  NotificationDedupService? _dedupService;
+
   Future<void> initialize() async {
     _navigatorKey = appNavigatorKey;
 
     await _initializeLocalNotifications();
     await _setupFirebaseMessaging();
+  }
+
+  /// Inject the persistent dedup service (call after SharedPreferences is ready).
+  void initDedup(NotificationDedupService dedupService) {
+    _dedupService = dedupService;
   }
 
   Future<void> _initializeLocalNotifications() async {
@@ -246,6 +255,22 @@ class NotificationService {
     final notificationType = NotificationHelper.resolveType(data);
     final orderId = data['orderId'] as String?;
     final hasSystemNotification = message.notification != null;
+
+    // ── Persistent dedup check ──
+    final messageId = message.messageId ?? data['messageId'] as String?;
+    if (messageId != null && _dedupService != null) {
+      if (_dedupService!.isDuplicate(messageId)) {
+        NotificationLogger.instance.log(
+          eventType: 'skipped',
+          notificationType: notificationType ?? 'unknown',
+          appState: 'foreground',
+          orderId: orderId,
+          escalationLevel: 'persistent_duplicate',
+        );
+        return;
+      }
+      _dedupService!.markAsProcessed(messageId);
+    }
 
     if (kDebugMode) {
       debugPrint(

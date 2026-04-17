@@ -100,16 +100,17 @@ class MainActivity : FlutterActivity() {
                     val notificationType = call.argument<String>("notificationType") ?: "new_order"
 
                     NotificationHelper.showFullScreenNotification(
-                        this,
-                        orderId,
-                        title,
-                        body,
-                        pickupLabel,
-                        dropoffLabel,
-                        price,
-                        distance,
-                        createdAt,
-                        notificationType
+                        context = this,
+                        orderId = orderId,
+                        messageId = null,
+                        title = title,
+                        body = body,
+                        pickupLabel = pickupLabel,
+                        dropoffLabel = dropoffLabel,
+                        price = price,
+                        distance = distance,
+                        createdAt = createdAt,
+                        notificationType = notificationType
                     )
                     result.success(null)
                 }

@@ -14,13 +14,19 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/router/app_router.dart';
+import 'core/router/navigator.dart';
 import 'core/theme/app_theme.dart';
+import 'features/notifications/full_screen_notification_screen.dart';
+import 'features/notifications/trip_start_reminder_screen.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 import 'services/acceptance_lock_manager.dart';
 import 'services/analytics_service.dart';
+import 'services/notification_dedup_service.dart';
+import 'services/notification_helper.dart';
 import 'services/notification_logger.dart';
 import 'features/update/force_update_provider.dart';
 import 'features/update/force_update_screen.dart';
@@ -108,6 +114,8 @@ void main() async {
     // which provides proper fullScreenIntent support for killed/locked states.
     // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
+    await _setupNotificationHandlers();
+
     runApp(const ProviderScope(child: MyApp()));
   }, (error, stack) {
     // Catch errors that occur outside of Flutter framework
@@ -117,6 +125,78 @@ void main() async {
     }
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
   });
+}
+
+// ---------------------------------------------------------------------------
+// Background / Terminated notification tap handlers
+// ---------------------------------------------------------------------------
+
+Map<String, dynamic>? _pendingNotificationData;
+
+Future<void> _setupNotificationHandlers() async {
+  // Background → user taps notification
+  FirebaseMessaging.onMessageOpenedApp.listen((message) {
+    final data = message.data;
+    if (data.isEmpty) return;
+    if (kDebugMode) {
+      debugPrint('[Main] 🔔 onMessageOpenedApp: $data');
+    }
+    _processTapData(data);
+  });
+
+  // Terminated / Cold start → user tapped notification to launch app
+  final initial = await FirebaseMessaging.instance.getInitialMessage();
+  if (initial != null && initial.data.isNotEmpty) {
+    if (kDebugMode) {
+      debugPrint('[Main] 🔔 getInitialMessage: ${initial.data}');
+    }
+    _pendingNotificationData = initial.data;
+  }
+}
+
+void _processTapData(Map<String, dynamic> data) {
+  final ctx = appNavigatorKey.currentContext;
+  if (ctx == null) {
+    // Router not ready yet — store for later
+    _pendingNotificationData = data;
+    return;
+  }
+  _navigateForNotification(ctx, data);
+}
+
+void _navigateForNotification(BuildContext ctx, Map<String, dynamic> data) {
+  final type = NotificationHelper.resolveType(data);
+
+  NotificationLogger.instance.log(
+    eventType: 'tapped',
+    notificationType: type ?? 'unknown',
+    appState: 'background',
+    orderId: data['orderId'] as String?,
+  );
+
+  if (type == 'trip_start_reminder') {
+    final parsed = TripStartReminderData.tryParse(data);
+    if (parsed != null) {
+      ctx.go('/trip-start-reminder', extra: parsed);
+      return;
+    }
+  }
+
+  if (type == 'new_order' ||
+      type == 'new_order_nearby' ||
+      type == 'unassigned_order_reminder') {
+    final parsed = FullScreenNotificationData.tryParse(data);
+    if (parsed != null) {
+      ctx.go('/full-screen-notification', extra: parsed);
+      return;
+    }
+  }
+
+  // Fallback: use helper route mapping
+  final route = NotificationHelper.getRouteFromNotification(type: type);
+  if (route != null) {
+    ctx.go(route);
+  }
 }
 
 /// Initialize Firebase Crashlytics with proper error handlers
@@ -200,6 +280,20 @@ class _MyAppState extends ConsumerState<MyApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (mounted) {
         await NotificationService().initialize();
+
+        // Initialize persistent dedup service
+        final prefs = await SharedPreferences.getInstance();
+        NotificationService().initDedup(NotificationDedupService(prefs));
+
+        // Process pending notification tap from terminated/cold start
+        if (_pendingNotificationData != null) {
+          final data = _pendingNotificationData!;
+          _pendingNotificationData = null;
+          final navCtx = appNavigatorKey.currentContext;
+          if (navCtx != null) {
+            _navigateForNotification(navCtx, data);
+          }
+        }
 
         // Initialize notification health monitoring
         final monitor = NotificationHealthMonitor();
