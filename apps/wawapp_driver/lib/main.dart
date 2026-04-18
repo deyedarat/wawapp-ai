@@ -14,6 +14,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/router/app_router.dart';
@@ -45,8 +46,14 @@ import 'services/missed_notification_recovery.dart';
 /// to MyFirebaseMessagingService.kt in the future if needed.
 
 void main() async {
-  // Run app initialization in error zone to catch all errors
-  runZonedGuarded<Future<void>>(() async {
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = 'https://7af9dad2913b46aed9be1fc7e0c40780@o4511234675834880.ingest.us.sentry.io/4511234687303680';
+      options.environment = kReleaseMode ? 'production' : 'debug';
+      options.enabled = kReleaseMode;
+      options.release = 'wawapp-driver@1.0.0';
+    },
+    appRunner: () => runZonedGuarded<Future<void>>(() async {
     if (kDebugMode) {
       print('🟢 WawApp Driver starting...');
     }
@@ -124,7 +131,9 @@ void main() async {
       print('Stack trace: $stack');
     }
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-  });
+    Sentry.captureException(error, stackTrace: stack);
+    }),
+  );
 }
 
 // ---------------------------------------------------------------------------

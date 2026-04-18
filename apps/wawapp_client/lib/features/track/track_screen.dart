@@ -26,6 +26,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
   LatLng? _currentPosition;
   String? _orderId;
   bool _hasNavigated = false;
+  String? _lastStatus;
 
   @override
   void initState() {
@@ -66,6 +67,8 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
       if (data == null) return;
 
       final statusStr = data['status'] as String?;
+      if (statusStr == _lastStatus) return;
+      _lastStatus = statusStr;
       if (statusStr != null) {
         final status = OrderStatus.fromFirestore(statusStr);
         if (status == OrderStatus.accepted && !_hasNavigated) {

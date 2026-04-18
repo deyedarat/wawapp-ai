@@ -20,6 +20,7 @@
  */
 
 import * as admin from 'firebase-admin';
+import { CloudTasksClient } from '@google-cloud/tasks';
 import {
   DriverDispatchState,
   DispatchOffer,
@@ -170,6 +171,7 @@ export async function enqueueOrder(
     currentWave: 0,
     totalOffersSent: 0,
 
+    waveStatus: 'idle',
     waveStartedAt: null,
     waveExpiresAt: null,
 
@@ -265,29 +267,28 @@ export async function processNextWave(orderId: string): Promise<void> {
   const queueRef = db.collection('dispatch_queue').doc(orderId);
 
   try {
-    await db.runTransaction(async (transaction) => {
+    const iAmTheWinner = await db.runTransaction(async (transaction) => {
       const queueDoc = await transaction.get(queueRef);
 
-      if (!queueDoc.exists) {
-        console.log('[DispatchEngine] Order no longer in queue', { order_id: orderId });
-        return;
-      }
+      if (!queueDoc.exists) return false;
 
       const queueData = queueDoc.data() as DispatchQueueEntry;
       const nextWaveNum = queueData.currentWave + 1;
 
-      // Check if we have more waves available
       if (nextWaveNum > DEFAULT_WAVES.length) {
         emitMetric('wave_all_exhausted', { orderId });
+        return false;
+      }
+
+      // Atomic guard — only one concurrent caller proceeds
+      if (queueData.waveStatus === 'sending') {
         console.warn(JSON.stringify({
           tag: 'DispatchEngine',
-          stage: 'wave_advance',
+          stage: 'wave_start',
           orderId,
-          result: 'all_waves_exhausted',
-          totalWaves: DEFAULT_WAVES.length,
+          result: 'skipped_already_sending',
         }));
-        // Don't dequeue yet — admin should handle manually
-        return;
+        return false;
       }
 
       const wave = DEFAULT_WAVES[nextWaveNum - 1];
@@ -296,29 +297,44 @@ export async function processNextWave(orderId: string): Promise<void> {
         now.toMillis() + wave.ttl * 1000
       );
 
-      // Update queue entry
       transaction.update(queueRef, {
         currentWave: nextWaveNum,
+        waveStatus: 'sending',
         waveStartedAt: now,
         waveExpiresAt: expiresAt,
         updatedAt: now,
       });
 
       emitMetric('wave_creation_started', { orderId, wave: nextWaveNum });
-      console.log(JSON.stringify({
-        tag: 'DispatchEngine',
-        stage: 'wave_start',
-        orderId,
-        wave: nextWaveNum,
-        maxDrivers: wave.maxDrivers,
-        ttlSeconds: wave.ttl,
-        maxDistance: wave.maxDistance,
-      }));
+      return true;
     });
 
-    // After transaction: send offers (non-blocking for transaction)
+    if (!iAmTheWinner) return;
+
+    // Send offers (only the winner reaches here)
     await sendWaveOffers(orderId);
     emitMetric('wave_creation_succeeded', { orderId });
+
+    await db.collection('dispatch_queue').doc(orderId)
+      .update({ waveStatus: 'sent' })
+      .catch(() => {}); // non-fatal
+
+    // Schedule precise Cloud Task for wave expiration
+    const freshQueue = await db.collection('dispatch_queue').doc(orderId).get();
+    if (freshQueue.exists) {
+      const freshData = freshQueue.data() as DispatchQueueEntry;
+      const currentWave = DEFAULT_WAVES[freshData.currentWave - 1];
+      if (currentWave) {
+        await scheduleWaveExpirationTask(orderId, currentWave.ttl).catch((err: any) => {
+          console.warn(JSON.stringify({
+            tag: 'DispatchEngine',
+            stage: 'wave_task_schedule_failed',
+            orderId,
+            error: err.message,
+          }));
+        });
+      }
+    }
 
   } catch (error: any) {
     emitMetric('wave_creation_failed', { orderId, error: error.message });
@@ -329,6 +345,9 @@ export async function processNextWave(orderId: string): Promise<void> {
       result: 'exception',
       error: error.message,
     }));
+    await db.collection('dispatch_queue').doc(orderId)
+      .update({ waveStatus: 'idle' })
+      .catch(() => {});
   }
 }
 
@@ -531,11 +550,163 @@ async function sendWaveNotifications(
 // WAVE EXPIRATION HANDLER
 // ============================================================================
 
+// ============================================================================
+// CLOUD TASKS — PRECISE WAVE EXPIRATION SCHEDULING
+// ============================================================================
+
 /**
- * Process expired waves (called by scheduled function)
+ * Schedule a Cloud Task to process wave expiration for a specific order.
+ * Fires exactly `ttlSeconds` after the wave starts — eliminates the
+ * up-to-60s dead time of the old 1-minute scheduler.
+ */
+async function scheduleWaveExpirationTask(orderId: string, ttlSeconds: number): Promise<void> {
+  const project = process.env.GCLOUD_PROJECT || process.env.GCP_PROJECT || '';
+  const location = 'us-central1';
+  const queue = 'wave-expiration';
+  const serviceUrl = `https://${location}-${project}.cloudfunctions.net/handleWaveExpirationTask`;
+
+  const client = new CloudTasksClient();
+  const parent = client.queuePath(project, location, queue);
+
+  const scheduleTime = new Date(Date.now() + ttlSeconds * 1000);
+  const serviceAccountEmail = `firebase-adminsdk-fbsvc@${project}.iam.gserviceaccount.com`;
+  const task = {
+    httpRequest: {
+      httpMethod: 'POST' as const,
+      url: serviceUrl,
+      headers: { 'Content-Type': 'application/json' },
+      body: Buffer.from(JSON.stringify({ orderId })).toString('base64'),
+      oidcToken: {
+        serviceAccountEmail,
+        audience: serviceUrl,
+      },
+    },
+    scheduleTime: {
+      seconds: Math.floor(scheduleTime.getTime() / 1000),
+      nanos: 0,
+    },
+  };
+
+  await client.createTask({ parent, task });
+
+  console.log(JSON.stringify({
+    tag: 'DispatchEngine',
+    stage: 'wave_task_scheduled',
+    orderId,
+    ttlSeconds,
+    scheduledFor: scheduleTime.toISOString(),
+  }));
+}
+
+// ============================================================================
+// SINGLE-ORDER WAVE EXPIRATION (used by Cloud Tasks + fallback scheduler)
+// ============================================================================
+
+/**
+ * Process wave expiration for a single order.
  *
- * Finds all dispatch queue entries where waveExpiresAt < now
- * and triggers next wave.
+ * Extracted from the batch loop so both the Cloud Task handler
+ * and the fallback scheduler can call it.
+ */
+export async function processExpiredWavesForOrder(orderId: string): Promise<void> {
+  const now = admin.firestore.Timestamp.now();
+  const queueDoc = await db.collection('dispatch_queue').doc(orderId).get();
+
+  if (!queueDoc.exists) {
+    console.log('[DispatchEngine] Order no longer in queue (already handled)', { order_id: orderId });
+    return;
+  }
+
+  const queueData = queueDoc.data() as DispatchQueueEntry;
+
+  // Guard: wave already being processed by another trigger
+  if (queueData.waveStatus === 'sending' || queueData.waveStatus === 'sent') {
+    console.log('[DispatchEngine] Wave already being processed, skipping', {
+      order_id: orderId,
+      waveStatus: queueData.waveStatus,
+    });
+    return;
+  }
+
+  // Guard: only process if the wave has actually expired
+  if (queueData.waveExpiresAt && queueData.waveExpiresAt.toMillis() > now.toMillis()) {
+    console.log('[DispatchEngine] Wave not yet expired, skipping', {
+      order_id: orderId,
+      wave: queueData.currentWave,
+      expiresAt: queueData.waveExpiresAt.toDate().toISOString(),
+    });
+    return;
+  }
+
+  try {
+    console.log('[DispatchEngine] Wave expired, moving to next', {
+      order_id: orderId,
+      expired_wave: queueData.currentWave,
+    });
+
+    // Mark current wave as completed in metrics (non-fatal)
+    await db.collection('dispatch_metrics').doc(orderId).update({
+      [`waveMetrics.${queueData.currentWave - 1}.completedAt`]: now,
+    }).catch((err: any) => {
+      console.warn('[DispatchEngine] Metrics update failed (non-fatal)', {
+        order_id: orderId,
+        error: err.message,
+      });
+    });
+
+    // Expire all sent offers from this wave
+    const sentOffers = await db
+      .collection('dispatch_offers')
+      .where('orderId', '==', orderId)
+      .where('round', '==', queueData.currentWave)
+      .where('status', '==', 'sent')
+      .get();
+
+    if (!sentOffers.empty) {
+      const batch = db.batch();
+      sentOffers.docs.forEach((offerDoc) => {
+        batch.update(offerDoc.ref, { status: 'expired', respondedAt: now });
+      });
+      await batch.commit();
+
+      console.log('[DispatchEngine] Expired sent offers', {
+        order_id: orderId,
+        count: sentOffers.size,
+      });
+    }
+
+    // Trigger next wave
+    await processNextWave(orderId);
+
+    // Success — clear failure counter
+    clearOrderFailure(orderId);
+
+  } catch (err: any) {
+    // Per-order circuit breaker
+    const failCount = recordOrderFailure(orderId);
+    recordGlobalFailure();
+
+    console.error(JSON.stringify({
+      tag: 'DispatchEngine',
+      stage: 'expired_wave_processing',
+      orderId,
+      result: 'exception',
+      consecutiveFailures: failCount,
+      error: err.message,
+    }));
+
+    if (failCount >= ORDER_CIRCUIT_BREAKER_THRESHOLD) {
+      await moveToStuckOrders(orderId, queueData, failCount, err.message);
+      clearOrderFailure(orderId);
+    }
+  }
+}
+
+/**
+ * Process expired waves (FALLBACK — safety net scheduler)
+ *
+ * Kept as a safety fallback in case Cloud Tasks fail to fire.
+ * Now delegates per-order logic to processExpiredWavesForOrder.
  *
  * CIRCUIT BREAKERS:
  * - Per-order: after N consecutive failures, moves order to dispatch_stuck_orders
@@ -565,77 +736,9 @@ export async function processExpiredWaves(): Promise<void> {
     return;
   }
 
-  console.log('[DispatchEngine] Processing expired waves', { count: expiredSnapshot.size });
+  console.log('[DispatchEngine] Processing expired waves (fallback)', { count: expiredSnapshot.size });
 
-  const promises = expiredSnapshot.docs.map(async (doc) => {
-    const orderId = doc.id;
-    const queueData = doc.data() as DispatchQueueEntry;
-
-    try {
-      console.log('[DispatchEngine] Wave expired, moving to next', {
-        order_id: orderId,
-        expired_wave: queueData.currentWave,
-      });
-
-      // Mark current wave as completed in metrics (non-fatal)
-      await db.collection('dispatch_metrics').doc(orderId).update({
-        [`waveMetrics.${queueData.currentWave - 1}.completedAt`]: now,
-      }).catch((err: any) => {
-        console.warn('[DispatchEngine] Metrics update failed (non-fatal)', {
-          order_id: orderId,
-          error: err.message,
-        });
-      });
-
-      // Expire all sent offers from this wave
-      const sentOffers = await db
-        .collection('dispatch_offers')
-        .where('orderId', '==', orderId)
-        .where('round', '==', queueData.currentWave)
-        .where('status', '==', 'sent')
-        .get();
-
-      if (!sentOffers.empty) {
-        const batch = db.batch();
-        sentOffers.docs.forEach((offerDoc) => {
-          batch.update(offerDoc.ref, { status: 'expired', respondedAt: now });
-        });
-        await batch.commit();
-
-        console.log('[DispatchEngine] Expired sent offers', {
-          order_id: orderId,
-          count: sentOffers.size,
-        });
-      }
-
-      // Trigger next wave
-      await processNextWave(orderId);
-
-      // Success — clear failure counter
-      clearOrderFailure(orderId);
-
-    } catch (err: any) {
-      // Per-order circuit breaker
-      const failCount = recordOrderFailure(orderId);
-      recordGlobalFailure();
-
-      console.error(JSON.stringify({
-        tag: 'DispatchEngine',
-        stage: 'expired_wave_processing',
-        orderId,
-        result: 'exception',
-        consecutiveFailures: failCount,
-        error: err.message,
-      }));
-
-      if (failCount >= ORDER_CIRCUIT_BREAKER_THRESHOLD) {
-        // Move to stuck orders — stop retrying this order
-        await moveToStuckOrders(orderId, queueData, failCount, err.message);
-        clearOrderFailure(orderId);
-      }
-    }
-  });
-
+  const promises = expiredSnapshot.docs.map((doc) => processExpiredWavesForOrder(doc.id));
   await Promise.allSettled(promises);
 }
 

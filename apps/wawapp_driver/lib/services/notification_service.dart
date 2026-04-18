@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/router/navigator.dart';
 import '../features/notifications/full_screen_notification_screen.dart';
@@ -41,8 +43,20 @@ class NotificationService {
   // Navigation guard: prevents stacking multiple full-screen routes for the same order
   String? _activeFullScreenOrderId;
 
-  // Offer-level deduplication to prevent showing same offer twice
-  final Set<String> _seenOfferIds = {};
+  // ── Offer-level deduplication (central gate) ──
+  // Map<offerId, timestamp> with 10-minute TTL. Prevents both FcmForegroundBridge
+  // and FirebaseMessaging.onMessage from triggering UI for the same message.
+  // Entries auto-expire so memory stays bounded without arbitrary size caps.
+  final Map<String, DateTime> _seenOfferIds = {};
+  static const Duration _offerTtl = Duration(minutes: 10);
+
+  // Lock: if an offerId is currently being processed, the second caller awaits
+  // and then returns (no-op). Prevents race conditions where two async calls
+  // both pass the _seenOfferIds check before either writes to it.
+  final Map<String, Completer<void>> _processingOffers = {};
+
+  // Replay protection key for SharedPreferences (survives app restart).
+  static const String _kLastOfferId = 'last_handled_offer_id';
 
   // Persistent dedup service (initialized via initDedup)
   NotificationDedupService? _dedupService;
@@ -166,15 +180,17 @@ class NotificationService {
   }
 
   Future<void> _setupFirebaseMessaging() async {
-    // Fallback: firebase_messaging onMessage (may never fire if
-    // MyFirebaseMessagingService priority=10 intercepts all messages first).
-    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+    // Both listeners funnel through handleIncomingOffer for dedup.
+    // Fallback: firebase_messaging onMessage (may not fire if native intercepts).
+    FirebaseMessaging.onMessage.listen((msg) {
+      if (kDebugMode) debugPrint('[NotificationService] ← FirebaseMessaging.onMessage');
+      handleIncomingOffer(msg.data, source: 'onMessage');
+    });
 
-    // Primary foreground path: FcmForegroundBridge (Kotlin) forwards the
-    // message here when the app is open, since our native service has
-    // priority=10 and the firebase_messaging plugin never receives it.
+    // Primary foreground path: FcmForegroundBridge (Kotlin EventChannel).
     NotificationMethodChannel.onForegroundMessage.listen((data) {
-      _handleForegroundMessage(RemoteMessage(data: data));
+      if (kDebugMode) debugPrint('[NotificationService] ← FcmForegroundBridge');
+      handleIncomingOffer(data, source: 'bridge');
     });
 
     // PART 2: Tap routing — background (app was in background, user taps)
@@ -247,14 +263,154 @@ class NotificationService {
   }
 
   // ---------------------------------------------------------------------------
-  // Foreground message handler
+  // Offer-level dedup helpers
   // ---------------------------------------------------------------------------
 
-  void _handleForegroundMessage(RemoteMessage message) async {
-    final data = message.data;
+  /// Build a collision-safe dedup key.
+  /// Uses `offerId` when present (globally unique from Cloud Functions).
+  /// Falls back to `orderId_round` to distinguish waves for the same order.
+  static String _extractOfferKey(Map<String, dynamic> data) {
+    final explicit = data['offerId'] as String?;
+    if (explicit != null && explicit.isNotEmpty) return explicit;
+    final orderId = data['orderId'] as String? ?? '';
+    final round = data['round'] as String? ?? '1';
+    return '${orderId}_$round';
+  }
+
+  /// Returns true if [offerId] was already seen and its TTL has not expired.
+  /// Expired entries are removed lazily so they can be re-processed.
+  bool _isSeenOffer(String offerId) {
+    final ts = _seenOfferIds[offerId];
+    if (ts == null) return false;
+    if (DateTime.now().difference(ts) >= _offerTtl) {
+      _seenOfferIds.remove(offerId); // expired → allow
+      return false;
+    }
+    return true;
+  }
+
+  /// Lightweight TTL sweep — removes all entries older than [_offerTtl].
+  /// Called on every incoming message; O(n) but n is tiny (< 50 in practice).
+  void _pruneExpiredOffers() {
+    final now = DateTime.now();
+    _seenOfferIds.removeWhere((_, ts) => now.difference(ts) >= _offerTtl);
+  }
+
+  /// Persist [offerId] to SharedPreferences so a restart cannot replay it.
+  /// Fire-and-forget — never blocks the notification pipeline.
+  void _persistLastOfferId(String offerId) {
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setString(_kLastOfferId, offerId);
+    }).catchError((_) {/* storage failure is non-fatal */});
+  }
+
+  /// Check if [offerId] matches the last persisted offer (replay protection).
+  Future<bool> _isReplayedOffer(String offerId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(_kLastOfferId) == offerId;
+    } catch (_) {
+      return false; // storage failure → fail-open
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Central entry point — ALL foreground paths MUST call this
+  // ---------------------------------------------------------------------------
+
+  /// Central handler for every incoming offer / notification.
+  ///
+  /// Dedup pipeline (in order):
+  /// 1. Extract wave-safe offerId key
+  /// 2. TTL prune (lightweight, every call)
+  /// 3. Replay check (SharedPreferences — survives restart)
+  /// 4. In-memory TTL dedup (_seenOfferIds)
+  /// 5. Completer-based race lock
+  /// 6. Process → mark seen (memory + disk)
+  ///
+  /// [source] is for logging only ('onMessage' | 'bridge' | 'recovery').
+  Future<void> handleIncomingOffer(
+    Map<String, dynamic> data, {
+    String source = 'unknown',
+  }) async {
+    final offerId = _extractOfferKey(data);
+
+    // ── 1. TTL prune (cheap, keeps map small) ──
+    _pruneExpiredOffers();
+
+    // ── 2. Replay protection (survives app restart) ──
+    if (offerId.isNotEmpty && await _isReplayedOffer(offerId)) {
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] ⛔ REPLAY blocked (offerId=$offerId, source=$source)',
+        );
+      }
+      NotificationLogger.instance.log(
+        eventType: 'duplicate_blocked',
+        notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
+        appState: 'foreground',
+        orderId: data['orderId'] as String?,
+        escalationLevel: 'replay_$source',
+      );
+      return;
+    }
+
+    // ── 3. In-memory TTL dedup ──
+    if (offerId.isNotEmpty && _isSeenOffer(offerId)) {
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] ⛔ DUPLICATE blocked (offerId=$offerId, source=$source)',
+        );
+      }
+      NotificationLogger.instance.log(
+        eventType: 'duplicate_blocked',
+        notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
+        appState: 'foreground',
+        orderId: data['orderId'] as String?,
+        escalationLevel: 'dedup_$source',
+      );
+      return;
+    }
+
+    // ── 4. Race-condition lock ──
+    if (offerId.isNotEmpty && _processingOffers.containsKey(offerId)) {
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] ⏳ RACE blocked — waiting on offerId=$offerId (source=$source)',
+        );
+      }
+      await _processingOffers[offerId]!.future;
+      return;
+    }
+
+    // ── 5. Acquire lock ──
+    final completer = Completer<void>();
+    if (offerId.isNotEmpty) _processingOffers[offerId] = completer;
+
+    try {
+      // Mark as seen immediately (before any async gap).
+      if (offerId.isNotEmpty) {
+        _seenOfferIds[offerId] = DateTime.now();
+        _persistLastOfferId(offerId);
+      }
+
+      await _handleForegroundMessageInner(data);
+    } finally {
+      // ── Release lock ──
+      if (offerId.isNotEmpty) _processingOffers.remove(offerId);
+      if (!completer.isCompleted) completer.complete();
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Foreground message handler (inner — only called from handleIncomingOffer)
+  // ---------------------------------------------------------------------------
+
+  Future<void> _handleForegroundMessageInner(Map<String, dynamic> data) async {
     final notificationType = NotificationHelper.resolveType(data);
     final orderId = data['orderId'] as String?;
-    final hasSystemNotification = message.notification != null;
+    // FcmForegroundBridge messages never carry a notification block.
+    const hasSystemNotification = false;
 
     // ── Persistent dedup check ──
     final messageId = message.messageId ?? data['messageId'] as String?;
@@ -490,13 +646,6 @@ class NotificationService {
         escalationLevel: 'parse_failed',
       );
       return;
-    }
-
-    // Offer-level deduplication
-    final offerId = data['offerId'] as String?;
-    if (offerId != null) {
-      if (_seenOfferIds.contains(offerId)) return;
-      _seenOfferIds.add(offerId);
     }
 
     // Apply debouncing to prevent duplicate notifications
@@ -755,8 +904,8 @@ class NotificationService {
     _recentlyProcessedOrders.removeWhere(
       (key, timestamp) => DateTime.now().difference(timestamp) > const Duration(minutes: 5),
     );
-    // Clear seen offer IDs for this order
-    _seenOfferIds.removeWhere((id) => id.startsWith(orderId));
+    // Note: we do NOT clear _seenOfferIds here — an already-shown offer
+    // should never be shown again even after the driver processes the order.
   }
 
   /// Check if this is a stale notification for a recently processed order.
@@ -907,12 +1056,8 @@ class NotificationService {
   }
 
   /// Called by MissedNotificationRecovery to display a recovered notification.
+  /// Funnels through the central dedup gate.
   void recoverNotification(Map<String, dynamic> data) {
-    final notificationType = NotificationHelper.resolveType(data);
-    if (notificationType == 'trip_start_reminder') {
-      _showTripReminderNotification(data);
-    } else if (NotificationHelper.isFullScreenType(notificationType)) {
-      _showFullScreenNotification(data);
-    }
+    handleIncomingOffer(data, source: 'recovery');
   }
 }

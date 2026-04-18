@@ -34,6 +34,7 @@ export { notifyOrderEvents } from './notifyOrderEvents';
 // export { notifyUnassignedOrders } from './notifyUnassignedOrders'; // ❌ DISABLED: v2.0 handles retries via processExpiredWaves
 export { monitorAcceptedOrders } from './monitorAcceptedOrders'; // Phase D: Monitor accepted orders timeout & reminders
 export { handleDriverCancellation } from './handleDriverCancellation'; // Phase D: Return cancelled orders to matching
+export { handleWaveExpirationTask } from './handleWaveExpiration'; // Cloud Tasks: precise wave expiration
 export { cleanupRejectedOrders } from './cleanupRejectedOrders'; // Cleanup expired driver rejection records
 export { autoForceUpdate } from './autoForceUpdate'; // Auto-enable force update after deadline
 export { initAppConfig } from './initAppConfig'; // One-time setup for app update config

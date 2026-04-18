@@ -130,6 +130,7 @@ export interface DispatchQueueEntry {
   totalOffersSent: number;
 
   // Wave tracking
+  waveStatus?: 'idle' | 'sending' | 'sent';
   waveStartedAt: admin.firestore.Timestamp | null;
   waveExpiresAt: admin.firestore.Timestamp | null;
 
