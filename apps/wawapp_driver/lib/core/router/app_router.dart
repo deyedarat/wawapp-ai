@@ -28,6 +28,7 @@ import '../../features/profile/driver_profile_screen.dart';
 import '../../features/settings/notification_health_screen.dart';
 import '../../features/profile/providers/driver_profile_providers.dart';
 import '../../features/wallet/wallet_screen.dart';
+import '../../services/notification_service.dart';
 import 'navigator.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -133,17 +134,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           // 1. Try GoRouter extra (in-app navigation)
           final extra = state.extra;
           if (extra is FullScreenNotificationData) {
+            // Cache on first build to survive GoRouter refreshes
+            NotificationService().cacheFullScreenNotification(extra);
             return FullScreenNotificationScreen(data: extra);
           }
 
-          // 2. Try query parameters (deep links / notification tap)
+          // 2. Retrieve from cache on rebuild (when extra is lost)
+          final cached =
+              NotificationService().getCachedFullScreenNotification();
+          if (cached != null) {
+            return FullScreenNotificationScreen(data: cached);
+          }
+
+          // 3. Last resort: try query parameters (deep links)
           final params = state.uri.queryParameters;
           final data = FullScreenNotificationData.tryParse(params);
           if (data != null) {
+            NotificationService().cacheFullScreenNotification(data);
             return FullScreenNotificationScreen(data: data);
           }
 
-          // 3. Fallback — missing or invalid data
+          // 4. Fallback — missing or invalid data
           if (kDebugMode) {
             debugPrint('[ROUTER] ❌ /full-screen-notification: invalid params, '
                 'extra=$extra, query=$params');
@@ -158,17 +169,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           // 1. Try GoRouter extra (in-app navigation)
           final extra = state.extra;
           if (extra is TripStartReminderData) {
+            // Cache on first build to survive GoRouter refreshes
+            NotificationService().cacheTripReminderNotification(extra);
             return TripStartReminderScreen(data: extra);
           }
 
-          // 2. Try query parameters (deep links / notification tap)
+          // 2. Retrieve from cache on rebuild (when extra is lost)
+          final cached =
+              NotificationService().getCachedTripReminderNotification();
+          if (cached != null) {
+            return TripStartReminderScreen(data: cached);
+          }
+
+          // 3. Last resort: try query parameters (deep links)
           final params = state.uri.queryParameters;
           final data = TripStartReminderData.tryParse(params);
           if (data != null) {
+            NotificationService().cacheTripReminderNotification(data);
             return TripStartReminderScreen(data: data);
           }
 
-          // 3. Fallback — missing or invalid data, redirect to active order
+          // 4. Fallback — missing or invalid data, redirect to active order
           if (kDebugMode) {
             debugPrint('[ROUTER] ❌ /trip-start-reminder: invalid params, '
                 'extra=$extra, query=$params');
@@ -276,6 +297,16 @@ String? _redirect(GoRouterState s, AuthState st, DriverProfile? profile) {
 
   // 4. AUTHENTICATED AND NO PIN
   if (st.pinStatus == PinStatus.noPin) {
+    // Allow notification routes to bypass PIN creation
+    if (s.matchedLocation == '/full-screen-notification' ||
+        s.matchedLocation == '/trip-start-reminder' ||
+        s.matchedLocation == '/active-order') {
+      if (kDebugMode) {
+        debugPrint(
+            '[ROUTER] ✓ Allowing notification route during noPin: ${s.matchedLocation}');
+      }
+      return null;
+    }
     if (s.matchedLocation != '/create-pin') {
       if (kDebugMode) {
         debugPrint('[ROUTER] → Redirect to /create-pin (user has no PIN)');

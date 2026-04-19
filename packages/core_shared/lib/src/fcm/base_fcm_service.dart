@@ -258,37 +258,14 @@ abstract class BaseFCMService {
 
   /// Setup notification handlers for all app states.
   ///
-  /// Handles notifications when app is:
-  /// - Background: App is running but not in foreground
-  /// - Terminated: App was completely closed
-  ///
-  /// NOTE: Foreground messages are handled by NotificationService
-  /// (flutter_local_notifications) to show proper system notifications.
-  /// Do NOT add onMessage listener here to avoid duplicate handling.
+  /// DISABLED: All FCM tap routing (onMessageOpenedApp, getInitialMessage)
+  /// is now handled exclusively by each app's NotificationService.
+  /// Registering listeners here caused race conditions with duplicate handlers.
   void setupNotificationHandlers(BuildContext context) {
-    // Handle notification taps when app is in BACKGROUND
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      if (kDebugMode) {
-        debugPrint('[FCM] Notification tapped (background): ${message.data}');
-      }
-      if (context.mounted) {
-        handleNotificationTap(context, message, 'background');
-      }
-    });
-
-    // Handle notification taps when app is TERMINATED
-    FirebaseMessaging.instance
-        .getInitialMessage()
-        .then((RemoteMessage? message) {
-      if (message != null) {
-        if (kDebugMode) {
-          debugPrint('[FCM] Notification tapped (terminated): ${message.data}');
-        }
-        if (context.mounted) {
-          handleNotificationTap(context, message, 'terminated');
-        }
-      }
-    });
+    if (kDebugMode) {
+      debugPrint(
+          '[BaseFCMService] setupNotificationHandlers disabled — using NotificationService instead');
+    }
   }
 
   /// Extract order ID from deep link path.

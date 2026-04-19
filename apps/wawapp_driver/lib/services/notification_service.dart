@@ -58,6 +58,10 @@ class NotificationService {
   // Replay protection key for SharedPreferences (survives app restart).
   static const String _kLastOfferId = 'last_handled_offer_id';
 
+  // Cache for active notification data (survives GoRouter rebuilds)
+  FullScreenNotificationData? _cachedFullScreenData;
+  TripStartReminderData? _cachedTripReminderData;
+
   // Persistent dedup service (initialized via initDedup)
   NotificationDedupService? _dedupService;
 
@@ -736,6 +740,7 @@ class NotificationService {
     }
 
     try {
+      cacheFullScreenNotification(data);
       ctx.go('/full-screen-notification', extra: data);
     } catch (e) {
       if (kDebugMode) {
@@ -773,6 +778,7 @@ class NotificationService {
     }
 
     try {
+      cacheTripReminderNotification(data);
       ctx.go('/trip-start-reminder', extra: data);
     } catch (e) {
       if (kDebugMode) {
@@ -873,16 +879,26 @@ class NotificationService {
       debugPrint('[NotificationService] Route from helper: $route');
     }
 
-    if (route != null && _navigatorKey?.currentContext != null) {
-      try {
-        _navigatorKey!.currentContext!.go(route);
-        if (kDebugMode) {
-          debugPrint('[NotificationService] ✅ Navigation successful');
+    if (route != null) {
+      if (_navigatorKey?.currentContext != null) {
+        try {
+          _navigatorKey!.currentContext!.go(route);
+          if (kDebugMode) {
+            debugPrint('[NotificationService] ✅ Navigation successful');
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            debugPrint('[NotificationService] ❌ Navigation error: $e');
+          }
         }
-      } catch (e) {
-        if (kDebugMode) {
-          debugPrint('[NotificationService] ❌ Navigation error: $e');
-        }
+      } else {
+        // Save pending route if context not ready
+        _pendingRoute = route;
+        _schedulePendingNavigation(() {
+          if (_navigatorKey?.currentContext != null) {
+            _navigatorKey!.currentContext!.go(route);
+          }
+        });
       }
     }
   }
@@ -1053,6 +1069,36 @@ class NotificationService {
         _navigatorKey!.currentContext!.go(route);
       }
     }
+  }
+
+  /// Cache the active full-screen notification data to survive GoRouter rebuilds.
+  void cacheFullScreenNotification(FullScreenNotificationData data) {
+    _cachedFullScreenData = data;
+  }
+
+  /// Get cached full-screen notification data.
+  FullScreenNotificationData? getCachedFullScreenNotification() {
+    return _cachedFullScreenData;
+  }
+
+  /// Clear cached full-screen notification (call when user dismisses/exits screen).
+  void clearCachedFullScreenNotification() {
+    _cachedFullScreenData = null;
+  }
+
+  /// Cache the active trip reminder data to survive GoRouter rebuilds.
+  void cacheTripReminderNotification(TripStartReminderData data) {
+    _cachedTripReminderData = data;
+  }
+
+  /// Get cached trip reminder data.
+  TripStartReminderData? getCachedTripReminderNotification() {
+    return _cachedTripReminderData;
+  }
+
+  /// Clear cached trip reminder.
+  void clearCachedTripReminderNotification() {
+    _cachedTripReminderData = null;
   }
 
   /// Called by MissedNotificationRecovery to display a recovered notification.

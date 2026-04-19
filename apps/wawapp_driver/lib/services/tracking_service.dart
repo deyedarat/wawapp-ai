@@ -22,6 +22,7 @@ class TrackingService {
   Timer? _keepAliveTimer; // Periodic write to prevent stale location
   Position? _lastPosition;
   bool _isTracking = false;
+  bool _isLocationUpdatesActive = false; // Guard against duplicate starts
   int _updateIntervalSeconds = 10; // Default 10 seconds
   int _consecutiveSmallMoves = 0; // Track consecutive small movements
   int _positionUpdatesCount = 0; // Count position updates for debugging
@@ -93,7 +94,19 @@ class TrackingService {
   }
 
   Future<void> _startLocationUpdates(String driverId) async {
-    // Removed _updateTimer?.cancel() - redundant timer was removed in Memory Optimization Phase 1
+    // GUARD: prevent duplicate parallel starts from multiple stream emissions
+    if (_isLocationUpdatesActive) {
+      if (kDebugMode) {
+        debugPrint('$_logTag ⚠️ Location updates already active, skipping duplicate start');
+      }
+      return;
+    }
+    _isLocationUpdatesActive = true;
+
+    // Cancel any existing streams/timers before restarting
+    _keepAliveTimer?.cancel();
+    _locationService.stopPositionStream();
+
     _positionUpdatesCount = 0;
     _firstFixTimestamp = null;
 
@@ -314,6 +327,7 @@ class TrackingService {
     if (kDebugMode) {
       debugPrint('$_logTag Stopping location updates');
     }
+    _isLocationUpdatesActive = false;
     _keepAliveTimer?.cancel();
     _keepAliveTimer = null;
     _lastPosition = null;

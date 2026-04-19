@@ -121,7 +121,9 @@ void main() async {
     // which provides proper fullScreenIntent support for killed/locked states.
     // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    await _setupNotificationHandlers();
+    // REMOVED: _setupNotificationHandlers() — FCM tap routing is now handled
+    // exclusively by NotificationService to prevent race conditions.
+    // See: services/notification_service.dart (_setupFirebaseMessaging)
 
     runApp(const ProviderScope(child: MyApp()));
   }, (error, stack) {
@@ -137,76 +139,13 @@ void main() async {
 }
 
 // ---------------------------------------------------------------------------
-// Background / Terminated notification tap handlers
+// REMOVED: Duplicate FCM tap handlers (_setupNotificationHandlers,
+// _processTapData, _navigateForNotification, _pendingNotificationData).
+//
+// All FCM tap routing (onMessageOpenedApp, getInitialMessage) is now handled
+// exclusively by NotificationService to eliminate race conditions.
+// See: services/notification_service.dart
 // ---------------------------------------------------------------------------
-
-Map<String, dynamic>? _pendingNotificationData;
-
-Future<void> _setupNotificationHandlers() async {
-  // Background → user taps notification
-  FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    final data = message.data;
-    if (data.isEmpty) return;
-    if (kDebugMode) {
-      debugPrint('[Main] 🔔 onMessageOpenedApp: $data');
-    }
-    _processTapData(data);
-  });
-
-  // Terminated / Cold start → user tapped notification to launch app
-  final initial = await FirebaseMessaging.instance.getInitialMessage();
-  if (initial != null && initial.data.isNotEmpty) {
-    if (kDebugMode) {
-      debugPrint('[Main] 🔔 getInitialMessage: ${initial.data}');
-    }
-    _pendingNotificationData = initial.data;
-  }
-}
-
-void _processTapData(Map<String, dynamic> data) {
-  final ctx = appNavigatorKey.currentContext;
-  if (ctx == null) {
-    // Router not ready yet — store for later
-    _pendingNotificationData = data;
-    return;
-  }
-  _navigateForNotification(ctx, data);
-}
-
-void _navigateForNotification(BuildContext ctx, Map<String, dynamic> data) {
-  final type = NotificationHelper.resolveType(data);
-
-  NotificationLogger.instance.log(
-    eventType: 'tapped',
-    notificationType: type ?? 'unknown',
-    appState: 'background',
-    orderId: data['orderId'] as String?,
-  );
-
-  if (type == 'trip_start_reminder') {
-    final parsed = TripStartReminderData.tryParse(data);
-    if (parsed != null) {
-      ctx.go('/trip-start-reminder', extra: parsed);
-      return;
-    }
-  }
-
-  if (type == 'new_order' ||
-      type == 'new_order_nearby' ||
-      type == 'unassigned_order_reminder') {
-    final parsed = FullScreenNotificationData.tryParse(data);
-    if (parsed != null) {
-      ctx.go('/full-screen-notification', extra: parsed);
-      return;
-    }
-  }
-
-  // Fallback: use helper route mapping
-  final route = NotificationHelper.getRouteFromNotification(type: type);
-  if (route != null) {
-    ctx.go(route);
-  }
-}
 
 /// Initialize Firebase Crashlytics with proper error handlers
 Future<void> _initializeCrashlytics() async {
@@ -294,15 +233,8 @@ class _MyAppState extends ConsumerState<MyApp> {
         final prefs = await SharedPreferences.getInstance();
         NotificationService().initDedup(NotificationDedupService(prefs));
 
-        // Process pending notification tap from terminated/cold start
-        if (_pendingNotificationData != null) {
-          final data = _pendingNotificationData!;
-          _pendingNotificationData = null;
-          final navCtx = appNavigatorKey.currentContext;
-          if (navCtx != null) {
-            _navigateForNotification(navCtx, data);
-          }
-        }
+        // REMOVED: _pendingNotificationData processing — now handled by
+        // NotificationService internally via its own getInitialMessage handler.
 
         // Initialize notification health monitoring
         final monitor = NotificationHealthMonitor();

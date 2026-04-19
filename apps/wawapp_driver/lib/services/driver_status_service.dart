@@ -117,7 +117,7 @@ class DriverStatusService {
       }
 
       return isOnline;
-    }).handleError((error) {
+    }).distinct().handleError((error) {
       debugPrint('[DriverStatus] ❌ Error watching online status: $error');
       return false;
     });
