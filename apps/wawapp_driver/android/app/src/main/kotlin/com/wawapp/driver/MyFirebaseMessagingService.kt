@@ -185,6 +185,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // trip_start_reminder is excluded — it routes through MainActivity via fullScreenIntent.
         if (type != "trip_start_reminder") {
             try {
+                val notificationId = (message.data["messageId"] ?: orderId).hashCode()
                 val fsIntent = Intent(applicationContext, FullScreenNotificationActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
                     putExtra("orderId", orderId)
@@ -193,6 +194,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     putExtra("price", price)
                     putExtra("distance", distance)
                     putExtra("notificationType", type)
+                    putExtra("notificationId", notificationId)
                 }
                 applicationContext.startActivity(fsIntent)
                 Log.d(TAG, "FullScreenNotificationActivity launched directly for order $orderId")

@@ -130,26 +130,17 @@ export async function sendOfferNotification(
     const body = notificationData.body;
     const message: admin.messaging.Message = {
       token: fcmToken,
-      // notification block ensures Android system tray display when app is killed.
-      // When app is alive, MyFirebaseMessagingService intercepts before system tray
-      // and routes to Flutter — so this block is only visible in killed state.
-      notification: {
-        title,
-        body,
-      },
+      // DATA-ONLY: No top-level `notification` block.
+      // This ensures MyFirebaseMessagingService.onMessageReceived() is ALWAYS called
+      // (foreground, background, AND killed state) so it can build the CallStyle
+      // full-screen intent notification natively.
+      // Previously, the `notification` block caused Android to auto-display a plain
+      // banner (id=0, tag=FCM-Notification:XXX) that couldn't be cancelled.
       data: notificationData as unknown as Record<string, string>,
       android: {
         priority: 'high',
         ttl: ttlMs,
         collapseKey: `order_${offer.orderId}`,
-        notification: {
-          channelId: 'new_orders_v9',
-          sound: 'trip_reminder',
-          priority: 'max',
-          defaultVibrateTimings: false,
-          vibrateTimingsMillis: [0, 500, 200, 500, 200, 500],
-          visibility: 'public',
-        },
       },
       apns: {
         payload: {

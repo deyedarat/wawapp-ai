@@ -110,8 +110,8 @@ export interface DispatchWave {
  * Wave 3: 5 farther drivers (45s timeout)
  */
 export const DEFAULT_WAVES: DispatchWave[] = [
-  { round: 1, maxDrivers: 1, ttl: 15, maxDistance: 3 },   // Closest only, fast
-  { round: 2, maxDrivers: 3, ttl: 30, maxDistance: 8 },   // Nearby backup
+  { round: 1, maxDrivers: 1, ttl: 60, maxDistance: 3 },   // Closest only, 60s to respond
+  { round: 2, maxDrivers: 3, ttl: 45, maxDistance: 8 },   // Nearby backup
   { round: 3, maxDrivers: 5, ttl: 45, maxDistance: 15 },  // Wider net
 ];
 

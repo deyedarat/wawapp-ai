@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:developer' as dev;
 
 import 'package:core_shared/core_shared.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +13,7 @@ import '../../core/theme/colors.dart';
 import '../../core/theme/components.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/analytics_service.dart';
+import '../../services/connectivity_service.dart';
 import '../../services/driver_status_service.dart';
 import '../permissions/permission_helper.dart';
 import '../permissions/permission_setup_screen.dart';
@@ -34,6 +37,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   bool _isTogglingStatus = false;
 
   bool _trackingResumed = false;
+  StreamSubscription<ServiceStatus>? _locationServiceSubscription;
 
   @override
   void initState() {
@@ -45,6 +49,31 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     _resumeTrackingIfOnline();
     // Show permission setup on first launch
     _checkPermissionSetup();
+    // Listen for internet loss
+    ConnectivityService().onForcedOffline = _onInternetLost;
+  }
+
+  void _onInternetLost() {
+    if (!mounted) return;
+    _stopLocationMonitoring();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('انقطع الاتصال'),
+        content: const Text(
+          'تم فقدان الاتصال بالإنترنت.\n'
+          'تم تحويلك إلى وضع غير متصل تلقائياً.\n\n'
+          'عند عودة الإنترنت، اضغط "متصل" مرة أخرى.',
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('حسناً'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _resumeTrackingIfOnline() async {
@@ -57,16 +86,90 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     if (isOnline && mounted) {
       _trackingResumed = true;
       if (kDebugMode) {
-        dev.log('[DriverHome] Driver was online, resuming tracking');
+        dev.log('[DriverHome] Driver was online, verifying location before resuming...');
       }
+
+      // Same prerequisite check as manual toggle
+      final locationError =
+          await LocationService.instance.verifyLocationPrerequisites();
+      if (locationError != null) {
+        if (kDebugMode) {
+          dev.log('[DriverHome] Location prerequisites failed on resume: $locationError');
+        }
+        await DriverStatusService.instance.setOffline(uid);
+        if (mounted) {
+          _showLocationPrerequisitesDialog(locationError);
+        }
+        return;
+      }
+
       try {
         await TrackingService.instance.startTracking();
+        _startLocationMonitoring();
       } catch (e) {
         if (kDebugMode) {
           dev.log('[DriverHome] Failed to resume tracking: $e');
         }
+        await DriverStatusService.instance.setOffline(uid);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('تم إيقاف الاتصال: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
+  }
+
+  /// Monitor location service status while driver is online.
+  /// Auto-sets driver offline if GPS is disabled mid-session.
+  void _startLocationMonitoring() {
+    _locationServiceSubscription?.cancel();
+    _locationServiceSubscription =
+        Geolocator.getServiceStatusStream().listen((ServiceStatus status) async {
+      if (status == ServiceStatus.disabled) {
+        if (kDebugMode) {
+          dev.log('[DriverHome] ⚠️ Location services disabled mid-session');
+        }
+        final authState = ref.read(authProvider);
+        final uid = authState.user?.uid;
+        if (uid == null) return;
+
+        final isOnline = await DriverStatusService.instance.getOnlineStatus(uid);
+        if (!isOnline) return;
+
+        TrackingService.instance.stopTracking();
+        await DriverStatusService.instance.setOffline(uid);
+
+        if (mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (ctx) => AlertDialog(
+              title: const Text('تم إيقاف الاتصال'),
+              content: const Text(
+                'تم تعطيل خدمات الموقع (GPS). '
+                'تم تحويلك إلى وضع غير متصل تلقائياً.\n\n'
+                'أعد تفعيل الموقع ثم اضغط "متصل" مرة أخرى.',
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('حسناً'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    });
+  }
+
+  void _stopLocationMonitoring() {
+    _locationServiceSubscription?.cancel();
+    _locationServiceSubscription = null;
   }
 
   Future<void> _checkPermissionSetup() async {
@@ -183,6 +286,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         // Start tracking when going online (this will get first GPS fix)
         try {
           await TrackingService.instance.startTracking();
+          _startLocationMonitoring();
 
           if (kDebugMode) {
             dev.log('[DriverHome] ✅ Tracking started with first GPS fix');
@@ -213,6 +317,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         await DriverStatusService.instance.setOffline(authState.user!.uid);
         // Stop tracking when going offline
         TrackingService.instance.stopTracking();
+        _stopLocationMonitoring();
       }
 
       if (mounted) {

@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,7 +12,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/router/app_router.dart';
@@ -46,14 +43,7 @@ import 'services/missed_notification_recovery.dart';
 /// to MyFirebaseMessagingService.kt in the future if needed.
 
 void main() async {
-  await SentryFlutter.init(
-    (options) {
-      options.dsn = 'https://7af9dad2913b46aed9be1fc7e0c40780@o4511234675834880.ingest.us.sentry.io/4511234687303680';
-      options.environment = kReleaseMode ? 'production' : 'debug';
-      options.enabled = kReleaseMode;
-      options.release = 'wawapp-driver@1.0.0';
-    },
-    appRunner: () => runZonedGuarded<Future<void>>(() async {
+  runZonedGuarded<Future<void>>(() async {
     if (kDebugMode) {
       print('🟢 WawApp Driver starting...');
     }
@@ -116,14 +106,10 @@ void main() async {
           '✅ Firebase initialized, Crashlytics ready, FCM token manager started');
     }
 
-    // ❌ REMOVED: Dart background handler conflicts with Native MyFirebaseMessagingService
-    // Background notifications are now handled ONLY by MyFirebaseMessagingService.kt
-    // which provides proper fullScreenIntent support for killed/locked states.
-    // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    // REMOVED: _setupNotificationHandlers() — FCM tap routing is now handled
-    // exclusively by NotificationService to prevent race conditions.
-    // See: services/notification_service.dart (_setupFirebaseMessaging)
+    // Register a no-op background handler to prevent Flutter FCM plugin from
+    // auto-displaying notifications. Native MyFirebaseMessagingService.kt handles
+    // the actual notification display (FullScreenNotificationActivity).
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     runApp(const ProviderScope(child: MyApp()));
   }, (error, stack) {
@@ -133,9 +119,7 @@ void main() async {
       print('Stack trace: $stack');
     }
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    Sentry.captureException(error, stackTrace: stack);
-    }),
-  );
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -146,6 +130,13 @@ void main() async {
 // exclusively by NotificationService to eliminate race conditions.
 // See: services/notification_service.dart
 // ---------------------------------------------------------------------------
+
+// No-op background handler — suppresses Flutter plugin auto-notification.
+// Actual handling is done by MyFirebaseMessagingService.kt (Native).
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // Intentionally empty. Native Kotlin handler does the work.
+}
 
 /// Initialize Firebase Crashlytics with proper error handlers
 Future<void> _initializeCrashlytics() async {

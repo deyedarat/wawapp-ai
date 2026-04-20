@@ -417,7 +417,7 @@ class NotificationService {
     const hasSystemNotification = false;
 
     // ── Persistent dedup check ──
-    final messageId = message.messageId ?? data['messageId'] as String?;
+    final messageId = data['messageId'] as String?;
     if (messageId != null && _dedupService != null) {
       if (_dedupService!.isDuplicate(messageId)) {
         NotificationLogger.instance.log(

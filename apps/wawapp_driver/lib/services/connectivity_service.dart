@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+
+import 'driver_status_service.dart';
+import 'tracking_service.dart';
 
 /// Service to monitor network connectivity and handle Firestore reconnection
 class ConnectivityService {
@@ -12,6 +16,9 @@ class ConnectivityService {
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   bool _wasOffline = false;
+
+  /// Callback fired when driver is forced offline due to internet loss
+  VoidCallback? onForcedOffline;
 
   /// Initialize connectivity monitoring
   Future<void> initialize() async {
@@ -75,9 +82,28 @@ class ConnectivityService {
     } else if (!isOnline) {
       _wasOffline = true;
       if (kDebugMode) {
-        print('📴 Device offline - Firestore will use cache');
+        print('📴 Device offline - setting driver offline');
       }
+      _forceDriverOffline();
     }
+  }
+
+  /// Force driver offline when internet is lost
+  Future<void> _forceDriverOffline() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    final isOnline = await DriverStatusService.instance.getOnlineStatus(uid);
+    if (!isOnline) return;
+
+    TrackingService.instance.stopTracking();
+    await DriverStatusService.instance.setOffline(uid);
+
+    if (kDebugMode) {
+      print('📴 Driver forced offline due to internet loss');
+    }
+
+    onForcedOffline?.call();
   }
 
   /// Force Firestore to reconnect by disabling/enabling network

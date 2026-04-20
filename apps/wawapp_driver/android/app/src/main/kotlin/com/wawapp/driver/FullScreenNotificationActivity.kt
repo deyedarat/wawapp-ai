@@ -32,6 +32,7 @@ class FullScreenNotificationActivity : Activity() {
 
     private lateinit var orderId: String
     private lateinit var notificationType: String
+    private var notificationId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +42,11 @@ class FullScreenNotificationActivity : Activity() {
         loadNotificationData()
         setupButtons()
 
-        // Cancel the notification immediately when the full-screen activity opens
-        cancelNotification()
+        // Do NOT cancel notification here — keep it visible as fallback.
+        // Sound from FLAG_INSISTENT continues until user interacts (accept/reject/later).
+        // This ensures full-screen experience is preserved.
 
-        Log.d(TAG, "Full-screen notification opened: orderId=$orderId, type=$notificationType")
+        Log.d(TAG, "Full-screen notification opened: orderId=$orderId, type=$notificationType, notifId=$notificationId")
     }
 
     private fun setupLockScreenBehavior() {
@@ -75,6 +77,7 @@ class FullScreenNotificationActivity : Activity() {
         val price = intent.getDoubleExtra("price", 0.0)
         val distance = intent.getDoubleExtra("distance", 0.0)
         notificationType = intent.getStringExtra("notificationType") ?: "new_order"
+        notificationId = intent.getIntExtra("notificationId", orderId.hashCode())
 
         // Update UI elements
         findViewById<TextView>(R.id.pickup_label).text = pickupLabel
@@ -114,8 +117,8 @@ class FullScreenNotificationActivity : Activity() {
     }
 
     private fun onAcceptClicked() {
-        // Cancel sound repeats
-        NotificationHelper.cancelSoundRepeats(this, orderId)
+        // Cancel notification + sound completely
+        cancelNotification()
 
         // Open MainActivity with orderId
         val intent = Intent(this, MainActivity::class.java).apply {
@@ -131,7 +134,7 @@ class FullScreenNotificationActivity : Activity() {
     }
 
     private fun onRejectClicked() {
-        NotificationHelper.cancelSoundRepeats(this, orderId)
+        cancelNotification()
 
         // Open MainActivity so Flutter can write to driver_rejected_orders
         val intent = Intent(this, MainActivity::class.java).apply {
@@ -144,15 +147,9 @@ class FullScreenNotificationActivity : Activity() {
     }
 
     private fun onLaterClicked() {
-        NotificationHelper.cancelSoundRepeats(this, orderId)
+        cancelNotification()
 
-        // Open MainActivity so Flutter can schedule a snooze reminder
-        val intent = Intent(this, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            putExtra("orderId", orderId)
-            putExtra("action", "snooze_order")
-        }
-        startActivity(intent)
+        // Just close this activity — return user to whatever they were doing
         finish()
 
         Log.d(TAG, "User chose 'Later' for order: $orderId")
@@ -160,9 +157,13 @@ class FullScreenNotificationActivity : Activity() {
 
     private fun cancelNotification() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
-        val notificationId = orderId.hashCode()
+        // Cancel by the exact notificationId used when creating
         notificationManager.cancel(notificationId)
-        Log.d(TAG, "Notification cancelled: id=$notificationId, orderId=$orderId")
+        // Also cancel by orderId.hashCode() as fallback
+        notificationManager.cancel(orderId.hashCode())
+        // Stop FLAG_INSISTENT sound + scheduled repeats
+        NotificationHelper.cancelSoundRepeats(this, orderId)
+        Log.d(TAG, "Notification cancelled: notifId=$notificationId, orderId=$orderId")
     }
 
     override fun onDestroy() {

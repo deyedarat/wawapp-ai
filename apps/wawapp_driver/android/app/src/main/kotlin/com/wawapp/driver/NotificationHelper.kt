@@ -160,14 +160,15 @@ object NotificationHelper {
             }
         }
 
-        // Build CallStyle notification (Android 12+)
+        // Build a SILENT notification (no sound, no heads-up).
+        // Purpose: fallback only if FullScreenNotificationActivity fails to launch.
+        // The actual UX is the full-screen activity + manual sound playback.
         val notification = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             buildCallStyleNotification(
                 context, orderId, title, body, pickupLabel, dropoffLabel,
                 price, distance, createdAt, notificationType, channelId, notificationId
             )
         } else {
-            // Fallback for Android < 12: use traditional full-screen intent
             buildLegacyFullScreenNotification(
                 context, orderId, title, body, pickupLabel, dropoffLabel,
                 price, distance, createdAt, notificationType, channelId
@@ -175,9 +176,9 @@ object NotificationHelper {
         }
 
         nm.notify(notificationId, notification)
-        Log.d(TAG, "✓ Call-style notification shown: id=$notificationId, order=$orderId, channel=$channelId")
+        Log.d(TAG, "✓ Silent fallback notification posted: id=$notificationId, order=$orderId")
 
-        // Schedule sound repeats
+        // Schedule sound repeats (played via MediaPlayer, NOT via notification channel)
         scheduleSoundRepeats(context, orderId, notificationId)
     }
 
@@ -200,106 +201,36 @@ object NotificationHelper {
         channelId: String,
         notificationId: Int
     ): Notification {
-        // Create Person for the "caller" (order/reminder)
-        val callerName = if (notificationType == "trip_start_reminder") {
-            "تذكير بدء الرحلة"
-        } else {
-            "طلب جديد"
-        }
-        val caller = Person.Builder()
-            .setName(callerName)
-            .setImportant(true)
-            .build()
+        // Build a MINIMAL notification — no sound, no heads-up.
+        // FullScreenNotificationActivity is launched directly by MyFirebaseMessagingService.
+        // This notification exists ONLY as a silent fallback for lock-screen fullScreenIntent.
+        val contentTitle = if (notificationType == "trip_start_reminder") title else "$pickupLabel → $dropoffLabel"
+        val contentText = if (notificationType == "trip_start_reminder") body else "${price.toInt()} أوقية • ${String.format("%.1f", distance)} كم"
 
-        // For trip_start_reminder: "Start Trip" action instead of "Accept"
-        // For new_order: "Accept" action
-        val acceptIntent = Intent(context, OrderActionReceiver::class.java).apply {
-            action = if (notificationType == "trip_start_reminder") {
-                OrderActionReceiver.ACTION_START_TRIP
-            } else {
-                OrderActionReceiver.ACTION_ACCEPT
-            }
-            putExtra("orderId", orderId)
-            putExtra("notificationId", notificationId)
-        }
-        val acceptPendingIntent = PendingIntent.getBroadcast(
-            context, orderId.hashCode() + 1, acceptIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // For trip_start_reminder: "Snooze" action instead of "Decline"
-        // For new_order: "Decline" action
-        val declineIntent = Intent(context, OrderActionReceiver::class.java).apply {
-            action = if (notificationType == "trip_start_reminder") {
-                OrderActionReceiver.ACTION_SNOOZE
-            } else {
-                OrderActionReceiver.ACTION_DECLINE
-            }
-            putExtra("orderId", orderId)
-            putExtra("notificationId", notificationId)
-        }
-        val declinePendingIntent = PendingIntent.getBroadcast(
-            context, orderId.hashCode() + 2, declineIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // Full-screen intent → opens FullScreenNotificationActivity on lock screen
         val fullScreenPendingIntent = createFullScreenPendingIntent(
             context, orderId, pickupLabel, dropoffLabel, price, distance, createdAt, notificationType
         )
-
-        // Content tap intent → opens MainActivity (when user taps notification body)
-        val contentIntent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra("orderId", orderId)
-            putExtra("notificationType", "new_order")
-            putExtra("action", "view_order")
-        }
-        val contentPendingIntent = PendingIntent.getActivity(
-            context, orderId.hashCode() + 3000, contentIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // Delete intent
         val deleteIntent = createDeletePendingIntent(context, orderId)
 
-        // Customize content based on notification type
-        val contentTitle = if (notificationType == "trip_start_reminder") {
-            title  // Already formatted: "هل وصلت للعميل؟"
-        } else {
-            "$pickupLabel → $dropoffLabel"
-        }
-
-        val contentText = if (notificationType == "trip_start_reminder") {
-            body  // Already formatted: "مضى X دقائق منذ القبول — موقع الاستلام"
-        } else {
-            "${price.toInt()} أوقية • ${String.format("%.1f", distance)} كم"
-        }
-
-        // Build notification with CallStyle + full-screen intent
-        return Notification.Builder(context, channelId)
+        val notification = Notification.Builder(context, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(contentTitle)
             .setContentText(contentText)
-            .setStyle(
-                Notification.CallStyle.forIncomingCall(
-                    caller,
-                    declinePendingIntent,
-                    acceptPendingIntent
-                )
-            )
             .setFullScreenIntent(fullScreenPendingIntent, true)
-            .setContentIntent(contentPendingIntent)
             .setCategory(Notification.CATEGORY_CALL)
-            .setPriority(NotificationManager.IMPORTANCE_HIGH)
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setOngoing(true)
             .setAutoCancel(false)
             .setDeleteIntent(deleteIntent)
-            .setVibrate(longArrayOf(0, 500, 200, 500, 200, 500))
-            .setSound(Uri.parse("android.resource://${context.packageName}/raw/trip_reminder"))
             .setTimeoutAfter(60000)
             .build()
+
+        // Remove sound and vibration flags to prevent heads-up
+        notification.sound = null
+        notification.vibrate = null
+        notification.defaults = 0
+
+        return notification
     }
 
     /**

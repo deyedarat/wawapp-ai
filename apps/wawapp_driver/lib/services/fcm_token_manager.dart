@@ -31,7 +31,7 @@ class FcmTokenManager {
       debugPrint('[FcmTokenManager] 🚀 Initializing...');
     }
 
-    // Get initial token
+    // Get initial token (may not sync to Firestore if user not logged in yet)
     await _refreshToken();
 
     // Update lastSeen on every app open (even if token unchanged)
@@ -47,6 +47,13 @@ class FcmTokenManager {
         }
       },
     );
+
+    // Listen for auth state changes — sync token when user logs in
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null && _currentToken != null) {
+        _syncTokenToFirestore(_currentToken!);
+      }
+    });
 
     if (kDebugMode) {
       debugPrint('[FcmTokenManager] ✅ Initialized successfully');
@@ -187,6 +194,14 @@ class FcmTokenManager {
       if (kDebugMode) {
         debugPrint('[FcmTokenManager] ❌ Force refresh failed: $e');
       }
+      // Safety net: if deleteToken succeeded but _refreshToken failed,
+      // try getting a new token without deleting first
+      await _refreshToken();
+    }
+
+    // Final guard: if we still have no token synced, try one more time
+    if (_currentToken == null) {
+      await _refreshToken();
     }
   }
 

@@ -99,7 +99,8 @@ function getNotificationConfig(
 async function sendNotification(
   userId: string,
   orderId: string,
-  config: NotificationConfig
+  config: NotificationConfig,
+  userCollection: 'users' | 'drivers' = 'users'
 ): Promise<boolean> {
   // Idempotency: Check if notification already sent
   const notificationId = `${userId}_${orderId}_${config.type}`;
@@ -151,8 +152,9 @@ async function sendNotification(
 
   try {
     // Fetch user's FCM token from Firestore
+    // Clients are in 'users', drivers are in 'drivers'
     const userDoc = await admin.firestore()
-      .collection('users')
+      .collection(userCollection)
       .doc(userId)
       .get();
 
@@ -244,7 +246,7 @@ async function sendNotification(
 
       // Remove invalid token from Firestore
       await admin.firestore()
-        .collection('users')
+        .collection(userCollection)
         .doc(userId)
         .update({ fcmToken: admin.firestore.FieldValue.delete() });
 
@@ -315,7 +317,7 @@ export const notifyOrderEvents = functions.firestore
       return null;
     }
 
-    await sendNotification(ownerId, orderId, notificationConfig);
+    await sendNotification(ownerId, orderId, notificationConfig, 'users');
 
     // STEP 3A: Notify assigned driver if client cancelled
     if ((beforeStatus === 'accepted' || beforeStatus === 'onRoute') &&
@@ -330,7 +332,7 @@ export const notifyOrderEvents = functions.firestore
 
         const driverNotificationConfig = getNotificationConfig(beforeStatus, afterStatus);
         if (driverNotificationConfig) {
-          await sendNotification(assignedDriverId, orderId, driverNotificationConfig);
+          await sendNotification(assignedDriverId, orderId, driverNotificationConfig, 'drivers');
         }
       }
     }
