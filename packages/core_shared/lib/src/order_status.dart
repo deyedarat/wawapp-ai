@@ -36,6 +36,12 @@ enum OrderStatus {
   /// Order cancelled by driver
   cancelledByDriver,
 
+  /// Order cancelled by system (e.g. insufficient balance after repeated attempts)
+  cancelledBySystem,
+
+  /// Order cancelled by admin
+  cancelledByAdmin,
+
   /// Order expired without being accepted
   expired;
 
@@ -64,6 +70,10 @@ enum OrderStatus {
       case 'cancelledByDriver':
       case 'cancelled': // Legacy - assume driver cancelled
         return OrderStatus.cancelledByDriver;
+      case 'cancelledBySystem':
+        return OrderStatus.cancelledBySystem;
+      case 'cancelled_by_admin':
+        return OrderStatus.cancelledByAdmin;
       case 'expired':
         return OrderStatus.expired;
       default:
@@ -87,7 +97,11 @@ enum OrderStatus {
       case OrderStatus.cancelledByClient:
         return 'cancelledByClient';
       case OrderStatus.cancelledByDriver:
-        return 'cancelled'; // Keep 'cancelled' for compatibility
+        return 'cancelledByDriver';
+      case OrderStatus.cancelledBySystem:
+        return 'cancelledBySystem';
+      case OrderStatus.cancelledByAdmin:
+        return 'cancelled_by_admin';
       case OrderStatus.expired:
         return 'expired';
     }
@@ -110,6 +124,10 @@ enum OrderStatus {
         return 'ألغاه العميل';
       case OrderStatus.cancelledByDriver:
         return 'ألغاه السائق';
+      case OrderStatus.cancelledBySystem:
+        return 'ألغاه النظام';
+      case OrderStatus.cancelledByAdmin:
+        return 'ألغي من الإدارة';
       case OrderStatus.expired:
         return 'منتهي الصلاحية';
     }
@@ -154,6 +172,8 @@ enum OrderStatus {
       OrderStatus.completed: <OrderStatus>[],
       OrderStatus.cancelledByClient: <OrderStatus>[],
       OrderStatus.cancelledByDriver: <OrderStatus>[],
+      OrderStatus.cancelledBySystem: <OrderStatus>[],
+      OrderStatus.cancelledByAdmin: <OrderStatus>[],
       OrderStatus.expired: <OrderStatus>[],
     };
     return transitions[this]?.contains(target) ?? false;
@@ -181,7 +201,9 @@ enum OrderStatus {
 
     // Add cancelledAt when cancelling order
     if (this == OrderStatus.cancelledByClient ||
-        this == OrderStatus.cancelledByDriver) {
+        this == OrderStatus.cancelledByDriver ||
+        this == OrderStatus.cancelledBySystem ||
+        this == OrderStatus.cancelledByAdmin) {
       update['cancelledAt'] = FieldValue.serverTimestamp();
     }
 

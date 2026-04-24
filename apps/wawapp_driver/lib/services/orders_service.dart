@@ -11,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import '../features/orders/models/dispatch_offer.dart';
 import 'acceptance_lock_manager.dart';
 import 'analytics_service.dart';
+import 'notification_method_channel.dart';
 
 final ordersServiceProvider = Provider<OrdersService>((ref) {
   return OrdersService();
@@ -117,6 +118,9 @@ class OrdersService {
       // Log analytics event after successful acceptance
       AnalyticsService.instance.logOrderAcceptedByDriver(orderId: orderId);
 
+      // Set native active trip flag so MyFirebaseMessagingService suppresses new offers
+      NotificationMethodChannel.setActiveTripFlag(true);
+
       // Clear lock after 5 seconds (successful acceptance)
       // This gives enough time for Firestore to update and prevents duplicate notifications
       Future.delayed(const Duration(seconds: 5), () {
@@ -168,6 +172,8 @@ class OrdersService {
       // Log analytics event for completed orders
       if (to == OrderStatus.completed) {
         AnalyticsService.instance.logOrderCompletedByDriver(orderId: orderId);
+        // Clear native active trip flag — driver is available again
+        NotificationMethodChannel.setActiveTripFlag(false);
       }
     } on Object catch (e) {
       if (e is AppError) rethrow;
@@ -223,6 +229,9 @@ class OrdersService {
 
       // Log analytics event after successful cancellation
       AnalyticsService.instance.logOrderCancelledByDriver(orderId: orderId);
+
+      // Clear native active trip flag — driver is available again
+      NotificationMethodChannel.setActiveTripFlag(false);
     } on Object catch (e) {
       if (e is AppError) rethrow;
       throw AppError.from(e);
@@ -325,6 +334,9 @@ class OrdersService {
 
       // Log analytics event after successful acceptance
       AnalyticsService.instance.logOrderAcceptedByDriver(orderId: orderId);
+
+      // Set native active trip flag so MyFirebaseMessagingService suppresses new offers
+      NotificationMethodChannel.setActiveTripFlag(true);
 
       // Clear lock after 5 seconds (successful acceptance)
       Future.delayed(const Duration(seconds: 5), () {

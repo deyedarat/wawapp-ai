@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/testlab_flags.dart';
 import '../../../core/config/testlab_mock_data.dart';
+import '../../../core/cache/pin_status_cache.dart';
 import '../../../core/errors/auth_error_messages.dart';
 import '../../../services/analytics_service.dart';
 import '../../../services/driver_cleanup_service.dart';
@@ -68,14 +69,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // Check if current user has a PIN set
   Future<void> _checkHasPin() async {
-    final user = state.user; // Use state.user or _firebaseAuth.currentUser
+    final user = state.user;
     if (user == null) return;
 
-    // Prevent duplicate checks if we already have a definitive result
-    if (state.pinStatus == PinStatus.hasPin ||
-        state.pinStatus == PinStatus.noPin) {
-      return;
-    }
+    // Prevent duplicate checks if we already have a definitive positive result
+    if (state.pinStatus == PinStatus.hasPin) return;
 
     try {
       if (kDebugMode) {
@@ -83,13 +81,32 @@ class AuthNotifier extends StateNotifier<AuthState> {
             '[AuthNotifier] Checking if user has PIN, isPinResetFlow=${state.isPinResetFlow}');
       }
 
+      // Try cache first for instant navigation (no network wait)
+      if (state.pinStatus == PinStatus.unknown) {
+        final cached = await PinStatusCache.get(user.uid);
+        // CRITICAL: Only trust cached hasPin (positive). Never trust cached noPin
+        // because it may have been poisoned by an empty Firestore cache read.
+        if (cached == PinStatus.hasPin && !state.isPinResetFlow) {
+          if (kDebugMode) {
+            print('[AuthNotifier] Using cached PIN status: $cached');
+          }
+          state = state.copyWith(
+            pinStatus: cached,
+            phoneE164: user.phoneNumber,
+            isPinCheckLoading: false,
+          );
+          // Verify in background without blocking navigation
+          _verifyPinInBackground(user);
+          return;
+        }
+        // cached == noPin or null → must verify with server (don't trust noPin from cache)
+      }
+
       state =
           state.copyWith(isPinCheckLoading: true, pinStatus: PinStatus.loading);
 
-      // Driver app has hasPinHash method
       final hasPinHash = await _authService.hasPinHash();
-
-      // CRITICAL: During PIN reset flow, always report hasPin=false/noPin
+      // If we reach here, hasPinHash() got a definitive answer (server or trusted cache).
       final effectiveHasPin = state.isPinResetFlow ? false : hasPinHash;
 
       if (kDebugMode && state.isPinResetFlow) {
@@ -105,16 +122,54 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isPinCheckLoading: false,
       );
 
+      // Safe to cache: this came from a reliable source.
+      await PinStatusCache.set(user.uid, status);
+
       if (kDebugMode) {
         print('[AuthNotifier] _checkHasPin result: $status');
-        print('[PIN] PinStatus changed to $status');
       }
     } on Object catch (e) {
       if (kDebugMode) {
         print('[AuthNotifier] Error checking PIN: $e');
       }
+      // hasPinHash() threw → result is UNKNOWN (not "no PIN").
+      // Try cache as fallback — but only trust hasPin, not noPin.
+      final cached = await PinStatusCache.get(user.uid);
+      if (cached == PinStatus.hasPin) {
+        if (kDebugMode) {
+          print('[AuthNotifier] Network error, using cached PIN status: $cached');
+        }
+        state = state.copyWith(
+          pinStatus: cached,
+          isPinCheckLoading: false,
+        );
+        return;
+      }
+      // No reliable cache → error state (shows /pin-gate with retry, NOT /create-pin)
       state =
           state.copyWith(isPinCheckLoading: false, pinStatus: PinStatus.error);
+    }
+  }
+
+  /// Background verification: re-checks Firestore without blocking navigation.
+  Future<void> _verifyPinInBackground(User user) async {
+    try {
+      final hasPinHash = await _authService.hasPinHash();
+      final serverStatus = state.isPinResetFlow
+          ? PinStatus.noPin
+          : (hasPinHash ? PinStatus.hasPin : PinStatus.noPin);
+      if (serverStatus != state.pinStatus) {
+        if (kDebugMode) {
+          print(
+              '[AuthNotifier] Background verify: cache disagrees, updating to $serverStatus');
+        }
+        state = state.copyWith(pinStatus: serverStatus);
+        await PinStatusCache.set(user.uid, serverStatus);
+      }
+    } on Object catch (e) {
+      if (kDebugMode) {
+        print('[AuthNotifier] Background PIN verify failed (non-fatal): $e');
+      }
     }
   }
 
@@ -250,8 +305,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _authService.setPin(pin);
       await AnalyticsService.instance.logPinCreated();
 
-      // CRITICAL: Clear isPinResetFlow flag after successful PIN creation
-      // This allows AuthGate to navigate to home screen instead of looping back to CreatePinScreen
       if (kDebugMode) {
         print(
             '[AuthNotifier] PIN created successfully, clearing isPinResetFlow flag');
@@ -260,11 +313,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         isLoading: false,
         pinStatus: PinStatus.hasPin,
-        isPinResetFlow: false, // Clear reset flow flag
+        isPinResetFlow: false,
       );
 
-      if (kDebugMode) {
-        print('[PIN] PinStatus changed to hasPin (PIN created)');
+      // Cache the new PIN status
+      final user = _firebaseAuth.currentUser;
+      if (user != null) {
+        await PinStatusCache.set(user.uid, PinStatus.hasPin);
       }
     } on Object catch (e) {
       state = state.copyWith(
@@ -323,6 +378,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         // Continue with logout even if cleanup fails
       }
 
+      await PinStatusCache.clearAll();
       await _authService.signOut();
       state = const AuthState(); // Reset to initial state
 

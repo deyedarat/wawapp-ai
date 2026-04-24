@@ -1,6 +1,6 @@
 param(
     [Parameter(Position=0)]
-    [ValidateSet('init','doctor','help','env:verify','fix:node-policy','format','analyze','flutter:refresh','build:driver','build:client','build:admin','run:driver','run:client','run:admin','deploy:admin','test:unit','test:analyze','env:verify-Firebase','fcm:verify','error:analyze')]
+    [ValidateSet('init','doctor','help','env:verify','fix:node-policy','format','analyze','flutter:refresh','build:driver','build:client','build:admin','run:driver','run:client','run:admin','deploy:admin','deploy:functions','test:unit','test:analyze','env:verify-Firebase','fcm:verify','error:analyze')]
     [string]$Command = 'help',
     
     [Parameter(Position=1)]
@@ -31,6 +31,7 @@ Spec tasks:
   .\spec.ps1 build:admin
   .\spec.ps1 run:admin
   .\spec.ps1 deploy:admin
+  .\spec.ps1 deploy:functions
   .\spec.ps1 test:unit
   .\spec.ps1 test:analyze
   .\spec.ps1 env:verify-Firebase
@@ -247,6 +248,29 @@ function Invoke-DeployAdmin {
     Write-Host "[DEPLOY:ADMIN] SUCCESS"
 }
 
+function Invoke-DeployFunctions {
+    Write-Host "[DEPLOY:FUNCTIONS] Building and deploying Cloud Functions..."
+    $env:FUNCTIONS_DISCOVERY_TIMEOUT = 120000
+    $functionsPath = Join-Path $ScriptRoot "functions"
+    Push-Location $functionsPath
+    try {
+        npm run build
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "[DEPLOY:FUNCTIONS] TypeScript build failed"
+            exit $LASTEXITCODE
+        }
+        firebase deploy --only functions
+        $exitCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    if ($exitCode -ne 0) {
+        Write-Error "[DEPLOY:FUNCTIONS] Firebase deploy failed"
+        exit $exitCode
+    }
+    Write-Host "[DEPLOY:FUNCTIONS] SUCCESS"
+}
+
 function Invoke-RunAdmin {
     Write-Host "[RUN:ADMIN] Running admin app on Chrome..."
     $appPath = Join-Path $ScriptRoot "apps\wawapp_admin"
@@ -352,6 +376,7 @@ switch ($Command) {
     'build:admin' { Invoke-BuildAdmin }
     'run:admin' { Invoke-RunAdmin }
     'deploy:admin' { Invoke-DeployAdmin }
+    'deploy:functions' { Invoke-DeployFunctions }
     'test:unit' { Invoke-TestUnit }
     'test:analyze' { Invoke-TestAnalyze }
     'env:verify-Firebase' { Invoke-EnvVerifyFirebase }

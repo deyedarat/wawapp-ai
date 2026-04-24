@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <!-- Bypass Do Not Disturb mode for critical notifications -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <!-- Re-schedule snooze alarms after device reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
         android:label="wawapp_driver"
         android:name="${applicationName}"
@@ -70,6 +72,15 @@
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:theme="@style/LaunchTheme" />
+        <!-- Trip start reminder full-screen activity (amber theme) -->
+        <activity
+            android:name=".TripReminderActivity"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:theme="@style/LaunchTheme" />
         <!-- Sound repeat receiver (AlarmManager triggers for Doze-safe sound repetition) -->
         <receiver
             android:name=".SoundRepeatReceiver"
@@ -78,6 +89,18 @@
         <receiver
             android:name=".NotificationDismissReceiver"
             android:exported="false" />
+        <!-- Snooze alarm receiver (AlarmManager fires after "Later" button) -->
+        <receiver
+            android:name=".SnoozeAlarmReceiver"
+            android:exported="false" />
+        <!-- Boot receiver: re-schedules snooze alarms lost on reboot -->
+        <receiver
+            android:name=".SnoozeBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
         <!-- Order action receiver (handles accept/decline from CallStyle notification) -->
         <receiver
             android:name=".OrderActionReceiver"

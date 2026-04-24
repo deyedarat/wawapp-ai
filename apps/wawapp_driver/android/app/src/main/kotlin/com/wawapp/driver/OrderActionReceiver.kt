@@ -22,7 +22,7 @@ class OrderActionReceiver : BroadcastReceiver() {
             ACTION_ACCEPT -> handleAccept(context, orderId, notificationId)
             ACTION_DECLINE -> handleDecline(context, orderId, notificationId)
             ACTION_START_TRIP -> handleStartTrip(context, orderId, notificationId)
-            ACTION_SNOOZE -> handleSnooze(context, orderId, notificationId)
+            ACTION_SNOOZE -> handleSnooze(context, orderId, notificationId, intent)
         }
     }
 
@@ -31,6 +31,9 @@ class OrderActionReceiver : BroadcastReceiver() {
 
         // Cancel sound repeats
         NotificationHelper.cancelSoundRepeats(context, orderId)
+
+        // Cancel any pending snooze alarm for this order (prevents ghost notification)
+        SnoozeScheduler.cancel(context, orderId)
 
         // Dismiss notification
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -51,6 +54,12 @@ class OrderActionReceiver : BroadcastReceiver() {
 
         // Cancel sound repeats
         NotificationHelper.cancelSoundRepeats(context, orderId)
+
+        // Cancel any pending snooze alarm for this order (prevents ghost notification)
+        SnoozeScheduler.cancel(context, orderId)
+
+        // Mark as rejected so native FCM handler won't re-show this order
+        MyFirebaseMessagingService.markOrderRejected(context, orderId)
 
         // Dismiss notification
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -85,8 +94,8 @@ class OrderActionReceiver : BroadcastReceiver() {
         context.startActivity(mainIntent)
     }
 
-    private fun handleSnooze(context: Context, orderId: String, notificationId: Int) {
-        Log.d(TAG, "User snoozed trip reminder: $orderId")
+    private fun handleSnooze(context: Context, orderId: String, notificationId: Int, intent: Intent) {
+        Log.d(TAG, "User snoozed order: $orderId")
 
         // Cancel sound repeats
         NotificationHelper.cancelSoundRepeats(context, orderId)
@@ -95,7 +104,28 @@ class OrderActionReceiver : BroadcastReceiver() {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         nm.cancel(notificationId)
 
-        // Just dismiss - Flutter will handle re-showing after snooze duration
+        // Schedule snooze alarm via AlarmManager (survives Doze + process death).
+        // Mirrors FullScreenNotificationActivity.onLaterClicked() exactly.
+        val offerId = intent.getStringExtra("offerId") ?: ""
+        val pickupLabel = intent.getStringExtra("pickupLabel") ?: ""
+        val dropoffLabel = intent.getStringExtra("dropoffLabel") ?: ""
+        val price = intent.getDoubleExtra("price", 0.0)
+        val distance = intent.getDoubleExtra("distance", 0.0)
+        val createdAt = intent.getLongExtra("createdAt", 0L)
+
+        SnoozeScheduler.schedule(
+            context = context,
+            orderId = orderId,
+            offerId = offerId,
+            delaySeconds = 300,
+            pickupLabel = pickupLabel,
+            dropoffLabel = dropoffLabel,
+            price = price,
+            distance = distance,
+            createdAt = createdAt
+        )
+
+        Log.d(TAG, "Snooze scheduled for order: $orderId (300s)")
     }
 
     companion object {

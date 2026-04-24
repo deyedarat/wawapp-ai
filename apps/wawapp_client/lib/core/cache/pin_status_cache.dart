@@ -37,19 +37,16 @@ class PinStatusCache {
 
   /// Store PIN status for a user
   ///
-  /// Only caches hasPin or noPin states (never unknown/loading/error)
+  /// CRITICAL: Only caches hasPin (positive confirmation).
+  /// Never persists noPin — it may originate from an empty Firestore local
+  /// cache and would poison future cold starts with a false "Create PIN".
   static Future<void> set(String uid, PinStatus status) async {
     try {
-      // Only cache known states
-      if (status != PinStatus.hasPin && status != PinStatus.noPin) {
-        return;
-      }
+      if (status != PinStatus.hasPin) return;
 
       final prefs = await SharedPreferences.getInstance();
       final key = _keyPrefix + uid;
-      final value = status == PinStatus.hasPin ? 'hasPin' : 'noPin';
-
-      await prefs.setString(key, value);
+      await prefs.setString(key, 'hasPin');
     } catch (e) {
       // Fail gracefully - cache is optional
     }

@@ -27,10 +27,10 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
             '[ClientAuthNotifier] Auth state changed: user=${user?.uid}, phone=${user?.phoneNumber}, isPinResetFlow=${state.isPinResetFlow}');
       }
 
-      // When user changes, reset PinStatus to loading
+      // When user changes, reset PinStatus to unknown (cache check happens in checkHasPin)
       state = state.copyWith(
         user: user,
-        pinStatus: user != null ? PinStatus.loading : PinStatus.unknown,
+        pinStatus: user != null ? PinStatus.unknown : PinStatus.unknown,
       );
 
       // Set user context for Crashlytics
@@ -73,14 +73,19 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       // Try to preload from cache for faster startup
       if (user != null && oldStatus == PinStatus.unknown) {
         final cached = await PinStatusCache.get(user.uid);
-        if (cached != null) {
+        // CRITICAL: Only trust cached hasPin (positive). Never trust cached noPin
+        // because it may have been poisoned by an empty Firestore cache read.
+        if (cached == PinStatus.hasPin && !state.isPinResetFlow) {
           if (kDebugMode) {
             print('[ClientAuthNotifier] Using cached PIN status: $cached');
           }
           state = state.copyWith(pinStatus: cached);
           AuthLogger.logPinStatusChange(
               oldStatus.toString(), cached.toString(), user.uid);
+          _verifyPinInBackground(user.uid);
+          return;
         }
+        // cached == noPin or null → must verify with server
       }
 
       state = state.copyWith(pinStatus: PinStatus.loading);
@@ -125,9 +130,10 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       }
 
       // On error, try to use cached value as fallback
+      // CRITICAL: Only trust cached hasPin, never cached noPin (may be poisoned)
       if (user != null) {
         final cached = await PinStatusCache.get(user.uid);
-        if (cached != null) {
+        if (cached == PinStatus.hasPin) {
           if (kDebugMode) {
             print(
                 '[ClientAuthNotifier] Network error, using cached PIN status: $cached');
@@ -142,6 +148,29 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(pinStatus: PinStatus.error);
       AuthLogger.logPinStatusChange(
           oldStatus.toString(), PinStatus.error.toString(), user?.uid);
+    }
+  }
+
+  /// Background verification: re-checks Firestore without blocking navigation.
+  /// If the server disagrees with cache, update state + cache silently.
+  Future<void> _verifyPinInBackground(String uid) async {
+    try {
+      final hasPinHash = await _authService.hasPinHash();
+      final serverStatus = state.isPinResetFlow
+          ? PinStatus.noPin
+          : (hasPinHash ? PinStatus.hasPin : PinStatus.noPin);
+      if (serverStatus != state.pinStatus) {
+        if (kDebugMode) {
+          print(
+              '[ClientAuthNotifier] Background verify: cache disagrees with server, updating to $serverStatus');
+        }
+        state = state.copyWith(pinStatus: serverStatus);
+        await PinStatusCache.set(uid, serverStatus);
+      }
+    } on Object catch (e) {
+      if (kDebugMode) {
+        print('[ClientAuthNotifier] Background PIN verify failed (non-fatal): $e');
+      }
     }
   }
 

@@ -11,7 +11,6 @@ import 'package:go_router/go_router.dart';
 import '../../services/notification_method_channel.dart';
 import '../../services/notification_service.dart';
 import '../../services/orders_service.dart';
-import 'providers/snooze_provider.dart';
 import 'widgets/order_details_card.dart';
 
 /// Data class for notification payload passed via GoRouter extra.
@@ -126,11 +125,19 @@ class _FullScreenNotificationScreenState
 
   Future<void> _accept() async {
     _dismissNotification();
-    // Release navigation guard before navigating away
     NotificationService().clearActiveFullScreen();
+    NotificationMethodChannel.cancelSnooze(widget.data.orderId);
     setState(() => _isLoading = true);
     try {
-      await ref.read(ordersServiceProvider).acceptOrder(widget.data.orderId);
+      final offerId = widget.data.offerId;
+      if (offerId != null && offerId.isNotEmpty) {
+        await ref.read(ordersServiceProvider).acceptOfferV2(
+          offerId: offerId,
+          orderId: widget.data.orderId,
+        );
+      } else {
+        await ref.read(ordersServiceProvider).acceptOrder(widget.data.orderId);
+      }
       // Mark order as processed AFTER successful accept to prevent stale notifications
       NotificationService().markOrderAsProcessed(widget.data.orderId);
       if (!mounted) return;
@@ -152,10 +159,9 @@ class _FullScreenNotificationScreenState
 
   Future<void> _reject() async {
     _dismissNotification();
-    // Mark order as processed to prevent stale notifications
     NotificationService().markOrderAsProcessed(widget.data.orderId);
-    // Release navigation guard before navigating away
     NotificationService().clearActiveFullScreen();
+    NotificationMethodChannel.cancelSnooze(widget.data.orderId);
     setState(() => _isLoading = true);
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
@@ -186,15 +192,20 @@ class _FullScreenNotificationScreenState
 
   void _snooze() {
     _dismissNotification();
-    // Release navigation guard before snoozing so reminder can re-show
     NotificationService().clearActiveFullScreen();
-    ref.read(snoozeProvider.notifier).scheduleReminder(
-      widget.data.orderId,
-      () {
-        if (mounted) {
-          context.push('/full-screen-notification', extra: widget.data);
-        }
-      },
+    // Clear dedup for this offer so the snooze alarm can re-show it.
+    final offerKey = widget.data.offerId ?? widget.data.orderId;
+    NotificationService().clearSnoozedOffer(offerKey);
+    // Schedule via Android AlarmManager (survives Doze + process death)
+    NotificationMethodChannel.scheduleSnooze(
+      orderId: widget.data.orderId,
+      offerId: widget.data.offerId ?? '',
+      delaySeconds: 300,
+      pickupLabel: widget.data.pickupLabel,
+      dropoffLabel: widget.data.dropoffLabel,
+      price: widget.data.price,
+      distance: widget.data.distance,
+      createdAt: widget.data.createdAtMs ?? 0,
     );
     context.go('/');
   }

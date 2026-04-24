@@ -1,672 +1,407 @@
 # WawApp System Map
-**Generated:** 2025-12-30  
-**Purpose:** Comprehensive system architecture overview for delivery audit
+
+Generated from code inspection. Every path and symbol referenced below was directly read.
 
 ---
 
-## 1. Repository Structure
+## 1. Repository Layout
 
 ```
-wawapp-ai/
+root/
 ├── apps/
-│   ├── wawapp_client/      # Flutter client app (customers)
-│   ├── wawapp_driver/      # Flutter driver app
-│   └── wawapp_admin/       # Flutter web admin panel
+│   ├── wawapp_client/          # Flutter client app (order placement)
+│   ├── wawapp_driver/          # Flutter driver app (order acceptance + fulfillment)
+│   └── wawapp_admin/           # Flutter web admin panel
 ├── packages/
-│   ├── auth_shared/        # Shared auth logic (phone/PIN)
-│   └── core_shared/        # Shared models (Order, Profile, etc.)
-├── functions/              # Firebase Cloud Functions (Node.js/TypeScript)
-├── firestore.rules         # Security rules
-├── firestore.indexes.json  # Composite indexes
-└── firebase.json           # Firebase config
+│   ├── auth_shared/            # Shared auth: PhonePinAuth, AuthState, OtpStage, PinStatus
+│   └── core_shared/            # Shared models: Order, DriverProfile, OrderStatus, BaseFCMService
+├── functions/                  # Firebase Cloud Functions v1 (Node 20, TypeScript)
+│   └── src/
+│       ├── auth/               # sendOtp, verifyOtp, createCustomToken, checkPhoneExists, rateLimiting
+│       ├── dispatch/           # engine, intake, selectors, notifications, state, counters, types
+│       ├── finance/            # orderSettlement, walletOperations, config, adminPayouts
+│       ├── admin/              # setAdminRole, adminDriverActions, adminClientActions, adminOrderActions
+│       ├── reports/            # getDriverPerformanceReport, getFinancialReport, getReportsOverview
+│       └── (root-level .ts)    # acceptOrder, expireStaleOrders, notifyOrderEvents, etc.
+├── firestore.rules             # Security rules (single file, ~350 lines)
+├── firestore.indexes.json      # Composite indexes
+├── firebase.json               # Functions, Firestore, Hosting config
+├── .firebaserc                 # Project: wawapp-952d6
+├── .github/workflows/          # CI: fast-checks, client_ci, driver_safe_build, firestore-rules-test
+├── codemagic.yaml              # Codemagic CI/CD: debug APK, release APK, iOS builds
+├── firestore-rules-tests/      # Jest-based Firestore rules test suite
+└── hosting/                    # APK distribution via Firebase Hosting
 ```
 
 ---
 
-## 2. Firebase Project Configuration
+## 2. Application Layers
 
-**Project ID:** `wawapp-952d6`  
-**Environment:** Production + Emulators
+### 2.1 Client App (`apps/wawapp_client/`)
 
-### Firebase Services
-- **Firestore:** Primary database
-- **Authentication:** Phone auth + Custom tokens (PIN-based)
-- **Cloud Functions:** Backend logic (Node 18+)
-- **Hosting:** Admin panel web hosting
-- **Cloud Messaging (FCM):** Push notifications
+**Entry**: `lib/main.dart`
+- Firebase init → App Check (PlayIntegrity) → Crashlytics → Sentry → Location bootstrap → `ProviderScope(child: MyApp())`
 
-### Emulator Ports
-- Firestore: `8080`
-- Auth: `9099`
-- Functions: `5001`
-- UI: `4000`
+**Router**: `lib/core/router/app_router.dart`
+- GoRouter with `_GoRouterRefreshStream` listening to `authProvider.notifier.stream`
+- Redirect logic: CAPTCHA guard → OTP flow → public routes → auth check → PIN gate → PIN create → authenticated
+- Debounced (600ms) with critical OTP states bypassing debounce
 
----
+**Auth flow**: Uses `auth_shared` package's `PhonePinAuth(userCollection: 'users')`
+- `AuthNotifier` in `lib/features/auth/providers/auth_service_provider.dart` (overrides shared package version)
+- State machine: `PinStatus.unknown → loading → hasPin|noPin|error`
 
-## 3. Applications
+**Key services**:
+- `lib/services/fcm_service.dart` — extends `BaseFCMService`, collection='users'
+- `lib/services/notification_service.dart` — client-side notification handling
+- `lib/core/firebase_boot.dart` — safe Firebase initialization
 
-### 3.1 Client App (`wawapp_client`)
-**Platform:** Flutter (iOS/Android)  
-**User Role:** Customers placing delivery orders
+**Android native**: `android/app/src/main/kotlin/com/wawapp/client/`
+- `MainActivity.kt` only (no custom FCM service — uses Flutter plugin default)
+- Deep link schemes: `wawapp://`, `https://wawappclient.page.link`
+- No full-screen intent, no custom notification channels
 
-#### Features
-- **Auth:** Phone/PIN login, OTP verification
-- **Home:** Order creation, saved locations
-- **Map:** Pickup/dropoff selection (Google Maps)
-- **Quote:** Price calculation, distance estimation
-- **Track:** Real-time order tracking
-- **Profile:** User settings, logout
-- **Shipment Type:** Package type selection
+### 2.2 Driver App (`apps/wawapp_driver/`)
 
-#### Key Services
-- `fcm_service.dart` - Push notifications
-- `notification_service.dart` - Local notifications
-- `analytics_service.dart` - Event tracking
+**Entry**: `lib/main.dart`
+- Firebase init (3-attempt retry) → Crashlytics → Firestore offline persistence → Connectivity → FCM token manager → Battery optimization check → No-op background handler → `ProviderScope(child: MyApp())`
 
-#### Navigation
-- Uses Flutter Navigator 2.0 with route guards
-- Auth gate checks authentication state
+**Router**: `lib/core/router/app_router.dart`
+- GoRouter with `_RouterRefreshNotifier` driven by `ref.listen` on `authProvider` + `driverProfileStreamProvider`
+- Redirect logic: OTP → not authenticated → PIN gate (unknown/loading/error) → no PIN → blocked check → authenticated
+- Notification routes (`/full-screen-notification`, `/trip-start-reminder`, `/active-order`) bypass PIN gate
 
----
+**Auth flow**: Uses `auth_shared` package's `PhonePinAuth(userCollection: 'drivers')`
+- `AuthNotifier` in `lib/features/auth/providers/auth_service_provider.dart` (overrides shared package version)
+- Same PinStatus state machine as client
 
-### 3.2 Driver App (`wawapp_driver`)
-**Platform:** Flutter (iOS/Android)  
-**User Role:** Drivers accepting and fulfilling orders
+**Key services**:
+- `lib/services/notification_service.dart` — 6-layer dedup pipeline, central `handleIncomingOffer()` gate
+- `lib/services/fcm_service.dart` — extends `BaseFCMService`, collection='drivers' (tap handlers disabled — legacy)
+- `lib/services/orders_service.dart` — `getNearbyOrders` (Cloud Function), `acceptOrder` (v1), `acceptOfferV2`, `rejectOffer`, `transition`, `cancelOrder`
+- `lib/services/notification_method_channel.dart` — Flutter↔Kotlin bridge for native notifications
+- `lib/services/fcm_token_manager.dart` — token refresh management
+- `lib/services/location_service.dart` — GPS tracking
+- `lib/services/acceptance_lock_manager.dart` — prevents double-acceptance race
 
-#### Features
-- **Auth:** Phone/PIN login, OTP verification, driver claims
-- **Home:** Driver status toggle (online/offline)
-- **Nearby:** Real-time matching orders feed
-- **Active:** Current order management (accept, on-route, complete)
-- **Map:** Navigation, location tracking
-- **Wallet:** Balance display, transaction history (UI only)
-- **Earnings:** Trip statistics
-- **History:** Completed orders
-- **Profile:** Driver settings, logout
+**Android native**: `android/app/src/main/kotlin/com/wawapp/driver/`
 
-#### Key Services
-- `orders_service.dart` - Order CRUD, status updates
-- `location_service.dart` - GPS tracking
-- `location_throttling_service.dart` - Bandwidth optimization
-- `tracking_service.dart` - Real-time location updates
-- `driver_status_service.dart` - Online/offline state
-- `driver_cleanup_service.dart` - Cleanup on logout
-- `fcm_service.dart` - Push notifications
+| File | Responsibility |
+|------|---------------|
+| `MyFirebaseMessagingService.kt` | Priority-10 FCM handler. Routes: foreground→FcmForegroundBridge, background→NotificationHelper (full-screen intent). Validates order status via Firestore before showing. |
+| `FcmForegroundBridge.kt` | EventChannel bridge: Kotlin→Flutter for foreground FCM messages |
+| `FullScreenNotificationActivity.kt` | Native call-style UI for new order notifications (background/killed) |
+| `TripReminderActivity.kt` | Native amber-theme UI for trip start reminders (background/killed) |
+| `NotificationHelper.kt` | Creates v9 notification channels (bypassDnd, USAGE_ALARM), builds CallStyle notifications |
+| `SoundRepeatReceiver.kt` | AlarmManager-based sound repetition (Doze-safe) |
+| `NotificationDismissReceiver.kt` | Cancels sound repeats on notification swipe-dismiss |
+| `OrderActionReceiver.kt` | Handles accept/decline from CallStyle notification buttons |
+| `MainActivity.kt` | Flutter engine host, registers EventChannels + MethodChannels |
 
-#### Critical Flows
-1. **Go Online:** Updates `driver_locations` collection
-2. **Accept Order:** Updates order status to `accepted`, sets `assignedDriverId`
-3. **Location Updates:** Throttled writes to `driver_locations/{driverId}`
-4. **Complete Order:** Triggers wallet settlement via Cloud Function
+**Manifest permissions**: INTERNET, FINE_LOCATION, COARSE_LOCATION, FOREGROUND_SERVICE, FOREGROUND_SERVICE_LOCATION, POST_NOTIFICATIONS, USE_FULL_SCREEN_INTENT, WAKE_LOCK, SCHEDULE_EXACT_ALARM, USE_EXACT_ALARM, REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, ACCESS_NOTIFICATION_POLICY
 
----
+**Deep link schemes**: `wawappdriver://`, `https://wawappdriver.page.link`
 
-### 3.3 Admin Panel (`wawapp_admin`)
-**Platform:** Flutter Web  
-**User Role:** Platform administrators
+### 2.3 Shared Packages
 
-#### Features (from README)
-- Dashboard with stats
-- User/driver management
-- Order monitoring
-- Reports (financial, performance)
-- Payout management
+**`packages/auth_shared/`**
+- `PhonePinAuth` — singleton, parameterized by `userCollection` ('users' or 'drivers')
+  - `ensurePhoneSession()` → calls `sendOtp` Cloud Function
+  - `confirmOtp()` → calls `verifyOtp` Cloud Function → `signInWithCustomToken`
+  - `verifyPin()` → calls `createCustomToken` Cloud Function → `signInWithCustomToken`
+  - `setPin()` → writes `pinHash`+`pinSalt` to Firestore
+  - `hasPinHash()` → reads from Firestore (server-first, cache fallback)
+- `AuthState` — immutable state: user, pinStatus, otpStage, otpFlowActive, isPinResetFlow, etc.
+- `AuthNotifier` (base) — sets `hasPin` (bool), NOT `pinStatus` (enum). Both apps override this.
 
-**Hosting:** Firebase Hosting at `apps/wawapp_admin/build/web`
+**`packages/core_shared/`**
+- `Order` — unified model with `fromFirestore`, `fromFirestoreWithId`, `toMap`, `copyWith`
+- `OrderStatus` — enum with `fromFirestore` (handles legacy values), `toFirestore`, `canTransitionTo`, `createTransitionUpdate`
+- `DriverProfile` — model with `isCompleteForOrders` validation
+- `BaseFCMService` — abstract: token management, permission requests, Firestore persistence
+- `CrashlyticsObserver`, `WawLog`, `DebugConfig` — observability
 
 ---
 
-## 4. Shared Packages
+## 3. Cloud Functions
 
-### 4.1 `auth_shared`
-**Exports:**
-- `phone_pin_auth.dart` - Phone/PIN authentication logic
-- `auth_state.dart` - Authentication state model
-- `auth_notifier.dart` - State management
-- `phone_utils.dart` - Phone number formatting/validation
+### 3.1 Firestore Triggers (onUpdate/onCreate)
 
-**Used by:** Client, Driver, Admin apps
+| Function | Trigger | Collection | Condition |
+|----------|---------|------------|-----------|
+| `notifyNewOrderV2` | `onCreate` | `orders/{orderId}` | `status === 'matching'` → enqueues into dispatch engine |
+| `notifyOrderEvents` | `onUpdate` | `orders/{orderId}` | Status changed → sends FCM to client/driver |
+| `handleDriverCancellation` | `onUpdate` | `orders/{orderId}` | Status → `cancelled`/`cancelledByDriver` → returns to matching |
+| `onOrderCompleted` | `onUpdate` | `orders/{orderId}` | Status → `completed` → settles finances |
+| `processTripStartFee` | `onUpdate` | `orders/{orderId}` | `accepted` → `onRoute` → deducts 10% from driver wallet |
+| `enforceOrderExclusivity` | `onUpdate` | `orders/{orderId}` | Exclusivity guards |
+| `trackOrderAcceptance` | `onUpdate` | `orders/{orderId}` | Tracks acceptance timestamp |
+| `aggregateDriverRating` | `onUpdate` | `orders/{orderId}` | Rating submitted → updates driver aggregate |
 
----
+### 3.2 Scheduled Functions
 
-### 4.2 `core_shared`
-**Exports:**
-- `order.dart` - Unified Order model
-- `order_status.dart` - Order status enum
-- `client_profile.dart` - Client user model
-- `driver_profile.dart` - Driver user model
-- `saved_location.dart` - Saved location model
-- `analytics/analytics.dart` - Analytics helpers
-- `fcm/fcm.dart` - FCM helpers
-- `app_error.dart` - Error handling
-- `date_normalizer.dart` - Date utilities
+| Function | Schedule | Purpose |
+|----------|----------|---------|
+| `expireStaleOrders` | Every 2 min | Expires matching orders older than 8 min |
+| `processExpiredWaves` | Every 1 min | Fallback: processes expired dispatch waves |
+| `monitorAcceptedOrders` | Every 1 min | Sends escalating trip-start reminders |
+| `cleanStaleDriverLocations` | Scheduled | Cleans old driver location docs |
+| `cleanupRejectedOrders` | Scheduled | Cleans expired rejection records |
+| `autoForceUpdate` | Scheduled | Auto-enables force update after deadline |
 
-**Critical Model:** `Order` class with dual constructors:
-- `fromFirestore(Map)` - Client app compatibility
-- `fromFirestoreWithId(String, Map)` - Driver app compatibility
+### 3.3 Callable Functions (HTTPS)
 
----
+| Function | Called By | Purpose |
+|----------|-----------|---------|
+| `sendOtp` | Client/Driver | Sends OTP via Twilio Verify |
+| `verifyOtp` | Client/Driver | Verifies OTP, creates/finds user, returns customToken |
+| `createCustomToken` | Client/Driver | PIN-based auth with rate limiting |
+| `checkPhoneExists` | Client/Driver | Phone existence check |
+| `acceptOrder` | Driver (v1) | Legacy order acceptance |
+| `acceptOrderV2` | Driver (v2) | Offer-based acceptance with dispatch engine |
+| `rejectOffer` | Driver | Explicit offer rejection |
+| `getNearbyOrders` | Driver | Server-side nearby order query (bypasses Firestore rules) |
+| `handleDriverCancellation` | (trigger) | Returns cancelled orders to matching |
+| `requestTripStartExtension` | Driver | Request extra time before trip start |
+| `createTopupRequest` | Driver | Create wallet top-up request |
+| `approveTopupRequest` | Admin | Approve/reject top-up |
+| `updateOrderLocation` | Driver | Secure driver location tracking |
+| `deleteAccount` | Client/Driver | Google Play compliance: account deletion |
 
-## 5. Firestore Collections
+### 3.4 HTTP Functions
 
-### 5.1 `users`
-**Purpose:** Client user profiles  
-**Key Fields:**
-- `phone` (E.164 format)
-- `pinHash`, `pinSalt` (SHA-256 hashed PIN)
-- `totalTrips`, `averageRating` (admin-managed)
-- Subcollection: `savedLocations`
+| Function | Trigger | Purpose |
+|----------|---------|---------|
+| `handleWaveExpirationTask` | Cloud Tasks POST | Precise per-order wave expiration |
 
-**Security:**
-- Read/write: Owner only
-- No list queries (prevents phone enumeration)
-- PIN fields must be updated together
+### 3.5 Dispatch Engine (`functions/src/dispatch/`)
 
----
+**Architecture**: Hybrid sequential-wave system
 
-### 5.2 `drivers`
-**Purpose:** Driver profiles  
-**Key Fields:**
-- `phone`, `pinHash`, `pinSalt`
-- `isVerified`, `rating`, `totalTrips`, `ratedOrders` (admin-managed)
-- `fcmToken` (for notifications)
-
-**Security:**
-- Read/write: Owner only
-- Admin has full access
-- No list queries (use `driver_locations` for active drivers)
-
----
-
-### 5.3 `clients`
-**Purpose:** Client metadata (separate from `users`)  
-**Key Fields:**
-- `isVerified`, `totalTrips`, `averageRating` (admin-managed)
-
-**Security:**
-- Read/write: Owner only
-- Admin has full access
-
----
-
-### 5.4 `orders`
-**Purpose:** Delivery orders  
-**Key Fields:**
-- `ownerId` (client UID)
-- `status` (matching, accepted, onRoute, completed, cancelled*)
-- `assignedDriverId`, `driverId`
-- `pickup`, `dropoff` (lat/lng/label)
-- `pickupAddress`, `dropoffAddress`
-- `price`, `distanceKm`
-- `createdAt`, `updatedAt`, `completedAt`
-- `driverRating`, `ratedAt`
-- `settledAt`, `driverEarning`, `platformFee` (finance)
-- `walletGuard` (Phase D: balance enforcement)
-
-**Status Transitions (Firestore Rules):**
-- `matching` → `accepted`, `cancelled*`
-- `accepted` → `onRoute`, `cancelled*`
-- `onRoute` → `completed`, `cancelled*`
-
-**Security:**
-- Create: Owner only, must be `matching` status
-- Read: Owner, assigned driver, or `matching` status (for driver feed)
-- Update: Strict status transition validation, role-based
-
-**Indexes:** 9 composite indexes (see `firestore.indexes.json`)
-
----
-
-### 5.5 `driver_locations`
-**Purpose:** Real-time driver GPS positions  
-**Key Fields:**
-- Document ID = `driverId`
-- `lat`, `lng`, `timestamp`
-
-**Security:**
-- Read: Any authenticated user (for matching)
-- Write: Owner driver only
-
-**Cleanup:** `cleanStaleDriverLocations` function (scheduled)
-
----
-
-### 5.6 `wallets`
-**Purpose:** Driver wallet balances (Phase 5)  
-**Key Fields:**
-- Document ID = `driverId` or `PLATFORM_WALLET`
-- `type` (driver, platform)
-- `ownerId`
-- `balance`, `totalCredited`, `totalDebited`, `pendingPayout`
-- `currency` (MRU)
-
-**Security:**
-- Read: Owner driver, admins
-- Write: Cloud Functions only (no client writes)
-
----
-
-### 5.7 `transactions`
-**Purpose:** Wallet transaction ledger (Phase 5)  
-**Key Fields:**
-- `walletId`
-- `type` (credit, debit)
-- `source` (order_settlement, trip_start_fee, payout, topup)
-- `amount`, `currency`
-- `orderId` (if applicable)
-- `balanceBefore`, `balanceAfter`
-- `note`, `metadata`
-
-**Security:**
-- Read: Wallet owner, admins
-- Write: Cloud Functions only
-
----
-
-### 5.8 `payouts`
-**Purpose:** Driver payout requests (Phase 5)  
-**Key Fields:**
-- `driverId`
-- `amount`, `currency`
-- `status` (pending, approved, rejected, completed)
-- `requestedAt`, `processedAt`
-
-**Security:**
-- Read: Driver owner, admins
-- Write: Cloud Functions only
-
----
-
-### 5.9 `topup_requests`
-**Purpose:** Driver wallet top-up requests (Phase D)  
-**Key Fields:**
-- `driverId`
-- `amount`
-- `status` (pending, approved, rejected)
-
-**Security:**
-- Create: Driver owner, must be `pending` status
-- Update: Admins only (via Cloud Functions)
-
----
-
-### 5.10 `admins`
-**Purpose:** Admin user metadata  
-**Security:**
-- Read: Admins only
-- Write: Cloud Functions only (no client writes)
-
----
-
-## 6. Cloud Functions
-
-**Runtime:** Node.js 18+  
-**Location:** `functions/src/`
-
-### 6.1 Authentication
-- **`createCustomToken`** - Generate custom token after PIN verification
-- **`manualSetDriverClaims`** - Set driver custom claims (isDriver: true)
-
-### 6.2 Order Lifecycle
-- **`notifyNewOrder`** - Notify drivers when order created (matching status)
-- **`notifyUnassignedOrders`** - Repeated notifications for unassigned orders (Phase A)
-- **`trackOrderAcceptance`** - Track acceptance timestamp (Phase B)
-- **`notifyOrderEvents`** - Notify on status changes
-- **`expireStaleOrders`** - Auto-cancel old matching orders (scheduled)
-
-### 6.3 Finance/Wallet (Phase 5)
-- **`onOrderCompleted`** - Settle completed orders into wallets (80/20 split)
-  - Triggers on order status → `completed`
-  - Credits driver wallet (80%), platform wallet (20%)
-  - Creates transaction records
-  - Idempotent (checks `settledAt` field)
-- **`processTripStartFee`** - Deduct trip start fee from driver wallet (Phase C)
-- **`enforceWalletBalance`** - Enforce positive balance for order acceptance (Phase D)
-  - Triggers on order status → `accepted`
-  - Reverts to `matching` if balance ≤ 0
-  - Fail-closed on errors
-  - Loop guard via `walletGuard` field
-- **`createTopupRequest`** - Create driver top-up request (Phase D)
-- **`approveTopupRequest`, `rejectTopupRequest`** - Admin top-up approval (Phase D)
-- **`adminCreatePayoutRequest`, `adminUpdatePayoutStatus`** - Admin payout management
-
-### 6.4 Guards/Enforcement
-- **`enforceOrderExclusivity`** - Prevent drivers from accepting multiple orders (Phase C)
-- **`aggregateDriverRating`** - Update driver rating on order completion
-- **`cleanStaleDriverLocations`** - Remove old driver locations (scheduled)
-
-### 6.5 Admin Actions
-- **`setAdminRole`, `removeAdminRole`** - Manage admin custom claims
-- **`getAdminStats`** - Dashboard statistics
-- **`adminCancelOrder`, `adminReassignOrder`** - Order management
-- **`adminBlockDriver`, `adminUnblockDriver`, `adminVerifyDriver`** - Driver management
-- **`adminSetClientVerification`, `adminBlockClient`, `adminUnblockClient`** - Client management
-
-### 6.6 Reports
-- **`getReportsOverview`** - Overview statistics
-- **`getFinancialReport`** - Financial analytics
-- **`getDriverPerformanceReport`** - Driver performance metrics
-
----
-
-## 7. Critical Flows
-
-### 7.1 Authentication Flow (Phone + PIN)
-
-#### New User Registration
-1. **Client:** Enter phone number
-2. **Client → Firebase Auth:** Send OTP via `verifyPhoneNumber()`
-3. **User:** Receive SMS, enter OTP
-4. **Client → Firebase Auth:** Verify OTP, sign in with `PhoneAuthCredential`
-5. **Client:** Create PIN (4 digits)
-6. **Client → Firestore:** Write `users/{uid}` with `pinHash`, `pinSalt`
-7. **Client:** Navigate to home
-
-#### Returning User (PIN Login)
-1. **Client:** Enter phone number + PIN
-2. **Client → Cloud Function:** Call `createCustomToken(phoneE164, pin)`
-3. **Function:** Query `users` by phone, verify PIN hash
-4. **Function → Client:** Return custom token
-5. **Client → Firebase Auth:** Sign in with custom token
-6. **Client:** Navigate to home
-
-**Security Concerns:**
-- PIN brute force (no rate limiting visible)
-- Phone enumeration (mitigated by Firestore rules, but function still queries)
-- Session binding (no device/session tracking)
-
----
-
-### 7.2 Order Lifecycle
-
-#### 1. Order Creation (Client)
 ```
-Client App
-  ↓ Select pickup/dropoff
-  ↓ Calculate price
-  ↓ Create order (status: matching)
-  ↓
-Firestore: orders/{orderId}
-  ↓ Trigger: notifyNewOrder
-  ↓
-Cloud Function
-  ↓ Query active drivers
-  ↓ Send FCM notifications
-  ↓
-Driver Apps (nearby feed)
+Order Created → notifyNewOrderV2 (onCreate)
+  → safeEnqueueOrder (intake.ts: normalize → validate → enqueue or quarantine)
+    → enqueueOrder (engine.ts: write dispatch_queue, trigger wave 1)
+      → processNextWave (transaction: atomic wave status update)
+        → sendWaveOffers (find eligible drivers → create dispatch_offers → send FCM)
+          → scheduleWaveExpirationTask (Cloud Tasks: precise TTL)
+
+Wave Expires → handleWaveExpirationTask (Cloud Tasks) OR processExpiredWaves (fallback scheduler)
+  → processExpiredWavesForOrder
+    → expire sent offers → processNextWave (next wave)
+
+Driver Accepts → acceptOrderV2 (callable)
+  → handleOfferAcceptance (transaction: validate offer → update order → lock driver → expire other offers → dequeue)
+
+Driver Rejects → rejectOffer (callable)
+  → handleOfferRejection (transaction: update offer → clear driver state)
 ```
 
-#### 2. Order Acceptance (Driver)
+**Wave config** (types.ts):
+- Wave 1: 1 driver, 3km, 45s TTL
+- Wave 2: 3 drivers, 8km, 45s TTL
+- Wave 3: 5 drivers, 15km, 45s TTL
+- Wave 4+: 5 drivers, 15km, 60s TTL (repeats until order status changes)
+
+**Safety mechanisms**:
+- Per-order circuit breaker (3 consecutive failures → `dispatch_stuck_orders`)
+- Global circuit breaker (10 failures/min → 30s cooldown)
+- Intake quarantine (`dispatch_intake_failures`)
+- Architecture violation assertion (rejects raw order data in notification layer)
+- Idempotent enqueue (checks existing dispatch_queue doc)
+
+---
+
+## 4. Firestore Collections
+
+### 4.1 Core Collections
+
+| Collection | Owner | Purpose | Key Fields |
+|------------|-------|---------|------------|
+| `orders` | Client creates, Driver/Functions update | Order lifecycle | status, ownerId, assignedDriverId, pickup, dropoff, price, createdAt |
+| `users` | Client | Client profiles + auth | phone, pinHash, pinSalt, fcmToken, name |
+| `drivers` | Driver | Driver profiles + auth | phone, pinHash, pinSalt, fcmToken, name, vehicleType, vehiclePlate, city, isVerified, isOnline, isBlocked |
+| `clients` | Client | Client profiles (alternate) | phone, name |
+| `driver_locations` | Driver | Real-time GPS | latitude/lat, longitude/lng, updatedAt, accuracy |
+| `wallets` | Functions | Driver + platform wallets | balance, totalDebited, totalCredited |
+| `transactions` | Functions | Financial ledger | walletId, type, amount, orderId, balanceBefore, balanceAfter |
+
+### 4.2 Dispatch Collections
+
+| Collection | Writer | Purpose |
+|------------|--------|---------|
+| `dispatch_queue` | Functions | Active orders awaiting dispatch (single source of truth) |
+| `dispatch_offers` | Functions | Per-driver offers with status lifecycle (sent→accepted/rejected/expired/cancelled) |
+| `driver_dispatch_state` | Functions | Per-driver lock state (activeOfferId, activeOrderId, acceptanceLock) |
+| `dispatch_metrics` | Functions | Per-order dispatch analytics |
+| `dispatch_intake_failures` | Functions | Quarantined orders that failed validation |
+| `dispatch_stuck_orders` | Functions | Orders that hit circuit breaker threshold |
+| `driver_rejected_orders` | Driver (client SDK) | Driver rejection records (24h TTL) |
+
+### 4.3 Notification/Logging Collections
+
+| Collection | Writer | Purpose |
+|------------|--------|---------|
+| `notification_log` | Functions | Idempotency log for `notifyOrderEvents` |
+| `notification_logs/{driverId}/events` | Driver (client SDK) | Client-side notification event tracking |
+| `driver_notifications` | Functions | Per-driver notification records |
+| `driver_notification_health` | Driver (client SDK) | Health monitoring reports |
+| `bug_reports` | Unauthenticated (client SDK) | OTP error reports (pre-login) |
+
+### 4.4 Admin/Config Collections
+
+| Collection | Writer | Purpose |
+|------------|--------|---------|
+| `admins` | Admin | Admin profiles |
+| `app_config` | Admin | Bank app configs, force update settings |
+| `topup_requests` | Driver creates, Admin approves | Wallet top-up requests |
+| `payouts` | Functions | Driver payout records |
+| `pin_rate_limits` | Functions only | Brute-force protection (locked from client SDK) |
+
+---
+
+## 5. Notification Generation & Handling Paths
+
+### 5.1 New Order → Driver (Full-Screen)
+
 ```
-Driver App
-  ↓ Tap "Accept" on order
-  ↓ Update order (status: accepted, assignedDriverId)
-  ↓
-Firestore: orders/{orderId}
-  ↓ Trigger: enforceWalletBalance
-  ↓
-Cloud Function
-  ↓ Check wallets/{driverId}.balance
-  ↓ If balance ≤ 0:
-  │   ↓ Revert to matching
-  │   ↓ Set walletGuard field
-  │   ↓ Send FCM notification
-  ↓ Else: Allow acceptance
-  ↓ Trigger: enforceOrderExclusivity (Phase C)
-  ↓
-Cloud Function
-  ↓ Check for other active orders
-  ↓ If exists: Revert to matching
-  ↓ Trigger: trackOrderAcceptance (Phase B)
-  ↓
-Cloud Function
-  ↓ Record acceptedAt timestamp
+Client creates order (Firestore write)
+  → notifyNewOrderV2 (onCreate trigger)
+    → safeEnqueueOrder → enqueueOrder → processNextWave → sendWaveOffers
+      → sendOfferNotification (dispatch/notifications.ts)
+        → admin.messaging().send() — DATA-ONLY payload (no notification block)
+          → Android: MyFirebaseMessagingService.onMessageReceived()
+            → Foreground: FcmForegroundBridge → Flutter NotificationService.handleIncomingOffer()
+              → 6-layer dedup → _showFullScreenNotification → ctx.go('/full-screen-notification')
+            → Background/Killed: NotificationHelper.showFullScreenNotification()
+              → FullScreenNotificationActivity (native call-style UI)
 ```
 
-#### 3. Trip Start (Driver)
+### 5.2 Order Status Change → Client
+
 ```
-Driver App
-  ↓ Tap "Start Trip"
-  ↓ Update order (status: onRoute)
-  ↓
-Firestore: orders/{orderId}
-  ↓ Trigger: processTripStartFee (Phase C)
-  ↓
-Cloud Function
-  ↓ Debit driver wallet (trip start fee)
-  ↓ Create transaction record
+Driver accepts/starts/completes order (Firestore update)
+  → notifyOrderEvents (onUpdate trigger)
+    → getNotificationConfig(before, after)
+      → sendNotification(ownerId, orderId, config, 'users')
+        → idempotency check (notification_log)
+        → admin.messaging().send() — data + APNS notification block
+          → Client app: standard Flutter FCM handling
 ```
 
-#### 4. Trip Completion (Driver)
+### 5.3 Trip Start Reminder → Driver
+
 ```
-Driver App
-  ↓ Tap "Complete"
-  ↓ Update order (status: completed, completedAt)
-  ↓
-Firestore: orders/{orderId}
-  ↓ Trigger: onOrderCompleted
-  ↓
-Cloud Function
-  ↓ Calculate split (80% driver, 20% platform)
-  ↓ Credit wallets/{driverId}.balance
-  ↓ Credit wallets/PLATFORM_WALLET.balance
-  ↓ Create transaction records
-  ↓ Set order.settledAt
-  ↓ Trigger: aggregateDriverRating
-  ↓
-Cloud Function
-  ↓ Update driver.rating, driver.totalTrips
+monitorAcceptedOrders (every 1 min scheduler)
+  → queries orders where status='accepted'
+  → for each: check elapsed time since acceptedAt
+    → if >= 3 min and not recently reminded:
+      → sendToDriver() — data-only FCM with notificationType='trip_start_reminder'
+        → Same MyFirebaseMessagingService path as new orders
+          → Background: TripReminderActivity (native amber UI)
+          → Foreground: Flutter NotificationService → /trip-start-reminder route
+```
+
+### 5.4 Order Expiry → Client
+
+```
+expireStaleOrders (every 2 min scheduler)
+  → queries orders where status='matching', assignedDriverId=null, createdAt < 8min ago
+  → batch update: status='expired'
+    → notifyOrderEvents (onUpdate trigger)
+      → getNotificationConfig('matching', 'expired') → type='order_expired'
+        → sendNotification(ownerId) → FCM to client
 ```
 
 ---
 
-### 7.3 Wallet System (Phase 5)
-
-#### Wallet Structure
-- **Driver Wallet:** `wallets/{driverId}`
-- **Platform Wallet:** `wallets/PLATFORM_WALLET`
-
-#### Transaction Types
-- **Credit:**
-  - `order_settlement` - 80% of order price
-  - `topup` - Admin-approved top-up
-- **Debit:**
-  - `trip_start_fee` - Fee deducted on trip start
-  - `payout` - Driver withdrawal
-
-#### Finance Config (`functions/src/finance/config.ts`)
-```typescript
-PLATFORM_COMMISSION_RATE: 0.20  // 20%
-DRIVER_COMMISSION_RATE: 0.80    // 80%
-DEFAULT_CURRENCY: 'MRU'
-PLATFORM_WALLET_ID: 'PLATFORM_WALLET'
-```
-
-#### Atomicity
-- All wallet updates use Firestore transactions
-- Idempotency via `settledAt` field on orders
-
-**Risks:**
-- No double-spend protection visible
-- No ledger integrity checks
-- Race conditions on concurrent order completions?
-- Retry logic on transaction failures?
-
----
-
-### 7.4 Driver Location Tracking
+## 6. Auth Flow (Both Apps)
 
 ```
-Driver App (online)
-  ↓ location_service.dart
-  ↓ GPS updates (throttled)
-  ↓ location_throttling_service.dart
-  ↓ Write to Firestore
-  ↓
-Firestore: driver_locations/{driverId}
-  ↓ Real-time listeners
-  ↓
-Client App (tracking order)
-  ↓ Display driver location on map
+Phone Entry → sendOtp Cloud Function → Twilio Verify SMS
+  → OTP Screen → verifyOtp Cloud Function → Twilio check → find/create user → customToken
+    → signInWithCustomToken → Firebase Auth state change
+      → AuthNotifier._checkHasPin() → reads pinHash from Firestore
+        → PinStatus.hasPin → Router redirects to home
+        → PinStatus.noPin → Router redirects to /create-pin
+          → setPin() → writes pinHash+pinSalt to Firestore → PinStatus.hasPin
+
+Returning User → Phone Entry → loginByPin
+  → createCustomToken Cloud Function → rate limit check → PIN hash verification → customToken
+    → signInWithCustomToken → same flow as above
 ```
 
-**Cleanup:**
-- `cleanStaleDriverLocations` (scheduled function)
-- Removes locations older than threshold
+---
+
+## 7. CI/CD & Deployment
+
+### 7.1 GitHub Actions
+
+| Workflow | Trigger | What it does |
+|----------|---------|-------------|
+| `fast-checks.yml` | Push/PR on `apps/wawapp_driver/**`, `packages/**` | Flutter analyze + test (driver) |
+| `wawapp_client_ci.yml` | Push/PR on `apps/wawapp_client/**` | Flutter analyze (client) |
+| `wawapp_driver_safe_build.yml` | Push/PR on main/develop | Gradle assembleDebug (Android only, no Flutter) |
+| `firestore-rules-test.yml` | Push/PR on `firestore.rules`, `firestore-rules-tests/**` | Syntax validation + 57 Jest security tests |
+
+### 7.2 Codemagic
+
+| Workflow | Trigger | Output |
+|----------|---------|--------|
+| `android_debug` | Push to main | Debug APK (client) |
+| `android_release` | Tag `v*` | Release APK (client) |
+| `ios_debug` | Push to develop | iOS debug build (client) |
+| `ios_release` | Tag `ios-v*` | IPA → TestFlight (client) |
+| `test_workflow` | Pull request | Flutter test + integration test (client) |
+
+### 7.3 Firebase Deployment
+
+- **Project**: `wawapp-952d6`
+- **Functions**: `firebase deploy --only functions` (from `functions/` dir)
+- **Firestore rules**: `firebase deploy --only firestore:rules` (from root `firestore.rules`)
+- **Hosting targets**: `admin` → `wawapp-952d6`, `downloads` → `wawapp-downloads` (APK distribution)
 
 ---
 
-## 8. Security Model
+## 8. Cross-Layer Dependency Chains
 
-### 8.1 Firestore Rules Summary
+### Chain A: Order Creation → Driver Notification
+```
+Client Flutter → Firestore write (orders collection)
+  → Cloud Functions (notifyNewOrderV2 onCreate)
+    → Dispatch Engine (intake → engine → selectors → notifications)
+      → FCM (admin.messaging().send)
+        → Android Native (MyFirebaseMessagingService.kt)
+          → Kotlin NotificationHelper / FcmForegroundBridge
+            → Flutter NotificationService / FullScreenNotificationActivity
+```
+**Layers crossed**: Flutter → Firestore → Cloud Functions → FCM → Android Native → Flutter
 
-#### Strengths
-- Owner-based access control
-- Admin bypass via custom claims (`isAdmin: true`)
-- Status transition validation for orders
-- No unauthenticated list queries (prevents enumeration)
-- Wallet/transaction writes locked to Cloud Functions
+### Chain B: Driver Acceptance → Client Notification
+```
+Driver Flutter → Cloud Function (acceptOrderV2 callable)
+  → Dispatch Engine (handleOfferAcceptance transaction)
+    → Firestore update (orders.status = 'accepted')
+      → Cloud Functions (notifyOrderEvents onUpdate)
+        → FCM → Client Flutter
+```
+**Layers crossed**: Flutter → Cloud Functions → Firestore → Cloud Functions → FCM → Flutter
 
-#### Weaknesses
-- **Order Matching Feed:** Any authenticated user can read `matching` orders (line 59)
-  - Potential: Client users can see driver-only data
-- **Driver Locations:** Any authenticated user can read (line 71)
-  - Potential: Privacy leak, location tracking
-- **Admin Fields:** Protected but only if they exist (lines 94-95, 143-146)
-  - Potential: New documents without admin fields bypass checks
-- **Rating Update:** Client can rate completed orders (lines 19-26)
-  - Potential: Rating manipulation if status is forged
+### Chain C: Trip Start → Fee Deduction
+```
+Driver Flutter → Firestore transaction (status: accepted → onRoute)
+  → Cloud Functions (processTripStartFee onUpdate)
+    → Firestore transaction (wallet deduction + ledger write)
+      → If insufficient: revert status to 'accepted' + FCM notification
+```
+**Layers crossed**: Flutter → Firestore → Cloud Functions → Firestore → (optional) FCM → Flutter
 
-### 8.2 Authentication Security
-
-#### Custom Claims
-- `isAdmin: true` - Admin users
-- `isDriver: true` - Driver users (set via `manualSetDriverClaims`)
-
-#### PIN Security
-- SHA-256 hash with random salt (base64url, 16 bytes)
-- Legacy migration: Upgrades old unsalted hashes on login
-- **No brute force protection** (no rate limiting, lockout, or attempt tracking)
-
-#### Session Management
-- No session binding to device/IP
-- No logout tracking (cleanup via `driver_cleanup_service.dart`)
-
----
-
-## 9. Third-Party Integrations
-
-### 9.1 Google Maps (Client App)
-- **API Key:** Stored in `android/app/src/main/res/values/api_keys.xml`
-- **Usage:** Pickup/dropoff selection, geocoding, distance calculation
-
-### 9.2 Firebase Cloud Messaging (FCM)
-- **Client App:** Order updates, promotions
-- **Driver App:** New orders, wallet alerts, order events
-- **Token Storage:** `drivers.fcmToken`, `users.fcmToken` (assumed)
-
-### 9.3 Firebase Crashlytics
-- **Mentioned in:** `CRASHLYTICS_VERIFICATION.md`
-- **Usage:** Error tracking, crash reporting
-
----
-
-## 10. CI/CD & Deployment
-
-### GitHub Actions (`.github/`)
-- Workflows for build, test, deploy (assumed from directory presence)
-
-### Codemagic (`codemagic.yaml`)
-- Mobile app builds (iOS/Android)
-
-### Firebase Deployment
-- **Functions:** `firebase deploy --only functions`
-- **Firestore Rules:** `firebase deploy --only firestore:rules`
-- **Hosting:** `firebase deploy --only hosting`
-
----
-
-## 11. Documentation Artifacts
-
-### Planning/Implementation
-- `ARCHITECTURE.md` - System architecture
-- `SECURITY_MODEL.md` - Security design
-- `PRODUCT_SCOPE_V1.md` - Product requirements
-- `PHASE*_COMPLETION_SUMMARY.md` - Phase deliverables
-
-### Operations
-- `PILOT_OPS_RUNBOOK.md` - Operations manual
-- `TROUBLESHOOTING.md` - Common issues
-- `SECRETS_MANAGEMENT.md` - API key management
-
-### Testing
-- `PHASE*_TEST_CHECKLIST.md` - Test plans
-- `PRODUCTION_READINESS_*.md` - Readiness reports
-
----
-
-## 12. Known Issues & Technical Debt
-
-### From Documentation Review
-1. **Logout Implementation:** Multiple phases (LOGOUT_*.md)
-2. **FCM Fixes:** Simplified fixes applied (FCM_*.md)
-3. **Navigator Issues:** Fixed (NAVIGATOR_FIX_SUMMARY.md)
-4. **Nearby Orders Overflow:** Fixed (NEARBY_ORDERS_OVERFLOW_FIX.md)
-5. **Authentication Guards:** Audited (guard_audit_otp_navigation.md)
-6. **Firestore Query Optimization:** Applied (FIRESTORE_QUERY_OPTIMIZATION_SUMMARY.md)
-
----
-
-## 13. Audit Scope Recommendations
-
-### High Priority
-1. **Firestore Rules:**
-   - Order matching feed access control
-   - Driver location privacy
-   - Admin field protection gaps
-   - Rating manipulation vectors
-
-2. **Cloud Functions:**
-   - Wallet transaction atomicity
-   - Double-spend scenarios
-   - Retry/idempotency for all financial functions
-   - Input validation (all callable functions)
-   - Authorization checks (admin functions)
-
-3. **Authentication:**
-   - PIN brute force protection
-   - Phone enumeration via `createCustomToken`
-   - Session binding/device tracking
-   - Logout flow completeness
-
-4. **Finance/Wallet:**
-   - Ledger integrity checks
-   - Race conditions on concurrent settlements
-   - Payout request validation
-   - Top-up approval workflow
-
-### Medium Priority
-1. **Order Lifecycle:**
-   - Status transition edge cases
-   - Cancellation flows (by client, driver, admin)
-   - Stale order expiration logic
-
-2. **Driver Tracking:**
-   - Location update throttling effectiveness
-   - Stale location cleanup reliability
-
-3. **Notifications:**
-   - FCM token management
-   - Notification delivery guarantees
-
-### Low Priority
-1. **Admin Panel:**
-   - Authorization for admin actions
-   - Audit logging
-
-2. **Analytics:**
-   - Data privacy compliance
-
----
-
-## End of System Map
+### Chain D: Auth (PIN Login)
+```
+Driver/Client Flutter → Cloud Function (createCustomToken callable)
+  → Firestore read (users/drivers collection: phone lookup + PIN hash)
+    → Firebase Auth (createCustomToken)
+      → Flutter (signInWithCustomToken)
+        → Firebase Auth state change → AuthNotifier → Router redirect
+```
+**Layers crossed**: Flutter → Cloud Functions → Firestore → Firebase Auth → Flutter

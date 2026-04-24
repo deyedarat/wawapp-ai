@@ -35,6 +35,22 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         NotificationHelper.createNotificationChannels(applicationContext)
     }
 
+    // ── Offer-level dedup (SharedPreferences, survives process death) ──
+    private fun isOfferAlreadySeen(context: Context, key: String): Boolean {
+        if (key.isBlank()) return false
+        val prefs = context.getSharedPreferences("fcm_dedup", Context.MODE_PRIVATE)
+        val ts = prefs.getLong(key, 0L)
+        if (ts == 0L) return false
+        // 10-minute TTL
+        return System.currentTimeMillis() - ts < 10 * 60 * 1000
+    }
+
+    private fun markOfferSeen(context: Context, key: String) {
+        if (key.isBlank()) return
+        val prefs = context.getSharedPreferences("fcm_dedup", Context.MODE_PRIVATE)
+        prefs.edit().putLong(key, System.currentTimeMillis()).apply()
+    }
+
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
@@ -43,8 +59,21 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             ?: return
 
         val orderId = message.data["orderId"] ?: ""
+        val offerId = message.data["offerId"] ?: ""
 
-        Log.d(TAG, "Native FCM received: type=$type, orderId=$orderId, foreground=${isAppInForeground()}, hasNotification=${message.notification != null}")
+        // ── Native dedup: prevent duplicate display for same offer ──
+        // trip_start_reminder is excluded — it's a recurring reminder from the
+        // backend (every 3 min) and must never be deduped by orderId.
+        if (type != "trip_start_reminder") {
+            val dedupKey = offerId.ifBlank { "${orderId}_${message.data["round"] ?: "1"}" }
+            if (isOfferAlreadySeen(applicationContext, dedupKey)) {
+                Log.d(TAG, "⛔ DEDUP: offer already seen, dropping: key=$dedupKey")
+                return
+            }
+            markOfferSeen(applicationContext, dedupKey)
+        }
+
+        Log.d(TAG, "Native FCM received: type=$type, orderId=$orderId, offerId=$offerId, foreground=${isAppInForeground()}, hasNotification=${message.notification != null}")
 
         // When app is in foreground and message has a notification block,
         // Android auto-displays it in the system tray. We suppress that here
@@ -140,7 +169,21 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      * new_order / unassigned_order_reminder use full-screen intent via FullScreenNotificationActivity.
      */
     private fun handleCriticalNotification(message: RemoteMessage, type: String, orderId: String) {
+        val offerId = message.data["offerId"] ?: ""
         Log.d(TAG, "Handling critical notification: type=$type, orderId=$orderId")
+
+        // ── Active trip guard: suppress new-order offers when driver is busy ──
+        // trip_start_reminder is excluded — it targets the active trip itself.
+        if (type != "trip_start_reminder" && isDriverOnActiveTrip(applicationContext)) {
+            Log.d(TAG, "⛔ Driver has active trip — suppressing new offer: orderId=$orderId")
+            return
+        }
+
+        // ── Rejected order guard: suppress offers for orders driver already rejected ──
+        if (type != "trip_start_reminder" && orderId.isNotBlank() && isOrderRejected(applicationContext, orderId)) {
+            Log.d(TAG, "⛔ Order already rejected — suppressing: orderId=$orderId")
+            return
+        }
 
         NotificationHelper.createNotificationChannels(applicationContext)
 
@@ -185,7 +228,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // trip_start_reminder is excluded — it routes through MainActivity via fullScreenIntent.
         if (type != "trip_start_reminder") {
             try {
-                val notificationId = (message.data["messageId"] ?: orderId).hashCode()
+                val notificationId = orderId.hashCode()
                 val fsIntent = Intent(applicationContext, FullScreenNotificationActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
                     putExtra("orderId", orderId)
@@ -193,8 +236,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     putExtra("dropoffLabel", dropoffLabel)
                     putExtra("price", price)
                     putExtra("distance", distance)
+                    putExtra("createdAt", createdAt)
                     putExtra("notificationType", type)
                     putExtra("notificationId", notificationId)
+                    putExtra("offerId", offerId)
                 }
                 applicationContext.startActivity(fsIntent)
                 Log.d(TAG, "FullScreenNotificationActivity launched directly for order $orderId")
@@ -202,19 +247,20 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 Log.w(TAG, "Direct activity launch failed (notification fallback active): ${e.message}")
             }
         } else {
-            // trip_start_reminder: launch MainActivity directly so Flutter shows TripStartReminderScreen
-            // Mirrors exactly what createFullScreenPendingIntent() does for this type.
+            // trip_start_reminder: launch TripReminderActivity directly (full-screen amber UI)
             try {
-                val reminderIntent = Intent(applicationContext, MainActivity::class.java).apply {
+                val elapsedMinutes = message.data["elapsedMinutes"]?.toIntOrNull() ?: 0
+                val reminderNotifId = (message.data["messageId"] ?: orderId).hashCode()
+                val reminderIntent = Intent(applicationContext, TripReminderActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
-                    putExtra("action", "trip_start_reminder")
                     putExtra("orderId", orderId)
                     putExtra("pickupLabel", pickupLabel)
-                    putExtra("destinationLabel", dropoffLabel)
-                    putExtra("createdAt", createdAt.toString())
+                    putExtra("dropoffLabel", dropoffLabel)
+                    putExtra("elapsedMinutes", elapsedMinutes)
+                    putExtra("notificationId", reminderNotifId)
                 }
                 applicationContext.startActivity(reminderIntent)
-                Log.d(TAG, "MainActivity launched directly for trip_start_reminder: $orderId")
+                Log.d(TAG, "TripReminderActivity launched directly for order $orderId")
             } catch (e: Exception) {
                 Log.w(TAG, "Direct trip reminder launch failed (notification fallback active): ${e.message}")
             }
@@ -300,7 +346,42 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
     }
 
+    // ── Active trip flag (SharedPreferences, set by Flutter) ──
+
+    private fun isDriverOnActiveTrip(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_TRIP_STATE, Context.MODE_PRIVATE)
+            .getBoolean(KEY_HAS_ACTIVE_TRIP, false)
+    }
+
+    // ── Rejected orders (SharedPreferences, set by native reject paths) ──
+
+    private fun isOrderRejected(context: Context, orderId: String): Boolean {
+        val ids = context.getSharedPreferences(PREFS_REJECTED, Context.MODE_PRIVATE)
+            .getStringSet(KEY_REJECTED_IDS, emptySet()) ?: emptySet()
+        return orderId in ids
+    }
+
     companion object {
         private const val TAG = "MyFCMService"
+        const val PREFS_TRIP_STATE = "driver_trip_state"
+        const val KEY_HAS_ACTIVE_TRIP = "driver_has_active_trip"
+        const val PREFS_REJECTED = "driver_rejected_orders_native"
+        const val KEY_REJECTED_IDS = "rejected_order_ids"
+
+        /** Mark an orderId as rejected. Called from native reject paths. */
+        fun markOrderRejected(context: Context, orderId: String) {
+            val prefs = context.getSharedPreferences(PREFS_REJECTED, Context.MODE_PRIVATE)
+            val ids = prefs.getStringSet(KEY_REJECTED_IDS, mutableSetOf())?.toMutableSet()
+                ?: mutableSetOf()
+            ids.add(orderId)
+            // Cap at 200 entries to prevent unbounded growth.
+            // Oldest entries are lost but that's fine — orders expire in <1 hour.
+            if (ids.size > 200) {
+                val excess = ids.size - 200
+                val iter = ids.iterator()
+                repeat(excess) { if (iter.hasNext()) { iter.next(); iter.remove() } }
+            }
+            prefs.edit().putStringSet(KEY_REJECTED_IDS, ids).apply()
+        }
     }
 }

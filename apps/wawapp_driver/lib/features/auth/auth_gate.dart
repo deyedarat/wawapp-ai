@@ -62,6 +62,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 
     final action = intentData['action'];
     final orderId = intentData['orderId'];
+    final offerId = intentData['offerId'];
     if (action == null || orderId == null || orderId.isEmpty) return;
 
     await NotificationMethodChannel.clearIntentData();
@@ -69,7 +70,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 
     switch (action) {
       case 'accept_order':
-        await _handleNativeAccept(orderId);
+        await _handleNativeAccept(orderId, offerId: offerId);
       case 'view_order':
         _navigateToOrderDetails();
       case 'reject_order':
@@ -83,11 +84,28 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     }
   }
 
-  Future<void> _handleNativeAccept(String orderId) async {
+  Future<void> _handleNativeAccept(String orderId, {String? offerId}) async {
     try {
+      // PATCH-05 (RC-13): Do NOT suppress the offer until server confirms.
+      // Previously markOrderAsProcessed was called before the await, so a
+      // failed server response (network error, already taken) left the offer
+      // permanently invisible to the driver for 2 minutes.
+      if (offerId != null && offerId.isNotEmpty) {
+        // Persist offer as handled so tap/replay paths don't re-show it
+        NotificationService().handleIncomingOffer(
+          {'orderId': orderId, 'offerId': offerId},
+          source: 'native_accept_suppress',
+        );
+        await ref.read(ordersServiceProvider).acceptOfferV2(
+          offerId: offerId,
+          orderId: orderId,
+        );
+      } else {
+        await ref.read(ordersServiceProvider).acceptOrder(orderId);
+      }
+      // Server confirmed — now safe to suppress locally.
       NotificationService().markOrderAsProcessed(orderId);
       NotificationService().clearActiveFullScreen();
-      await ref.read(ordersServiceProvider).acceptOrder(orderId);
       if (mounted) context.go('/active-order');
     } on Object catch (e) {
       if (!mounted) return;
@@ -100,6 +118,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       );
     }
   }
+
 
   Future<void> _handleNativeStartTrip(String orderId) async {
     try {
@@ -123,10 +142,11 @@ class _AuthGateState extends ConsumerState<AuthGate> {
   void _processLiveIntent(Map<String, dynamic> data) {
     final action = data['action'] as String?;
     final orderId = data['orderId'] as String? ?? '';
+    final offerId = data['offerId'] as String?;
     if (action == null || orderId.isEmpty) return;
     switch (action) {
       case 'accept_order':
-        _handleNativeAccept(orderId);
+        _handleNativeAccept(orderId, offerId: offerId);
       case 'reject_order':
         _handleNativeReject(orderId);
       case 'view_order':

@@ -187,10 +187,31 @@ class PhonePinAuth {
     }
   }
 
+  /// Check if user has a PIN hash in Firestore.
+  ///
+  /// Returns `true` if pinHash exists, `false` if server confirms no pinHash.
+  /// Throws [StateError] if the result is UNKNOWN (empty cache, no network).
+  /// Callers MUST catch the error and treat it as "unknown" — never as "no PIN".
   Future<bool> hasPinHash() async {
     final doc = await _userDoc();
-    final snap = await doc.get();
-    return snap.data()?['pinHash'] != null;
+    // Force server read — this is the only reliable source of truth.
+    try {
+      final snap = await doc.get(const GetOptions(source: Source.server));
+      return snap.data()?['pinHash'] != null;
+    } on Object catch (_) {
+      // Network unavailable — try Firestore local cache as fallback.
+      // But ONLY trust it if the document actually exists in cache.
+      final snap = await doc.get();
+      if (!snap.exists || snap.data() == null) {
+        // Document not in local cache → we genuinely don't know.
+        // Throw so callers treat this as UNKNOWN, not as "no PIN".
+        throw StateError(
+          'PIN status unknown: server unreachable and no local cache for ${doc.path}',
+        );
+      }
+      // Document exists in cache → trust it (was fetched in a previous session).
+      return snap.data()!['pinHash'] != null;
+    }
   }
 
   Future<bool> phoneExists(String phoneE164) async {

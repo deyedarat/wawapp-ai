@@ -33,6 +33,12 @@ class FullScreenNotificationActivity : Activity() {
     private lateinit var orderId: String
     private lateinit var notificationType: String
     private var notificationId: Int = 0
+    private var offerId: String = ""
+    private var pickupLabel: String = ""
+    private var dropoffLabel: String = ""
+    private var price: Double = 0.0
+    private var distance: Double = 0.0
+    private var createdAt: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,12 +78,14 @@ class FullScreenNotificationActivity : Activity() {
     private fun loadNotificationData() {
         // Extract data from Intent extras
         orderId = intent.getStringExtra("orderId") ?: "unknown"
-        val pickupLabel = intent.getStringExtra("pickupLabel") ?: "موقع الاستلام"
-        val dropoffLabel = intent.getStringExtra("dropoffLabel") ?: "الوجهة"
-        val price = intent.getDoubleExtra("price", 0.0)
-        val distance = intent.getDoubleExtra("distance", 0.0)
+        pickupLabel = intent.getStringExtra("pickupLabel") ?: "موقع الاستلام"
+        dropoffLabel = intent.getStringExtra("dropoffLabel") ?: "الوجهة"
+        price = intent.getDoubleExtra("price", 0.0)
+        distance = intent.getDoubleExtra("distance", 0.0)
+        createdAt = intent.getLongExtra("createdAt", 0L)
         notificationType = intent.getStringExtra("notificationType") ?: "new_order"
         notificationId = intent.getIntExtra("notificationId", orderId.hashCode())
+        offerId = intent.getStringExtra("offerId") ?: ""
 
         // Update UI elements
         findViewById<TextView>(R.id.pickup_label).text = pickupLabel
@@ -120,12 +128,16 @@ class FullScreenNotificationActivity : Activity() {
         // Cancel notification + sound completely
         cancelNotification()
 
+        // Cancel any pending snooze alarm for this order (prevents ghost notification)
+        SnoozeScheduler.cancel(this, orderId)
+
         // Open MainActivity with orderId
         val intent = Intent(this, MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             putExtra("orderId", orderId)
             putExtra("notificationType", notificationType)
             putExtra("action", "accept_order")
+            putExtra("offerId", offerId)
         }
         startActivity(intent)
 
@@ -135,6 +147,12 @@ class FullScreenNotificationActivity : Activity() {
 
     private fun onRejectClicked() {
         cancelNotification()
+
+        // Cancel any pending snooze alarm for this order (prevents ghost notification)
+        SnoozeScheduler.cancel(this, orderId)
+
+        // Mark as rejected so native FCM handler won't re-show this order
+        MyFirebaseMessagingService.markOrderRejected(this, orderId)
 
         // Open MainActivity so Flutter can write to driver_rejected_orders
         val intent = Intent(this, MainActivity::class.java).apply {
@@ -149,10 +167,27 @@ class FullScreenNotificationActivity : Activity() {
     private fun onLaterClicked() {
         cancelNotification()
 
-        // Just close this activity — return user to whatever they were doing
+        // Schedule snooze alarm via AlarmManager (survives Doze + process death).
+        // This matches Flutter's FullScreenNotificationScreen._snooze() exactly:
+        // 1. SnoozeScheduler.schedule() clears native fcm_dedup so the alarm
+        //    won't be blocked by the 10-min TTL dedup.
+        // 2. SnoozeAlarmReceiver fires after 300s, re-validates via Firestore,
+        //    and re-shows the full-screen notification.
+        SnoozeScheduler.schedule(
+            context = this,
+            orderId = orderId,
+            offerId = offerId,
+            delaySeconds = 300,
+            pickupLabel = pickupLabel,
+            dropoffLabel = dropoffLabel,
+            price = price,
+            distance = distance,
+            createdAt = createdAt
+        )
+
         finish()
 
-        Log.d(TAG, "User chose 'Later' for order: $orderId")
+        Log.d(TAG, "User chose 'Later' for order: $orderId — snooze scheduled (300s)")
     }
 
     private fun cancelNotification() {

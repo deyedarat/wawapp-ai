@@ -224,8 +224,10 @@ class _MyAppState extends ConsumerState<MyApp> {
         final prefs = await SharedPreferences.getInstance();
         NotificationService().initDedup(NotificationDedupService(prefs));
 
-        // REMOVED: _pendingNotificationData processing — now handled by
-        // NotificationService internally via its own getInitialMessage handler.
+        // PATCH-04 (RC-15): Process the cold-start FCM message AFTER dedup is
+        // injected. Previously this ran inside initialize() before initDedup(),
+        // making replay protection unavailable on cold start.
+        await NotificationService().processInitialMessage();
 
         // Initialize notification health monitoring
         final monitor = NotificationHealthMonitor();

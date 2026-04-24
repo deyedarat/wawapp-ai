@@ -9,6 +9,8 @@
 
 import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
+import { safeEnqueueOrder } from './dispatch/intake';
+import { releaseDriverState } from './dispatch/state';
 
 const CANCEL_REASON_LABELS: Record<string, string> = {
   vehicle_breakdown: 'تعطل السيارة',
@@ -24,8 +26,10 @@ export const handleDriverCancellation = functions.firestore
     const after = change.after.data();
     const orderId = context.params.orderId;
 
-    // Only act on transitions TO cancelledByDriver (Firestore value: 'cancelled')
+    // Only act on transitions TO cancelledByDriver (Firestore value: 'cancelled' or 'cancelledByDriver')
     if (before.status === after.status) return null;
+    // Skip system cancellations (e.g. insufficient balance) — these should NOT return to matching
+    if (after.status === 'cancelledBySystem') return null;
     if (after.status !== 'cancelled' && after.status !== 'cancelledByDriver') return null;
     // Avoid re-processing if already returned to matching
     if (before.status === 'matching') return null;
@@ -59,6 +63,17 @@ export const handleDriverCancellation = functions.firestore
     });
 
     console.log('[HandleDriverCancel] Order returned to matching', { order_id: orderId });
+
+    // Release driver dispatch state so they can receive new offers
+    if (previousDriverId) {
+      await releaseDriverState(previousDriverId);
+    }
+
+    // Re-enqueue order into dispatch engine so it immediately gets new offers
+    const freshOrder = await orderRef.get();
+    if (freshOrder.exists) {
+      await safeEnqueueOrder(orderId, freshOrder.data()!);
+    }
 
     // Notify client
     if (ownerId) {

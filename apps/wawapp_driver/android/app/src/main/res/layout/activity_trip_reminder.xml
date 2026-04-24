@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/amber_warning"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:layoutDirection="rtl"
+    tools:context=".TripReminderActivity">
+
+    <!-- Clock Icon -->
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="24dp"
+        android:src="@android:drawable/ic_menu_recent_history"
+        android:tint="@android:color/white"
+        android:contentDescription="تذكير" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/reminder_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="هل وصلت للعميل؟"
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="حان وقت بدء الرحلة"
+        android:textColor="#FFFFFFCC"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Card Container -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="48dp"
+        android:backgroundTint="@android:color/white"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:gravity="center">
+
+            <!-- Elapsed Timer -->
+            <TextView
+                android:id="@+id/elapsed_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/amber_warning"
+                android:textSize="48sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="الوقت منذ القبول"
+                android:textColor="@color/text_on_card_secondary"
+                android:textSize="14sp"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/border_dark"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Pickup Location -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_mylocation"
+                    android:tint="@color/success_green"
+                    android:layout_marginEnd="12dp"
+                    android:contentDescription="موقع الاستلام" />
+
+                <TextView
+                    android:id="@+id/pickup_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="موقع الاستلام"
+                    android:textColor="#212529"
+                    android:textSize="15sp"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <!-- Dropoff Location -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_mylocation"
+                    android:tint="@color/error_red"
+                    android:layout_marginEnd="12dp"
+                    android:contentDescription="الوجهة" />
+
+                <TextView
+                    android:id="@+id/dropoff_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="الوجهة"
+                    android:textColor="#212529"
+                    android:textSize="15sp"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Start Trip Button (Primary — Green) -->
+    <Button
+        android:id="@+id/start_trip_button"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginBottom="16dp"
+        android:text="▶ بدأت الرحلة"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/primary_green"
+        android:gravity="center" />
+
+    <!-- Not Yet Button (Secondary) -->
+    <Button
+        android:id="@+id/not_yet_button"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="✕ لم أصل بعد"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/amber_warning"
+        android:backgroundTint="@android:color/white"
+        android:gravity="center" />
+
+</LinearLayout>

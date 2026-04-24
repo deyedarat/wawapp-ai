@@ -1,5 +1,7 @@
 import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
+// PATCH-03: Import the engine's exclusive acceptance transaction.
+import { handleOfferAcceptance } from './dispatch/engine';
 
 export const acceptOrder = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
@@ -22,6 +24,25 @@ export const acceptOrder = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('permission-denied', 'Driver account is not verified');
   }
 
+  // PATCH-03: When offerId is present, delegate entirely to the engine's
+  // handleOfferAcceptance which runs inside a single Firestore transaction.
+  // This eliminates the race condition where this Callable and the engine
+  // could both accept the same order through separate concurrent transactions.
+  if (offerId) {
+    const result = await handleOfferAcceptance(offerId, driverId);
+    if (!result.success) {
+      const alreadyTaken = result.error === 'offer_expired' ||
+        result.error === 'order_already_assigned' ||
+        result.error === 'offer_accepted';
+      throw new functions.https.HttpsError(
+        alreadyTaken ? 'failed-precondition' : 'internal',
+        result.error ?? 'accept_failed'
+      );
+    }
+    return { success: true };
+  }
+
+  // Legacy path: no offerId provided (old client versions).
   try {
     let customerPhone: string | null = null;
 
@@ -78,42 +99,6 @@ export const acceptOrder = functions.https.onCall(async (data, context) => {
       has_phone: customerPhone !== null,
     });
 
-    // Update dispatch_offers after successful acceptance (non-blocking)
-    if (offerId) {
-      try {
-        await db.collection('dispatch_offers').doc(offerId).update({
-          status: 'accepted',
-          respondedAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-
-        // Expire all other sent offers for this order
-        const otherOffers = await db.collection('dispatch_offers')
-          .where('orderId', '==', orderId)
-          .where('status', '==', 'sent')
-          .get();
-
-        if (!otherOffers.empty) {
-          const batch = db.batch();
-          for (const doc of otherOffers.docs) {
-            if (doc.id !== offerId) {
-              batch.update(doc.ref, { status: 'expired' });
-            }
-          }
-          await batch.commit();
-        }
-
-        console.log('[AcceptOrder] Dispatch offers updated', {
-          accepted_offer: offerId,
-          expired_count: otherOffers.size > 0 ? otherOffers.size - 1 : 0,
-        });
-      } catch (offerErr: any) {
-        console.warn('[AcceptOrder] Failed to update dispatch offers (non-critical)', {
-          offer_id: offerId,
-          error: offerErr.message,
-        });
-      }
-    }
-
     return { success: true };
   } catch (error: any) {
     if (error instanceof functions.https.HttpsError) throw error;
@@ -121,3 +106,4 @@ export const acceptOrder = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('internal', 'Failed to accept order');
   }
 });
+

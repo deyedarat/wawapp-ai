@@ -231,25 +231,8 @@ service cloud.firestore {
     }
 
     // Top-up requests collection (Phase D)
-    match /topup_requests/{requestId} {
-      // Admins can read all requests
-      allow read: if isAdmin();
-
-      // Drivers can read their own requests
-      allow read: if isSignedIn() &&
-                     request.auth.uid == resource.data.driverId;
-
-      // Drivers can create their own requests
-      allow create: if isSignedIn() &&
-                       request.auth.uid == request.resource.data.driverId &&
-                       request.resource.data.status == 'pending' &&
-                       request.resource.data.amount is number &&
-                       request.resource.data.amount > 0;
-
-      // Only admins can approve/reject (via Cloud Functions)
-      allow update: if false;
-      allow delete: if false;
-    }
+    // REMOVED: Weak duplicate rule block. Consolidated into R2 block below
+    // which enforces stricter validation (amount is int, range 1000..100000).
 
     // PIN rate limiting collection (P0-AUTH-1 fix)
     match /pin_rate_limits/{docId} {
@@ -280,16 +263,23 @@ service cloud.firestore {
     }
 
     // R2: Top-up requests collection (Driver app)
+    // Consolidated from Phase D + R2 blocks. Supports both driverId and userId fields.
     match /topup_requests/{requestId} {
       // Admins can read all requests
       allow read: if isAdmin();
 
-      // Drivers can read their own requests
-      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      // Drivers can read their own requests (supports both field names)
+      allow read: if isSignedIn() && (
+        resource.data.userId == request.auth.uid ||
+        resource.data.driverId == request.auth.uid
+      );
 
-      // Drivers can create their own requests
+      // Drivers can create their own requests (strict validation)
       allow create: if isSignedIn()
-        && request.resource.data.userId == request.auth.uid
+        && (
+          request.resource.data.userId == request.auth.uid ||
+          request.resource.data.driverId == request.auth.uid
+        )
         && request.resource.data.status == 'pending'
         && request.resource.data.amount is int
         && request.resource.data.amount >= 1000

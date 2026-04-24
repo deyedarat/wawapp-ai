@@ -22,6 +22,8 @@ class MainActivity : FlutterActivity() {
     private val FCM_FOREGROUND_CHANNEL = "com.wawapp.driver/fcm_foreground"
     private val NEW_INTENT_CHANNEL = "com.wawapp.driver/new_intent"
 
+    private val PREFS_PENDING_ACTION = "pending_native_action"
+
     private var newIntentEventSink: EventChannel.EventSink? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +45,11 @@ class MainActivity : FlutterActivity() {
 
         // Cancel notification if opened from full-screen intent
         cancelNotificationIfNeeded()
+
+        // Push onCreate intent to EventChannel + cache as fallback.
+        // This handles the cold-start case where FullScreenNotificationActivity
+        // launched MainActivity with accept/reject action while app was killed.
+        dispatchActionIntent(intent)
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -80,6 +87,33 @@ class MainActivity : FlutterActivity() {
                 }
                 "clearIntentData" -> {
                     clearIntentExtras()
+                    result.success(null)
+                }
+                "getPendingActionFromCache" -> {
+                    val prefs = getSharedPreferences(PREFS_PENDING_ACTION, Context.MODE_PRIVATE)
+                    val action = prefs.getString("action", null)
+                    if (action != null) {
+                        val ts = prefs.getLong("timestamp", 0L)
+                        // Expire after 30 seconds — stale intents are not actionable
+                        if (System.currentTimeMillis() - ts < 30_000) {
+                            result.success(mapOf(
+                                "action" to action,
+                                "orderId" to prefs.getString("orderId", null),
+                                "notificationType" to prefs.getString("notificationType", null),
+                                "offerId" to prefs.getString("offerId", null)
+                            ))
+                        } else {
+                            // Expired — clear and return null
+                            prefs.edit().clear().apply()
+                            result.success(null)
+                        }
+                    } else {
+                        result.success(null)
+                    }
+                }
+                "clearPendingActionCache" -> {
+                    getSharedPreferences(PREFS_PENDING_ACTION, Context.MODE_PRIVATE)
+                        .edit().clear().apply()
                     result.success(null)
                 }
                 else -> result.notImplemented()
@@ -128,6 +162,26 @@ class MainActivity : FlutterActivity() {
                     NotificationHelper.cancelOrderNotification(this, orderId)
                     result.success(null)
                 }
+                "scheduleSnooze" -> {
+                    val orderId = call.argument<String>("orderId") ?: ""
+                    val offerId = call.argument<String>("offerId") ?: ""
+                    val delaySeconds = call.argument<Int>("delaySeconds") ?: 300
+                    val pickupLabel = call.argument<String>("pickupLabel") ?: ""
+                    val dropoffLabel = call.argument<String>("dropoffLabel") ?: ""
+                    val price = call.argument<Double>("price") ?: 0.0
+                    val distance = call.argument<Double>("distance") ?: 0.0
+                    val createdAt = call.argument<Long>("createdAt") ?: 0L
+                    SnoozeScheduler.schedule(
+                        this, orderId, offerId, delaySeconds,
+                        pickupLabel, dropoffLabel, price, distance, createdAt
+                    )
+                    result.success(null)
+                }
+                "cancelSnooze" -> {
+                    val orderId = call.argument<String>("orderId") ?: ""
+                    SnoozeScheduler.cancel(this, orderId)
+                    result.success(null)
+                }
                 "requestBatteryOptimizationExemption" -> {
                     val granted = requestBatteryOptimizationExemption()
                     result.success(granted)
@@ -168,6 +222,16 @@ class MainActivity : FlutterActivity() {
                         "canUseFullScreenIntent" to canUseFullScreenIntent()
                     )
                     result.success(statuses)
+                }
+                "setActiveTripFlag" -> {
+                    val active = call.argument<Boolean>("active") ?: false
+                    getSharedPreferences(
+                        MyFirebaseMessagingService.PREFS_TRIP_STATE,
+                        Context.MODE_PRIVATE
+                    ).edit()
+                        .putBoolean(MyFirebaseMessagingService.KEY_HAS_ACTIVE_TRIP, active)
+                        .apply()
+                    result.success(null)
                 }
                 else -> {
                     result.notImplemented()
@@ -289,7 +353,8 @@ class MainActivity : FlutterActivity() {
                 "pickupLabel" to intent?.getStringExtra("pickupLabel"),
                 "dropoffLabel" to intent?.getStringExtra("dropoffLabel"),
                 "price" to intent?.extras?.getDouble("price", 0.0)?.toString(),
-                "distance" to intent?.extras?.getDouble("distance", 0.0)?.toString()
+                "distance" to intent?.extras?.getDouble("distance", 0.0)?.toString(),
+                "offerId" to intent?.getStringExtra("offerId")
             )
         }
         if (action == "trip_start_reminder") {
@@ -326,13 +391,43 @@ class MainActivity : FlutterActivity() {
         // Cancel notification if opened from full-screen intent
         cancelNotificationIfNeeded()
 
-        val action = intent.getStringExtra("action")
-        if (action != null) {
-            newIntentEventSink?.success(mapOf(
-                "action" to action,
-                "orderId" to intent.getStringExtra("orderId"),
-                "notificationType" to intent.getStringExtra("notificationType")
-            ))
+        // Push to EventChannel + cache as fallback
+        dispatchActionIntent(intent)
+    }
+
+    /**
+     * Extract action data from intent and deliver to Flutter via two paths:
+     *   1. EventChannel (immediate, if Flutter is listening)
+     *   2. SharedPreferences (fallback, if EventSink is null during cold start)
+     *
+     * Flutter checks the fallback cache on startup via getPendingActionFromCache().
+     */
+    private fun dispatchActionIntent(intent: Intent?) {
+        val action = intent?.getStringExtra("action") ?: return
+
+        val data = mapOf<String, Any?>(
+            "action" to action,
+            "orderId" to intent.getStringExtra("orderId"),
+            "notificationType" to intent.getStringExtra("notificationType"),
+            "offerId" to intent.getStringExtra("offerId")
+        )
+
+        // Path 1: EventChannel (immediate delivery if Flutter is listening)
+        if (newIntentEventSink != null) {
+            newIntentEventSink?.success(data)
+            // Clear cache — EventChannel delivery succeeded
+            getSharedPreferences(PREFS_PENDING_ACTION, Context.MODE_PRIVATE)
+                .edit().clear().apply()
+        } else {
+            // Path 2: Cache to SharedPreferences (Flutter will read on startup)
+            val prefs = getSharedPreferences(PREFS_PENDING_ACTION, Context.MODE_PRIVATE)
+            prefs.edit()
+                .putString("action", action)
+                .putString("orderId", intent.getStringExtra("orderId"))
+                .putString("notificationType", intent.getStringExtra("notificationType"))
+                .putString("offerId", intent.getStringExtra("offerId"))
+                .putLong("timestamp", System.currentTimeMillis())
+                .apply()
         }
     }
 

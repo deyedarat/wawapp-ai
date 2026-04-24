@@ -5,7 +5,6 @@ import 'package:core_shared/core_shared.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,14 +21,7 @@ import 'services/analytics_service.dart';
 import 'services/notification_service.dart';
 
 void main() async {
-  await SentryFlutter.init(
-    (options) {
-      options.dsn = 'https://7af9dad2913b46aed9be1fc7e0c40780@o4511234675834880.ingest.us.sentry.io/4511234687303680';
-      options.environment = kReleaseMode ? 'production' : 'debug';
-      options.enabled = kReleaseMode;
-      options.release = 'wawapp-client@1.0.0';
-    },
-    appRunner: () => runZonedGuarded<Future<void>>(() async {
+  runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
     if (kDebugMode) {
@@ -98,9 +90,7 @@ void main() async {
       debugPrint('Stack trace: $stack');
     }
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    Sentry.captureException(error, stackTrace: stack);
-    }),
-  );
+  });
 }
 
 /// Initialize Firebase Crashlytics with proper error handlers

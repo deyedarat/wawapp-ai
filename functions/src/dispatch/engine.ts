@@ -27,6 +27,7 @@ import {
   DispatchQueueEntry,
   EligibleDriver,
   DEFAULT_WAVES,
+  REPEAT_WAVE,
   DispatchMetrics,
 } from './types';
 import { NormalizedDispatchPayload, removeUndefinedDeep } from './intake';
@@ -189,20 +190,20 @@ export async function enqueueOrder(
   };
 
   // Idempotency: check if already in queue (prevents duplicate wave triggers)
+  // PATCH-06 (RC-08): Previously only blocked when currentWave > 0, so a second
+  // call arriving before processNextWave ran (wave still 0) would overwrite the doc.
+  // Any existing document means the order is already queued — skip unconditionally.
   const existingDoc = await db.collection('dispatch_queue').doc(orderId).get();
   if (existingDoc.exists) {
-    const existing = existingDoc.data();
-    if (existing && existing.currentWave > 0) {
-      emitMetric('dispatch_queue_duplicate_skipped', { orderId });
-      console.warn(JSON.stringify({
-        tag: 'DispatchEngine',
-        stage: 'enqueue',
-        orderId,
-        result: 'duplicate_skipped',
-        existingWave: existing.currentWave,
-      }));
-      return;
-    }
+    emitMetric('dispatch_queue_duplicate_skipped', { orderId });
+    console.warn(JSON.stringify({
+      tag: 'DispatchEngine',
+      stage: 'enqueue',
+      orderId,
+      result: 'duplicate_skipped',
+      existingWave: existingDoc.data()?.currentWave ?? 0,
+    }));
+    return;
   }
 
   await db.collection('dispatch_queue').doc(orderId).set(
@@ -263,6 +264,18 @@ export async function dequeueOrder(orderId: string): Promise<void> {
  * - When previous wave expires without acceptance
  * - By scheduled function (processExpiredWaves)
  */
+/**
+ * Get wave config for a given wave number.
+ * Waves 1-3 use DEFAULT_WAVES. Wave 4+ repeats REPEAT_WAVE.
+ */
+function getWaveConfig(waveNum: number): { wave: typeof DEFAULT_WAVES[0]; isRepeat: boolean } | null {
+  if (waveNum <= DEFAULT_WAVES.length) {
+    return { wave: DEFAULT_WAVES[waveNum - 1], isRepeat: false };
+  }
+  // Wave 4+: repeat
+  return { wave: { ...REPEAT_WAVE, round: waveNum }, isRepeat: true };
+}
+
 export async function processNextWave(orderId: string): Promise<void> {
   const queueRef = db.collection('dispatch_queue').doc(orderId);
 
@@ -275,7 +288,9 @@ export async function processNextWave(orderId: string): Promise<void> {
       const queueData = queueDoc.data() as DispatchQueueEntry;
       const nextWaveNum = queueData.currentWave + 1;
 
-      if (nextWaveNum > DEFAULT_WAVES.length) {
+      // Get wave config (waves 1-3 from DEFAULT_WAVES, 4+ repeats REPEAT_WAVE)
+      const waveConfig = getWaveConfig(nextWaveNum);
+      if (!waveConfig) {
         emitMetric('wave_all_exhausted', { orderId });
         return false;
       }
@@ -291,7 +306,7 @@ export async function processNextWave(orderId: string): Promise<void> {
         return false;
       }
 
-      const wave = DEFAULT_WAVES[nextWaveNum - 1];
+      const wave = waveConfig.wave;
       const now = admin.firestore.Timestamp.now();
       const expiresAt = admin.firestore.Timestamp.fromMillis(
         now.toMillis() + wave.ttl * 1000
@@ -323,9 +338,9 @@ export async function processNextWave(orderId: string): Promise<void> {
     const freshQueue = await db.collection('dispatch_queue').doc(orderId).get();
     if (freshQueue.exists) {
       const freshData = freshQueue.data() as DispatchQueueEntry;
-      const currentWave = DEFAULT_WAVES[freshData.currentWave - 1];
-      if (currentWave) {
-        await scheduleWaveExpirationTask(orderId, currentWave.ttl).catch((err: any) => {
+      const currentWaveConfig = getWaveConfig(freshData.currentWave);
+      if (currentWaveConfig) {
+        await scheduleWaveExpirationTask(orderId, currentWaveConfig.wave.ttl).catch((err: any) => {
           console.warn(JSON.stringify({
             tag: 'DispatchEngine',
             stage: 'wave_task_schedule_failed',
@@ -362,7 +377,9 @@ async function sendWaveOffers(orderId: string): Promise<void> {
   if (!queueDoc.exists) return;
 
   const queueData = queueDoc.data() as DispatchQueueEntry;
-  const wave = DEFAULT_WAVES[queueData.currentWave - 1];
+  const waveConfig = getWaveConfig(queueData.currentWave);
+  if (!waveConfig) return;
+  const wave = waveConfig.wave;
 
   // Find eligible drivers
   const eligibleDrivers = await findEligibleDrivers(
@@ -400,7 +417,10 @@ async function sendWaveOffers(orderId: string): Promise<void> {
 
   for (let i = 0; i < eligibleDrivers.length; i++) {
     const driver = eligibleDrivers[i];
-    const offerId = `${orderId}_${driver.driverId}`;
+    // FIX-R2: Include round in offerId to prevent cross-wave dedup collisions.
+    // Old format: orderId_driverId (collided when same driver re-offered in wave 4+)
+    // New format: orderId_driverId_w{round}
+    const offerId = `${orderId}_${driver.driverId}_w${queueData.currentWave}`;
 
     const offer: DispatchOffer = {
       offerId,
@@ -619,13 +639,46 @@ export async function processExpiredWavesForOrder(orderId: string): Promise<void
 
   const queueData = queueDoc.data() as DispatchQueueEntry;
 
-  // Guard: wave already being processed by another trigger
-  if (queueData.waveStatus === 'sending' || queueData.waveStatus === 'sent') {
-    console.log('[DispatchEngine] Wave already being processed, skipping', {
+  // Guard: verify order is still in 'matching' status before processing waves.
+  // Orders expired/cancelled by other functions remain orphaned in dispatch_queue.
+  const orderDoc = await db.collection('orders').doc(orderId).get();
+  if (!orderDoc.exists || orderDoc.data()?.status !== 'matching') {
+    console.log('[DispatchEngine] Order no longer matching, removing from dispatch_queue', {
       order_id: orderId,
-      waveStatus: queueData.waveStatus,
+      order_status: orderDoc.data()?.status ?? 'not_found',
     });
+    await dequeueOrder(orderId);
     return;
+  }
+
+  // Guard: wave currently being sent (another trigger is actively sending offers).
+  // PATCH-07 (RC-07): A crashed instance leaves waveStatus === 'sending' with no
+  // recovery. Detect stale 'sending' (>2 min since waveStartedAt) and reset to
+  // 'idle' so the next trigger can proceed.
+  if (queueData.waveStatus === 'sending') {
+    const STALE_SENDING_MS = 2 * 60 * 1000; // 2 minutes
+    const startedAtMs = queueData.waveStartedAt?.toMillis() ?? 0;
+    const elapsedMs = now.toMillis() - startedAtMs;
+
+    if (elapsedMs < STALE_SENDING_MS) {
+      console.log('[DispatchEngine] Wave currently sending (fresh), skipping', {
+        order_id: orderId,
+        elapsed_ms: elapsedMs,
+      });
+      return;
+    }
+
+    // Stale sending state — instance likely crashed; reset and fall through.
+    console.warn(JSON.stringify({
+      tag: 'DispatchEngine',
+      stage: 'stale_sending_recovery',
+      orderId,
+      elapsed_ms: elapsedMs,
+      result: 'resetting_to_idle',
+    }));
+    await db.collection('dispatch_queue').doc(orderId)
+      .update({ waveStatus: 'idle' })
+      .catch(() => {}); // non-fatal; proceed anyway
   }
 
   // Guard: only process if the wave has actually expired
@@ -836,6 +889,13 @@ export async function handleOfferAcceptance(
 
       if (driverStateDoc.exists) {
         const state = driverStateDoc.data() as DriverDispatchState;
+
+        // Guard: driver already has an active order (different from this one)
+        if (state.activeOrderId && state.activeOrderId !== offer.orderId) {
+          return { success: false, error: 'driver_has_active_order' };
+        }
+
+        // Guard: acceptance lock still held
         if (state.acceptanceLock && state.lockExpiresAt && state.lockExpiresAt.toMillis() > now.toMillis()) {
           return { success: false, error: 'driver_locked' };
         }
@@ -889,15 +949,16 @@ export async function handleOfferAcceptance(
         updatedAt: now,
       }, { merge: true });
 
-      // 4. Update metrics (guard createdAt — may be missing on legacy orders)
+      // 4. Update metrics — use set+merge so acceptance succeeds even if
+      //    the metrics doc was never created (enqueue race / legacy order).
       const metricsRef = db.collection('dispatch_metrics').doc(offer.orderId);
       const createdAtMs = orderData.createdAt?.toMillis?.() ?? Date.now();
-      transaction.update(metricsRef, {
+      transaction.set(metricsRef, {
         acceptedByDriverId: driverId,
         acceptedAtWave: offer.round,
         acceptedAt: now,
         timeToAcceptSeconds: Math.floor((now.toMillis() - createdAtMs) / 1000),
-      });
+      }, { merge: true });
 
       return { success: true };
     });
@@ -995,11 +1056,11 @@ export async function handleOfferRejection(
         updatedAt: now,
       });
 
-      // Update metrics
+      // Update metrics — set+merge to tolerate missing doc
       const metricsRef = db.collection('dispatch_metrics').doc(offer.orderId);
-      transaction.update(metricsRef, {
+      transaction.set(metricsRef, {
         [`waveMetrics.${offer.round - 1}.rejections`]: admin.firestore.FieldValue.increment(1),
-      });
+      }, { merge: true });
     });
 
     console.log('[DispatchEngine] Offer rejected', {

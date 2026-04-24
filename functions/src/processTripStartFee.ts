@@ -194,15 +194,15 @@ export const processTripStartFee = functions.firestore
           const revertCount = afterData.feeRevertCount || 0;
           
           if (revertCount >= 3) {
-            // P0-7 FIX: Too many reverts, cancel order instead
+            // P0-7 FIX: Too many reverts, cancel order by system
             transaction.update(change.after.ref, {
-              status: 'cancelled',
-              cancellationReason: 'Insufficient driver wallet balance after multiple attempts',
+              status: 'cancelledBySystem',
+              cancellationReason: 'insufficient_balance',
               cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
               updatedAt: admin.firestore.FieldValue.serverTimestamp(),
             });
             
-            console.error('[TripStartFee] Order cancelled due to repeated insufficient balance', {
+            console.error('[TripStartFee] Order cancelled by system due to repeated insufficient balance', {
               order_id: orderId,
               driver_id: assignedDriverId,
               revert_count: revertCount,
@@ -288,16 +288,33 @@ export const processTripStartFee = functions.firestore
         error: error,
       });
 
-      // If transaction fails, try to revert order status
+      // Guard: only revert if order is still onRoute (fresh read, not snapshot).
+      // Prevents corrupting completed/settled/cancelled orders.
       try {
-        await change.after.ref.update({
-          status: 'accepted',
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
+        const freshSnap = await change.after.ref.get();
+        const currentStatus = freshSnap.data()?.status as string | undefined;
 
-        console.log('[TripStartFee] Order status reverted due to transaction failure', {
-          order_id: orderId,
-        });
+        const TERMINAL = ['completed', 'cancelledByClient', 'cancelledByDriver', 'cancelledBySystem', 'expired'];
+
+        if (!currentStatus || TERMINAL.includes(currentStatus)) {
+          console.warn('[TripStartFee] Skipping revert — order reached terminal status', {
+            order_id: orderId,
+            current_status: currentStatus,
+          });
+        } else if (currentStatus !== 'onRoute') {
+          console.warn('[TripStartFee] Skipping revert — order no longer onRoute', {
+            order_id: orderId,
+            current_status: currentStatus,
+          });
+        } else {
+          await change.after.ref.update({
+            status: 'accepted',
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          console.log('[TripStartFee] Order status reverted due to transaction failure', {
+            order_id: orderId,
+          });
+        }
       } catch (revertError) {
         console.error('[TripStartFee] Failed to revert order status', {
           order_id: orderId,

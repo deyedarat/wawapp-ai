@@ -14,6 +14,7 @@
 import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 import { writeAdminNotification } from './helpers/adminNotifications';
+import { releaseDriverState } from './dispatch/state';
 
 /**
  * Notification configuration
@@ -89,6 +90,15 @@ function getNotificationConfig(
     };
   }
 
+  // System cancellation (e.g. insufficient driver balance after repeated attempts)
+  if (toStatus === 'cancelledBySystem') {
+    return {
+      title: 'تم إلغاء الطلب',
+      body: 'تعذّر إتمام الطلب. يرجى المحاولة مجدداً.',
+      type: 'order_cancelled_by_system',
+    };
+  }
+
   // No notification needed for this transition
   return null;
 }
@@ -144,6 +154,10 @@ async function sendNotification(
         
     case 'order_expired_driver':
       deepLink = '/orders/nearby';
+      break;
+
+    case 'order_cancelled_by_system':
+      deepLink = '/';
       break;
     
     default:
@@ -334,6 +348,17 @@ export const notifyOrderEvents = functions.firestore
         if (driverNotificationConfig) {
           await sendNotification(assignedDriverId, orderId, driverNotificationConfig, 'drivers');
         }
+
+        // Release driver dispatch state so they can receive new offers
+        await releaseDriverState(assignedDriverId);
+      }
+    }
+
+    // Release driver dispatch state on trip completion
+    if (afterStatus === 'completed') {
+      const assignedDriverId = afterData.assignedDriverId as string | undefined;
+      if (assignedDriverId) {
+        await releaseDriverState(assignedDriverId);
       }
     }
 

@@ -67,11 +67,20 @@ class MissedNotificationRecovery {
 
     _notificationSubscription?.cancel();
 
+    // PATCH-08 (RC-12): Without a createdAt lower-bound the listener would fire
+    // for every undelivered doc ever written, including offers for orders that
+    // are already expired/accepted. Mirror the same 24-hour cutoff the polling
+    // path uses so stale notifications are never recovered.
+    final cutoff = Timestamp.fromDate(
+      DateTime.now().subtract(const Duration(hours: 24)),
+    );
+
     // Listen to driver-specific notification collection
     _notificationSubscription = FirebaseFirestore.instance
         .collection('driver_notifications')
         .where('driverId', isEqualTo: user.uid)
         .where('delivered', isEqualTo: false)
+        .where('createdAt', isGreaterThan: cutoff)
         .orderBy('createdAt', descending: true)
         .limit(20)
         .snapshots()
@@ -92,6 +101,7 @@ class MissedNotificationRecovery {
       },
     );
   }
+
 
   /// Check for missed notifications (polling mode).
   Future<void> _checkForMissedNotifications() async {

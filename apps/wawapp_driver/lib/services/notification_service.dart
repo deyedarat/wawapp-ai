@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../core/router/navigator.dart';
 import '../features/notifications/full_screen_notification_screen.dart';
 import '../features/notifications/trip_start_reminder_screen.dart';
+import 'acceptance_lock_manager.dart';
 import 'notification_dedup_service.dart';
 import 'notification_helper.dart';
 import 'notification_logger.dart';
@@ -67,6 +68,12 @@ class NotificationService {
 
   Future<void> initialize() async {
     _navigatorKey = appNavigatorKey;
+
+    // PATCH-01: Reset the navigation guard on every app start.
+    // The singleton survives Dart isolate restarts on some devices; without
+    // this reset, _activeFullScreenOrderId left over from the previous session
+    // blocks every subsequent full-screen notification permanently.
+    _activeFullScreenOrderId = null;
 
     await _initializeLocalNotifications();
     await _setupFirebaseMessaging();
@@ -197,15 +204,57 @@ class NotificationService {
       handleIncomingOffer(data, source: 'bridge');
     });
 
+    // Native action intents (accept/reject from FullScreenNotificationActivity
+    // or OrderActionReceiver). Delivered via EventChannel from MainActivity.
+    NotificationMethodChannel.onNewIntent.listen(_handleNativeActionIntent);
+
     // PART 2: Tap routing — background (app was in background, user taps)
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTapFromFCM);
 
-    // PART 2: Tap routing — killed (app was terminated, user taps)
+    // PART 2: Tap routing — killed state is handled in processInitialMessage(),
+    // called from main.dart AFTER initDedup() so replay protection is available.
+  }
+
+  /// Process the FCM initial message (cold-start tap).
+  ///
+  /// PATCH-04 (RC-15): Separated from _setupFirebaseMessaging() so that it is
+  /// called only after initDedup() has been called, ensuring _dedupService is
+  /// non-null when the replay check runs. Call this from main.dart immediately
+  /// after NotificationService().initDedup(...).
+  Future<void> processInitialMessage() async {
+    // ── Fallback: check SharedPreferences cache for native action intents ──
+    // If the app was killed and FullScreenNotificationActivity launched
+    // MainActivity with accept/reject, the EventChannel sink was null.
+    // MainActivity cached the intent to SharedPreferences as fallback.
+    final cachedAction = await NotificationMethodChannel.getPendingActionFromCache();
+    if (cachedAction != null && cachedAction['action'] != null) {
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] 📦 Recovered cached native action: ${cachedAction['action']}',
+        );
+      }
+      await NotificationMethodChannel.clearPendingActionCache();
+      _handleNativeActionIntent(cachedAction);
+      return; // Don't also process FCM initial message (same tap)
+    }
+
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      _handleNotificationTapFromFCM(initialMessage);
+      // ── Replay protection for cold-start ──
+      final initOfferKey = _extractOfferKey(initialMessage.data);
+      if (initOfferKey.isNotEmpty && await _isReplayedOffer(initOfferKey)) {
+        if (kDebugMode) {
+          debugPrint(
+            '[NotificationService] ⛔ initialMessage REPLAY blocked: $initOfferKey',
+          );
+        }
+      } else {
+        _handleNotificationTapFromFCM(initialMessage);
+      }
     }
   }
+
+
 
   /// Handle notification tap from FCM (background or killed state).
   /// Routes to the correct screen based on notification type and orderId.
@@ -233,7 +282,68 @@ class NotificationService {
       NotificationMethodChannel.cancelSoundRepeats(orderId);
     }
 
+    // ── Dedup: don't re-show offer if already handled ──
+    if (orderId != null && _isStaleNotification(orderId)) {
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] ⛔ Tap blocked — order $orderId already processed',
+        );
+      }
+      return;
+    }
+    final offerKey = _extractOfferKey(data);
+    if (offerKey.isNotEmpty && _isSeenOffer(offerKey)) {
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] ⛔ Tap blocked — offer $offerKey already seen',
+        );
+      }
+      // Still navigate to home so user isn't stuck
+      _navigateTo('/');
+      return;
+    }
+
     _navigateFromMessage(data);
+  }
+
+  /// Handle action intents from native FullScreenNotificationActivity / OrderActionReceiver.
+  /// Delivered via EventChannel (onNewIntent) or SharedPreferences fallback cache.
+  void _handleNativeActionIntent(Map<String, dynamic> data) {
+    final action = data['action'] as String?;
+    final orderId = data['orderId'] as String?;
+
+    if (kDebugMode) {
+      debugPrint(
+        '[NotificationService] ← Native action intent: action=$action, orderId=$orderId',
+      );
+    }
+
+    if (action == null || orderId == null) return;
+
+    NotificationLogger.instance.log(
+      eventType: 'native_action',
+      notificationType: data['notificationType'] as String? ?? action,
+      appState: 'native_intent',
+      orderId: orderId,
+    );
+
+    switch (action) {
+      case 'accept_order':
+        // Navigate to active order — the Cloud Function call happens
+        // when Flutter's accept flow processes the orderId.
+        markOrderAsProcessed(orderId);
+        _navigateTo('/active-order');
+        break;
+      case 'reject_order':
+        markOrderAsProcessed(orderId);
+        _navigateTo('/');
+        break;
+      case 'start_trip':
+        _navigateTo('/active-order');
+        break;
+      default:
+        _navigateFromMessage(data);
+    }
   }
 
   /// Determine notification color based on type
@@ -342,24 +452,10 @@ class NotificationService {
     // ── 1. TTL prune (cheap, keeps map small) ──
     _pruneExpiredOffers();
 
-    // ── 2. Replay protection (survives app restart) ──
-    if (offerId.isNotEmpty && await _isReplayedOffer(offerId)) {
-      if (kDebugMode) {
-        debugPrint(
-          '[NotificationService] ⛔ REPLAY blocked (offerId=$offerId, source=$source)',
-        );
-      }
-      NotificationLogger.instance.log(
-        eventType: 'duplicate_blocked',
-        notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
-        appState: 'foreground',
-        orderId: data['orderId'] as String?,
-        escalationLevel: 'replay_$source',
-      );
-      return;
-    }
-
-    // ── 3. In-memory TTL dedup ──
+    // ── 2. In-memory TTL dedup (synchronous — must run before any await) ──
+    // PATCH-12 (RC-04): Previously the async _isReplayedOffer ran first, leaving
+    // a ~5ms window where a second concurrent caller could pass this check before
+    // the first call had written to _seenOfferIds. Synchronous check is now first.
     if (offerId.isNotEmpty && _isSeenOffer(offerId)) {
       if (kDebugMode) {
         debugPrint(
@@ -376,7 +472,7 @@ class NotificationService {
       return;
     }
 
-    // ── 4. Race-condition lock ──
+    // ── 3. Race-condition lock (synchronous) ──
     if (offerId.isNotEmpty && _processingOffers.containsKey(offerId)) {
       if (kDebugMode) {
         debugPrint(
@@ -387,11 +483,47 @@ class NotificationService {
       return;
     }
 
-    // ── 5. Acquire lock ──
+    // ── 4. Stamp in-memory BEFORE any await so concurrent callers are blocked ──
+    if (offerId.isNotEmpty) {
+      _seenOfferIds[offerId] = DateTime.now();
+    }
+
+    // ── 5. Replay protection (async — SharedPrefs survives app restart) ──
+    if (offerId.isNotEmpty && await _isReplayedOffer(offerId)) {
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] ⛔ REPLAY blocked (offerId=$offerId, source=$source)',
+        );
+      }
+      NotificationLogger.instance.log(
+        eventType: 'duplicate_blocked',
+        notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
+        appState: 'foreground',
+        orderId: data['orderId'] as String?,
+        escalationLevel: 'replay_$source',
+      );
+      // Remove the pre-stamp so a future legitimate delivery is not also blocked.
+      _seenOfferIds.remove(offerId);
+      return;
+    }
+
+    // ── 6. Acquire Completer lock ──
     final completer = Completer<void>();
     if (offerId.isNotEmpty) _processingOffers[offerId] = completer;
 
     try {
+      // ── 5b. Acceptance-lock guard (PATCH-10 / RC-05) ──
+      // If the driver tapped Accept <5s ago, suppress incoming offers until the
+      // server confirms. Without this the lock existed but was never consulted.
+      if (await AcceptanceLockManager.isWithinAcceptanceWindow()) {
+        if (kDebugMode) {
+          debugPrint(
+            '[NotificationService] ⛔ Acceptance lock active — suppressing offer (source=$source)',
+          );
+        }
+        return;
+      }
+
       // Mark as seen immediately (before any async gap).
       if (offerId.isNotEmpty) {
         _seenOfferIds[offerId] = DateTime.now();
@@ -417,9 +549,11 @@ class NotificationService {
     const hasSystemNotification = false;
 
     // ── Persistent dedup check ──
-    final messageId = data['messageId'] as String?;
-    if (messageId != null && _dedupService != null) {
-      if (_dedupService!.isDuplicate(messageId)) {
+    // PATCH-02: Use the wave-stable offerId key (same key used by _seenOfferIds),
+    // NOT messageId which contained Date.now() and was always unique.
+    final persistDedupKey = _extractOfferKey(data);
+    if (persistDedupKey.isNotEmpty && _dedupService != null) {
+      if (_dedupService!.isDuplicate(persistDedupKey)) {
         NotificationLogger.instance.log(
           eventType: 'skipped',
           notificationType: notificationType ?? 'unknown',
@@ -429,7 +563,7 @@ class NotificationService {
         );
         return;
       }
-      _dedupService!.markAsProcessed(messageId);
+      _dedupService!.markAsProcessed(persistDedupKey);
     }
 
     if (kDebugMode) {
@@ -596,8 +730,25 @@ class NotificationService {
       );
     }
 
-    // FOREGROUND: Skip Native notification (shows as heads-up, not full-screen).
-    // Navigate directly to the trip reminder Flutter UI.
+    // Guard: verify order is still 'accepted' before showing reminder
+    if (orderId.isNotEmpty) {
+      final stillAccepted = await _isOrderStillAccepted(orderId);
+      if (!stillAccepted) {
+        if (kDebugMode) {
+          debugPrint(
+            '[NotificationService] ⛔ Trip reminder dropped — order $orderId no longer accepted',
+          );
+        }
+        NotificationLogger.instance.log(
+          eventType: 'skipped',
+          notificationType: 'trip_start_reminder',
+          appState: 'foreground',
+          orderId: orderId,
+          escalationLevel: 'order_not_accepted',
+        );
+        return;
+      }
+    }
 
     NotificationLogger.instance.log(
       eventType: 'displayed',
@@ -616,6 +767,21 @@ class NotificationService {
       if (!_isOnActiveOrder()) {
         _navigateTo('/active-order');
       }
+    }
+  }
+
+  /// Check if order is still in 'accepted' status (for trip_start_reminder guard).
+  Future<bool> _isOrderStillAccepted(String orderId) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(orderId)
+          .get(const GetOptions(source: Source.server));
+      return doc.exists && doc.data()?['status'] == 'accepted';
+    } on Object catch (_) {
+      // PATCH-09 (RC-06): Fail-closed. If we cannot reach the server we must
+      // not show a reminder — the order may have been cancelled or completed.
+      return false;
     }
   }
 
@@ -653,7 +819,10 @@ class NotificationService {
     }
 
     // Apply debouncing to prevent duplicate notifications
-    if (_isDuplicateNotification(notificationData.orderId)) {
+    // Use offerId (unique per wave) instead of orderId to allow wave 2/3
+    // to show full-screen even if wave 1 was shown recently.
+    final dedupeKey = data['offerId'] as String? ?? notificationData.orderId;
+    if (_isDuplicateNotification(dedupeKey)) {
       NotificationLogger.instance.log(
         eventType: 'skipped',
         notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
@@ -664,11 +833,12 @@ class NotificationService {
       return;
     }
 
-    // Navigation guard: prevent stacking multiple full-screen routes for the same order
-    if (_activeFullScreenOrderId == notificationData.orderId) {
+    // Navigation guard: prevent stacking full-screen routes.
+    // Block ANY new full-screen if one is already active (even for a different order).
+    if (_activeFullScreenOrderId != null) {
       if (kDebugMode) {
         debugPrint(
-          '[NotificationService] ⛔ Full-screen already active for order: ${notificationData.orderId} — skipping push',
+          '[NotificationService] ⛔ Full-screen already active for order: $_activeFullScreenOrderId — skipping ${notificationData.orderId}',
         );
       }
       NotificationLogger.instance.log(
@@ -676,7 +846,7 @@ class NotificationService {
         notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
         appState: 'foreground',
         orderId: notificationData.orderId,
-        escalationLevel: 'duplicate_notification',
+        escalationLevel: 'another_fullscreen_active',
       );
       return;
     }
@@ -690,7 +860,7 @@ class NotificationService {
     final type = NotificationHelper.resolveType(data);
 
     // Mark notification as shown (for debouncing) and set navigation guard
-    _markNotificationShown(notificationData.orderId);
+    _markNotificationShown(dedupeKey);
     _activeFullScreenOrderId = notificationData.orderId;
 
     // FOREGROUND: Skip Native notification (Android shows it as heads-up, not full-screen).
@@ -911,6 +1081,18 @@ class NotificationService {
   /// Must be called from accept / reject / snooze / dispose in FullScreenNotificationScreen.
   void clearActiveFullScreen() {
     _activeFullScreenOrderId = null;
+  }
+
+  /// Remove a specific offer from ALL dedup layers so it can be re-shown
+  /// after a snooze alarm fires. Only call this from the snooze handler.
+  void clearSnoozedOffer(String offerKey) {
+    if (offerKey.isEmpty) return;
+    _seenOfferIds.remove(offerKey);
+    _recentlyShownNotifications.remove(offerKey);
+    _dedupService?.clearProcessed(offerKey);
+    if (kDebugMode) {
+      debugPrint('[NotificationService] 🔕 Dedup cleared for snoozed offer: $offerKey');
+    }
   }
 
   /// Mark order as recently processed (accepted/rejected) to filter stale notifications.

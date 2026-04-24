@@ -65,7 +65,7 @@ export type OfferStatus =
  * Dispatch offer document
  *
  * Collection: dispatch_offers/{offerId}
- * ID format: {orderId}_{driverId}
+ * ID format: {orderId}_{driverId}_w{round}
  */
 export interface DispatchOffer {
   offerId: string;
@@ -110,10 +110,21 @@ export interface DispatchWave {
  * Wave 3: 5 farther drivers (45s timeout)
  */
 export const DEFAULT_WAVES: DispatchWave[] = [
-  { round: 1, maxDrivers: 1, ttl: 60, maxDistance: 3 },   // Closest only, 60s to respond
+  { round: 1, maxDrivers: 1, ttl: 45, maxDistance: 3 },   // Closest only, 45s
   { round: 2, maxDrivers: 3, ttl: 45, maxDistance: 8 },   // Nearby backup
   { round: 3, maxDrivers: 5, ttl: 45, maxDistance: 15 },  // Wider net
 ];
+
+/**
+ * Repeat wave config: after all DEFAULT_WAVES are exhausted,
+ * re-run this config every 60s until order status changes.
+ */
+export const REPEAT_WAVE: DispatchWave = {
+  round: -1, // placeholder — actual round is set dynamically
+  maxDrivers: 5,
+  ttl: 60,
+  maxDistance: 15,
+};
 
 // ============================================================================
 // DISPATCH QUEUE

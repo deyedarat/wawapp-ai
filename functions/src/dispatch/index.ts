@@ -13,3 +13,4 @@ export * from './intake';
 export * from './selectors';
 export { sendOfferNotification, assertNormalizedPayload } from './notifications';
 export * from './counters';
+export { releaseDriverState } from './state';

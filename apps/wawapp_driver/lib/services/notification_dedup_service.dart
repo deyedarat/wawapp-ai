@@ -27,6 +27,11 @@ class NotificationDedupService {
     _save();
   }
 
+  /// Remove a single key so a snoozed offer can pass dedup again.
+  void clearProcessed(String messageId) {
+    if (_processed.remove(messageId) != null) _save();
+  }
+
   void _load() {
     final raw = _prefs.getString(_prefsKey);
     if (raw != null) {

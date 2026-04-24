@@ -148,8 +148,10 @@ object NotificationHelper {
             else -> CHANNEL_ID_NEW_ORDERS
         }
 
-        // Deterministic: same messageId → same notificationId → Android replaces on retry
-        val notificationId = (messageId ?: orderId).hashCode()
+        // Use orderId as the sole notification ID source.
+        // This ensures cancel(orderId.hashCode()) always works.
+        // collapseKey from FCM ("order_{orderId}") handles dedup at the FCM level.
+        val notificationId = orderId.hashCode()
 
         // Check permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -212,6 +214,23 @@ object NotificationHelper {
         )
         val deleteIntent = createDeletePendingIntent(context, orderId)
 
+        // Snooze action — carries all order data so OrderActionReceiver can schedule alarm
+        val snoozeIntent = Intent(context, OrderActionReceiver::class.java).apply {
+            action = OrderActionReceiver.ACTION_SNOOZE
+            putExtra("orderId", orderId)
+            putExtra("notificationId", notificationId)
+            putExtra("offerId", orderId) // fallback; real offerId set by caller if available
+            putExtra("pickupLabel", pickupLabel)
+            putExtra("dropoffLabel", dropoffLabel)
+            putExtra("price", price)
+            putExtra("distance", distance)
+            putExtra("createdAt", createdAt)
+        }
+        val snoozePendingIntent = PendingIntent.getBroadcast(
+            context, orderId.hashCode() + 30000, snoozeIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val notification = Notification.Builder(context, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(contentTitle)
@@ -223,6 +242,9 @@ object NotificationHelper {
             .setAutoCancel(false)
             .setDeleteIntent(deleteIntent)
             .setTimeoutAfter(60000)
+            .addAction(Notification.Action.Builder(
+                null, "لاحقاً", snoozePendingIntent
+            ).build())
             .build()
 
         // Remove sound and vibration flags to prevent heads-up
@@ -254,6 +276,23 @@ object NotificationHelper {
         )
         val deleteIntent = createDeletePendingIntent(context, orderId)
 
+        // Snooze action — carries all order data so OrderActionReceiver can schedule alarm
+        val snoozeIntent = Intent(context, OrderActionReceiver::class.java).apply {
+            action = OrderActionReceiver.ACTION_SNOOZE
+            putExtra("orderId", orderId)
+            putExtra("notificationId", orderId.hashCode())
+            putExtra("offerId", orderId)
+            putExtra("pickupLabel", pickupLabel)
+            putExtra("dropoffLabel", dropoffLabel)
+            putExtra("price", price)
+            putExtra("distance", distance)
+            putExtra("createdAt", createdAt)
+        }
+        val snoozePendingIntent = PendingIntent.getBroadcast(
+            context, orderId.hashCode() + 30000, snoozeIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         return NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
@@ -269,6 +308,7 @@ object NotificationHelper {
             .setVibrate(longArrayOf(0, 500, 200, 500, 200, 500))
             .setSound(Uri.parse("android.resource://${context.packageName}/raw/trip_reminder"))
             .setTimeoutAfter(60000)
+            .addAction(R.mipmap.ic_launcher, "لاحقاً", snoozePendingIntent)
             .build()
     }
 
@@ -336,16 +376,15 @@ object NotificationHelper {
         createdAt: Long,
         notificationType: String
     ): PendingIntent {
-        // For trip_start_reminder, open TripStartReminderScreen via MainActivity
+        // For trip_start_reminder, open TripReminderActivity (amber full-screen)
         // For new_order, open FullScreenNotificationActivity
         val intent = if (notificationType == "trip_start_reminder") {
-            Intent(context, MainActivity::class.java).apply {
+            Intent(context, TripReminderActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
-                putExtra("action", "trip_start_reminder")
                 putExtra("orderId", orderId)
                 putExtra("pickupLabel", pickupLabel)
-                putExtra("destinationLabel", dropoffLabel)
-                putExtra("createdAt", createdAt.toString())
+                putExtra("dropoffLabel", dropoffLabel)
+                putExtra("elapsedMinutes", 0)
             }
         } else {
             Intent(context, FullScreenNotificationActivity::class.java).apply {

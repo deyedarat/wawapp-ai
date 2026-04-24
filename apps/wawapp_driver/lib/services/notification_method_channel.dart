@@ -230,6 +230,71 @@ class NotificationMethodChannel {
     }
   }
 
+  /// Schedule a snooze alarm via Android AlarmManager.
+  /// Fires even in Doze mode and after process death.
+  static Future<void> scheduleSnooze({
+    required String orderId,
+    String offerId = '',
+    int delaySeconds = 300,
+    String pickupLabel = '',
+    String dropoffLabel = '',
+    double price = 0,
+    double distance = 0,
+    int createdAt = 0,
+  }) async {
+    try {
+      await _channel.invokeMethod('scheduleSnooze', {
+        'orderId': orderId,
+        'offerId': offerId,
+        'delaySeconds': delaySeconds,
+        'pickupLabel': pickupLabel,
+        'dropoffLabel': dropoffLabel,
+        'price': price,
+        'distance': distance,
+        'createdAt': createdAt,
+      });
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] ✅ Snooze scheduled: orderId=$orderId, delay=${delaySeconds}s');
+      }
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] Error scheduling snooze: ${e.message}');
+      }
+    }
+  }
+
+  /// Cancel a pending snooze alarm for an order.
+  /// Call when order is accepted, rejected, or expired.
+  static Future<void> cancelSnooze(String orderId) async {
+    try {
+      await _channel.invokeMethod('cancelSnooze', {'orderId': orderId});
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] 🔕 Snooze cancelled: orderId=$orderId');
+      }
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] Error cancelling snooze: ${e.message}');
+      }
+    }
+  }
+
+  /// Set the active trip flag readable by native MyFirebaseMessagingService.
+  /// When true, native suppresses new-order full-screen notifications.
+  static Future<void> setActiveTripFlag(bool active) async {
+    try {
+      await _channel.invokeMethod('setActiveTripFlag', {'active': active});
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] Error setting active trip flag: ${e.message}');
+      }
+    }
+  }
+
   /// Check if the app can use full-screen intent (Android 14+).
   /// This permission is required for full-screen notifications on Android 14+.
   static Future<bool> canUseFullScreenIntent() async {
@@ -324,6 +389,7 @@ class NotificationMethodChannel {
         'dropoffLabel': result['dropoffLabel'] as String?,
         'price': result['price'] as String?,
         'distance': result['distance'] as String?,
+        'offerId': result['offerId'] as String?,
       };
     } on PlatformException catch (e) {
       if (kDebugMode) {
@@ -342,6 +408,40 @@ class NotificationMethodChannel {
       if (kDebugMode) {
         debugPrint(
             '[NotificationMethodChannel] Error clearing intent data: ${e.message}');
+      }
+    }
+  }
+
+  /// Read cached action intent from SharedPreferences (fallback for cold start).
+  /// Returns null if no cached action or if it expired (>30s).
+  static Future<Map<String, String?>?> getPendingActionFromCache() async {
+    try {
+      final Map<dynamic, dynamic>? result =
+          await _intentChannel.invokeMethod('getPendingActionFromCache');
+      if (result == null) return null;
+      return {
+        'action': result['action'] as String?,
+        'orderId': result['orderId'] as String?,
+        'notificationType': result['notificationType'] as String?,
+        'offerId': result['offerId'] as String?,
+      };
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] Error reading pending action cache: ${e.message}');
+      }
+      return null;
+    }
+  }
+
+  /// Clear the cached action intent after processing.
+  static Future<void> clearPendingActionCache() async {
+    try {
+      await _intentChannel.invokeMethod('clearPendingActionCache');
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] Error clearing pending action cache: ${e.message}');
       }
     }
   }

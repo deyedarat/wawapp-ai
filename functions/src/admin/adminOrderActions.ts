@@ -5,6 +5,8 @@
 
 import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
+import { dequeueOrder } from '../dispatch/engine';
+import { releaseDriverState } from '../dispatch/state';
 
 /**
  * Cancel an order (admin action)
@@ -59,6 +61,15 @@ export const adminCancelOrder = functions.https.onCall(async (data, context) => 
         'failed-precondition',
         `Cannot cancel order with status: ${currentStatus}`
       );
+    }
+
+    // Cancel any active dispatch process
+    await dequeueOrder(orderId);
+
+    // Release assigned driver's dispatch state
+    const assignedDriverId = orderData.assignedDriverId || orderData.driverId;
+    if (assignedDriverId) {
+      await releaseDriverState(assignedDriverId);
     }
 
     // Update order status
@@ -159,7 +170,24 @@ export const adminReassignOrder = functions.https.onCall(async (data, context) =
       );
     }
 
-    const previousDriverId = orderDoc.data()!.driverId;
+    const previousDriverId = orderDoc.data()!.driverId || orderDoc.data()!.assignedDriverId;
+
+    // Release old driver's dispatch state
+    if (previousDriverId) {
+      await releaseDriverState(previousDriverId);
+    }
+
+    // Lock new driver onto this order
+    const now = admin.firestore.Timestamp.now();
+    await db.collection('driver_dispatch_state').doc(newDriverId).set({
+      driverId: newDriverId,
+      status: 'busy',
+      activeOrderId: orderId,
+      activeOfferId: null,
+      acceptanceLock: false,
+      lockExpiresAt: null,
+      updatedAt: now,
+    }, { merge: true });
 
     await orderRef.update({
       driverId: newDriverId,

@@ -1,7 +1,7 @@
 /**
  * Cloud Function: Expire Stale Orders
  *
- * Automatically expires orders that have been in 'matching' status for more than 10 minutes
+ * Automatically expires orders that have been in 'matching' status for more than 8 minutes
  * without being assigned to a driver.
  *
  * Runs every 2 minutes via Cloud Scheduler.
@@ -14,7 +14,7 @@ import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 
 // Constants
-const EXPIRATION_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes in milliseconds
+const EXPIRATION_TIMEOUT_MS = 8 * 60 * 1000; // 8 minutes in milliseconds
 const BATCH_LIMIT = 500; // Max orders to expire per run
 
 /**
@@ -45,7 +45,7 @@ export const expireStaleOrders = functions
       // Query for stale orders:
       // - status == 'matching' (initial state when client creates order)
       // - assignedDriverId == null (no driver has claimed it)
-      // - createdAt < (now - 10 minutes)
+      // - createdAt < (now - 8 minutes)
       const staleOrdersSnapshot = await db
         .collection('orders')
         .where('status', '==', 'matching')
@@ -83,6 +83,9 @@ export const expireStaleOrders = functions
             expiredAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
           });
+
+          // Client notification is handled by notifyOrderEvents (matchingâ†’expired trigger)
+          // to avoid duplicate notifications. See notifyOrderEvents.ts.
 
           // Log analytics-style event
           console.log('[Analytics] order_expired', {
@@ -138,3 +141,7 @@ export const expireStaleOrders = functions
       );
     }
   });
+
+// NOTE: notifyClientOrderExpired removed - client expiry notifications are now
+// handled exclusively by notifyOrderEvents (matching- trigger) with
+// built-in idempotency via notification_log collection.

@@ -318,20 +318,11 @@ async function sendDriverNotification(
         });
         return { success: false, error: `offer_${offerStatus}` };
       }
-    } else {
-      // Create offer document if it doesn't exist
-      await admin.firestore().collection('dispatch_offers').doc(offerDocId).set({
-        orderId,
-        driverId: driver.driverId,
-        status: 'sent',
-        round: 1,
-        sentAt: admin.firestore.FieldValue.serverTimestamp(),
-        expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 10 * 60 * 1000)),
-        reminderCount: 0,
-        lastReminderAt: null,
-        respondedAt: null,
-      });
     }
+    // PATCH-11 (RC-14): Do NOT create a dispatch_offers doc here.
+    // Offer document creation is owned exclusively by the dispatch engine.
+    // Creating one with hardcoded round: 1 conflicts with the engine's current
+    // wave number and corrupts per-wave rejection/expiry tracking.
   } catch (offerCheckErr: any) {
     console.warn('[NotifyUnassignedOrders] dispatch_offers check failed (proceeding)', {
       driver_id: driver.driverId,
@@ -379,7 +370,9 @@ async function sendDriverNotification(
     const message: admin.messaging.Message = {
       token: driver.fcmToken,
       data: {
-        messageId: `${orderId}_unassigned_order_reminder_${Date.now()}`,
+        // PATCH-02: Stable key — Date.now() made every messageId unique,
+        // so Flutter's NotificationDedupService never found a match.
+        messageId: `${orderId}_${driver.driverId}_unassigned_reminder`,
         notificationType: 'unassigned_order_reminder',
         type: 'unassigned_order_reminder',
         title: 'طلب جديد قريب منك',
