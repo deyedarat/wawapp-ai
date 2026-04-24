@@ -88,7 +88,8 @@ class ConnectivityService {
     }
   }
 
-  /// Force driver offline when internet is lost
+  /// Handle internet loss — stop tracking but preserve driver intent (isOnline)
+  /// Dispatch eligibility is handled by location freshness filters in selectors.ts
   Future<void> _forceDriverOffline() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
@@ -96,11 +97,13 @@ class ConnectivityService {
     final isOnline = await DriverStatusService.instance.getOnlineStatus(uid);
     if (!isOnline) return;
 
+    // Stop tracking to avoid stale writes, but do NOT set isOnline=false.
+    // Driver intent remains "online". Dispatch engine will skip this driver
+    // because driver_locations.updatedAt becomes stale (>5 min).
     TrackingService.instance.stopTracking();
-    await DriverStatusService.instance.setOffline(uid);
 
     if (kDebugMode) {
-      print('📴 Driver forced offline due to internet loss');
+      print('📴 Internet lost — tracking stopped, isOnline preserved (driver intent unchanged)');
     }
 
     onForcedOffline?.call();

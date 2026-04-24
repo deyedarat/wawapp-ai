@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as dev;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_shared/core_shared.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/foundation.dart';
@@ -33,11 +34,27 @@ class DriverHomeScreen extends ConsumerStatefulWidget {
   ConsumerState<DriverHomeScreen> createState() => _DriverHomeScreenState();
 }
 
+// ---------------------------------------------------------------------------
+// Rate-limited nudge helper (in-memory, per message key)
+// ---------------------------------------------------------------------------
+final Map<String, DateTime> _nudgeLastShown = {};
+const _nudgeMinInterval = Duration(minutes: 2);
+
+bool _canShowNudge(String key) {
+  final last = _nudgeLastShown[key];
+  if (last != null && DateTime.now().difference(last) < _nudgeMinInterval) {
+    return false;
+  }
+  _nudgeLastShown[key] = DateTime.now();
+  return true;
+}
+
 class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   bool _isTogglingStatus = false;
 
   bool _trackingResumed = false;
   StreamSubscription<ServiceStatus>? _locationServiceSubscription;
+  StreamSubscription<Position>? _accuracyNudgeSubscription;
 
   @override
   void initState() {
@@ -51,6 +68,141 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     _checkPermissionSetup();
     // Listen for internet loss
     ConnectivityService().onForcedOffline = _onInternetLost;
+    // Check eligibility nudges after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkEligibilityNudges());
+  }
+
+  @override
+  void dispose() {
+    _accuracyNudgeSubscription?.cancel();
+    _stopLocationMonitoring();
+    super.dispose();
+  }
+
+  // ── Eligibility nudges (lightweight, no backend writes) ──────────
+
+  /// Check all nudge conditions once (on screen open / app resume).
+  Future<void> _checkEligibilityNudges() async {
+    final authState = ref.read(authProvider);
+    final uid = authState.user?.uid;
+    if (uid == null || !mounted) return;
+
+    final isOnline = await DriverStatusService.instance.getOnlineStatus(uid);
+    if (!isOnline) return;
+
+    // Nudge 1: tracking stopped while online
+    if (!TrackingService.instance.isTracking) {
+      _wasTrackingStopped = true; // track for recovery detection
+      if (_canShowNudge('tracking_stopped')) {
+      _showNudge(
+        'يجب تفعيل تتبع الموقع للحصول على الطلبات',
+        Icons.gps_off,
+      );
+      return; // one nudge at a time
+      }
+      return;
+    }
+
+    // Nudge 2: stale location (>5 min)
+    try {
+      final locDoc = await FirebaseFirestore.instance
+          .collection('driver_locations')
+          .doc(uid)
+          .get();
+      if (locDoc.exists) {
+        final updatedAt = locDoc.data()?['updatedAt'];
+        if (updatedAt is Timestamp) {
+          final age = DateTime.now().difference(updatedAt.toDate());
+          if (age.inMinutes >= 5 && _canShowNudge('stale_location')) {
+            _showNudge(
+              'افتح التطبيق لتحديث موقعك واستلام الطلبات',
+              Icons.update,
+            );
+            return;
+          }
+          // Detect recovery: location was stale, now fresh (app just resumed)
+          // If we reach here, location is fresh — trigger boost
+          if (age.inMinutes < 5 && _wasTrackingStopped) {
+            _markDriverRecovered();
+          }
+        }
+      }
+    } catch (_) {}
+
+    // Nudge 3: start listening for weak GPS accuracy
+    _startAccuracyNudgeListener();
+  }
+
+  /// Listen to position stream and nudge if accuracy > 800m.
+  /// Also detects recovery: accuracy transitions from >800 → ≤800.
+  double _lastAccuracy = 0;
+  bool _wasTrackingStopped = false;
+
+  void _startAccuracyNudgeListener() {
+    _accuracyNudgeSubscription?.cancel();
+    _accuracyNudgeSubscription = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 50,
+      ),
+    ).listen((position) {
+      if (!mounted) return;
+
+      // Detect recovery: accuracy improved from bad → good
+      if (_lastAccuracy > 800 && position.accuracy <= 800) {
+        _markDriverRecovered();
+      }
+      _lastAccuracy = position.accuracy;
+
+      if (position.accuracy > 800 && _canShowNudge('weak_gps')) {
+        _showNudge(
+          'دقة الموقع ضعيفة — اخرج لمكان مفتوح للحصول على الطلبات',
+          Icons.gps_not_fixed,
+        );
+      }
+    }, onError: (_) {});
+  }
+
+  /// Display a non-blocking snackbar nudge.
+  void _showNudge(String message, IconData icon) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(icon, color: Colors.white, size: 20),
+            const SizedBox(width: 8),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: Colors.orange.shade700,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 5),
+      ),
+    );
+  }
+
+  // ── Recovery boost (writes to existing drivers/{id} doc) ────────
+
+  /// Write a short-lived priority boost when driver recovers from
+  /// bad GPS / stale location / stopped tracking.
+  /// TTL is enforced at read time in selectors.ts (120s).
+  Future<void> _markDriverRecovered() async {
+    final uid = ref.read(authProvider).user?.uid;
+    if (uid == null) return;
+    try {
+      await FirebaseFirestore.instance.collection('drivers').doc(uid).set({
+        'priorityBoost': true,
+        'priorityBoostAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      if (kDebugMode) {
+        dev.log('[DriverHome] ✅ Recovery boost written for $uid');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        dev.log('[DriverHome] Recovery boost write failed (non-fatal): $e');
+      }
+    }
   }
 
   void _onInternetLost() {
@@ -63,8 +215,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         title: const Text('انقطع الاتصال'),
         content: const Text(
           'تم فقدان الاتصال بالإنترنت.\n'
-          'تم تحويلك إلى وضع غير متصل تلقائياً.\n\n'
-          'عند عودة الإنترنت، اضغط "متصل" مرة أخرى.',
+          'لن تصلك طلبات حتى يعود الاتصال.\n\n'
+          'أنت لا تزال في وضع "متصل".',
         ),
         actions: [
           ElevatedButton(
@@ -95,8 +247,10 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       if (locationError != null) {
         if (kDebugMode) {
           dev.log('[DriverHome] Location prerequisites failed on resume: $locationError');
+          dev.log('[DriverHome] isOnline preserved — driver intent unchanged');
         }
-        await DriverStatusService.instance.setOffline(uid);
+        // Do NOT call setOffline() — driver intent remains online.
+        // Dispatch engine will skip via location freshness / accuracy filters.
         if (mounted) {
           _showLocationPrerequisitesDialog(locationError);
         }
@@ -106,16 +260,23 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       try {
         await TrackingService.instance.startTracking();
         _startLocationMonitoring();
+
+        // Detect recovery: tracking was stopped → now active
+        if (_wasTrackingStopped) {
+          _wasTrackingStopped = false;
+          _markDriverRecovered();
+        }
       } catch (e) {
         if (kDebugMode) {
           dev.log('[DriverHome] Failed to resume tracking: $e');
+          dev.log('[DriverHome] isOnline preserved — driver intent unchanged');
         }
-        await DriverStatusService.instance.setOffline(uid);
+        // Do NOT call setOffline() — driver intent remains online.
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('تم إيقاف الاتصال: $e'),
-              backgroundColor: Colors.red,
+              content: Text('تعذر تشغيل التتبع: $e'),
+              backgroundColor: Colors.orange,
             ),
           );
         }
@@ -132,6 +293,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       if (status == ServiceStatus.disabled) {
         if (kDebugMode) {
           dev.log('[DriverHome] ⚠️ Location services disabled mid-session');
+          dev.log('[DriverHome] isOnline preserved — driver intent unchanged');
         }
         final authState = ref.read(authProvider);
         final uid = authState.user?.uid;
@@ -140,19 +302,21 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         final isOnline = await DriverStatusService.instance.getOnlineStatus(uid);
         if (!isOnline) return;
 
+        // Stop tracking but do NOT call setOffline().
+        // Driver intent remains online. Dispatch engine will skip
+        // via stale location / accuracy filters.
         TrackingService.instance.stopTracking();
-        await DriverStatusService.instance.setOffline(uid);
 
         if (mounted) {
           showDialog(
             context: context,
             barrierDismissible: false,
             builder: (ctx) => AlertDialog(
-              title: const Text('تم إيقاف الاتصال'),
+              title: const Text('الموقع غير متاح'),
               content: const Text(
-                'تم تعطيل خدمات الموقع (GPS). '
-                'تم تحويلك إلى وضع غير متصل تلقائياً.\n\n'
-                'أعد تفعيل الموقع ثم اضغط "متصل" مرة أخرى.',
+                'تم تعطيل خدمات الموقع (GPS).\n'
+                'لن تصلك طلبات حتى تعيد تفعيل الموقع.\n\n'
+                'أنت لا تزال في وضع "متصل".',
               ),
               actions: [
                 ElevatedButton(
@@ -294,16 +458,18 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         } on Object catch (trackingError) {
           if (kDebugMode) {
             dev.log('[DriverHome] ❌ Failed to start tracking: $trackingError');
+            dev.log('[DriverHome] isOnline preserved — driver intent set, tracking will retry');
           }
 
-          // Revert online status if tracking fails
-          await DriverStatusService.instance.setOffline(authState.user!.uid);
+          // Do NOT revert isOnline. Driver pressed "متصل" — intent is online.
+          // Dispatch engine will skip via stale location filters.
+          // Tracking will retry on next app resume via _resumeTrackingIfOnline().
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('فشل الحصول على موقعك: $trackingError'),
-                backgroundColor: Colors.red,
+                content: Text('تعذر الحصول على موقعك. لن تصلك طلبات حتى يتوفر GPS.'),
+                backgroundColor: Colors.orange,
                 duration: const Duration(seconds: 5),
               ),
             );

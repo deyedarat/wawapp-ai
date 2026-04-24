@@ -22,6 +22,9 @@ class TrackingService {
   Timer? _keepAliveTimer; // Periodic write to prevent stale location
   Position? _lastPosition;
   bool _isTracking = false;
+
+  /// Public read-only access to tracking state (used by nudge system).
+  bool get isTracking => _isTracking;
   bool _isLocationUpdatesActive = false; // Guard against duplicate starts
   int _updateIntervalSeconds = 10; // Default 10 seconds
   int _consecutiveSmallMoves = 0; // Track consecutive small movements

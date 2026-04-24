@@ -15,6 +15,8 @@ const db = admin.firestore();
 const MIN_DRIVER_ACCURACY_METERS = 100;
 const LOCATION_FRESHNESS_MINUTES = 5;
 
+const PRIORITY_BOOST_TTL_MS = 120_000; // 120 seconds
+
 // ============================================================================
 // HAVERSINE DISTANCE
 // ============================================================================
@@ -259,12 +261,42 @@ export async function findEligibleDrivers(
       })
     );
 
-    // Step 6: Filter nulls, sort by distance, and limit
+    // Step 6: Filter nulls, sort by boost + distance, and limit
     const eligibleDrivers = eligibilityChecks.filter(
       (d): d is EligibleDriver => d !== null
     );
 
-    eligibleDrivers.sort((a, b) => a.distance - b.distance);
+    // Build boost lookup from already-fetched driver profiles (no extra reads).
+    // driverDocs were batch-fetched in Step 3 and indexed by nearbyDriverIds.
+    const boostMap = new Map<string, boolean>();
+    const now = admin.firestore.Timestamp.now();
+    for (let i = 0; i < driverDocs.length; i++) {
+      const doc = driverDocs[i];
+      if (!doc.exists) continue;
+      const data = doc.data()!;
+      if (
+        data.priorityBoost === true &&
+        data.priorityBoostAt &&
+        typeof data.priorityBoostAt.toMillis === 'function' &&
+        (now.toMillis() - data.priorityBoostAt.toMillis()) < PRIORITY_BOOST_TTL_MS
+      ) {
+        boostMap.set(nearbyDriverIds[i].driverId, true);
+      }
+    }
+
+    // Sort: boosted drivers first, then by distance ascending (stable).
+    eligibleDrivers.sort((a, b) => {
+      const aBoost = boostMap.has(a.driverId) ? 0 : 1;
+      const bBoost = boostMap.has(b.driverId) ? 0 : 1;
+      if (aBoost !== bBoost) return aBoost - bBoost;
+      return a.distance - b.distance;
+    });
+
+    if (boostMap.size > 0) {
+      console.log('[DriverSelector] Priority boost applied', {
+        boosted_drivers: Array.from(boostMap.keys()),
+      });
+    }
 
     const selectedDrivers = eligibleDrivers.slice(0, maxDrivers);
 
