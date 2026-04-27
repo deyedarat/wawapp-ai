@@ -285,7 +285,7 @@ class _TripStartReminderScreenState
                           onPressed: _startTrip,
                           icon: const Icon(Icons.play_arrow, size: 28),
                           label: const Text(
-                            'بدأت الرحلة',
+                            'وصلت للعميل',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

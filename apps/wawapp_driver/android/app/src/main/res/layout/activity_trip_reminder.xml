@@ -145,7 +145,7 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginBottom="16dp"
-        android:text="▶ بدأت الرحلة"
+        android:text="▶ وصلت للعميل"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@android:color/white"

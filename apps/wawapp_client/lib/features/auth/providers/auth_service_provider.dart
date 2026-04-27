@@ -159,6 +159,16 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       final serverStatus = state.isPinResetFlow
           ? PinStatus.noPin
           : (hasPinHash ? PinStatus.hasPin : PinStatus.noPin);
+      // GUARD: Never downgrade hasPin → noPin from background verify.
+      // Prevents transient Firestore reads from yanking user to /create-pin.
+      if (serverStatus == PinStatus.noPin &&
+          state.pinStatus == PinStatus.hasPin) {
+        if (kDebugMode) {
+          print(
+              '[ClientAuthNotifier] Background verify: server says noPin but state is hasPin — refusing downgrade');
+        }
+        return;
+      }
       if (serverStatus != state.pinStatus) {
         if (kDebugMode) {
           print(

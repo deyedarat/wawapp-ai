@@ -27,7 +27,8 @@
     }
     .icon { font-size: 64px; margin-bottom: 16px; }
     h1 { font-size: 22px; margin-bottom: 8px; }
-    .version { color: #aaa; font-size: 14px; margin-bottom: 24px; }
+    .version { color: #aaa; font-size: 14px; margin-bottom: 8px; }
+    .updated { color: #6c6; font-size: 13px; margin-bottom: 24px; }
     .btn {
       display: block;
       width: 100%;
@@ -54,15 +55,12 @@
   <div class="card">
     <div class="icon">🚗</div>
     <h1>تطبيق واو - سائق</h1>
-    <p class="version" id="version"></p>
-    <a class="btn" href="/downloads/wawapp-driver.apk" id="downloadBtn" download>
+    <p class="version">الإصدار 1.1.0+6</p>
+    <p class="updated">آخر تحديث: 25 يونيو 2025</p>
+    <a class="btn" href="/downloads/wawapp-driver.apk" download>
       ⬇️ تحديث
     </a>
     <p class="note">بياناتك وحسابك محفوظة — فقط ثبّت التحديث فوق النسخة الحالية</p>
   </div>
-  <script>
-    // Optionally fetch version from Firestore via REST
-    document.getElementById('version').textContent = 'الإصدار 1.0.3';
-  </script>
 </body>
 </html>

@@ -180,6 +180,12 @@ object NotificationHelper {
         nm.notify(notificationId, notification)
         Log.d(TAG, "✓ Silent fallback notification posted: id=$notificationId, order=$orderId")
 
+        // FIX: Play sound immediately at t=0 on Android 12+ where notification is silent.
+        // Android < 12 gets t=0 sound from the channel via buildLegacyFullScreenNotification.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            playSoundOnce(context)
+        }
+
         // Schedule sound repeats (played via MediaPlayer, NOT via notification channel)
         scheduleSoundRepeats(context, orderId, notificationId)
     }
@@ -519,6 +525,14 @@ object NotificationHelper {
         )
 
         val triggerAt = SystemClock.elapsedRealtime() + delayMs
+
+        // FIX: Proactively check exact alarm permission on Android 12+ before attempting.
+        // Avoids SecurityException throw/catch and logs the reason clearly.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !am.canScheduleExactAlarms()) {
+            Log.w(TAG, "Exact alarm permission not granted — using inexact for repeat $repeatNum")
+            am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAt, pi)
+            return
+        }
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
