@@ -28,15 +28,32 @@ class ClientAuthNotifier extends StateNotifier<AuthState> {
       }
 
       // When user changes, reset PinStatus to unknown (cache check happens in checkHasPin)
-      state = state.copyWith(
-        user: user,
-        pinStatus: user != null ? PinStatus.unknown : PinStatus.unknown,
-      );
+      // But if same user re-authenticates and pinStatus is already hasPin
+      // (e.g. loginByPin just set it), do NOT reset — avoids race condition.
+      if (user != null) {
+        final isSameUser = state.user?.uid == user.uid;
+        final alreadyResolved = state.pinStatus == PinStatus.hasPin;
+        if (isSameUser && alreadyResolved) {
+          state = state.copyWith(user: user);
+        } else {
+          state = state.copyWith(
+            user: user,
+            pinStatus: PinStatus.unknown,
+          );
+        }
+      } else {
+        state = state.copyWith(
+          user: user,
+          pinStatus: PinStatus.unknown,
+        );
+      }
 
       // Set user context for Crashlytics
       if (user != null) {
         CrashlyticsObserver.setUserContext(user.uid, 'client');
-        checkHasPin();
+        if (state.pinStatus != PinStatus.hasPin) {
+          checkHasPin();
+        }
       } else {
         // On logout, preserve phoneE164 if PIN reset is active
         if (state.isPinResetFlow) {

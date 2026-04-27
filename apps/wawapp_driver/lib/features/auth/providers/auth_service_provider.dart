@@ -30,12 +30,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
 
       if (user != null) {
-        // New user or re-auth: reset pinStatus to unknown if it's different
-        // But if user is same, we might want to keep state.
-        // For safety, let's follow the prompt pattern:
+        // If same user and pinStatus is already hasPin (e.g. loginByPin just set it),
+        // do NOT reset to unknown — that would trigger a redundant _checkHasPin()
+        // race that overwrites the hasPin state with loading/error.
+        final isSameUser = state.user?.uid == user.uid;
+        final alreadyResolved = state.pinStatus == PinStatus.hasPin;
+        if (isSameUser && alreadyResolved) {
+          state = state.copyWith(user: user);
+          return;
+        }
         state = state.copyWith(
             user: user,
-            // If strictly following new logic:
             pinStatus: PinStatus.unknown);
         _checkHasPin();
       } else {
