@@ -127,7 +127,8 @@ class TripReminderActivity : Activity() {
     private fun cancelNotification() {
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
         nm.cancel(notificationId)
-        nm.cancel(orderId.hashCode())
+        nm.cancel(2002) // NOTIF_ID_TRIP_REMINDER (fixed ID)
+        nm.cancel(orderId.hashCode()) // legacy fallback
         NotificationHelper.cancelSoundRepeats(this, orderId)
     }
 
@@ -151,6 +152,18 @@ class TripReminderActivity : Activity() {
                 Log.w(TAG, "Order status check failed (keeping open): ${e.message}")
             }
         }.start()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        // Reset timer and reload data for the new reminder
+        timerRunnable?.let { handler.removeCallbacks(it) }
+        loadData()
+        startTimer()
+        NotificationHelper.playSoundOnce(this)
+        verifyOrderStatus()
+        Log.d(TAG, "onNewIntent: UI updated for order $orderId")
     }
 
     override fun onDestroy() {

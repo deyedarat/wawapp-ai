@@ -35,17 +35,30 @@ object NotificationHelper {
 
     private const val TAG = "NotificationHelper"
 
-    private const val CHANNEL_ID_NEW_ORDERS = "new_orders_v9"
-    private const val CHANNEL_ID_UNASSIGNED_ORDERS = "unassigned_orders_v9"
-    private const val CHANNEL_ID_TRIP_REMINDERS = "trip_reminders_v9"
-    private const val CHANNEL_ID_ORDER_UPDATES = "order_updates_v1"
-    private const val CHANNEL_ID_ACCEPTANCE = "acceptance_confirmations_v1"
+    private const val CHANNEL_ID_NEW_ORDERS = "new_orders_v10"
+    private const val CHANNEL_ID_UNASSIGNED_ORDERS = "unassigned_orders_v10"
+    private const val CHANNEL_ID_TRIP_REMINDERS = "trip_reminders_v10"
+    private const val CHANNEL_ID_ORDER_UPDATES = "order_updates_v2"
+    private const val CHANNEL_ID_ACCEPTANCE = "acceptance_confirmations_v2"
 
     private const val PREFS_NAME = "sound_repeat_prefs"
     // Sound file (trip_reminder.wav) is ~3 seconds long.
     // Schedule repeats after sound completes to avoid overlap.
     private const val REPEAT_DELAY_1_MS = 4000L  // +4s (after first play finishes)
     private const val REPEAT_DELAY_2_MS = 8000L  // +8s (after second play finishes)
+
+    // Fixed notification IDs per type — forces Android to REPLACE (not stack).
+    private const val NOTIF_ID_NEW_ORDER = 2000
+    private const val NOTIF_ID_UNASSIGNED = 2001
+    private const val NOTIF_ID_TRIP_REMINDER = 2002
+
+    // Fixed request codes for sound repeat alarms (new order overwrites old).
+    private const val ALARM_RC_REPEAT_1 = 22001
+    private const val ALARM_RC_REPEAT_2 = 22002
+
+    // Track current active orderId for cancellation
+    @Volatile
+    private var activeOrderId: String? = null
 
     // =========================================================================
     // Channel creation
@@ -111,13 +124,24 @@ object NotificationHelper {
 
     private fun deleteOldChannels(nm: NotificationManager) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+        // Delete ALL previous channel versions. Android channels are immutable once
+        // created — the only way to fix sound/vibration on existing installs is to
+        // delete the old channel and create a new one with a bumped ID.
         listOf(
-            "new_orders", "new_orders_v2", "new_orders_v3", "new_orders_v4", "new_orders_v5",
-            "new_orders_v6", "new_orders_v7", "new_orders_v8",
+            // new_orders: v1 through v9
+            "new_orders", "new_orders_v2", "new_orders_v3", "new_orders_v4",
+            "new_orders_v5", "new_orders_v6", "new_orders_v7", "new_orders_v8", "new_orders_v9",
+            // unassigned_orders: v1 through v9
             "unassigned_orders", "unassigned_orders_v2", "unassigned_orders_v3",
-            "unassigned_orders_v4", "unassigned_orders_v5", "unassigned_orders_v6", "unassigned_orders_v7", "unassigned_orders_v8",
-            "trip_reminders", "trip_reminders_v5", "trip_reminders_v6", "trip_reminders_v7", "trip_reminders_v8",
-            "order_updates", "acceptance_confirmations"
+            "unassigned_orders_v4", "unassigned_orders_v5", "unassigned_orders_v6",
+            "unassigned_orders_v7", "unassigned_orders_v8", "unassigned_orders_v9",
+            // trip_reminders: v1 through v9
+            "trip_reminders", "trip_reminders_v2", "trip_reminders_v3",
+            "trip_reminders_v4", "trip_reminders_v5", "trip_reminders_v6",
+            "trip_reminders_v7", "trip_reminders_v8", "trip_reminders_v9",
+            // order_updates & acceptance: v1
+            "order_updates", "order_updates_v1",
+            "acceptance_confirmations", "acceptance_confirmations_v1",
         ).forEach { id ->
             try { nm.deleteNotificationChannel(id) } catch (_: Exception) {}
         }
@@ -148,10 +172,20 @@ object NotificationHelper {
             else -> CHANNEL_ID_NEW_ORDERS
         }
 
-        // Use orderId as the sole notification ID source.
-        // This ensures cancel(orderId.hashCode()) always works.
-        // collapseKey from FCM ("order_{orderId}") handles dedup at the FCM level.
-        val notificationId = orderId.hashCode()
+        // Fixed notification ID per type — forces Android to REPLACE the previous
+        // notification instead of stacking. This eliminates the "layers of orders" bug.
+        val notificationId = when (notificationType) {
+            "trip_start_reminder" -> NOTIF_ID_TRIP_REMINDER
+            "unassigned_order_reminder" -> NOTIF_ID_UNASSIGNED
+            else -> NOTIF_ID_NEW_ORDER
+        }
+
+        // Cancel sound repeats for the previous order before replacing
+        val previousOrderId = activeOrderId
+        if (previousOrderId != null && previousOrderId != orderId) {
+            cancelSoundRepeats(context, previousOrderId)
+        }
+        activeOrderId = orderId
 
         // Check permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -518,7 +552,9 @@ object NotificationHelper {
             putExtra(SoundRepeatReceiver.EXTRA_ORDER_ID, orderId)
             putExtra(SoundRepeatReceiver.EXTRA_REPEAT_NUM, repeatNum)
         }
-        val requestCode = orderId.hashCode() + 20000 + repeatNum
+        // Fixed request codes: new order's alarms automatically overwrite the old
+        // order's alarms via FLAG_UPDATE_CURRENT, preventing stale sound plays.
+        val requestCode = if (repeatNum == 1) ALARM_RC_REPEAT_1 else ALARM_RC_REPEAT_2
         val pi = PendingIntent.getBroadcast(
             context, requestCode, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -564,21 +600,21 @@ object NotificationHelper {
             .remove("played_2_$orderId")
             .apply()
 
-        // Cancel AlarmManager PendingIntents
+        // Cancel AlarmManager PendingIntents using fixed request codes
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        for (offset in 1..2) {
+        for (rc in listOf(ALARM_RC_REPEAT_1, ALARM_RC_REPEAT_2)) {
             val intent = Intent(context, SoundRepeatReceiver::class.java).apply {
                 action = SoundRepeatReceiver.ACTION
             }
-            val requestCode = orderId.hashCode() + 20000 + offset
             val pi = PendingIntent.getBroadcast(
-                context, requestCode, intent,
+                context, rc, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             am.cancel(pi)
             pi.cancel()
         }
 
+        if (activeOrderId == orderId) activeOrderId = null
         Log.d(TAG, "Sound repeats cancelled for order $orderId")
     }
 
@@ -588,8 +624,15 @@ object NotificationHelper {
      */
     fun cancelOrderNotification(context: Context, orderId: String) {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        // Cancel by fixed IDs (covers all types)
+        nm.cancel(NOTIF_ID_NEW_ORDER)
+        nm.cancel(NOTIF_ID_UNASSIGNED)
+        nm.cancel(NOTIF_ID_TRIP_REMINDER)
+        // Also cancel by legacy hashCode in case old notifications linger
         nm.cancel(orderId.hashCode())
         cancelSoundRepeats(context, orderId)
+        // Cancel snooze alarm for this order
+        SnoozeScheduler.cancel(context, orderId)
         Log.d(TAG, "Notification cancelled for order $orderId")
     }
 }

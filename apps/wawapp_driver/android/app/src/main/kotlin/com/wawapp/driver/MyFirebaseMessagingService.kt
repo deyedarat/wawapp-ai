@@ -36,6 +36,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     // ── Offer-level dedup (SharedPreferences, survives process death) ──
+    // Thread-safe: onMessageReceived is called from a background thread pool.
+    private val dedupLock = Any()
+
     private fun isOfferAlreadySeen(context: Context, key: String): Boolean {
         if (key.isBlank()) return false
         val prefs = context.getSharedPreferences("fcm_dedup", Context.MODE_PRIVATE)
@@ -66,11 +69,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // backend (every 3 min) and must never be deduped by orderId.
         if (type != "trip_start_reminder") {
             val dedupKey = offerId.ifBlank { "${orderId}_${message.data["round"] ?: "1"}" }
-            if (isOfferAlreadySeen(applicationContext, dedupKey)) {
-                Log.d(TAG, "⛔ DEDUP: offer already seen, dropping: key=$dedupKey")
-                return
+            synchronized(dedupLock) {
+                if (isOfferAlreadySeen(applicationContext, dedupKey)) {
+                    Log.d(TAG, "⛔ DEDUP: offer already seen, dropping: key=$dedupKey")
+                    return
+                }
+                markOfferSeen(applicationContext, dedupKey)
             }
-            markOfferSeen(applicationContext, dedupKey)
         }
 
         Log.d(TAG, "Native FCM received: type=$type, orderId=$orderId, offerId=$offerId, foreground=${isAppInForeground()}, hasNotification=${message.notification != null}")
@@ -97,6 +102,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     if (orderId.isNotBlank()) {
                         val nm = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
                         nm.cancel(orderId.hashCode())
+                        // Also cancel fixed-ID notifications to prevent stale display
+                        nm.cancel(2000) // NOTIF_ID_NEW_ORDER
+                        nm.cancel(2001) // NOTIF_ID_UNASSIGNED
                     }
                     FcmForegroundBridge.sendMessage(message.data)
                     return
@@ -369,6 +377,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         const val KEY_REJECTED_IDS = "rejected_order_ids"
 
         /** Mark an orderId as rejected. Called from native reject paths. */
+        @Synchronized
         fun markOrderRejected(context: Context, orderId: String) {
             val prefs = context.getSharedPreferences(PREFS_REJECTED, Context.MODE_PRIVATE)
             val ids = prefs.getStringSet(KEY_REJECTED_IDS, mutableSetOf())?.toMutableSet()

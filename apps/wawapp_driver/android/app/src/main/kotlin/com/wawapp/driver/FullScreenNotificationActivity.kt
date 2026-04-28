@@ -194,11 +194,23 @@ class FullScreenNotificationActivity : Activity() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
         // Cancel by the exact notificationId used when creating
         notificationManager.cancel(notificationId)
-        // Also cancel by orderId.hashCode() as fallback
+        // Cancel fixed-ID notifications (covers the new stacking fix)
+        notificationManager.cancel(2000) // NOTIF_ID_NEW_ORDER
+        notificationManager.cancel(2001) // NOTIF_ID_UNASSIGNED
+        // Also cancel by orderId.hashCode() as legacy fallback
         notificationManager.cancel(orderId.hashCode())
         // Stop FLAG_INSISTENT sound + scheduled repeats
         NotificationHelper.cancelSoundRepeats(this, orderId)
         Log.d(TAG, "Notification cancelled: notifId=$notificationId, orderId=$orderId")
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        loadNotificationData()
+        // Restart sound for the new order
+        NotificationHelper.playSoundOnce(this)
+        Log.d(TAG, "onNewIntent: UI updated for new order $orderId")
     }
 
     override fun onDestroy() {

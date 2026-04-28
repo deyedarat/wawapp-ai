@@ -44,6 +44,10 @@ class NotificationService {
   // Navigation guard: prevents stacking multiple full-screen routes for the same order
   String? _activeFullScreenOrderId;
 
+  // Synchronous lock: blocks concurrent async paths from both pushing full-screen.
+  // Set BEFORE any await in _showFullScreenNotification, cleared in clearActiveFullScreen.
+  bool _isNavigatingToFullScreen = false;
+
   // ── Offer-level deduplication (central gate) ──
   // Map<offerId, timestamp> with 10-minute TTL. Prevents both FcmForegroundBridge
   // and FirebaseMessaging.onMessage from triggering UI for the same message.
@@ -74,6 +78,7 @@ class NotificationService {
     // this reset, _activeFullScreenOrderId left over from the previous session
     // blocks every subsequent full-screen notification permanently.
     _activeFullScreenOrderId = null;
+    _isNavigatingToFullScreen = false;
 
     await _initializeLocalNotifications();
     await _setupFirebaseMessaging();
@@ -139,17 +144,17 @@ class NotificationService {
 
   /// Create Android notification channels.
   ///
-  /// v6 channels (with bypassDnd + USAGE_ALARM) are created via Native Kotlin
+  /// v10 channels (with bypassDnd + USAGE_ALARM) are created via Native Kotlin
   /// through NotificationMethodChannel. These handle all order/reminder notifications.
   ///
   /// flutter_local_notifications is only used for non-critical notifications
   /// (acceptance_confirmation, order_updates) which use the default channel.
   Future<void> _createNotificationChannels() async {
-    // v6 channels via Native Kotlin (bypassDnd, full-screen intent, USAGE_ALARM)
+    // v10 channels via Native Kotlin (bypassDnd, full-screen intent, USAGE_ALARM)
     try {
       await NotificationMethodChannel.createNotificationChannels();
       if (kDebugMode) {
-        debugPrint('[NotificationService] ✅ Native v6 channels created');
+        debugPrint('[NotificationService] ✅ Native v10 channels created');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -158,7 +163,7 @@ class NotificationService {
       }
     }
 
-    // Clean up legacy v1-v5 channels (one-time migration)
+    // Clean up ALL legacy channels (v1-v9). Native Kotlin creates v10 channels.
     final android = _localNotifications.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
     if (android != null) {
@@ -171,6 +176,7 @@ class NotificationService {
         'new_orders_v6',
         'new_orders_v7',
         'new_orders_v8',
+        'new_orders_v9',
         'unassigned_orders',
         'unassigned_orders_v2',
         'unassigned_orders_v3',
@@ -179,11 +185,20 @@ class NotificationService {
         'unassigned_orders_v6',
         'unassigned_orders_v7',
         'unassigned_orders_v8',
+        'unassigned_orders_v9',
         'trip_reminders',
+        'trip_reminders_v2',
+        'trip_reminders_v3',
+        'trip_reminders_v4',
         'trip_reminders_v5',
         'trip_reminders_v6',
         'trip_reminders_v7',
         'trip_reminders_v8',
+        'trip_reminders_v9',
+        'order_updates',
+        'order_updates_v1',
+        'acceptance_confirmations',
+        'acceptance_confirmations_v1',
       ]) {
         await android.deleteNotificationChannel(id);
       }
@@ -834,6 +849,23 @@ class NotificationService {
     }
 
     // Navigation guard: prevent stacking full-screen routes.
+    // Synchronous lock check FIRST (before any await in the caller path).
+    if (_isNavigatingToFullScreen) {
+      if (kDebugMode) {
+        debugPrint(
+          '[NotificationService] ⛔ Navigation lock active — skipping ${notificationData.orderId}',
+        );
+      }
+      NotificationLogger.instance.log(
+        eventType: 'skipped',
+        notificationType: NotificationHelper.resolveType(data) ?? 'unknown',
+        appState: 'foreground',
+        orderId: notificationData.orderId,
+        escalationLevel: 'navigation_lock',
+      );
+      return;
+    }
+
     // Block ANY new full-screen if one is already active (even for a different order).
     if (_activeFullScreenOrderId != null) {
       if (kDebugMode) {
@@ -861,6 +893,7 @@ class NotificationService {
 
     // Mark notification as shown (for debouncing) and set navigation guard
     _markNotificationShown(dedupeKey);
+    _isNavigatingToFullScreen = true;
     _activeFullScreenOrderId = notificationData.orderId;
 
     // FOREGROUND: Skip Native notification (Android shows it as heads-up, not full-screen).
@@ -912,10 +945,14 @@ class NotificationService {
     try {
       cacheFullScreenNotification(data);
       ctx.go('/full-screen-notification', extra: data);
+      // Lock remains active — cleared by clearActiveFullScreen() on dismiss
     } catch (e) {
       if (kDebugMode) {
         debugPrint('[NotificationService] ❌ Navigation error: $e');
       }
+      // Release lock on failure so next notification can proceed
+      _isNavigatingToFullScreen = false;
+      _activeFullScreenOrderId = null;
       // Retry after short delay
       _schedulePendingNavigation(() => _navigateToFullScreen(data));
     }
@@ -968,6 +1005,9 @@ class NotificationService {
         debugPrint(
             '[NotificationService] ❌ Max retries reached for pending navigation');
       }
+      // Release navigation lock to prevent permanent deadlock
+      _isNavigatingToFullScreen = false;
+      _activeFullScreenOrderId = null;
       return;
     }
 
@@ -1081,6 +1121,7 @@ class NotificationService {
   /// Must be called from accept / reject / snooze / dispose in FullScreenNotificationScreen.
   void clearActiveFullScreen() {
     _activeFullScreenOrderId = null;
+    _isNavigatingToFullScreen = false;
   }
 
   /// Remove a specific offer from ALL dedup layers so it can be re-shown
