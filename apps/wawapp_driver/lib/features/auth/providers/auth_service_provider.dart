@@ -34,8 +34,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         // do NOT reset to unknown — that would trigger a redundant _checkHasPin()
         // race that overwrites the hasPin state with loading/error.
         final isSameUser = state.user?.uid == user.uid;
+        final isFirstLoadAfterLogin = state.user == null;
         final alreadyResolved = state.pinStatus == PinStatus.hasPin;
-        if (isSameUser && alreadyResolved) {
+        if ((isSameUser || isFirstLoadAfterLogin) && alreadyResolved) {
           state = state.copyWith(user: user);
           return;
         }
@@ -353,7 +354,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final isValid = await _authService.verifyPin(pin, phoneE164);
       if (isValid) {
         await AnalyticsService.instance.logLoginSuccess('pin');
-        state = state.copyWith(isLoading: false, pinStatus: PinStatus.hasPin);
+        state = state.copyWith(
+          isLoading: false, 
+          pinStatus: PinStatus.hasPin,
+          otpFlowActive: false,
+          isPinResetFlow: false,
+          otpStage: OtpStage.idle,
+        );
+        
+        final user = _firebaseAuth.currentUser;
+        if (user != null) {
+          await PinStatusCache.set(user.uid, PinStatus.hasPin);
+        }
+        
         if (kDebugMode) {
           print('[PIN] PinStatus changed to hasPin (PIN verified)');
         }
