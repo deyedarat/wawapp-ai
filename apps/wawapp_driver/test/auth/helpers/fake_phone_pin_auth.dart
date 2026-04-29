@@ -13,6 +13,9 @@ class FakePhonePinAuth implements PhonePinAuth {
     this.pinIsValid = true,
   });
 
+  @override
+  final String userCollection = 'drivers';
+
   bool shouldFailSendOtp;
   bool shouldFailVerifyOtp;
   bool shouldFailSetPin;

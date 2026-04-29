@@ -81,6 +81,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     // Prevent duplicate checks if we already have a definitive positive result
     if (state.pinStatus == PinStatus.hasPin) return;
 
+    // Force token refresh so Firestore backend recognizes the new auth session
+    await user.getIdToken(true);
+
     try {
       if (kDebugMode) {
         print(

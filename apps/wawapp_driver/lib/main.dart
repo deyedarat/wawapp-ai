@@ -187,10 +187,11 @@ Future<void> _enableFirestoreOfflinePersistence() async {
     if (kDebugMode) {
       print('✅ Firestore offline persistence enabled');
     }
-  } on FirebaseException catch (e) {
+  } on Object catch (e) {
+    // Firestore may already be started (e.g. by background isolate or implicit read).
+    // Settings cannot be changed after start — safe to continue without them.
     if (kDebugMode) {
-      print('⚠️ Failed to enable Firestore offline persistence: $e');
-      print('   App will continue without offline support.');
+      print('Firestore settings skipped: $e');
     }
   }
 }

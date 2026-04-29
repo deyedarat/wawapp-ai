@@ -20,13 +20,7 @@ String _hashWithSalt(String pin, String salt) {
 }
 
 class PhonePinAuth {
-  PhonePinAuth._(this.userCollection);
-  static PhonePinAuth? _instance;
-
-  factory PhonePinAuth({required String userCollection}) {
-    _instance ??= PhonePinAuth._(userCollection);
-    return _instance!;
-  }
+  PhonePinAuth({required this.userCollection});
 
   final String userCollection;
   final _auth = FirebaseAuth.instance;
