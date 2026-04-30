@@ -25,6 +25,11 @@ class FCMService extends BaseFCMService {
   @override
   String getFirestoreCollection() => 'drivers';
 
+  /// Neutralized: FCM token is saved via the driver's own onboarding/auth flow.
+  /// This prevents duplicate writes from BaseFCMService.initialize().
+  @override
+  Future<void> saveTokenToFirestore(String token) async {}
+
   @override
   Future<void> handleNotificationTap(
     BuildContext context,

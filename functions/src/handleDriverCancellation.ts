@@ -33,6 +33,8 @@ export const handleDriverCancellation = functions.firestore
     if (after.status !== 'cancelled' && after.status !== 'cancelledByDriver') return null;
     // Avoid re-processing if already returned to matching
     if (before.status === 'matching') return null;
+    // Guard: Do not re-match if driver cancels mid-trip (fee already deducted, no refund)
+    if (before.status === 'onRoute') return null;
 
     const cancelReason: string = after.cancelReason || 'other';
     const previousDriverId: string = after.assignedDriverId || after.driverId || '';

@@ -41,13 +41,6 @@ function getNotificationConfig(
     };
   }
 
-  if (fromStatus === 'accepted' && toStatus === 'onRoute') {
-    return {
-      title: 'السائق في الطريق',
-      body: 'السائق الآن في طريقه لموقع الانطلاق',
-      type: 'driver_on_route',
-    };
-  }
 
   if (fromStatus === 'onRoute' && toStatus === 'completed') {
     return {
@@ -79,6 +72,14 @@ function getNotificationConfig(
       title: 'ألغى العميل الرحلة',
       body: 'العميل ألغى الرحلة التي قبلتها',
       type: 'trip_cancelled_by_client',
+    };
+  }
+
+  if (toStatus === 'cancelledByDriver') {
+    return {
+      title: 'ألغى السائق الطلب',
+      body: 'السائق ألغى الطلب. جارِ البحث عن سائق آخر...',
+      type: 'cancelled_by_driver',
     };
   }
 
@@ -149,6 +150,7 @@ async function sendNotification(
     
     case 'order_cancelled_by_client':
     case 'trip_cancelled_by_client':
+    case 'cancelled_by_driver':
       deepLink = '/orders/nearby';
       break;
         

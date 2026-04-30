@@ -281,6 +281,51 @@ export const processTripStartFee = functions.firestore
         });
       });
 
+      // Send driver_on_route notification to client after successful fee deduction
+      const ownerId = afterData.ownerId as string | undefined;
+      if (ownerId) {
+        try {
+          const clientDoc = await admin.firestore().collection('users').doc(ownerId).get();
+          const clientToken = clientDoc.data()?.fcmToken as string | undefined;
+          if (clientToken) {
+            await admin.messaging().send({
+              token: clientToken,
+              data: {
+                orderId,
+                type: 'driver_on_route',
+                status: 'driver_on_route',
+                deepLink: `/order/${orderId}/tracking`,
+                title: '\u0627\u0644\u0633\u0627\u0626\u0642 \u0641\u064a \u0627\u0644\u0637\u0631\u064a\u0642',
+                body: '\u0627\u0644\u0633\u0627\u0626\u0642 \u0627\u0644\u0622\u0646 \u0641\u064a \u0637\u0631\u064a\u0642\u0647 \u0644\u0645\u0648\u0642\u0639 \u0627\u0644\u0627\u0646\u0637\u0644\u0627\u0642',
+                notificationType: 'driver_on_route',
+              },
+              android: { priority: 'high' },
+              apns: {
+                payload: {
+                  aps: {
+                    alert: {
+                      title: '\u0627\u0644\u0633\u0627\u0626\u0642 \u0641\u064a \u0627\u0644\u0637\u0631\u064a\u0642',
+                      body: '\u0627\u0644\u0633\u0627\u0626\u0642 \u0627\u0644\u0622\u0646 \u0641\u064a \u0637\u0631\u064a\u0642\u0647 \u0644\u0645\u0648\u0642\u0639 \u0627\u0644\u0627\u0646\u0637\u0644\u0627\u0642',
+                    },
+                    sound: 'default',
+                    badge: 1,
+                  },
+                },
+              },
+            });
+            console.log('[TripStartFee] driver_on_route notification sent to client', {
+              order_id: orderId,
+              client_id: ownerId,
+            });
+          }
+        } catch (notifError) {
+          console.error('[TripStartFee] Failed to send driver_on_route notification', {
+            order_id: orderId,
+            error: notifError,
+          });
+        }
+      }
+
     } catch (error) {
       console.error('[TripStartFee] Transaction failed', {
         order_id: orderId,

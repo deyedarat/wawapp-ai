@@ -130,14 +130,18 @@ class _FullScreenNotificationScreenState
     setState(() => _isLoading = true);
     try {
       final offerId = widget.data.offerId;
-      if (offerId != null && offerId.isNotEmpty) {
-        await ref.read(ordersServiceProvider).acceptOfferV2(
-          offerId: offerId,
-          orderId: widget.data.orderId,
+      if (offerId == null || offerId.isEmpty) {
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('خطأ: العرض غير صالح، حاول مرة أخرى')),
         );
-      } else {
-        await ref.read(ordersServiceProvider).acceptOrder(widget.data.orderId);
+        return;
       }
+      await ref.read(ordersServiceProvider).acceptOfferV2(
+        offerId: offerId,
+        orderId: widget.data.orderId,
+      );
       // Mark order as processed AFTER successful accept to prevent stale notifications
       NotificationService().markOrderAsProcessed(widget.data.orderId);
       if (!mounted) return;
