@@ -39,7 +39,7 @@ async function sendToDriver(
   title: string,
   body: string,
   data: Record<string, string>,
-  channelId = 'order_updates'
+  channelId = 'order_updates_v2'
 ): Promise<boolean> {
   try {
     const driverDoc = await admin.firestore().collection('drivers').doc(driverId).get();
@@ -221,7 +221,7 @@ async function processAcceptedOrder(
         elapsedMinutes: String(Math.floor(elapsedMinutes)),
         createdAt: String(Date.now()),
       },
-      'trip_reminders_v9'
+      'trip_reminders_v10'
     );
 
     if (sent) {
