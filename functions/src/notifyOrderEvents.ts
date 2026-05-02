@@ -314,6 +314,15 @@ export const notifyOrderEvents = functions.firestore
       to_status: afterStatus,
     });
 
+    // Release driver dispatch state on trip completion (before notification check
+    // so it always runs even if notificationConfig is null)
+    if (afterStatus === 'completed') {
+      const assignedDriverId = (afterData.assignedDriverId || afterData.driverId) as string | undefined;
+      if (assignedDriverId) {
+        await releaseDriverState(assignedDriverId);
+      }
+    }
+
     // Get notification config for this transition
     const notificationConfig = getNotificationConfig(beforeStatus, afterStatus);
 
@@ -352,14 +361,6 @@ export const notifyOrderEvents = functions.firestore
         }
 
         // Release driver dispatch state so they can receive new offers
-        await releaseDriverState(assignedDriverId);
-      }
-    }
-
-    // Release driver dispatch state on trip completion
-    if (afterStatus === 'completed') {
-      const assignedDriverId = afterData.assignedDriverId as string | undefined;
-      if (assignedDriverId) {
         await releaseDriverState(assignedDriverId);
       }
     }

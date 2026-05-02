@@ -18,7 +18,6 @@ import 'notification_dedup_service.dart';
 import 'notification_helper.dart';
 import 'notification_logger.dart';
 import 'notification_method_channel.dart';
-import 'orders_service.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -27,6 +26,8 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
+
+  StreamSubscription<Map<String, dynamic>>? _newIntentSubscription;
 
   GlobalKey<NavigatorState>? _navigatorKey;
   String? _pendingRoute;
@@ -222,7 +223,7 @@ class NotificationService {
 
     // Native action intents (accept/reject from FullScreenNotificationActivity
     // or OrderActionReceiver). Delivered via EventChannel from MainActivity.
-    NotificationMethodChannel.onNewIntent.listen(_handleNativeActionIntent);
+    _newIntentSubscription = NotificationMethodChannel.onNewIntent.listen(_handleNativeActionIntent);
 
     // PART 2: Tap routing — background (app was in background, user taps)
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTapFromFCM);
@@ -344,9 +345,6 @@ class NotificationService {
     );
 
     switch (action) {
-      case 'accept_order':
-        _handleNativeAccept(orderId, data['offerId'] as String?);
-        break;
       case 'reject_order':
         markOrderAsProcessed(orderId);
         _navigateTo('/');
@@ -356,25 +354,6 @@ class NotificationService {
         break;
       default:
         _navigateFromMessage(data);
-    }
-  }
-
-  /// Execute the actual accept call when the native Intent arrives.
-  Future<void> _handleNativeAccept(String orderId, String? offerId) async {
-    try {
-      final ordersService = OrdersService();
-      if (offerId != null && offerId.isNotEmpty) {
-        await ordersService.acceptOfferV2(offerId: offerId, orderId: orderId);
-      } else {
-        await ordersService.acceptOrder(orderId);
-      }
-      markOrderAsProcessed(orderId);
-      _navigateTo('/active-order');
-    } on Object catch (e) {
-      if (kDebugMode) {
-        debugPrint('[NotificationService] ❌ Native accept failed: $e');
-      }
-      _navigateTo('/');
     }
   }
 
@@ -1345,5 +1324,10 @@ class NotificationService {
   /// Funnels through the central dedup gate.
   void recoverNotification(Map<String, dynamic> data) {
     handleIncomingOffer(data, source: 'recovery');
+  }
+
+  void dispose() {
+    _newIntentSubscription?.cancel();
+    _newIntentSubscription = null;
   }
 }

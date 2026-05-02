@@ -96,6 +96,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 "trip_start_reminder"
             ) -> {
                 if (isAppInForeground()) {
+                    // Rejected order guard (foreground path)
+                    if (type != "trip_start_reminder" && orderId.isNotBlank() && isOrderRejected(applicationContext, orderId)) {
+                        Log.d(TAG, "⛔ Order already rejected (foreground) — suppressing: orderId=$orderId")
+                        return
+                    }
                     Log.d(TAG, "Critical notification in foreground → forwarding to Flutter via FcmForegroundBridge")
                     // Cancel any system-displayed notification from the notification block
                     // to prevent duplicate (Flutter handles foreground display directly)
@@ -107,14 +112,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         nm.cancel(2001) // NOTIF_ID_UNASSIGNED
                     }
                     FcmForegroundBridge.sendMessage(message.data)
-                    return
+                    // return removed to always build native notification
                 }
                 // Verify order is still valid before showing notification (race condition fix)
                 if (orderId.isNotBlank()) {
                     Thread {
                         val isValid = when (type) {
-                            "trip_start_reminder" -> isOrderStillAccepted(orderId)
-                            else -> isOrderStillMatching(orderId)
+                            "trip_start_reminder" -> isOrderStillAccepted(offerId)
+                            else -> isOrderStillMatching(offerId)
                         }
                         if (isValid) {
                             handleCriticalNotification(message, type, orderId)
@@ -139,7 +144,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         nm.cancel(orderId.hashCode())
                     }
                     FcmForegroundBridge.sendMessage(message.data)
-                    return
+                    // return removed to always build native notification
                 }
                 handleSimpleNotification(message, type, orderId)
             }
@@ -160,7 +165,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         nm.cancel(orderId.hashCode())
                     }
                     FcmForegroundBridge.sendMessage(message.data)
-                    return
+                    // return removed to always build native notification
                 }
                 handleSimpleNotification(message, type, orderId)
             }
@@ -312,45 +317,46 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     /**
-     * One-time Firestore read to verify order is still in 'matching' status
-     * and unassigned. Runs on background thread. Fail-open on error.
+     * One-time Firestore read on dispatch_offers/{offerId} to verify the offer
+     * is still in 'pending' status. Runs on background thread. Fail-open on error.
      */
-    private fun isOrderStillMatching(orderId: String): Boolean {
+    private fun isOrderStillMatching(offerId: String): Boolean {
+        if (offerId.isBlank()) return true
         return try {
             val task = FirebaseFirestore.getInstance()
-                .collection("orders")
-                .document(orderId)
+                .collection("dispatch_offers")
+                .document(offerId)
                 .get()
             val snapshot = Tasks.await(task, 5, TimeUnit.SECONDS)
             val status = snapshot.getString("status")
-            val assignedDriverId = snapshot.getString("assignedDriverId")
-            val isMatching = status == "matching" && assignedDriverId == null
-            Log.d(TAG, "Order check: orderId=$orderId, status=$status, assigned=$assignedDriverId, isMatching=$isMatching")
-            isMatching
+            val isPending = status == "sent" || status == "pending"
+            Log.d(TAG, "Offer check: offerId=$offerId, status=$status, isPending=$isPending")
+            isPending
         } catch (e: Exception) {
-            Log.w(TAG, "Order check failed (fail-open): orderId=$orderId, error=${e.message}")
-            true // fail open — show notification if check fails
+            Log.w(TAG, "Offer check failed (fail-open): offerId=$offerId, error=${e.message}")
+            true
         }
     }
 
     /**
-     * One-time Firestore read to verify order is still in 'accepted' status.
-     * Used for trip_start_reminder validation. Runs on background thread. Fail-open on error.
+     * One-time Firestore read on dispatch_offers/{offerId} to verify the offer
+     * is still in 'accepted' status. Used for trip_start_reminder. Fail-open on error.
      */
-    private fun isOrderStillAccepted(orderId: String): Boolean {
+    private fun isOrderStillAccepted(offerId: String): Boolean {
+        if (offerId.isBlank()) return true
         return try {
             val task = FirebaseFirestore.getInstance()
-                .collection("orders")
-                .document(orderId)
+                .collection("dispatch_offers")
+                .document(offerId)
                 .get()
             val snapshot = Tasks.await(task, 5, TimeUnit.SECONDS)
             val status = snapshot.getString("status")
             val isAccepted = status == "accepted"
-            Log.d(TAG, "Trip reminder check: orderId=$orderId, status=$status, isAccepted=$isAccepted")
+            Log.d(TAG, "Trip reminder offer check: offerId=$offerId, status=$status, isAccepted=$isAccepted")
             isAccepted
         } catch (e: Exception) {
-            Log.w(TAG, "Trip reminder check failed (fail-open): orderId=$orderId, error=${e.message}")
-            true // fail open — show notification if check fails
+            Log.w(TAG, "Trip reminder offer check failed (fail-open): offerId=$offerId, error=${e.message}")
+            true
         }
     }
 
@@ -378,7 +384,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         /** Mark an orderId as rejected. Called from native reject paths. */
         @Synchronized
-        fun markOrderRejected(context: Context, orderId: String) {
+        fun markOrderRejected(context: Context, orderId: String, offerId: String = "") {
             val prefs = context.getSharedPreferences(PREFS_REJECTED, Context.MODE_PRIVATE)
             val ids = prefs.getStringSet(KEY_REJECTED_IDS, mutableSetOf())?.toMutableSet()
                 ?: mutableSetOf()
@@ -391,6 +397,20 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 repeat(excess) { if (iter.hasNext()) { iter.next(); iter.remove() } }
             }
             prefs.edit().putStringSet(KEY_REJECTED_IDS, ids).apply()
+
+            // Call rejectOffer Cloud Function (handles Firestore writes on backend)
+            if (offerId.isNotBlank()) {
+                com.google.firebase.functions.FirebaseFunctions.getInstance()
+                    .getHttpsCallable("rejectOffer")
+                    .call(hashMapOf(
+                        "offerId" to offerId,
+                        "orderId" to orderId,
+                        "reason" to "driver_rejected"
+                    ))
+                    .addOnFailureListener { e: Exception ->
+                        Log.w(TAG, "rejectOffer call failed: ${e.message}")
+                    }
+            }
         }
     }
 }

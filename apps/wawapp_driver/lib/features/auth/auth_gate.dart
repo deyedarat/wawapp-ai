@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_shared/core_shared.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,6 +29,7 @@ class AuthGate extends ConsumerStatefulWidget {
 
 class _AuthGateState extends ConsumerState<AuthGate> {
   String? _lastInitializedUserId;
+  StreamSubscription<Map<String, dynamic>>? _intentSubscription;
 
   void _initializeServicesOnce(String userId, BuildContext context) {
     if (_lastInitializedUserId == userId) {
@@ -50,7 +53,8 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 
     _processPendingIntentAccept();
 
-    NotificationMethodChannel.onNewIntent.listen((data) {
+    _intentSubscription?.cancel();
+    _intentSubscription = NotificationMethodChannel.onNewIntent.listen((data) {
       if (mounted) _processLiveIntent(data);
     });
   }
@@ -196,6 +200,13 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     } else {
       context.go('/active-order');
     }
+  }
+
+  @override
+  void dispose() {
+    _intentSubscription?.cancel();
+    _intentSubscription = null;
+    super.dispose();
   }
 
   @override

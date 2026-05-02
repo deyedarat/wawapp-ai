@@ -419,11 +419,14 @@ class OrdersService {
         .where('status', isEqualTo: 'sent')
         .orderBy('sentAt', descending: true)
         .snapshots()
-        .map((snapshot) {
+        .asyncMap((snapshot) async {
       if (kDebugMode) {
         dev.log(
             '[DispatchV2] Dispatch offers snapshot: ${snapshot.docs.length} documents');
       }
+
+      // Load locally rejected order IDs from native SharedPreferences
+      final rejectedIds = await NotificationMethodChannel.getRejectedOrderIds();
 
       final offers = <DispatchOffer>[];
       for (final doc in snapshot.docs) {
@@ -431,17 +434,26 @@ class OrdersService {
           final offer = DispatchOffer.fromFirestore(doc);
 
           // Filter out expired offers
-          if (offer.isValid) {
-            offers.add(offer);
-
-            if (kDebugMode) {
-              dev.log(
-                  '[DispatchV2] Offer ${offer.offerId}: orderId=${offer.orderId}, round=${offer.round}, remaining=${offer.remainingSeconds}s');
-            }
-          } else {
+          if (!offer.isValid) {
             if (kDebugMode) {
               dev.log('[DispatchV2] Filtered out expired offer: ${offer.offerId}');
             }
+            continue;
+          }
+
+          // Filter out locally rejected orders
+          if (rejectedIds.contains(offer.orderId)) {
+            if (kDebugMode) {
+              dev.log('[DispatchV2] Filtered out locally rejected offer: ${offer.offerId} (orderId=${offer.orderId})');
+            }
+            continue;
+          }
+
+          offers.add(offer);
+
+          if (kDebugMode) {
+            dev.log(
+                '[DispatchV2] Offer ${offer.offerId}: orderId=${offer.orderId}, round=${offer.round}, remaining=${offer.remainingSeconds}s');
           }
         } on Object catch (e) {
           if (kDebugMode) {
@@ -451,7 +463,7 @@ class OrdersService {
       }
 
       if (kDebugMode) {
-        dev.log('[DispatchV2] Final valid offers: ${offers.length}');
+        dev.log('[DispatchV2] Final valid offers: ${offers.length} (rejected ${rejectedIds.length} order IDs locally)');
       }
 
       return offers;

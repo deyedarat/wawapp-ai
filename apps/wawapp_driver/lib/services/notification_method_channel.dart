@@ -295,6 +295,21 @@ class NotificationMethodChannel {
     }
   }
 
+  /// Read rejected order IDs from native SharedPreferences.
+  static Future<Set<String>> getRejectedOrderIds() async {
+    try {
+      final List<dynamic>? ids =
+          await _channel.invokeMethod('getRejectedOrderIds');
+      return ids?.cast<String>().toSet() ?? <String>{};
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] Error reading rejected order IDs: ${e.message}');
+      }
+      return <String>{};
+    }
+  }
+
   /// Check if the app can use full-screen intent (Android 14+).
   /// This permission is required for full-screen notifications on Android 14+.
   static Future<bool> canUseFullScreenIntent() async {

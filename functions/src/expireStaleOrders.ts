@@ -14,7 +14,7 @@ import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 
 // Constants
-const EXPIRATION_TIMEOUT_MS = 8 * 60 * 1000; // 8 minutes in milliseconds
+const EXPIRATION_TIMEOUT_MS = 60 * 60 * 1000; // 60 minutes in milliseconds
 const BATCH_LIMIT = 500; // Max orders to expire per run
 
 /**

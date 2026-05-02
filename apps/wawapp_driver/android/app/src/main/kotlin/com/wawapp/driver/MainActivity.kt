@@ -233,6 +233,11 @@ class MainActivity : FlutterActivity() {
                         .apply()
                     result.success(null)
                 }
+                "getRejectedOrderIds" -> {
+                    val prefs = getSharedPreferences("driver_rejected_orders_native", Context.MODE_PRIVATE)
+                    val ids = prefs.getStringSet("rejected_order_ids", emptySet()) ?: emptySet()
+                    result.success(ids.toList())
+                }
                 else -> {
                     result.notImplemented()
                 }

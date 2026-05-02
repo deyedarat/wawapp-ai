@@ -12,8 +12,8 @@ import { EligibleDriver } from './types';
 
 const db = admin.firestore();
 
-const MIN_DRIVER_ACCURACY_METERS = 100;
-const LOCATION_FRESHNESS_MINUTES = 5;
+const MIN_DRIVER_ACCURACY_METERS = 800;
+const LOCATION_FRESHNESS_MINUTES = 30;
 
 const PRIORITY_BOOST_TTL_MS = 120_000; // 120 seconds
 

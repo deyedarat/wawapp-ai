@@ -152,7 +152,7 @@ class FullScreenNotificationActivity : Activity() {
         SnoozeScheduler.cancel(this, orderId)
 
         // Mark as rejected so native FCM handler won't re-show this order
-        MyFirebaseMessagingService.markOrderRejected(this, orderId)
+        MyFirebaseMessagingService.markOrderRejected(this, orderId, offerId)
 
         // Open MainActivity so Flutter can write to driver_rejected_orders
         val intent = Intent(this, MainActivity::class.java).apply {

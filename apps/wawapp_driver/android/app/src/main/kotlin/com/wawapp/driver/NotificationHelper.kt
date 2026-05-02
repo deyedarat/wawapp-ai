@@ -1,5 +1,6 @@
 package com.wawapp.driver
 
+import android.app.ActivityManager
 import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
@@ -35,7 +36,7 @@ object NotificationHelper {
 
     private const val TAG = "NotificationHelper"
 
-    private const val CHANNEL_ID_NEW_ORDERS = "new_orders_v10"
+    private const val CHANNEL_ID_NEW_ORDERS = "new_orders_v11"
     private const val CHANNEL_ID_UNASSIGNED_ORDERS = "unassigned_orders_v10"
     private const val CHANNEL_ID_TRIP_REMINDERS = "trip_reminders_v10"
     private const val CHANNEL_ID_ORDER_UPDATES = "order_updates_v2"
@@ -249,9 +250,15 @@ object NotificationHelper {
         val contentTitle = if (notificationType == "trip_start_reminder") title else "$pickupLabel → $dropoffLabel"
         val contentText = if (notificationType == "trip_start_reminder") body else "${price.toInt()} أوقية • ${String.format("%.1f", distance)} كم"
 
+        val foreground = isForeground(context)
+        val isOrderOffer = notificationType == "new_order" || notificationType == "unassigned_order_reminder"
+
         val fullScreenPendingIntent = createFullScreenPendingIntent(
             context, orderId, pickupLabel, dropoffLabel, price, distance, createdAt, notificationType
         )
+        val contentPendingIntent = if (foreground && isOrderOffer) {
+            createForegroundContentIntent(context, orderId, notificationType)
+        } else null
         val deleteIntent = createDeletePendingIntent(context, orderId)
 
         // Snooze action — carries all order data so OrderActionReceiver can schedule alarm
@@ -271,11 +278,10 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = Notification.Builder(context, channelId)
+        val builder = Notification.Builder(context, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(contentTitle)
             .setContentText(contentText)
-            .setFullScreenIntent(fullScreenPendingIntent, true)
             .setCategory(Notification.CATEGORY_CALL)
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setOngoing(true)
@@ -285,7 +291,14 @@ object NotificationHelper {
             .addAction(Notification.Action.Builder(
                 null, "لاحقاً", snoozePendingIntent
             ).build())
-            .build()
+
+        if (foreground && isOrderOffer) {
+            builder.setContentIntent(contentPendingIntent)
+        } else {
+            builder.setFullScreenIntent(fullScreenPendingIntent, true)
+        }
+
+        val notification = builder.build()
 
         // Remove sound and vibration flags to prevent heads-up
         notification.sound = null
@@ -311,9 +324,15 @@ object NotificationHelper {
         notificationType: String,
         channelId: String
     ): Notification {
+        val foreground = isForeground(context)
+        val isOrderOffer = notificationType == "new_order" || notificationType == "unassigned_order_reminder"
+
         val fullScreenIntent = createFullScreenPendingIntent(
             context, orderId, pickupLabel, dropoffLabel, price, distance, createdAt, notificationType
         )
+        val contentIntent = if (foreground && isOrderOffer) {
+            createForegroundContentIntent(context, orderId, notificationType)
+        } else fullScreenIntent
         val deleteIntent = createDeletePendingIntent(context, orderId)
 
         // Snooze action — carries all order data so OrderActionReceiver can schedule alarm
@@ -333,7 +352,7 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Builder(context, channelId)
+        val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
             .setContentText(body)
@@ -342,14 +361,18 @@ object NotificationHelper {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(false)
             .setOngoing(true)
-            .setFullScreenIntent(fullScreenIntent, true)
-            .setContentIntent(fullScreenIntent)
+            .setContentIntent(contentIntent)
             .setDeleteIntent(deleteIntent)
             .setVibrate(longArrayOf(0, 500, 200, 500, 200, 500))
             .setSound(Uri.parse("android.resource://${context.packageName}/raw/trip_reminder"))
             .setTimeoutAfter(60000)
             .addAction(R.mipmap.ic_launcher, "لاحقاً", snoozePendingIntent)
-            .build()
+
+        if (!(foreground && isOrderOffer)) {
+            builder.setFullScreenIntent(fullScreenIntent, true)
+        }
+
+        return builder.build()
     }
 
     /**
@@ -443,6 +466,40 @@ object NotificationHelper {
             context, orderId.hashCode(), intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+    }
+
+    /**
+     * PendingIntent that brings MainActivity to foreground without creating a new Activity.
+     * Used when app is already in foreground for order offer notifications.
+     */
+    private fun createForegroundContentIntent(
+        context: Context,
+        orderId: String,
+        notificationType: String
+    ): PendingIntent {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+            putExtra("orderId", orderId)
+            putExtra("notificationType", notificationType)
+            putExtra("action", "view_order")
+        }
+        return PendingIntent.getActivity(
+            context, orderId.hashCode() + 50000, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    /**
+     * Check if the app process is currently in the foreground.
+     */
+    private fun isForeground(context: Context): Boolean {
+        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val appProcesses = am.runningAppProcesses ?: return false
+        val packageName = context.packageName
+        return appProcesses.any {
+            it.processName == packageName &&
+            it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+        }
     }
 
     /**
