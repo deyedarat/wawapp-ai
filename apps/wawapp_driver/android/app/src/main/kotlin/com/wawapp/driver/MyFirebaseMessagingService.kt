@@ -39,13 +39,17 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     // Thread-safe: onMessageReceived is called from a background thread pool.
     private val dedupLock = Any()
 
-    private fun isOfferAlreadySeen(context: Context, key: String): Boolean {
+    private fun isOfferAlreadySeen(context: Context, key: String, sentTime: Long = 0L): Boolean {
         if (key.isBlank()) return false
+        // Drop messages older than 60 minutes (delayed/ghost FCM)
+        if (sentTime > 0 && System.currentTimeMillis() - sentTime > DEDUP_TTL_MS) {
+            Log.d(TAG, "⛔ FCM message too old (sentTime=${sentTime}), dropping: key=$key")
+            return true
+        }
         val prefs = context.getSharedPreferences("fcm_dedup", Context.MODE_PRIVATE)
         val ts = prefs.getLong(key, 0L)
         if (ts == 0L) return false
-        // 10-minute TTL
-        return System.currentTimeMillis() - ts < 10 * 60 * 1000
+        return System.currentTimeMillis() - ts < DEDUP_TTL_MS
     }
 
     private fun markOfferSeen(context: Context, key: String) {
@@ -70,7 +74,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         if (type != "trip_start_reminder") {
             val dedupKey = offerId.ifBlank { "${orderId}_${message.data["round"] ?: "1"}" }
             synchronized(dedupLock) {
-                if (isOfferAlreadySeen(applicationContext, dedupKey)) {
+                if (isOfferAlreadySeen(applicationContext, dedupKey, message.sentTime)) {
                     Log.d(TAG, "⛔ DEDUP: offer already seen, dropping: key=$dedupKey")
                     return
                 }
@@ -112,7 +116,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         nm.cancel(2001) // NOTIF_ID_UNASSIGNED
                     }
                     FcmForegroundBridge.sendMessage(message.data)
-                    // return removed to always build native notification
+                    // Foreground: Flutter handles display — skip native notification
+                    return
                 }
                 // Verify order is still valid before showing notification (race condition fix)
                 if (orderId.isNotBlank()) {
@@ -333,14 +338,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Offer check: offerId=$offerId, status=$status, isPending=$isPending")
             isPending
         } catch (e: Exception) {
-            Log.w(TAG, "Offer check failed (fail-open): offerId=$offerId, error=${e.message}")
-            true
+            Log.w(TAG, "Offer check failed (fail-closed): offerId=$offerId, error=${e.message}")
+            false
         }
     }
 
     /**
      * One-time Firestore read on dispatch_offers/{offerId} to verify the offer
-     * is still in 'accepted' status. Used for trip_start_reminder. Fail-open on error.
+     * is still in 'accepted' status. Used for trip_start_reminder. Fail-closed on error.
      */
     private fun isOrderStillAccepted(offerId: String): Boolean {
         if (offerId.isBlank()) return true
@@ -355,8 +360,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Trip reminder offer check: offerId=$offerId, status=$status, isAccepted=$isAccepted")
             isAccepted
         } catch (e: Exception) {
-            Log.w(TAG, "Trip reminder offer check failed (fail-open): offerId=$offerId, error=${e.message}")
-            true
+            Log.w(TAG, "Trip reminder offer check failed (fail-closed): offerId=$offerId, error=${e.message}")
+            false
         }
     }
 
@@ -377,6 +382,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
         private const val TAG = "MyFCMService"
+        private const val DEDUP_TTL_MS = 60L * 60 * 1000 // 60 minutes
         const val PREFS_TRIP_STATE = "driver_trip_state"
         const val KEY_HAS_ACTIVE_TRIP = "driver_has_active_trip"
         const val PREFS_REJECTED = "driver_rejected_orders_native"

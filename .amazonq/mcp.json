@@ -6,6 +6,11 @@
                 "C:/Users/hp/Music/wawapp-mcp-debug-server/dist/index.js"
             ],
             "env": {}
+        },
+        "android-mcp": {
+            "command": "C:\\Users\\hp\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\android-mcp.exe",
+            "args": [],
+            "env": {}
         }
     }
 }

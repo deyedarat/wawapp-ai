@@ -76,6 +76,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   void dispose() {
     _accuracyNudgeSubscription?.cancel();
     _stopLocationMonitoring();
+    ConnectivityService().onForcedOffline = null;
     super.dispose();
   }
 

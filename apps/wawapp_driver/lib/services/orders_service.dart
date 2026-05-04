@@ -31,6 +31,30 @@ class OrdersService {
     });
   }
 
+  /// Sync the native active trip flag with Firestore on startup.
+  /// Ensures MyFirebaseMessagingService correctly suppresses/allows new offers.
+  static Future<void> syncActiveTripFlagOnStartup() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection('orders')
+          .where('driverId', isEqualTo: uid)
+          .where('status', whereIn: ['accepted', 'onRoute'])
+          .limit(1)
+          .get();
+      final hasActive = snap.docs.isNotEmpty;
+      await NotificationMethodChannel.setActiveTripFlag(hasActive);
+      if (kDebugMode) {
+        dev.log('[OrdersService] syncActiveTripFlag: hasActive=$hasActive');
+      }
+    } on Object catch (e) {
+      if (kDebugMode) {
+        dev.log('[OrdersService] syncActiveTripFlag error: $e');
+      }
+    }
+  }
+
   Future<List<Order>> getNearbyOrders(Position driverPosition) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -172,12 +196,15 @@ class OrdersService {
       // Log analytics event for completed orders
       if (to == OrderStatus.completed) {
         AnalyticsService.instance.logOrderCompletedByDriver(orderId: orderId);
-        // Clear native active trip flag — driver is available again
-        NotificationMethodChannel.setActiveTripFlag(false);
       }
     } on Object catch (e) {
       if (e is AppError) rethrow;
       throw AppError.from(e);
+    } finally {
+      // Always clear flag on completion/failure — re-synced on next startup
+      if (to == OrderStatus.completed) {
+        NotificationMethodChannel.setActiveTripFlag(false);
+      }
     }
   }
 
@@ -229,12 +256,12 @@ class OrdersService {
 
       // Log analytics event after successful cancellation
       AnalyticsService.instance.logOrderCancelledByDriver(orderId: orderId);
-
-      // Clear native active trip flag — driver is available again
-      NotificationMethodChannel.setActiveTripFlag(false);
     } on Object catch (e) {
       if (e is AppError) rethrow;
       throw AppError.from(e);
+    } finally {
+      // Always clear flag on cancel/failure — re-synced on next startup
+      NotificationMethodChannel.setActiveTripFlag(false);
     }
   }
 

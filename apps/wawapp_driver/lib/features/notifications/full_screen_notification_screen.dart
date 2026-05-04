@@ -79,6 +79,15 @@ class _FullScreenNotificationScreenState
   bool _isLoading = false;
   Timer? _elapsedTimer;
   String _elapsedText = '';
+  StreamSubscription<DocumentSnapshot>? _orderSubscription;
+
+  static const _terminalStatuses = {
+    'cancelledByClient',
+    'cancelledByDriver',
+    'expired',
+    'completed',
+    'accepted',
+  };
 
   @override
   void initState() {
@@ -88,12 +97,25 @@ class _FullScreenNotificationScreenState
       const Duration(seconds: 30),
       (_) => _updateElapsed(),
     );
+    _orderSubscription = FirebaseFirestore.instance
+        .collection('orders')
+        .doc(widget.data.orderId)
+        .snapshots()
+        .listen((snap) {
+      if (!mounted) return;
+      final status = snap.data()?['status'] as String?;
+      if (!snap.exists || (status != null && _terminalStatuses.contains(status))) {
+        _dismissNotification();
+        NotificationService().clearActiveFullScreen();
+        context.go('/nearby');
+      }
+    });
   }
 
   @override
   void dispose() {
     _elapsedTimer?.cancel();
-    // Release navigation guard so next notification for this order can show
+    _orderSubscription?.cancel();
     NotificationService().clearActiveFullScreen();
     super.dispose();
   }

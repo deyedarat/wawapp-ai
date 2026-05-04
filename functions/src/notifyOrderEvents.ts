@@ -83,14 +83,6 @@ function getNotificationConfig(
     };
   }
 
-  if (fromStatus === 'matching' && toStatus === 'expired') {
-    return {
-      title: 'انتهت مهلة الطلب',
-      body: 'لم يعد الطلب متاحاً',
-      type: 'order_expired_driver',
-    };
-  }
-
   // System cancellation (e.g. insufficient driver balance after repeated attempts)
   if (toStatus === 'cancelledBySystem') {
     return {
@@ -344,6 +336,18 @@ export const notifyOrderEvents = functions.firestore
 
     await sendNotification(ownerId, orderId, notificationConfig, 'users');
 
+    // Release driver dispatch state when driver cancels
+    if (afterStatus === 'cancelledByDriver') {
+      const driverId = (afterData.assignedDriverId || afterData.driverId) as string | undefined;
+      if (driverId) {
+        await releaseDriverState(driverId);
+        console.log('[NotifyOrderEvents] Released driver state after driver cancellation', {
+          order_id: orderId,
+          driver_id: driverId,
+        });
+      }
+    }
+
     // STEP 3A: Notify assigned driver if client cancelled
     if ((beforeStatus === 'accepted' || beforeStatus === 'onRoute') &&
         afterStatus === 'cancelledByClient') {
@@ -362,6 +366,21 @@ export const notifyOrderEvents = functions.firestore
 
         // Release driver dispatch state so they can receive new offers
         await releaseDriverState(assignedDriverId);
+      }
+
+      // Clean up dispatch_offers for this cancelled order
+      const offersSnap = await admin.firestore()
+        .collection('dispatch_offers')
+        .where('orderId', '==', orderId)
+        .get();
+      if (!offersSnap.empty) {
+        const batch = admin.firestore().batch();
+        offersSnap.docs.forEach((doc) => batch.delete(doc.ref));
+        await batch.commit();
+        console.log('[NotifyOrderEvents] Deleted dispatch_offers for cancelled order', {
+          order_id: orderId,
+          deleted_count: offersSnap.size,
+        });
       }
     }
 

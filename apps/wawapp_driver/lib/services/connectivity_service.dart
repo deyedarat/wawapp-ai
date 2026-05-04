@@ -79,6 +79,15 @@ class ConnectivityService {
       // Device came back online - force Firestore to reconnect
       _reconnectFirestore();
       _wasOffline = false;
+
+      // Restore driver online status in Firestore
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        DriverStatusService.instance.setOnline(uid);
+        if (kDebugMode) {
+          print('📡 Connectivity restored — driver set online');
+        }
+      }
     } else if (!isOnline) {
       _wasOffline = true;
       if (kDebugMode) {
@@ -101,9 +110,10 @@ class ConnectivityService {
     // Driver intent remains "online". Dispatch engine will skip this driver
     // because driver_locations.updatedAt becomes stale (>5 min).
     TrackingService.instance.stopTracking();
+    await DriverStatusService.instance.setOffline(uid);
 
     if (kDebugMode) {
-      print('📴 Internet lost — tracking stopped, isOnline preserved (driver intent unchanged)');
+      print('📴 Internet lost — tracking stopped, driver set offline');
     }
 
     onForcedOffline?.call();

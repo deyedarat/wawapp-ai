@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 /**
  * Native Kotlin Activity for full-screen notifications (no Flutter Engine).
@@ -40,6 +42,13 @@ class FullScreenNotificationActivity : Activity() {
     private var distance: Double = 0.0
     private var createdAt: Long = 0L
 
+    private var orderListener: ListenerRegistration? = null
+
+    private val terminalStatuses = setOf(
+        "cancelled", "cancelledByClient", "cancelledByDriver",
+        "expired", "accepted", "completed"
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full_screen_notification)
@@ -47,6 +56,7 @@ class FullScreenNotificationActivity : Activity() {
         setupLockScreenBehavior()
         loadNotificationData()
         setupButtons()
+        startOrderListener()
 
         // Do NOT cancel notification here — keep it visible as fallback.
         // Sound from FLAG_INSISTENT continues until user interacts (accept/reject/later).
@@ -78,6 +88,14 @@ class FullScreenNotificationActivity : Activity() {
     private fun loadNotificationData() {
         // Extract data from Intent extras
         orderId = intent.getStringExtra("orderId") ?: "unknown"
+
+        // Validate orderId — finish immediately if invalid
+        if (orderId.isBlank() || orderId == "unknown") {
+            Log.w(TAG, "Invalid orderId ('$orderId') — finishing activity")
+            finish()
+            return
+        }
+
         pickupLabel = intent.getStringExtra("pickupLabel") ?: "موقع الاستلام"
         dropoffLabel = intent.getStringExtra("dropoffLabel") ?: "الوجهة"
         price = intent.getDoubleExtra("price", 0.0)
@@ -204,16 +222,45 @@ class FullScreenNotificationActivity : Activity() {
         Log.d(TAG, "Notification cancelled: notifId=$notificationId, orderId=$orderId")
     }
 
+    private fun startOrderListener() {
+        if (!::orderId.isInitialized || orderId.isBlank() || orderId == "unknown") return
+        orderListener?.remove()
+        orderListener = FirebaseFirestore.getInstance()
+            .collection("orders")
+            .document(orderId)
+            .addSnapshotListener { snap, error ->
+                if (error != null) {
+                    Log.w(TAG, "Order listener error: ${error.message}")
+                    return@addSnapshotListener
+                }
+                if (snap == null || !snap.exists()) {
+                    Log.d(TAG, "Order $orderId deleted — finishing")
+                    cancelNotification()
+                    finish()
+                    return@addSnapshotListener
+                }
+                val status = snap.getString("status")
+                if (status != null && status in terminalStatuses) {
+                    Log.d(TAG, "Order $orderId reached terminal status '$status' — finishing")
+                    cancelNotification()
+                    finish()
+                }
+            }
+    }
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
         loadNotificationData()
+        startOrderListener()
         // Restart sound for the new order
         NotificationHelper.playSoundOnce(this)
         Log.d(TAG, "onNewIntent: UI updated for new order $orderId")
     }
 
     override fun onDestroy() {
+        orderListener?.remove()
+        orderListener = null
         super.onDestroy()
         Log.d(TAG, "Full-screen notification destroyed: orderId=$orderId")
     }

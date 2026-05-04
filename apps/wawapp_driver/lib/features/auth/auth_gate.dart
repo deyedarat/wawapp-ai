@@ -90,19 +90,15 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 
   Future<void> _handleNativeAccept(String orderId, {String? offerId}) async {
     try {
-      // PATCH-05 (RC-13): Do NOT suppress the offer until server confirms.
-      // Previously markOrderAsProcessed was called before the await, so a
-      // failed server response (network error, already taken) left the offer
-      // permanently invisible to the driver for 2 minutes.
       if (offerId != null && offerId.isNotEmpty) {
-        // Persist offer as handled so tap/replay paths don't re-show it
-        NotificationService().handleIncomingOffer(
-          {'orderId': orderId, 'offerId': offerId},
-          source: 'native_accept_suppress',
-        );
         await ref.read(ordersServiceProvider).acceptOfferV2(
           offerId: offerId,
           orderId: orderId,
+        );
+        // Server confirmed — now safe to suppress the offer
+        NotificationService().handleIncomingOffer(
+          {'orderId': orderId, 'offerId': offerId},
+          source: 'native_accept_suppress',
         );
       } else {
         await ref.read(ordersServiceProvider).acceptOrder(orderId);

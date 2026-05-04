@@ -1,6 +1,5 @@
 package com.wawapp.driver
 
-import android.app.ActivityManager
 import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
@@ -19,16 +18,18 @@ import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.IconCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ProcessLifecycleOwner
 
 /**
  * Helper class for creating high-priority, full-screen intent notifications
  * that behave like incoming phone calls.
  *
  * Sound repetition strategy:
- * - Main notification plays sound once via channel settings.
- * - 2 additional plays are scheduled via AlarmManager → SoundRepeatReceiver
- *   at +2s and +4s. AlarmManager.setExactAndAllowWhileIdle() ensures
- *   delivery even in Doze mode.
+ * - Main notification plays sound once at t=0.
+ * - 7 additional plays are scheduled at +8s intervals via Handler + AlarmManager.
+ *   Total coverage: ~56s (until driver responds or notification TTL expires).
+ * - AlarmManager.setExactAndAllowWhileIdle() ensures delivery in Doze mode.
  * - Repeats are cancelled when notification is tapped/dismissed or order
  *   is accepted/rejected.
  */
@@ -44,18 +45,17 @@ object NotificationHelper {
 
     private const val PREFS_NAME = "sound_repeat_prefs"
     // Sound file (trip_reminder.wav) is ~3 seconds long.
-    // Schedule repeats after sound completes to avoid overlap.
-    private const val REPEAT_DELAY_1_MS = 4000L  // +4s (after first play finishes)
-    private const val REPEAT_DELAY_2_MS = 8000L  // +8s (after second play finishes)
+    // Schedule repeats every 8s to avoid overlap (~5s gap between plays).
+    private const val REPEAT_INTERVAL_MS = 8000L
+    private const val MAX_REPEATS = 7  // 7 repeats × 8s = 56s coverage
 
     // Fixed notification IDs per type — forces Android to REPLACE (not stack).
     private const val NOTIF_ID_NEW_ORDER = 2000
     private const val NOTIF_ID_UNASSIGNED = 2001
     private const val NOTIF_ID_TRIP_REMINDER = 2002
 
-    // Fixed request codes for sound repeat alarms (new order overwrites old).
-    private const val ALARM_RC_REPEAT_1 = 22001
-    private const val ALARM_RC_REPEAT_2 = 22002
+    // Fixed request code base for sound repeat alarms (new order overwrites old).
+    private const val ALARM_RC_REPEAT_BASE = 22000
 
     // Track current active orderId for cancellation
     @Volatile
@@ -492,14 +492,9 @@ object NotificationHelper {
     /**
      * Check if the app process is currently in the foreground.
      */
-    private fun isForeground(context: Context): Boolean {
-        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        val appProcesses = am.runningAppProcesses ?: return false
-        val packageName = context.packageName
-        return appProcesses.any {
-            it.processName == packageName &&
-            it.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-        }
+    private fun isForeground(@Suppress("UNUSED_PARAMETER") context: Context): Boolean {
+        return ProcessLifecycleOwner.get().lifecycle.currentState
+            .isAtLeast(Lifecycle.State.STARTED)
     }
 
     /**
@@ -524,37 +519,33 @@ object NotificationHelper {
     private fun scheduleSoundRepeats(context: Context, orderId: String, notificationId: Int) {
         val appContext = context.applicationContext
 
-        // Mark repeats as pending (both slots unplayed)
-        appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+        // Mark all repeat slots as pending
+        val editor = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
             .putBoolean("pending_$orderId", true)
-            .putBoolean("played_1_$orderId", false)
-            .putBoolean("played_2_$orderId", false)
-            .apply()
+        for (i in 1..MAX_REPEATS) {
+            editor.putBoolean("played_${i}_$orderId", false)
+        }
+        editor.apply()
 
         // PRIMARY: Handler.postDelayed fires reliably while process is alive
-        // (no SCHEDULE_EXACT_ALARM permission required).
         val handler = Handler(Looper.getMainLooper())
-        handler.postDelayed({
-            if (consumePendingRepeat(appContext, orderId, 1)) {
-                Log.d(TAG, "Handler repeat 1 playing for order $orderId")
-                playSoundOnce(appContext)
-            }
-        }, REPEAT_DELAY_1_MS)
-        handler.postDelayed({
-            if (consumePendingRepeat(appContext, orderId, 2)) {
-                Log.d(TAG, "Handler repeat 2 playing for order $orderId")
-                playSoundOnce(appContext)
-            }
-        }, REPEAT_DELAY_2_MS)
+        for (i in 1..MAX_REPEATS) {
+            val delayMs = REPEAT_INTERVAL_MS * i
+            handler.postDelayed({
+                if (consumePendingRepeat(appContext, orderId, i)) {
+                    Log.d(TAG, "Handler repeat $i/$MAX_REPEATS playing for order $orderId")
+                    playSoundOnce(appContext)
+                }
+            }, delayMs)
+        }
 
-        // BACKUP: AlarmManager fires even if process is killed before +2s/+4s.
-        // Uses setExactAndAllowWhileIdle when SCHEDULE_EXACT_ALARM is granted,
-        // falls back to set() otherwise.
+        // BACKUP: AlarmManager fires even if process is killed.
         val am = appContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        scheduleOneRepeat(appContext, am, orderId, notificationId, REPEAT_DELAY_1_MS, repeatNum = 1)
-        scheduleOneRepeat(appContext, am, orderId, notificationId, REPEAT_DELAY_2_MS, repeatNum = 2)
+        for (i in 1..MAX_REPEATS) {
+            scheduleOneRepeat(appContext, am, orderId, notificationId, REPEAT_INTERVAL_MS * i, repeatNum = i)
+        }
 
-        Log.d(TAG, "Sound repeats scheduled (Handler + AlarmManager) for order $orderId")
+        Log.d(TAG, "Sound repeats scheduled ($MAX_REPEATS repeats, Handler + AlarmManager) for order $orderId")
     }
 
     /**
@@ -609,9 +600,8 @@ object NotificationHelper {
             putExtra(SoundRepeatReceiver.EXTRA_ORDER_ID, orderId)
             putExtra(SoundRepeatReceiver.EXTRA_REPEAT_NUM, repeatNum)
         }
-        // Fixed request codes: new order's alarms automatically overwrite the old
-        // order's alarms via FLAG_UPDATE_CURRENT, preventing stale sound plays.
-        val requestCode = if (repeatNum == 1) ALARM_RC_REPEAT_1 else ALARM_RC_REPEAT_2
+        // Fixed request codes per slot: new order's alarms overwrite old via FLAG_UPDATE_CURRENT.
+        val requestCode = ALARM_RC_REPEAT_BASE + repeatNum
         val pi = PendingIntent.getBroadcast(
             context, requestCode, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -649,22 +639,22 @@ object NotificationHelper {
      * Call when: notification tapped, dismissed, order accepted/rejected.
      */
     fun cancelSoundRepeats(context: Context, orderId: String) {
-        // Clear pending flag and played flags
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .edit()
+        // Clear pending flag and all played flags
+        val editor = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
             .remove("pending_$orderId")
-            .remove("played_1_$orderId")
-            .remove("played_2_$orderId")
-            .apply()
+        for (i in 1..MAX_REPEATS) {
+            editor.remove("played_${i}_$orderId")
+        }
+        editor.apply()
 
-        // Cancel AlarmManager PendingIntents using fixed request codes
+        // Cancel all AlarmManager PendingIntents
         val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        for (rc in listOf(ALARM_RC_REPEAT_1, ALARM_RC_REPEAT_2)) {
+        for (i in 1..MAX_REPEATS) {
             val intent = Intent(context, SoundRepeatReceiver::class.java).apply {
                 action = SoundRepeatReceiver.ACTION
             }
             val pi = PendingIntent.getBroadcast(
-                context, rc, intent,
+                context, ALARM_RC_REPEAT_BASE + i, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             am.cancel(pi)

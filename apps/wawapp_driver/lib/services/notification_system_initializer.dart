@@ -4,6 +4,7 @@ import 'battery_optimization_manager.dart';
 import 'fcm_token_manager.dart';
 import 'missed_notification_recovery.dart';
 import 'notification_health_monitor.dart';
+import 'orders_service.dart';
 
 /// Post-login notification system initializer.
 ///
@@ -63,7 +64,10 @@ class NotificationSystemInitializer {
         await monitor.autoRepair();
       }
 
-      // 5. Start missed notification recovery
+      // 5. Sync native active trip flag with Firestore
+      await OrdersService.syncActiveTripFlagOnStartup();
+
+      // 6. Start missed notification recovery
       await MissedNotificationRecovery().start();
 
       _initialized = true;
