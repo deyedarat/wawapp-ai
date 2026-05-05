@@ -259,8 +259,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     putExtra("notificationId", notificationId)
                     putExtra("offerId", offerId)
                 }
-                applicationContext.startActivity(fsIntent)
-                Log.d(TAG, "FullScreenNotificationActivity launched directly for order $orderId")
+                // On Android 12+: startActivity from background requires SYSTEM_ALERT_WINDOW.
+                // If not granted, the notification's fullScreenIntent handles lock-screen,
+                // and heads-up handles unlocked state (acceptable fallback).
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
+                    && !android.provider.Settings.canDrawOverlays(applicationContext)) {
+                    Log.d(TAG, "Overlay permission not granted — relying on fullScreenIntent fallback")
+                } else {
+                    applicationContext.startActivity(fsIntent)
+                    Log.d(TAG, "FullScreenNotificationActivity launched directly for order $orderId")
+                }
             } catch (e: Exception) {
                 Log.w(TAG, "Direct activity launch failed (notification fallback active): ${e.message}")
             }

@@ -43,12 +43,13 @@ class MainActivity : FlutterActivity() {
             )
         }
 
+        // Request overlay permission for full-screen notifications over other apps (Android 12+)
+        requestOverlayPermissionIfNeeded()
+
         // Cancel notification if opened from full-screen intent
         cancelNotificationIfNeeded()
 
         // Push onCreate intent to EventChannel + cache as fallback.
-        // This handles the cold-start case where FullScreenNotificationActivity
-        // launched MainActivity with accept/reject action while app was killed.
         dispatchActionIntent(intent)
     }
 
@@ -214,12 +215,20 @@ class MainActivity : FlutterActivity() {
                     val granted = requestFullScreenIntentPermission()
                     result.success(granted)
                 }
+                "canDrawOverlays" -> {
+                    result.success(Settings.canDrawOverlays(this))
+                }
+                "requestOverlayPermission" -> {
+                    requestOverlayPermissionIfNeeded()
+                    result.success(true)
+                }
                 "getAllPermissionStatuses" -> {
                     val statuses = mapOf(
                         "batteryOptimizationDisabled" to isBatteryOptimizationDisabled(),
                         "canBypassDnd" to canBypassDnd(),
                         "canScheduleExactAlarms" to canScheduleExactAlarms(),
-                        "canUseFullScreenIntent" to canUseFullScreenIntent()
+                        "canUseFullScreenIntent" to canUseFullScreenIntent(),
+                        "canDrawOverlays" to Settings.canDrawOverlays(this)
                     )
                     result.success(statuses)
                 }
@@ -341,6 +350,32 @@ class MainActivity : FlutterActivity() {
             }
         } else {
             true // Not needed on older Android versions
+        }
+    }
+
+    /**
+     * Request SYSTEM_ALERT_WINDOW permission for launching FullScreenNotificationActivity
+     * over other apps on Android 12+. Only prompts once per install.
+     */
+    private fun requestOverlayPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            val prefs = getSharedPreferences("overlay_perm", Context.MODE_PRIVATE)
+            if (prefs.getBoolean("asked", false)) return // Only ask once
+            prefs.edit().putBoolean("asked", true).apply()
+
+            // Show explanation via system dialog then open settings
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            try {
+                startActivity(intent)
+                android.widget.Toast.makeText(
+                    this,
+                    "يحتاج التطبيق صلاحية الظهور فوق التطبيقات الأخرى لعرض طلبات الشحن الجديدة",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+            } catch (_: Exception) {}
         }
     }
 

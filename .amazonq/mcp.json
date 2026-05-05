@@ -11,6 +11,14 @@
             "command": "C:\\Users\\hp\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\android-mcp.exe",
             "args": [],
             "env": {}
+        },
+        "mobile-mcp": {
+            "command": "npx",
+            "args": ["-y", "@mobilenext/mobile-mcp@latest"],
+            "env": {
+                "PATH": "C:\\Users\\user\\AppData\\Roaming\\npm\\node_modules\\@mobilenext\\mobile-mcp\\node_modules\\.bin;C:\\Users\\user\\AppData\\Local\\Android\\Sdk\\platform-tools;C:\\nvm4w\\nodejs;%PATH%",
+                "ANDROID_HOME": "C:\\Users\\user\\AppData\\Local\\Android\\Sdk"
+            }
         }
     }
 }

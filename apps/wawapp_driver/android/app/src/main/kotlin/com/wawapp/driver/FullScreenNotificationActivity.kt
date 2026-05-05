@@ -67,14 +67,12 @@ class FullScreenNotificationActivity : Activity() {
 
     private fun setupLockScreenBehavior() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            // Modern API (Android 8.1+)
             setShowWhenLocked(true)
             setTurnScreenOn(true)
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
             keyguardManager.requestDismissKeyguard(this, null)
         } else {
-            // Legacy API (Android < 8.1)
             @Suppress("DEPRECATION")
             window.addFlags(
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
@@ -82,6 +80,10 @@ class FullScreenNotificationActivity : Activity() {
                 WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
             )
+        }
+        // Ensure activity is visible over lock screen and other apps
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
     }
 
