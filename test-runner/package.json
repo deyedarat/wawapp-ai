@@ -1,0 +1,10 @@
+{
+  "name": "wawapp-test-runner",
+  "version": "2.0.0",
+  "description": "E2E test runner for WawApp — pure ADB, two real devices, no Firebase Admin",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "dependencies": {}
+}
