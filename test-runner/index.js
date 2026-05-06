@@ -317,6 +317,31 @@ function monitorLogcat(device, tags, pattern, timeoutMs = 30000) {
 }
 
 // ============================================================================
+// RESET STATE
+// ============================================================================
+
+/**
+ * Reset both devices to a clean state before each scenario.
+ * Force-stops and relaunches both apps.
+ */
+async function resetState() {
+  // CLIENT
+  adb(CLIENT_DEVICE, 'shell input keyevent 3');
+  adb(CLIENT_DEVICE, `shell am force-stop ${CLIENT_PKG}`);
+  await sleep(1000);
+  adb(CLIENT_DEVICE, `shell am start -n ${CLIENT_ACTIVITY}`);
+  await sleep(3000);
+
+  // DRIVER
+  adb(DRIVER_DEVICE, 'shell cmd statusbar collapse');
+  adb(DRIVER_DEVICE, 'shell input keyevent 3');
+  adb(DRIVER_DEVICE, `shell am force-stop ${DRIVER_PKG}`);
+  await sleep(1000);
+  adb(DRIVER_DEVICE, `shell am start -n ${DRIVER_ACTIVITY}`);
+  await sleep(5000);
+}
+
+// ============================================================================
 // CLIENT NAVIGATION (UI-Aware)
 // ============================================================================
 
@@ -486,6 +511,8 @@ async function scenario1_newOrderBackground() {
   let notes = '';
 
   try {
+    await resetState();
+
     // Wake both devices
     wakeAndUnlock(CLIENT_DEVICE);
     const driverReady = ensureDriverReady(DRIVER_DEVICE);
@@ -559,6 +586,8 @@ async function scenario2_driverAccept() {
   let notes = '';
 
   try {
+    await resetState();
+
     wakeAndUnlock(DRIVER_DEVICE);
     await sleep(1000);
 
@@ -612,6 +641,8 @@ async function scenario3_clientCancels() {
   let notes = '';
 
   try {
+    await resetState();
+
     wakeAndUnlock(CLIENT_DEVICE);
     const driverReady = ensureDriverReady(DRIVER_DEVICE);
     if (!driverReady) {
@@ -708,6 +739,8 @@ async function scenario6_driverLocked() {
   let notes = '';
 
   try {
+    await resetState();
+
     wakeAndUnlock(CLIENT_DEVICE);
     const driverReady = ensureDriverReady(DRIVER_DEVICE);
     if (!driverReady) {
@@ -790,6 +823,8 @@ async function scenario5_noResponseTTL() {
   let notes = '';
 
   try {
+    await resetState();
+
     wakeAndUnlock(CLIENT_DEVICE);
     const driverReady = ensureDriverReady(DRIVER_DEVICE);
     if (!driverReady) {

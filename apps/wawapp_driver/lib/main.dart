@@ -8,6 +8,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_skill/flutter_skill.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,6 +50,8 @@ void main() async {
     }
 
     WidgetsFlutterBinding.ensureInitialized();
+
+    if (kDebugMode) FlutterSkillBinding.ensureInitialized();
 
     // Initialize Firebase with retry logic to handle race conditions
     // Firebase may auto-initialize in parallel on Android

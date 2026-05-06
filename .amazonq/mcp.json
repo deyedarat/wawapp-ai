@@ -23,6 +23,10 @@
                 "PATH": "C:\\Users\\user\\AppData\\Local\\Android\\Sdk\\platform-tools;C:\\nvm4w\\nodejs;%PATH%",
                 "ANDROID_HOME": "C:\\Users\\user\\AppData\\Local\\Android\\Sdk"
             }
+        },
+        "flutter-skill": {
+            "command": "flutter-skill",
+            "args": ["server"]
         }
     }
 }
