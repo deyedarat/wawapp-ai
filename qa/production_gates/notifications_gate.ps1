@@ -1,7 +1,9 @@
 # ============================================================================
-# WawApp QA — Production Gate: Notifications
+# WawApp QA - Production Gate: Notifications
 # ============================================================================
-# Runs all notification reliability tests.
+# Gate verdict depends ONLY on PASS_FAIL.txt contents from test artifacts.
+# A script can execute successfully (RUNTIME_PASS) but still FAIL the test.
+#
 # Exit 0 = gate passed, Exit 1 = gate blocked
 # ============================================================================
 
@@ -9,73 +11,116 @@ param()
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\..\scripts\lib\common.ps1"
+. "$PSScriptRoot\..\scripts\lib\verdict.ps1"
 
 $GateName = "NOTIFICATIONS"
 
 Write-QA-Banner "Production Gate: $GateName"
 
-$scripts = @(
-    "$PSScriptRoot\..\scripts\run_notification_killed_state.ps1"
-    "$PSScriptRoot\..\scripts\run_notification_spam.ps1"
+# ============================================================================
+# TEST REGISTRY
+# ============================================================================
+$tests = @(
+    @{ Name = "notification_killed_state"; Script = "$PSScriptRoot\..\scripts\run_notification_killed_state.ps1"; Prefix = "N3" }
+    @{ Name = "notification_spam";         Script = "$PSScriptRoot\..\scripts\run_notification_spam.ps1";         Prefix = "SPAM" }
 )
 
-$results = @()
+$artifactsRoot = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\qa\artifacts")
+
+# ============================================================================
+# EXECUTE TESTS & CLASSIFY
+# ============================================================================
+$classifications = @()
 $gateStart = Get-Date
 
-foreach ($script in $scripts) {
-    $name = [System.IO.Path]::GetFileNameWithoutExtension($script) -replace "^run_", ""
-    Write-QA-Step "Running: $name"
+foreach ($test in $tests) {
+    Write-QA-Step "Running: $($test.Name)"
 
     $runStart = Get-Date
-    $verdict = "PASS"
-    $reason = ""
+    $runtimeSuccess = $true
+    $runtimeError = ""
 
     try {
-        & $script
+        & $test.Script
         $code = $LASTEXITCODE
         if ($null -eq $code) { $code = 0 }
-        if ($code -ne 0) { $verdict = "FAIL"; $reason = "Exit code: $code" }
-    } catch {
-        $verdict = "FAIL"; $reason = "$_"
-    }
-
-    # Read verdict from latest artifact
-    $artifactsRoot = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\qa\artifacts")
-    $latest = Get-ChildItem -Path $artifactsRoot -Directory -ErrorAction SilentlyContinue |
-        Sort-Object CreationTime -Descending | Select-Object -First 1
-
-    if ($latest) {
-        $passFile = Join-Path $latest.FullName "PASS_FAIL.txt"
-        if (Test-Path $passFile) {
-            $content = Get-Content $passFile -Raw
-            if ($content -match "VERDICT:\s*(PASS|FAIL)") { $verdict = $Matches[1] }
-            if ($content -match "REASONS:\s*(.+)" -and $Matches[1].Trim()) { $reason = $Matches[1].Trim() }
+        if ($code -ne 0) {
+            $runtimeSuccess = $false
+            $runtimeError = "Exit code: $code"
         }
+    } catch {
+        $runtimeSuccess = $false
+        $runtimeError = "$_"
     }
+
+    # Classify: runtime status + test verdict from PASS_FAIL.txt
+    $classification = Get-QA-RunClassification `
+        -ScriptName $test.Name `
+        -ArtifactsRoot $artifactsRoot `
+        -ScenarioPrefix $test.Prefix `
+        -RuntimeSuccess $runtimeSuccess `
+        -RuntimeError $runtimeError
 
     $duration = [math]::Round(((Get-Date) - $runStart).TotalSeconds, 1)
-    $results += @{ Name = $name; Verdict = $verdict; Duration = $duration; Reason = $reason }
+    $classification.Duration = $duration
 
-    if ($verdict -eq "PASS") { Write-QA-Pass "$name (${duration}s)" }
-    else { Write-QA-Fail "$name (${duration}s): $reason" }
+    Write-QA-Classification $classification
+    $classifications += $classification
+
+    Write-Host ""
 }
 
+# ============================================================================
+# GATE VERDICT (depends ONLY on test verdicts, NOT runtime exit codes)
+# ============================================================================
 $gateEnd = Get-Date
 $totalDuration = [math]::Round(($gateEnd - $gateStart).TotalSeconds, 1)
-$failed = ($results | Where-Object { $_.Verdict -eq "FAIL" }).Count
-$gateVerdict = if ($failed -eq 0) { "PASSED" } else { "BLOCKED" }
 
+$blocked = @($classifications | Where-Object { $_.GateDecision -eq "GATE_BLOCKED" })
+$passed  = @($classifications | Where-Object { $_.GateDecision -eq "GATE_PASS" })
+
+$gateVerdict = if ($blocked.Count -eq 0) { "PASSED" } else { "BLOCKED" }
+
+# ============================================================================
+# SUMMARY
+# ============================================================================
 Write-Host ""
-if ($gateVerdict -eq "PASSED") { Write-QA-Pass "Gate $GateName : PASSED (${totalDuration}s)" }
-else { Write-QA-Fail "Gate $GateName : BLOCKED (${totalDuration}s)" }
+Write-Host "-------------------------------------------------------" -ForegroundColor DarkYellow
+Write-Host "  Gate: $GateName" -ForegroundColor DarkYellow
+Write-Host "-------------------------------------------------------" -ForegroundColor DarkYellow
 
-# Return structured result for release_gate
-$global:GateResult = @{
-    Gate     = $GateName
-    Verdict  = $gateVerdict
-    Duration = $totalDuration
-    Results  = $results
-    Failed   = $failed
+foreach ($c in $classifications) {
+    $icon = if ($c.GateDecision -eq "GATE_PASS") { "[PASS]" } else { "[BLOCK]" }
+    $rt = $c.RuntimeStatus
+    $tv = $c.TestVerdict
+    $dur = $c.Duration
+    $color = if ($c.GateDecision -eq "GATE_PASS") { "Green" } else { "Red" }
+    Write-Host "  $icon $($c.Script)  [$rt | $tv]  ${dur}s" -ForegroundColor $color
+    if ($c.TestReasons.Count -gt 0) {
+        $c.TestReasons | ForEach-Object { Write-Host "       > $_" -ForegroundColor DarkRed }
+    }
 }
 
-if ($failed -gt 0) { exit 1 } else { exit 0 }
+Write-Host "-------------------------------------------------------" -ForegroundColor DarkYellow
+
+$durationLabel = "${totalDuration}s"
+if ($gateVerdict -eq "PASSED") {
+    Write-QA-Pass "Gate $GateName : PASSED $durationLabel"
+} else {
+    $blockedCount = $blocked.Count
+    Write-QA-Fail "Gate $GateName : BLOCKED $durationLabel - $blockedCount tests failed"
+}
+
+# ============================================================================
+# STRUCTURED RESULT
+# ============================================================================
+$global:GateResult = @{
+    Gate            = $GateName
+    Verdict         = $gateVerdict
+    Duration        = $totalDuration
+    Classifications = $classifications
+    Passed          = $passed.Count
+    Blocked         = $blocked.Count
+}
+
+if ($blocked.Count -gt 0) { exit 1 } else { exit 0 }

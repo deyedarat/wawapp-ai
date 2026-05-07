@@ -1,7 +1,9 @@
 # ============================================================================
-# WawApp QA — Release Gate (Master Orchestrator)
+# WawApp QA - Release Gate (Master Orchestrator)
 # ============================================================================
 # Runs all production gates sequentially.
+# Gate approval depends ONLY on test verdicts from PASS_FAIL.txt artifacts.
+#
 # Exit 0 = release approved, Exit 1 = release blocked
 #
 # Usage:
@@ -15,11 +17,12 @@ param(
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\..\scripts\lib\common.ps1"
+. "$PSScriptRoot\..\scripts\lib\verdict.ps1"
 
 Write-QA-Banner "WawApp Release Gate"
 
 # ============================================================================
-# GATE REGISTRY (order matters)
+# GATE REGISTRY
 # ============================================================================
 $gates = @(
     @{ Name = "NOTIFICATIONS"; Script = "$PSScriptRoot\notifications_gate.ps1" }
@@ -36,11 +39,13 @@ $blockingGate = ""
 
 foreach ($gate in $gates) {
     Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkYellow
+    Write-Host "========================================================" -ForegroundColor DarkYellow
     Write-QA-Step "Gate: $($gate.Name)"
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor DarkYellow
+    Write-Host "========================================================" -ForegroundColor DarkYellow
 
     $gateStart = Get-Date
+    $runtimeStatus = "RUNTIME_PASS"
+    $testStatus = "TEST_PASS"
     $verdict = "PASSED"
     $reason = ""
 
@@ -48,27 +53,38 @@ foreach ($gate in $gates) {
         & $gate.Script
         $code = $LASTEXITCODE
         if ($null -eq $code) { $code = 0 }
-        if ($code -ne 0) { $verdict = "BLOCKED"; $reason = "Gate returned exit code $code" }
+        if ($code -ne 0) {
+            $runtimeStatus = "RUNTIME_PASS"
+            $testStatus = "TEST_FAIL"
+            $verdict = "BLOCKED"
+            $reason = "Gate test verdict: FAIL exit code $code"
+        }
     } catch {
-        $verdict = "BLOCKED"; $reason = "$_"
+        $runtimeStatus = "RUNTIME_FAIL"
+        $testStatus = "TEST_FAIL"
+        $verdict = "BLOCKED"
+        $reason = "Runtime exception: $_"
     }
 
     $gateDuration = [math]::Round(((Get-Date) - $gateStart).TotalSeconds, 1)
 
     $gateResults += @{
-        Name     = $gate.Name
-        Verdict  = $verdict
-        Duration = $gateDuration
-        Reason   = $reason
+        Name          = $gate.Name
+        Verdict       = $verdict
+        RuntimeStatus = $runtimeStatus
+        TestStatus    = $testStatus
+        Duration      = $gateDuration
+        Reason        = $reason
     }
 
+    $durLabel = "${gateDuration}s"
     if ($verdict -eq "PASSED") {
-        Write-QA-Pass "Gate $($gate.Name): PASSED (${gateDuration}s)"
+        Write-QA-Pass "Gate $($gate.Name): PASSED [$runtimeStatus | $testStatus] $durLabel"
     } else {
-        Write-QA-Fail "Gate $($gate.Name): BLOCKED (${gateDuration}s)"
+        Write-QA-Fail "Gate $($gate.Name): BLOCKED [$runtimeStatus | $testStatus] $durLabel"
         if (-not $blockingGate) { $blockingGate = $gate.Name }
         if ($StopOnFailure) {
-            Write-QA-Warn "StopOnFailure — skipping remaining gates"
+            Write-QA-Warn "StopOnFailure - skipping remaining gates"
             break
         }
     }
@@ -79,8 +95,8 @@ foreach ($gate in $gates) {
 # ============================================================================
 $releaseEnd = Get-Date
 $totalDuration = [math]::Round(($releaseEnd - $releaseStart).TotalSeconds, 1)
-$passedGates = ($gateResults | Where-Object { $_.Verdict -eq "PASSED" }).Count
-$blockedGates = ($gateResults | Where-Object { $_.Verdict -eq "BLOCKED" }).Count
+$passedGates = @($gateResults | Where-Object { $_.Verdict -eq "PASSED" }).Count
+$blockedGates = @($gateResults | Where-Object { $_.Verdict -eq "BLOCKED" }).Count
 $releaseVerdict = if ($blockedGates -eq 0) { "APPROVED" } else { "BLOCKED" }
 
 # ============================================================================
@@ -93,9 +109,11 @@ $reportTimestamp = Get-QA-Timestamp
 $reportFile = Join-Path $reportsDir "release_gate_$reportTimestamp.md"
 
 $gateRows = ($gateResults | ForEach-Object {
-    $icon = if ($_.Verdict -eq "PASSED") { "✅" } else { "🚫" }
-    "| $($_.Name) | $icon $($_.Verdict) | $($_.Duration)s | $($_.Reason) |"
+    $icon = if ($_.Verdict -eq "PASSED") { "PASS" } else { "BLOCK" }
+    "| $($_.Name) | $icon $($_.Verdict) | $($_.RuntimeStatus) | $($_.TestStatus) | $($_.Duration)s | $($_.Reason) |"
 }) -join "`n"
+
+$blockLabel = if ($blockingGate) { $blockingGate } else { "none" }
 
 $report = @"
 # Release Gate Report
@@ -104,16 +122,31 @@ $report = @"
 
 | Field | Value |
 |-------|-------|
-| **Verdict** | **$releaseVerdict** |
+| Verdict | **$releaseVerdict** |
 | Timestamp | $reportTimestamp |
 | Total duration | ${totalDuration}s |
-| Blocking gate | $(if ($blockingGate) { $blockingGate } else { "—" }) |
+| Blocking gate | $blockLabel |
 
 ## Gate Results
 
-| Gate | Verdict | Duration | Reason |
-|------|---------|----------|--------|
+| Gate | Verdict | Runtime | Test | Duration | Reason |
+|------|---------|---------|------|----------|--------|
 $gateRows
+
+## Classification Legend
+
+| Classification | Meaning |
+|----------------|---------|
+| RUNTIME_PASS | Script executed without crash/exception |
+| RUNTIME_FAIL | Script crashed, threw, or timed out |
+| TEST_PASS | PASS_FAIL.txt contains VERDICT: PASS |
+| TEST_FAIL | PASS_FAIL.txt contains VERDICT: FAIL or missing/malformed |
+| GATE_BLOCKED | Release cannot proceed due to TEST_FAIL |
+
+## Key Principle
+
+A script can execute successfully RUNTIME_PASS but still FAIL the test.
+Gate approval depends ONLY on test verdicts from PASS_FAIL.txt artifacts.
 
 ## Summary
 
@@ -126,40 +159,31 @@ $gateRows
 
 ## Release Criteria
 
-- All gates must pass for release approval
-- Any single gate failure blocks the release
-- Notification gate is the highest-priority blocker
-
-## Next Steps
-
-$(if ($releaseVerdict -eq "APPROVED") {
-"- ✅ All gates passed — release is approved
-- Proceed with APK signing and Play Store upload"
-} else {
-"- 🚫 Release blocked by: **$blockingGate**
-- Fix the failing tests before re-running
-- Re-run: ``.\qa\production_gates\release_gate.ps1``"
-})
+- All gates must have TEST_PASS for release approval
+- Any single TEST_FAIL blocks the release GATE_BLOCKED
+- RUNTIME_PASS alone does NOT constitute gate approval
+- Missing or malformed PASS_FAIL.txt = TEST_FAIL
 "@
 
 $report | Out-File $reportFile -Encoding utf8
-Write-QA-Info "Report → $reportFile"
+Write-QA-Info "Report: $reportFile"
 
 # ============================================================================
 # FINAL OUTPUT
 # ============================================================================
 Write-Host ""
-Write-Host "═══════════════════════════════════════════════════════" -ForegroundColor Magenta
+Write-Host "========================================================" -ForegroundColor Magenta
 if ($releaseVerdict -eq "APPROVED") {
-    Write-Host "  🟢 RELEASE: APPROVED" -ForegroundColor Green
+    Write-Host "  RELEASE: APPROVED" -ForegroundColor Green
 } else {
-    Write-Host "  🔴 RELEASE: BLOCKED" -ForegroundColor Red
+    Write-Host "  RELEASE: BLOCKED" -ForegroundColor Red
     Write-Host "  Blocking gate: $blockingGate" -ForegroundColor Red
 }
+$totalLabel = "${totalDuration}s"
 Write-Host "  Gates: $passedGates passed, $blockedGates blocked" -ForegroundColor Gray
-Write-Host "  Duration: ${totalDuration}s" -ForegroundColor Gray
+Write-Host "  Duration: $totalLabel" -ForegroundColor Gray
 Write-Host "  Report: $reportFile" -ForegroundColor Gray
-Write-Host "═══════════════════════════════════════════════════════" -ForegroundColor Magenta
+Write-Host "========================================================" -ForegroundColor Magenta
 Write-Host ""
 
 if ($blockedGates -gt 0) { exit 1 } else { exit 0 }

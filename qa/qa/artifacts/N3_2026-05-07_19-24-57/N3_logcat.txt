@@ -1,0 +1,620 @@
+--------- beginning of main
+05-07 15:25:01.924  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:01.925   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+--------- beginning of system
+05-07 15:25:02.206  1476  1909 D ActivityManager: force stop from com.android.server.am.ActivityManagerService.forceStopPackage:4 com.android.server.am.ActivityManagerShellCommand.runForceStop:106 com.android.server.am.ActivityManagerShellCommand.onCommand:1744 
+05-07 15:25:02.207  1476  1909 I ActivityManager: Force stopping com.wawapp.driver appid=10372 user=0: from pid 26953
+05-07 15:25:02.214 28711 26957 I ContactsPerf: 10 task start
+05-07 15:25:02.214 28711 26957 I ContactsPerf: 10 task end
+05-07 15:25:02.215 28711 28711 I ContactsProvider: onTrimMemory-success
+05-07 15:25:02.216  1476  1909 I ActivityManager: Killing 26079:com.google.android.projection.gearhead:provider/u0a197 (adj 999): empty #17
+05-07 15:25:02.219  1476  1909 I ActivityManager: Killing 25932:com.google.android.tts/u0a213 (adj 999): empty #18
+05-07 15:25:02.240  1476  1751 D LocationManagerService: package com.wawapp.driver reset
+05-07 15:25:02.242  1900  1900 D CarrierSvcBindHelper: onHandleForceStop: [com.wawapp.driver]
+05-07 15:25:02.243  1900  1900 D CarrierSvcBindHelper: No carrier app for: 0
+05-07 15:25:02.243  1900  1900 D CarrierSvcBindHelper: No carrier app for: 1
+05-07 15:25:02.246  1928  2231 D SecSTQuickControlRequestReceiver: onReceive intent = Intent { act=android.intent.action.PACKAGE_RESTARTED dat=package: flg=0x4000010 (has extras) }
+05-07 15:25:02.251  1928  1928 D Navbar.Store: handleEvent(0) OnPackageRemoved(packageName=com.wawapp.driver) [Module] NavBarStoreImpl
+05-07 15:25:02.252  1928  1928 D Navbar.Store: --[Band]REMOTE_VIEW_PACK_PACKAGE_REMOVED
+05-07 15:25:02.253  1928  1928 D SecSTQuickControlRequestReceiver: onReceiveForPackage action = android.intent.action.PACKAGE_RESTARTED, pkgName = com.wawapp.driver
+05-07 15:25:02.262 22256 22256 I adbd    : Remote process closed the socket (on MSG_PEEK)
+05-07 15:25:02.263  1476  1518 I libprocessgroup: Removed cgroup /sys/fs/cgroup/uid_10197/pid_26079
+05-07 15:25:02.263   802   802 I Zygote  : Process 26079 exited due to signal 9 (Killed)
+05-07 15:25:02.265  1476  1505 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:02.270  1476  1670 D InputMethodManagerService: isImeSwitcherDisabledPackage : false
+05-07 15:25:02.272  1476  1505 D DisplayManagerService: Drop pending events for gone uid 10197
+05-07 15:25:02.283   802   802 I Zygote  : Process 25932 exited due to signal 9 (Killed)
+05-07 15:25:02.283  1476  1518 I libprocessgroup: Removed cgroup /sys/fs/cgroup/uid_10213/pid_25932
+05-07 15:25:02.284  1476  1505 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:02.288  1476  1505 D DisplayManagerService: Drop pending events for gone uid 10213
+05-07 15:25:02.426  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:02.427   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:02.929  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:02.930   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:03.431  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:03.432   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:03.713  1173  1173 I thermal_repeater: socket -1
+05-07 15:25:03.801   556   556 D io_stats: !@ 179,0 r 3498407 66868330 w 1157801 13692464 d 64859 13404312 f 280299 282202 iot 1173416 0 th 0 0 0 pt 0 inp 0 0 248280.132
+05-07 15:25:03.933  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:03.934   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:04.302   896   912 D ccci_mdinit: (1):monitor_time_update_thread round:12800 ########
+05-07 15:25:04.436  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:04.437   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:04.894  1476  1551 D MARsPolicyManager: triggerAction called!
+05-07 15:25:04.899  1476  1551 I NSLocationMonitor: getGPSUsingApps() called
+05-07 15:25:04.899  1476  1551 W NSLocationMonitor: NSMonitorService is not connected, return null
+05-07 15:25:04.938  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:04.939   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:05.370 28094 28133 W DGW     : W[onPingFailure:589] ConnectivityManager ping failure TransientError domain: MNSSecureTCP code: 1 detail: SecureTCP connection establish timeout
+05-07 15:25:05.440  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:05.440   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:05.801   556   556 D io_stats: !@ 179,0 r 3499531 66884610 w 1157801 13692464 d 64859 13404312 f 280299 282202 iot 1173640 0 th 0 0 0 pt 0 inp 0 0 248282.133
+05-07 15:25:05.802   556   556 D io_stats: !@ Read_top(KB): sh:normal(26961) 14296 sh:normal(26959) 932 system_server:h(1476) 692
+05-07 15:25:05.941  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:05.941   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:06.026 26963 26963 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-07 15:25:06.028 26963 26963 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-07 15:25:06.028 26963 26963 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-07 15:25:06.260 26961 26961 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+05-07 15:25:06.266  1476  2195 I EDMNativeHelperService: isScreenCaptureEnabled
+05-07 15:25:06.282  1476  2195 D RestrictionPolicy: isScreenCaptureEnabled : ret=true userId=0
+05-07 15:25:06.282 26961 26961 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+05-07 15:25:06.442  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:06.442   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:06.476 26961 26965 I GrallocExtra: gralloc_extra_query:is_SW3D 0
+05-07 15:25:06.477 26961 26961 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm
+05-07 15:25:06.477 26961 26961 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm-uncached
+05-07 15:25:06.477 26961 26961 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_svp_region
+05-07 15:25:06.477 26961 26961 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_region
+05-07 15:25:06.477 26961 26961 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_wfd_region
+05-07 15:25:06.526  3290 14397 W MediaProvider: isAppCloneUserPair for user 0: false
+05-07 15:25:06.562  3290 14397 W SQLiteLog: (28) walCheckpoint: eMode(0), mxFrame(271), /data/data/com.google.android.providers.media.module/databases/external.db-wal
+05-07 15:25:06.603  5451  5514 D MediaSync: loaded: 28ms, 0
+05-07 15:25:06.607  5451  5513 D SecMediaProvider: UPDATE /local/metadata 29396, 29445
+05-07 15:25:06.786  1476  2622 I ActivityManager: Broadcasting: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x400000 }
+05-07 15:25:06.788  1476  2622 I ActivityManager: Enqueued broadcast Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x400000 }: 0
+05-07 15:25:06.793  3290  3290 I MediaServiceV2: Creating work for intent Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-07 15:25:06.797  3290  3290 I MediaServiceV2: Work enqueued for intent: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-07 15:25:06.799  1476  1504 I ActivityManager: Broadcast completed: result=0
+05-07 15:25:06.829  3290  3485 D WM-SystemJobScheduler: Scheduling work ID 02412f63-b1d8-4dee-8591-10aaf44b2829Job ID 1196
+05-07 15:25:06.830 26961 26961 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x728b1ea848). Use sp<> to manage this object.
+05-07 15:25:06.839  3290  3290 D WM-SystemJobService: onStartJob for WorkGenerationalId(workSpecId=02412f63-b1d8-4dee-8591-10aaf44b2829, generation=0)
+05-07 15:25:06.841  3290  3485 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:25:06.841  3290  3485 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:25:06.841  3290  3485 D WM-GreedyScheduler: Starting work for 02412f63-b1d8-4dee-8591-10aaf44b2829
+05-07 15:25:06.843 26961 26961 D RefBase :   #00 pc 0000000000097cf0  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+144) (BuildId: 4f9ec6c2efd8ecb128681ec832af69ad)
+05-07 15:25:06.843 26961 26961 D RefBase :   #01 pc 000000000009c688  /apex/com.android.runtime/lib64/bionic/libc.so (exit+24) (BuildId: 4f9ec6c2efd8ecb128681ec832af69ad)
+05-07 15:25:06.843 26961 26961 D RefBase :   #02 pc 00000000000907c8  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+120) (BuildId: 4f9ec6c2efd8ecb128681ec832af69ad)
+05-07 15:25:06.849  3290  3485 D WM-Processor: Processor: processing WorkGenerationalId(workSpecId=02412f63-b1d8-4dee-8591-10aaf44b2829, generation=0)
+05-07 15:25:06.852  3290  3485 D WM-Processor: Work WorkGenerationalId(workSpecId=02412f63-b1d8-4dee-8591-10aaf44b2829, generation=0) is already enqueued for processing
+05-07 15:25:06.859  3290  3290 D WM-WorkerWrapper: Starting work for com.android.providers.media.MediaServiceV2
+05-07 15:25:06.863  3290 26976 I MediaServiceV2: Work initiated for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-07 15:25:06.898  3290 26976 I MediaServiceV2: Work ended for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-07 15:25:06.902  3290  3486 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=02412f63-b1d8-4dee-8591-10aaf44b2829, tags={ com.android.providers.media.MediaServiceV2 } ]
+05-07 15:25:06.909  3290  3290 D WM-Processor: Processor 02412f63-b1d8-4dee-8591-10aaf44b2829 executed; reschedule = false
+05-07 15:25:06.909  3290  3290 D WM-SystemJobService: 02412f63-b1d8-4dee-8591-10aaf44b2829 executed on JobScheduler
+05-07 15:25:06.929  3290  3486 D WM-SystemJobScheduler: Scheduling work ID 4ed2a44d-915e-4e9b-88b0-88b040f6bec0Job ID 1197
+05-07 15:25:06.933  3290  3486 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:25:06.934  3290  3486 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:25:06.937  3290  3486 D WM-GreedyScheduler: Cancelling work ID 02412f63-b1d8-4dee-8591-10aaf44b2829
+05-07 15:25:06.942  3290  3486 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:25:06.942  3290  3486 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:25:06.943  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:06.944   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:06.946  5451  5514 D MediaSync: loaded: 49ms, 1
+05-07 15:25:06.948  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:06.948  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:06.949  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:06.955  5451  5642 D MediaParseTask: scanItem: 1
+05-07 15:25:06.956  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:06.956  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:06.957  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:06.960  5451  5513 D SecMediaProvider: UPDATE /local/metadata 29445, 29446
+05-07 15:25:07.417  1476  4676 D PerProcessNandswap$NandswapHandler: nandswap start for non-activity com.samsung.android.scs(pid 26043) action:3 adj:250 type:2
+05-07 15:25:07.424 26043 26043 I SCS@AiSearch user 0: (ObserverWorker::AOSP_MP) [main] entering in startWork triggered by [content://media/external/file/1000004871]():  
+05-07 15:25:07.425 26043 26043 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [main] entering in onChange():  
+05-07 15:25:07.426 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [AOSP_MP-0] entering in collectChanges():  
+05-07 15:25:07.431  1476  2195 D PackageManager: setEnabledSetting : userId = 0 packageName = com.samsung.android.scs cmp = androidx.work.impl.background.systemalarm.RescheduleReceiver newState = 1 callingPackage = com.samsung.android.scs
+05-07 15:25:07.433  1476  2195 D ApplicationPolicy: getApplicationStateEnabled : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:07.435  1476  2195 D ApplicationPolicy: getApplicationComponentState : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:07.437  1476  4676 D PerProcessNandswap$NandswapHandler: nandswap end for non-activity com.samsung.android.scs(pid 26043) ret:8877699072 adj:250
+05-07 15:25:07.444  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:07.445   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:07.479 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchInternal values : maxSyncId: 1000004874 indexCount: 771 sourceCount: 772
+05-07 15:25:07.500 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in updateIndex():  
+05-07 15:25:07.501 26043 26101 I SCS@AiSearch user 0: (IndexManager) [UPDATE] index=com.google.android.providers.media, size=1, documents=[1000004871]
+05-07 15:25:07.501 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in updateDocumentList():  index: com.google.android.providers.media, updateList.size:1
+05-07 15:25:07.502 26043 26101 I SCS@AiSearch user 0: (IndexManager) getIndexWriter(): indexName com.google.android.providers.media
+05-07 15:25:07.518 26043 26101 I SCS@AiSearch user 0: (IndexManager) [UPDATE] Done indexName: com.google.android.providers.media updateList.size():1
+05-07 15:25:07.518 26043 26101 I SCS@AiSearch user 0: (IndexSearcherManager) [AOSP_MP-0] entering in refreshSearcherManager():  refreshSearcherManager for com.google.android.providers.media
+05-07 15:25:07.564 26043 26101 I SCS@AiSearch user 0: (IndexSearcherManager) [AOSP_MP-0] leaving from refreshSearcherManager():  
+05-07 15:25:07.564 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-07 15:25:07.564 26043 26140 I SCS@AiSearch user 0: (IndexManager) [pool-8-thread-1] entering in commitIndexWriter():  
+05-07 15:25:07.623 26043 26140 I SCS@AiSearch user 0: (IndexManager) [pool-8-thread-1] leaving from commitIndexWriter():  
+05-07 15:25:07.624 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] leaving from waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-07 15:25:07.624 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] leaving from updateIndex, result = true():  
+05-07 15:25:07.627 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetch: fetching took  175 ms
+05-07 15:25:07.627 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchChanges: applied 1 items
+05-07 15:25:07.803   556   556 D io_stats: !@ 179,0 r 3501079 66922842 w 1158041 13693492 d 64859 13404312 f 280315 282222 iot 1173960 0 th 0 0 0 pt 0 inp 0 0 248284.134
+05-07 15:25:07.946  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:07.947   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:08.411  3290  3290 D WM-DelayedWorkTracker: Scheduling work 4ed2a44d-915e-4e9b-88b0-88b040f6bec0
+05-07 15:25:08.413  3290  3290 D WM-GreedyScheduler: Starting tracking for 4ed2a44d-915e-4e9b-88b0-88b040f6bec0
+05-07 15:25:08.418  3290  3443 D WM-ConstraintTracker: BatteryNotLowTracker: initial state = true
+05-07 15:25:08.418  3290  3443 D WM-BrdcstRcvrCnstrntTrc: BatteryNotLowTracker: registering receiver
+05-07 15:25:08.420  3290  3443 D WM-GreedyScheduler: Constraints met: Scheduling work ID WorkGenerationalId(workSpecId=4ed2a44d-915e-4e9b-88b0-88b040f6bec0, generation=0)
+05-07 15:25:08.423  3290  3443 D WM-Processor: Processor: processing WorkGenerationalId(workSpecId=4ed2a44d-915e-4e9b-88b0-88b040f6bec0, generation=0)
+05-07 15:25:08.428  3290  3290 D WM-WorkerWrapper: Starting work for com.android.providers.media.photopicker.sync.ProactiveSyncWorker
+05-07 15:25:08.430  3290 26981 I PSyncWorker: Starting proactive picker sync from sync source: 1
+05-07 15:25:08.431  3290 26981 I PickerSyncTracker: Created new sync future java.util.concurrent.CompletableFuture@8af5f03[Not completed, 1 dependents]. Future map: {4ed2a44d-915e-4e9b-88b0-88b040f6bec0=java.util.concurrent.CompletableFuture@8af5f03[Not completed, 1 dependents]}
+05-07 15:25:08.433  3290 26981 D PickerSyncController: syncAllMediaFromProvider() LOCAL, auth=com.android.providers.media.photopicker, retry=true
+05-07 15:25:08.433  3290 26981 D PickerSyncController: getSyncRequestParams() LOCAL, auth=com.android.providers.media.photopicker
+05-07 15:25:08.448  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:08.448   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:08.455  3290  3697 I MediaProvider: Deleted 0 1 0 0 0 0 0 items on external_primary due to com.android.shell
+05-07 15:25:08.456  3290 26981 D PickerSyncController:    Latest ID/Gen=1603:0de52dc2-ca4d-425f-a8d9-82309a635c7c:external_primary/29446
+05-07 15:25:08.456  3290 26981 D PickerSyncController:    Cached ID/Gen=1603:0de52dc2-ca4d-425f-a8d9-82309a635c7c:external_primary/29404
+05-07 15:25:08.457  3290 26981 D PickerSyncController:    RESULT=SyncRequestParams{type=MEDIA_INCREMENTAL, gen=29404, latest=Bundle[{last_media_sync_generation=29446, media_collection_id=1603:0de52dc2-ca4d-425f-a8d9-82309a635c7c:external_primary}], pageSize=1000}
+05-07 15:25:08.457  3290 26981 I PickerSyncController: Executing SyncAdd. isLocal: true. authority: com.android.providers.media.photopicker
+05-07 15:25:08.457  3290 26981 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:25:08.458  3290 26981 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-51]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:08.458  3290 26981 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:08.458  3290 26981 D ExternalDbFacade: Token received for queryMedia = null
+05-07 15:25:08.470  3290 26981 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:25:08.471  3290 26981 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-51]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:08.471  3290 26981 D PickerSyncController: Clearing next page token for key: local_provider:media_add:resume
+05-07 15:25:08.471  3290 26981 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:08.472  3290 26981 D PickerNotificationSender: Sending a notification for media update
+05-07 15:25:08.473  5451  5514 D MediaSync: loaded: 20ms, 0
+05-07 15:25:08.473  3290 26981 D PickerNotificationSender: Sending a notification for merged album media update Favorites
+05-07 15:25:08.474  3290 26981 D PickerNotificationSender: Sending a notification for album media update Favorites
+05-07 15:25:08.475  3290 26981 D PickerNotificationSender: Sending a notification for merged album media update Videos
+05-07 15:25:08.475  3290 26981 D PickerNotificationSender: Sending a notification for album media update Videos
+05-07 15:25:08.476  3290 26981 I PickerSyncController: Paged sync successful. QueryArgs: Bundle[{android.provider.extra.SYNC_GENERATION=29404, android.provider.extra.PAGE_SIZE=1000}] Total Rows: 0
+05-07 15:25:08.477  3290 26981 I PickerSyncController: Executing SyncRemove. isLocal: true. authority: com.android.providers.media.photopicker
+05-07 15:25:08.477  3290 26981 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:25:08.477  3290 26981 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-51]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:08.477  3290 26981 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:08.482  3290 26981 E PickerDbFacade: Could not get first date taken millis for media id: 1000004871
+05-07 15:25:08.483  3290 26981 W PickerDbFacade: Unable to promote cloud media with localId: 1000004871
+05-07 15:25:08.484  3290 26981 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:25:08.484  3290 26981 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-51]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:08.484  3290 26981 D PickerSyncController: Clearing next page token for key: local_provider:media_remove:resume
+05-07 15:25:08.484  3290 26981 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:08.484  3290 26981 D PickerNotificationSender: Sending a notification for media update
+05-07 15:25:08.485  3290 26981 D PickerNotificationSender: Sending a notification for merged album media update Favorites
+05-07 15:25:08.486  3290 26981 D PickerNotificationSender: Sending a notification for album media update Favorites
+05-07 15:25:08.487  3290 26981 D PickerNotificationSender: Sending a notification for merged album media update Videos
+05-07 15:25:08.487  3290 26981 D PickerNotificationSender: Sending a notification for album media update Videos
+05-07 15:25:08.488  3290 26981 I PickerSyncController: Paged sync successful. QueryArgs: Bundle[{android.provider.extra.SYNC_GENERATION=29404, android.provider.extra.PAGE_SIZE=1000}] Total Rows: 0
+05-07 15:25:08.489  3290 26981 I PickerSyncTracker: Marked sync future complete for work id: 4ed2a44d-915e-4e9b-88b0-88b040f6bec0. Future map: {}
+05-07 15:25:08.489  3290 26981 I PSyncWorker: Completed picker proactive sync complete from local provider.
+05-07 15:25:08.491  3290  3443 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=4ed2a44d-915e-4e9b-88b0-88b040f6bec0, tags={ com.android.providers.media.photopicker.sync.ProactiveSyncWorker } ]
+05-07 15:25:08.493  3290  3290 D WM-Processor: Processor 4ed2a44d-915e-4e9b-88b0-88b040f6bec0 executed; reschedule = false
+05-07 15:25:08.493  3290  3290 D WM-GreedyScheduler: Stopping tracking for WorkGenerationalId(workSpecId=4ed2a44d-915e-4e9b-88b0-88b040f6bec0, generation=0)
+05-07 15:25:08.496  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:08.496  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:08.496  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:08.496  5451  5513 D SecMediaProvider: UPDATE /local/metadata 29445, 29451
+05-07 15:25:08.499  3290  3443 D WM-GreedyScheduler: Cancelling work ID 4ed2a44d-915e-4e9b-88b0-88b040f6bec0
+05-07 15:25:08.502  3290  3443 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:25:08.502  3290  3443 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:25:08.502  3290  3443 D WM-BrdcstRcvrCnstrntTrc: BatteryNotLowTracker: unregistering receiver
+05-07 15:25:08.714  1173  1173 I thermal_repeater: socket -1
+05-07 15:25:08.950  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:08.951   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:09.452  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:09.453   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:09.552  1476  3405 I ActivityManager: Broadcasting: Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }
+05-07 15:25:09.553  1476  1504 I ActivityManager: Broadcast completed: result=0
+05-07 15:25:09.553  1476  3405 I ActivityManager: Enqueued broadcast Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }: 0
+05-07 15:25:09.667 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) doesDataKeepChanging: postpone count: 0 - source count: very first = 776, previous = 776, current = 775
+05-07 15:25:09.805   556   556 D io_stats: !@ 179,0 r 3501151 66923218 w 1158043 13693500 d 64859 13404312 f 280315 282222 iot 1173980 0 th 0 0 0 pt 0 inp 0 0 248286.136
+05-07 15:25:09.805   556   556 D io_stats: !@ Read_top(KB): screencap:norma(26961) 29484 surfaceflinger:(881) 3492 kworker/u16:6:/(21601) 1328
+05-07 15:25:09.806   556   556 D io_stats: !@ Write_top(KB): rs.media.module(3290) 300 f2fs_ckpt-254:5(638) 248 ung.android.scs(26043) 176
+05-07 15:25:09.921  1476  1551 D MARsPolicyManager: triggerAction called!
+05-07 15:25:09.921  1476  1551 I NSLocationMonitor: getGPSUsingApps() called
+05-07 15:25:09.921  1476  1551 W NSLocationMonitor: NSMonitorService is not connected, return null
+05-07 15:25:09.954  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:09.956   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:10.457  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:10.458   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:10.810 24301 24301 D WM-DelayedWorkTracker: Scheduling work 35e99b92-8170-4e73-a58f-997701315d2f
+05-07 15:25:10.811 24301 24301 D WM-GreedyScheduler: Starting work for 35e99b92-8170-4e73-a58f-997701315d2f
+05-07 15:25:10.819 24301 26988 D WM-Processor: mko: processing WorkGenerationalId(workSpecId=35e99b92-8170-4e73-a58f-997701315d2f, generation=0)
+05-07 15:25:10.825 24301 26988 D MddListenableWorkerFactory: createWorker for class: com.google.apps.tiktok.contrib.work.TikTokListenableWorker
+05-07 15:25:10.831 24301 24301 D WM-WorkerWrapper: Starting work for com.google.apps.tiktok.contrib.work.TikTokListenableWorker
+05-07 15:25:10.850 24301 24301 I SyncManagerImpl: #sync(). Running Synclets and scheduling next sync.
+05-07 15:25:10.866 24301 24676 I SyncManagerImpl: Running synclets: [TemplateFetcherSynclet]
+05-07 15:25:10.870 24301 24417 I SyncManagerImpl: Starting synclet: TemplateFetcherSynclet
+05-07 15:25:10.876 24301 24674 I SyncManagerImpl: #sync() complete
+05-07 15:25:10.877 24301 24674 I SyncManagerImpl: Completed sync. Scheduling next wakeup
+05-07 15:25:10.878 24301 26988 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=35e99b92-8170-4e73-a58f-997701315d2f, tags={ com.google.apps.tiktok.contrib.work.TikTokListenableWorker,com.google.apps.tiktok.sync.impl.workmanager.SyncWorker,TikTokWorker#com.google.apps.tiktok.sync.impl.workmanager.SyncWorker } ]
+05-07 15:25:10.878 24301 24674 I SyncWorkManagerOneTimeS: Scheduling next onetime WorkManager workers
+05-07 15:25:10.880 24301 24301 D WM-Processor: mko 35e99b92-8170-4e73-a58f-997701315d2f executed; reschedule = false
+05-07 15:25:10.889 24301 26988 D WM-GreedyScheduler: Cancelling work ID 35e99b92-8170-4e73-a58f-997701315d2f
+05-07 15:25:10.893 24301 26988 D WM-GreedyScheduler: Ignoring {WorkSpec: 5b35a6a0-27c0-4667-8193-ed0cc8f30430}. Requires ContentUri triggers.
+05-07 15:25:10.893 24301 26988 D WM-GreedyScheduler: Ignoring {WorkSpec: b7a006dd-4f90-46cb-a9f4-20fea6c48ac2}. Requires ContentUri triggers.
+05-07 15:25:10.893 24301 26988 D WM-GreedyScheduler: Ignoring {WorkSpec: 84468b14-ba3b-4e56-b64a-fd81980c4c7b}. Requires ContentUri triggers.
+05-07 15:25:10.893 24301 26988 D WM-GreedyScheduler: Starting tracking for 4a3ee590-921a-414a-ba10-3bcf8fc36535,5f5c9bea-f19c-4046-b83e-6157bcbbd758,ecbf3d79-ad20-41d9-b33a-a1baabb8cc45,d29672ca-cb8d-4b93-9e53-2f0036d816e7,5df2eb4d-a12a-4cf5-925f-3f89eb8f7e97,924b99c8-a130-42e0-bd9f-2c2482b2f8b1
+05-07 15:25:10.909 24301 26988 D WM-SystemJobScheduler: Scheduling work ID 2ed2e04d-f6ef-4a6a-a5af-4782234a8e08Job ID 2329
+05-07 15:25:10.917 24301 26988 D WM-GreedyScheduler: Ignoring {WorkSpec: 5b35a6a0-27c0-4667-8193-ed0cc8f30430}. Requires ContentUri triggers.
+05-07 15:25:10.918 24301 26988 D WM-GreedyScheduler: Ignoring {WorkSpec: b7a006dd-4f90-46cb-a9f4-20fea6c48ac2}. Requires ContentUri triggers.
+05-07 15:25:10.918 24301 26988 D WM-GreedyScheduler: Ignoring {WorkSpec: 84468b14-ba3b-4e56-b64a-fd81980c4c7b}. Requires ContentUri triggers.
+05-07 15:25:10.918 24301 26988 D WM-GreedyScheduler: Starting tracking for 4a3ee590-921a-414a-ba10-3bcf8fc36535,5f5c9bea-f19c-4046-b83e-6157bcbbd758,ecbf3d79-ad20-41d9-b33a-a1baabb8cc45,d29672ca-cb8d-4b93-9e53-2f0036d816e7,5df2eb4d-a12a-4cf5-925f-3f89eb8f7e97,924b99c8-a130-42e0-bd9f-2c2482b2f8b1
+05-07 15:25:10.922 24301 26989 D WM-Processor: Processor cancelling c45b0e78-3ae1-4167-8445-5a11a69a7b36
+05-07 15:25:10.922 24301 26989 D WM-Processor: WorkerWrapper could not be found for c45b0e78-3ae1-4167-8445-5a11a69a7b36
+05-07 15:25:10.930 24301 26989 D WM-GreedyScheduler: Cancelling work ID c45b0e78-3ae1-4167-8445-5a11a69a7b36
+05-07 15:25:10.939 24301 26989 D WM-SystemJobScheduler: Scheduling work ID dd955ce8-bcb1-4d8d-91e1-1caf8df762c7Job ID 2330
+05-07 15:25:10.943 24301 26989 D WM-GreedyScheduler: Ignoring {WorkSpec: 5b35a6a0-27c0-4667-8193-ed0cc8f30430}. Requires ContentUri triggers.
+05-07 15:25:10.943 24301 26989 D WM-GreedyScheduler: Ignoring {WorkSpec: b7a006dd-4f90-46cb-a9f4-20fea6c48ac2}. Requires ContentUri triggers.
+05-07 15:25:10.943 24301 26989 D WM-GreedyScheduler: Ignoring {WorkSpec: 84468b14-ba3b-4e56-b64a-fd81980c4c7b}. Requires ContentUri triggers.
+05-07 15:25:10.943 24301 26989 D WM-GreedyScheduler: Starting tracking for 4a3ee590-921a-414a-ba10-3bcf8fc36535,5f5c9bea-f19c-4046-b83e-6157bcbbd758,ecbf3d79-ad20-41d9-b33a-a1baabb8cc45,d29672ca-cb8d-4b93-9e53-2f0036d816e7,5df2eb4d-a12a-4cf5-925f-3f89eb8f7e97,924b99c8-a130-42e0-bd9f-2c2482b2f8b1
+05-07 15:25:10.945 24301 26988 D WM-Processor: Processor cancelling f5b96d19-c35a-4ea2-a382-3adaef5e84eb
+05-07 15:25:10.945 24301 26988 D WM-Processor: WorkerWrapper could not be found for f5b96d19-c35a-4ea2-a382-3adaef5e84eb
+05-07 15:25:10.953 24301 26988 D WM-GreedyScheduler: Cancelling work ID f5b96d19-c35a-4ea2-a382-3adaef5e84eb
+05-07 15:25:10.959  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:10.960   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:10.961 24301 26988 D WM-SystemJobScheduler: Scheduling work ID 7eaa583d-c081-4d97-8655-cea9cf05c061Job ID 2331
+05-07 15:25:10.965 24301 26988 D WM-GreedyScheduler: Ignoring {WorkSpec: 5b35a6a0-27c0-4667-8193-ed0cc8f30430}. Requires ContentUri triggers.
+05-07 15:25:10.965 24301 26988 D WM-GreedyScheduler: Ignoring {WorkSpec: b7a006dd-4f90-46cb-a9f4-20fea6c48ac2}. Requires ContentUri triggers.
+05-07 15:25:10.965 24301 26988 D WM-GreedyScheduler: Ignoring {WorkSpec: 84468b14-ba3b-4e56-b64a-fd81980c4c7b}. Requires ContentUri triggers.
+05-07 15:25:10.965 24301 26988 D WM-GreedyScheduler: Starting tracking for 4a3ee590-921a-414a-ba10-3bcf8fc36535,5f5c9bea-f19c-4046-b83e-6157bcbbd758,ecbf3d79-ad20-41d9-b33a-a1baabb8cc45,d29672ca-cb8d-4b93-9e53-2f0036d816e7,5df2eb4d-a12a-4cf5-925f-3f89eb8f7e97,924b99c8-a130-42e0-bd9f-2c2482b2f8b1
+05-07 15:25:10.966 24301 26988 I SyncWorkManagerOneTimeS: Successfully scheduled next onetime workers
+05-07 15:25:11.035 26991 26991 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-07 15:25:11.037 26991 26991 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-07 15:25:11.037 26991 26991 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-07 15:25:11.461  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:11.462   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:11.807   556   556 D io_stats: !@ 179,0 r 3501182 66924042 w 1158097 13694560 d 64859 13404312 f 280315 282222 iot 1174000 0 th 0 0 0 pt 0 inp 0 0 248288.138
+05-07 15:25:11.963  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:11.965   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:11.979  5451  5673 D DelayedNotifier: notify for scanItem.
+05-07 15:25:11.982  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:12.466  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:12.467   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:12.698 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) doesDataKeepChanging: postpone count: 1 - source count: very first = 776, previous = 775, current = 775
+05-07 15:25:12.699 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [AOSP_MP-0] entering in collectChanges():  
+05-07 15:25:12.763 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchInternal values : maxSyncId: 1000004874 indexCount: 772 sourceCount: 771
+05-07 15:25:12.894 26043 26054 W ung.android.scs: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/Velvet/Velvet.apk' with 1 weak references
+05-07 15:25:12.968  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:12.969   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:13.000 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in deleteIndex():  ids.size():1
+05-07 15:25:13.000 26043 26101 I SCS@AiSearch user 0: (IndexManager) getIndexWriter(): indexName com.google.android.providers.media
+05-07 15:25:13.000 26043 26101 I SCS@AiSearch user 0: (IndexManager) [DELETE] indexName=[com.google.android.providers.media], #ids= 1
+05-07 15:25:13.001 26043 26101 I SCS@AiSearch user 0: (IndexSearcherManager) [AOSP_MP-0] entering in refreshSearcherManager():  refreshSearcherManager for com.google.android.providers.media
+05-07 15:25:13.005 26043 26071 I ung.android.scs: Waiting for a blocking GC ProfileSaver
+05-07 15:25:13.006 26043 26101 I SCS@AiSearch user 0: (IndexSearcherManager) [AOSP_MP-0] leaving from refreshSearcherManager():  
+05-07 15:25:13.006 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-07 15:25:13.007 26043 26140 I SCS@AiSearch user 0: (IndexManager) [pool-8-thread-1] entering in commitIndexWriter():  
+05-07 15:25:13.033 26043 26071 I ung.android.scs: WaitForGcToComplete blocked ProfileSaver on Background for 27.936ms
+05-07 15:25:13.042 26043 26140 I SCS@AiSearch user 0: (IndexManager) [pool-8-thread-1] leaving from commitIndexWriter():  
+05-07 15:25:13.042 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] leaving from waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-07 15:25:13.042 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) syncDeletedItems: deleted items = 1
+05-07 15:25:13.048 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetch: fetching took  324 ms
+05-07 15:25:13.048 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchChanges: applied 1 items
+05-07 15:25:13.470  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:13.471   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:13.715  1173  1173 I thermal_repeater: socket -1
+05-07 15:25:13.808   556   556 D io_stats: !@ 179,0 r 3501182 66924042 w 1158191 13694924 d 64859 13404312 f 280328 282237 iot 1174008 0 th 0 0 0 pt 0 inp 0 0 248290.139
+05-07 15:25:13.809   556   556 D io_stats: !@ Read_top(KB): kworker/u16:6:/(21601) 512 .apps.messaging(24301) 312
+05-07 15:25:13.809   556   556 D io_stats: !@ Write_top(KB): kworker/u16:6:/(21601) 876 .apps.messaging(24301) 184 kworker/5:1:/(26805) 156
+05-07 15:25:13.972  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:13.974   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:14.475  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:14.476   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:14.939  1476  1551 D MARsPolicyManager: triggerAction called!
+05-07 15:25:14.940  1476  1551 I NSLocationMonitor: getGPSUsingApps() called
+05-07 15:25:14.940  1476  1551 W NSLocationMonitor: NSMonitorService is not connected, return null
+05-07 15:25:14.977  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:14.978   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:15.087 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) doesDataKeepChanging: postpone count: 0 - source count: very first = 775, previous = 775, current = 775
+05-07 15:25:15.087 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [AOSP_MP-0] entering in collectChanges():  
+05-07 15:25:15.141 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchInternal values : maxSyncId: 1000004874 indexCount: 771 sourceCount: 771
+05-07 15:25:15.179 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in addIndex():  
+05-07 15:25:15.183 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetch: fetching took  71 ms
+05-07 15:25:15.183 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchChanges: applied 0 items
+05-07 15:25:15.183 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) Collect finished. Result: true
+05-07 15:25:15.185 26043 26101 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) enqueue ObserverWorker name: DOCUMENTS policy: KEEP
+05-07 15:25:15.185 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) enqueue ObserverWorker name: com.sec.android.app.myfiles, policy: APPEND_OR_REPLACE
+05-07 15:25:15.185 26043 26092 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=8dfa0ab4-fd44-4725-88bc-0fc7516b101f, tags={ com.sec.android.app.myfiles, com.samsung.android.scs.ai.search.data.collector.base.ObserverWorker } ]
+05-07 15:25:15.198 26043 26043 I SCS@AiSearch user 0: (SearchProvider) onTrimMemory(): 40
+05-07 15:25:15.201  1476  3405 D PackageManager: setEnabledSetting : userId = 0 packageName = com.samsung.android.scs cmp = androidx.work.impl.background.systemalarm.RescheduleReceiver newState = 1 callingPackage = com.samsung.android.scs
+05-07 15:25:15.202  1476  3405 D ApplicationPolicy: getApplicationStateEnabled : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:15.203  1476  3405 D ApplicationPolicy: getApplicationComponentState : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:15.228  1476  2622 D PackageManager: setEnabledSetting : userId = 0 packageName = com.samsung.android.scs cmp = androidx.work.impl.background.systemalarm.RescheduleReceiver newState = 1 callingPackage = com.samsung.android.scs
+05-07 15:25:15.229  1476  2622 D ApplicationPolicy: getApplicationStateEnabled : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:15.230  1476  2622 D ApplicationPolicy: getApplicationComponentState : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:15.259 26043 26043 I SCS@AiSearch user 0: (ObserverWorker::DOCUMENTS) [main] entering in startWork triggered by []():  
+05-07 15:25:15.261  1476  2622 I BatteryService_BatteryPropertiesRegistrar: [getProperty]id:4
+05-07 15:25:15.261  1476  2622 I BatteryService_BatteryPropertiesRegistrar: [getProperty]prop.long:-9223372036854775808 ,prop.string:null
+05-07 15:25:15.262 26043 26043 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) [main] entering in onChange():  
+05-07 15:25:15.263 26043 26161 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) [DOCUMENTS-0] entering in collectChanges():  
+05-07 15:25:15.267  1476  3405 D PackageManager: setEnabledSetting : userId = 0 packageName = com.samsung.android.scs cmp = androidx.work.impl.background.systemalarm.RescheduleReceiver newState = 1 callingPackage = com.samsung.android.scs
+05-07 15:25:15.267 26043 26161 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) fetchInternal values : indexCount: 2 sourceCount: 2
+05-07 15:25:15.268  1476  3405 D ApplicationPolicy: getApplicationStateEnabled : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:15.268  1476  3405 D ApplicationPolicy: getApplicationComponentState : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:15.270 26043 26161 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) fetch: fetching took  5 ms
+05-07 15:25:15.270 26043 26161 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) fetchChanges: applied 0 items
+05-07 15:25:15.270 26043 26161 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) Collect finished. Result: true
+05-07 15:25:15.276 26043 26097 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=3d00a742-1439-4047-a0c9-c65020131953, tags={ com.samsung.android.scs.ai.search.data.collector.base.ObserverWorker, com.samsung.android.scs.documents } ]
+05-07 15:25:15.285 26043 26043 I SCS@AiSearch user 0: (SearchProvider) onTrimMemory(): 40
+05-07 15:25:15.479  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:15.480   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:15.810   556   556 D io_stats: !@ 179,0 r 3501183 66924046 w 1158197 13695136 d 64859 13404312 f 280328 282237 iot 1174012 0 th 0 0 0 pt 0 inp 0 0 248292.141
+05-07 15:25:15.981  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:15.982   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:16.059 26992 26992 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-07 15:25:16.061 26992 26992 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-07 15:25:16.061 26992 26992 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-07 15:25:16.483  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:16.485   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:16.986  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:16.987   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:17.488  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:17.489   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:17.812   556   556 D io_stats: !@ 179,0 r 3501183 66924046 w 1158203 13695412 d 64859 13404312 f 280328 282237 iot 1174016 0 th 0 0 0 pt 0 inp 0 0 248294.143
+05-07 15:25:17.812   556   556 D io_stats: !@ Read_top(KB): ung.android.scs(26043) 4
+05-07 15:25:17.812   556   556 D io_stats: !@ Write_top(KB): ung.android.scs(26043) 300 kworker/u16:6:/(21601) 188
+05-07 15:25:17.990  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:17.991   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:18.492  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:18.493   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:18.717  1173  1173 I thermal_repeater: socket -1
+05-07 15:25:18.994  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:18.995   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:19.497  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:19.498   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:19.958  1476  1551 D MARsPolicyManager: triggerAction called!
+05-07 15:25:19.958  1476  1551 I NSLocationMonitor: getGPSUsingApps() called
+05-07 15:25:19.958  1476  1551 W NSLocationMonitor: NSMonitorService is not connected, return null
+05-07 15:25:19.999  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:20.000   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:20.501  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:20.502   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:21.003  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:21.005   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:21.073 26993 26993 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-07 15:25:21.075 26993 26993 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-07 15:25:21.075 26993 26993 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-07 15:25:21.506  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:21.507   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:21.815   556   556 D io_stats: !@ 179,0 r 3501183 66924046 w 1158209 13695448 d 64859 13404312 f 280328 282237 iot 1174020 0 th 0 0 0 pt 0 inp 0 0 248298.146
+05-07 15:25:21.815   556   556 D io_stats: !@ Write_top(KB): kworker/u16:6:/(21601) 32 .apps.messaging(24301) 4
+05-07 15:25:22.008  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:22.009   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:22.405   831   890 I libPerfCtl: xgfGetFPS pid:-1 fps:0
+05-07 15:25:22.407   831   890 I libPerfCtl: xgfGetFPS ioctl_ret:-1
+05-07 15:25:22.510  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:22.512   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:22.702  1476  1510 E Watchdog: !@Sync: 8272 heap(MB): 85 / 101 FD: 1054 [2026-05-07 15:25:22.701]
+05-07 15:25:23.013  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:23.014   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:23.515  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:23.516   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:23.718  1173  1173 I thermal_repeater: socket -1
+05-07 15:25:24.017  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:24.018   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:24.519  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:24.521   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:24.978  1476  1551 D MARsPolicyManager: triggerAction called!
+05-07 15:25:24.978  1476  1551 I NSLocationMonitor: getGPSUsingApps() called
+05-07 15:25:24.978  1476  1551 W NSLocationMonitor: NSMonitorService is not connected, return null
+05-07 15:25:25.022  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:25.023   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:25.524  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:25.525   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:26.027  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:26.028   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:26.090 26994 26994 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-07 15:25:26.091 26994 26994 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-07 15:25:26.091 26994 26994 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-07 15:25:26.529  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:26.530   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:27.031  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:27.033   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:27.534  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:27.535   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:28.036  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:28.037   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:28.539  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:28.540   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:28.719  1173  1173 I thermal_repeater: socket -1
+05-07 15:25:29.041  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:29.042   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:29.543  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:29.545   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:29.821   556   556 D io_stats: !@ Write_top(KB): .gms.persistent(21818) 12 kworker/2:1:/(25059) 4
+05-07 15:25:29.997  1476  1551 D MARsPolicyManager: triggerAction called!
+05-07 15:25:29.997  1476  1551 I NSLocationMonitor: getGPSUsingApps() called
+05-07 15:25:29.997  1476  1551 W NSLocationMonitor: NSMonitorService is not connected, return null
+05-07 15:25:30.046  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:30.047   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:30.549  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:30.550   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:30.944 26995 26995 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+05-07 15:25:30.946  1476  3405 I EDMNativeHelperService: isScreenCaptureEnabled
+05-07 15:25:30.947  1476  3405 D RestrictionPolicy: isScreenCaptureEnabled : ret=true userId=0
+05-07 15:25:30.947 26995 26995 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+05-07 15:25:30.993 26995 26997 I GrallocExtra: gralloc_extra_query:is_SW3D 0
+05-07 15:25:30.993 26995 26995 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm
+05-07 15:25:30.993 26995 26995 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm-uncached
+05-07 15:25:30.993 26995 26995 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_svp_region
+05-07 15:25:30.993 26995 26995 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_region
+05-07 15:25:30.993 26995 26995 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_wfd_region
+05-07 15:25:31.008  3290  5545 W MediaProvider: isAppCloneUserPair for user 0: false
+05-07 15:25:31.045  5451  5514 D MediaSync: loaded: 20ms, 0
+05-07 15:25:31.048  5451  5513 D SecMediaProvider: UPDATE /local/metadata 29445, 29457
+05-07 15:25:31.051  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:31.051   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:31.096 27000 27000 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-07 15:25:31.098 27000 27000 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-07 15:25:31.098 27000 27000 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-07 15:25:31.215  1476  3405 I ActivityManager: Broadcasting: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x400000 }
+05-07 15:25:31.216  1476  3405 I ActivityManager: Enqueued broadcast Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x400000 }: 0
+05-07 15:25:31.219  3290  3290 I MediaServiceV2: Creating work for intent Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-07 15:25:31.220  3290  3290 I MediaServiceV2: Work enqueued for intent: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-07 15:25:31.222  1476  1504 I ActivityManager: Broadcast completed: result=0
+05-07 15:25:31.243 26995 26995 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x6ffe399848). Use sp<> to manage this object.
+05-07 15:25:31.252  3290  3486 D WM-SystemJobScheduler: Scheduling work ID f5d742e3-c9d0-4bff-8ded-362a6ec0d1a0Job ID 1198
+05-07 15:25:31.253 26995 26995 D RefBase :   #00 pc 0000000000097cf0  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+144) (BuildId: 4f9ec6c2efd8ecb128681ec832af69ad)
+05-07 15:25:31.253 26995 26995 D RefBase :   #01 pc 000000000009c688  /apex/com.android.runtime/lib64/bionic/libc.so (exit+24) (BuildId: 4f9ec6c2efd8ecb128681ec832af69ad)
+05-07 15:25:31.253 26995 26995 D RefBase :   #02 pc 00000000000907c8  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+120) (BuildId: 4f9ec6c2efd8ecb128681ec832af69ad)
+05-07 15:25:31.263  3290  3290 D WM-SystemJobService: onStartJob for WorkGenerationalId(workSpecId=f5d742e3-c9d0-4bff-8ded-362a6ec0d1a0, generation=0)
+05-07 15:25:31.264  3290  3486 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:25:31.264  3290  3486 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:25:31.264  3290  3486 D WM-GreedyScheduler: Starting work for f5d742e3-c9d0-4bff-8ded-362a6ec0d1a0
+05-07 15:25:31.271  3290  3486 D WM-Processor: Processor: processing WorkGenerationalId(workSpecId=f5d742e3-c9d0-4bff-8ded-362a6ec0d1a0, generation=0)
+05-07 15:25:31.275  3290  3486 D WM-Processor: Work WorkGenerationalId(workSpecId=f5d742e3-c9d0-4bff-8ded-362a6ec0d1a0, generation=0) is already enqueued for processing
+05-07 15:25:31.283  3290  3290 D WM-WorkerWrapper: Starting work for com.android.providers.media.MediaServiceV2
+05-07 15:25:31.285  3290 27006 I MediaServiceV2: Work initiated for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-07 15:25:31.303  3290 27006 I MediaServiceV2: Work ended for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-07 15:25:31.307  3290  3484 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=f5d742e3-c9d0-4bff-8ded-362a6ec0d1a0, tags={ com.android.providers.media.MediaServiceV2 } ]
+05-07 15:25:31.312  3290  3290 D WM-Processor: Processor f5d742e3-c9d0-4bff-8ded-362a6ec0d1a0 executed; reschedule = false
+05-07 15:25:31.312  3290  3290 D WM-SystemJobService: f5d742e3-c9d0-4bff-8ded-362a6ec0d1a0 executed on JobScheduler
+05-07 15:25:31.338  5451  5514 D MediaSync: loaded: 34ms, 1
+05-07 15:25:31.339  3290  3484 D WM-SystemJobScheduler: Scheduling work ID e3fcc3dd-3f8b-4e4d-af80-ca2caa2a3494Job ID 1199
+05-07 15:25:31.341  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:31.341  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:31.342  3290  3484 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:25:31.342  3290  3484 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:25:31.343  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:31.344  3290  3484 D WM-GreedyScheduler: Cancelling work ID f5d742e3-c9d0-4bff-8ded-362a6ec0d1a0
+05-07 15:25:31.344  5451 14767 D MediaParseTask: scanItem: 1
+05-07 15:25:31.346  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:31.346  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:31.346  1476  2622 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:31.347  3290  3484 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:25:31.348  3290  3484 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:25:31.351  5451  5513 D SecMediaProvider: UPDATE /local/metadata 29457, 29458
+05-07 15:25:31.553  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:31.554   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:31.822   556   556 D io_stats: !@ 179,0 r 3501289 66924554 w 1158214 13695464 d 64859 13404312 f 280329 282240 iot 1174040 0 th 0 0 0 pt 0 inp 0 0 248308.153
+05-07 15:25:31.827 26043 26043 I SCS@AiSearch user 0: (ObserverWorker::AOSP_MP) [main] entering in startWork triggered by [content://media/external/file/1000004871]():  
+05-07 15:25:31.827 26043 26043 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [main] entering in onChange():  
+05-07 15:25:31.828 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [AOSP_MP-0] entering in collectChanges():  
+05-07 15:25:31.838  1476  2622 D PackageManager: setEnabledSetting : userId = 0 packageName = com.samsung.android.scs cmp = androidx.work.impl.background.systemalarm.RescheduleReceiver newState = 1 callingPackage = com.samsung.android.scs
+05-07 15:25:31.840  1476  2622 D ApplicationPolicy: getApplicationStateEnabled : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:31.841  1476  2622 D ApplicationPolicy: getApplicationComponentState : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:31.887 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchInternal values : maxSyncId: 1000004874 indexCount: 771 sourceCount: 772
+05-07 15:25:31.910 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in updateIndex():  
+05-07 15:25:31.911 26043 26101 I SCS@AiSearch user 0: (IndexManager) [UPDATE] index=com.google.android.providers.media, size=1, documents=[1000004871]
+05-07 15:25:31.911 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in updateDocumentList():  index: com.google.android.providers.media, updateList.size:1
+05-07 15:25:31.912 26043 26101 I SCS@AiSearch user 0: (IndexManager) getIndexWriter(): indexName com.google.android.providers.media
+05-07 15:25:31.927 26043 26101 I SCS@AiSearch user 0: (IndexManager) [UPDATE] Done indexName: com.google.android.providers.media updateList.size():1
+05-07 15:25:31.927 26043 26101 I SCS@AiSearch user 0: (IndexSearcherManager) [AOSP_MP-0] entering in refreshSearcherManager():  refreshSearcherManager for com.google.android.providers.media
+05-07 15:25:31.971 26043 26101 I SCS@AiSearch user 0: (IndexSearcherManager) [AOSP_MP-0] leaving from refreshSearcherManager():  
+05-07 15:25:31.972 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-07 15:25:31.972 26043 26140 I SCS@AiSearch user 0: (IndexManager) [pool-8-thread-1] entering in commitIndexWriter():  
+05-07 15:25:32.005 26043 26140 I SCS@AiSearch user 0: (IndexManager) [pool-8-thread-1] leaving from commitIndexWriter():  
+05-07 15:25:32.005 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] leaving from waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-07 15:25:32.006 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] leaving from updateIndex, result = true():  
+05-07 15:25:32.009 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetch: fetching took  150 ms
+05-07 15:25:32.009 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchChanges: applied 1 items
+05-07 15:25:32.055  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:32.055   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:32.556  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:32.558   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:32.814  3290  3290 D WM-DelayedWorkTracker: Scheduling work e3fcc3dd-3f8b-4e4d-af80-ca2caa2a3494
+05-07 15:25:32.814  3290  3290 D WM-GreedyScheduler: Starting tracking for e3fcc3dd-3f8b-4e4d-af80-ca2caa2a3494
+05-07 15:25:32.819  3290  3443 D WM-ConstraintTracker: BatteryNotLowTracker: initial state = true
+05-07 15:25:32.819  3290  3443 D WM-BrdcstRcvrCnstrntTrc: BatteryNotLowTracker: registering receiver
+05-07 15:25:32.822  3290  3443 D WM-GreedyScheduler: Constraints met: Scheduling work ID WorkGenerationalId(workSpecId=e3fcc3dd-3f8b-4e4d-af80-ca2caa2a3494, generation=0)
+05-07 15:25:32.829  3290  3443 D WM-Processor: Processor: processing WorkGenerationalId(workSpecId=e3fcc3dd-3f8b-4e4d-af80-ca2caa2a3494, generation=0)
+05-07 15:25:32.836  3290 14384 I MediaProvider: Deleted 0 1 0 0 0 0 0 items on external_primary due to com.android.shell
+05-07 15:25:32.839  3290  3290 D WM-WorkerWrapper: Starting work for com.android.providers.media.photopicker.sync.ProactiveSyncWorker
+05-07 15:25:32.841  3290 27011 I PSyncWorker: Starting proactive picker sync from sync source: 1
+05-07 15:25:32.841  3290 27011 I PickerSyncTracker: Created new sync future java.util.concurrent.CompletableFuture@53bb42d[Not completed, 1 dependents]. Future map: {e3fcc3dd-3f8b-4e4d-af80-ca2caa2a3494=java.util.concurrent.CompletableFuture@53bb42d[Not completed, 1 dependents]}
+05-07 15:25:32.842  3290 27011 D PickerSyncController: syncAllMediaFromProvider() LOCAL, auth=com.android.providers.media.photopicker, retry=true
+05-07 15:25:32.842  3290 27011 D PickerSyncController: getSyncRequestParams() LOCAL, auth=com.android.providers.media.photopicker
+05-07 15:25:32.848  3290 27011 D PickerSyncController:    Latest ID/Gen=1603:0de52dc2-ca4d-425f-a8d9-82309a635c7c:external_primary/29320
+05-07 15:25:32.848  3290 27011 D PickerSyncController:    Cached ID/Gen=1603:0de52dc2-ca4d-425f-a8d9-82309a635c7c:external_primary/29446
+05-07 15:25:32.848  3290 27011 D PickerSyncController:    RESULT=SyncRequestParams{type=MEDIA_INCREMENTAL, gen=29446, latest=Bundle[{last_media_sync_generation=29320, media_collection_id=1603:0de52dc2-ca4d-425f-a8d9-82309a635c7c:external_primary}], pageSize=1000}
+05-07 15:25:32.848  3290 27011 I PickerSyncController: Executing SyncAdd. isLocal: true. authority: com.android.providers.media.photopicker
+05-07 15:25:32.848  3290 27011 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:25:32.848  3290 27011 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-53]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:32.848  3290 27011 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:32.849  3290 27011 D ExternalDbFacade: Token received for queryMedia = null
+05-07 15:25:32.854  3290 27011 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:25:32.854  3290 27011 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-53]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:32.854  3290 27011 D PickerSyncController: Clearing next page token for key: local_provider:media_add:resume
+05-07 15:25:32.854  3290 27011 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:32.854  3290 27011 D PickerNotificationSender: Sending a notification for media update
+05-07 15:25:32.856  3290 27011 D PickerNotificationSender: Sending a notification for merged album media update Favorites
+05-07 15:25:32.856  3290 27011 D PickerNotificationSender: Sending a notification for album media update Favorites
+05-07 15:25:32.858  5451  5514 D MediaSync: loaded: 21ms, 0
+05-07 15:25:32.858  3290 27011 D PickerNotificationSender: Sending a notification for merged album media update Videos
+05-07 15:25:32.858  3290 27011 D PickerNotificationSender: Sending a notification for album media update Videos
+05-07 15:25:32.859  3290 27011 I PickerSyncController: Paged sync successful. QueryArgs: Bundle[{android.provider.extra.SYNC_GENERATION=29446, android.provider.extra.PAGE_SIZE=1000}] Total Rows: 0
+05-07 15:25:32.860  3290 27011 I PickerSyncController: Executing SyncRemove. isLocal: true. authority: com.android.providers.media.photopicker
+05-07 15:25:32.860  3290 27011 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:25:32.860  3290 27011 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-53]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:32.860  3290 27011 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:32.863  3290 27011 E PickerDbFacade: Could not get first date taken millis for media id: 1000004871
+05-07 15:25:32.863  3290 27011 W PickerDbFacade: Unable to promote cloud media with localId: 1000004871
+05-07 15:25:32.863  3290 27011 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:25:32.863  3290 27011 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-53]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:32.863  3290 27011 D PickerSyncController: Clearing next page token for key: local_provider:media_remove:resume
+05-07 15:25:32.863  3290 27011 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:25:32.863  3290 27011 D PickerNotificationSender: Sending a notification for media update
+05-07 15:25:32.865  3290 27011 D PickerNotificationSender: Sending a notification for merged album media update Favorites
+05-07 15:25:32.865  3290 27011 D PickerNotificationSender: Sending a notification for album media update Favorites
+05-07 15:25:32.866  3290 27011 D PickerNotificationSender: Sending a notification for merged album media update Videos
+05-07 15:25:32.866  3290 27011 D PickerNotificationSender: Sending a notification for album media update Videos
+05-07 15:25:32.867  3290 27011 I PickerSyncController: Paged sync successful. QueryArgs: Bundle[{android.provider.extra.SYNC_GENERATION=29446, android.provider.extra.PAGE_SIZE=1000}] Total Rows: 0
+05-07 15:25:32.867  3290 27011 I PickerSyncTracker: Marked sync future complete for work id: e3fcc3dd-3f8b-4e4d-af80-ca2caa2a3494. Future map: {}
+05-07 15:25:32.867  3290 27011 I PSyncWorker: Completed picker proactive sync complete from local provider.
+05-07 15:25:32.870  3290  3484 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=e3fcc3dd-3f8b-4e4d-af80-ca2caa2a3494, tags={ com.android.providers.media.photopicker.sync.ProactiveSyncWorker } ]
+05-07 15:25:32.874  3290  3290 D WM-Processor: Processor e3fcc3dd-3f8b-4e4d-af80-ca2caa2a3494 executed; reschedule = false
+05-07 15:25:32.874  3290  3290 D WM-GreedyScheduler: Stopping tracking for WorkGenerationalId(workSpecId=e3fcc3dd-3f8b-4e4d-af80-ca2caa2a3494, generation=0)
+05-07 15:25:32.875  1476  3405 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:32.875  1476  3405 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:32.875  5451  5513 D SecMediaProvider: UPDATE /local/metadata 29457, 29463
+05-07 15:25:32.876  1476  3405 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:32.882  3290  3484 D WM-GreedyScheduler: Cancelling work ID e3fcc3dd-3f8b-4e4d-af80-ca2caa2a3494
+05-07 15:25:32.885  3290  3484 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:25:32.886  3290  3484 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:25:32.886  3290  3484 D WM-BrdcstRcvrCnstrntTrc: BatteryNotLowTracker: unregistering receiver
+05-07 15:25:33.059  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:33.060   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:33.561  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:33.562   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:33.721  1173  1173 I thermal_repeater: socket -1
+05-07 15:25:33.823   556   556 D io_stats: !@ 179,0 r 3501343 66924770 w 1158335 13696136 d 64859 13404312 f 280338 282254 iot 1174056 0 th 0 0 0 pt 0 inp 0 0 248310.154
+05-07 15:25:33.824   556   556 D io_stats: !@ Read_top(KB): rs.media.module(3290) 360 d.process.media(5451) 240 surfaceflinger:(881) 100
+05-07 15:25:33.824   556   556 D io_stats: !@ Write_top(KB): f2fs_ckpt-254:5(638) 248 ung.android.scs(26043) 212 kworker/4:0:/(26911) 204
+05-07 15:25:34.021  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.samsung.android.messaging
+05-07 15:25:34.023  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.verizon.messaging.vzmsgs
+05-07 15:25:34.026  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.kakao.talk
+05-07 15:25:34.028  1476  2622 D NotificationService: getNotificationHistory for dump pkg=jp.naver.line.android
+05-07 15:25:34.030  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.sds.mysinglesquare
+05-07 15:25:34.032  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.samsung.knox.message
+05-07 15:25:34.034  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.google.android.talk
+05-07 15:25:34.036  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.sgiggle.production
+05-07 15:25:34.039  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.nimbuzz
+05-07 15:25:34.041  1476  2622 D NotificationService: getNotificationHistory for dump pkg=kik.android
+05-07 15:25:34.043  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.bsb.hike
+05-07 15:25:34.043 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) doesDataKeepChanging: postpone count: 0 - source count: very first = 776, previous = 776, current = 775
+05-07 15:25:34.045  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.tencent.mm
+05-07 15:25:34.047  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.skype.raider
+05-07 15:25:34.050  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.facebook.orca
+05-07 15:25:34.052  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.google.android.apps.tachyon
+05-07 15:25:34.054  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.snapchat.android
+05-07 15:25:34.056  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.discord
+05-07 15:25:34.058  1476  2622 D NotificationService: getNotificationHistory for dump pkg=Uxpp.UC
+05-07 15:25:34.060  1476  2622 D NotificationService: getNotificationHistory for dump pkg=com.google.android.apps.dynamite
+05-07 15:25:34.062  1476  2622 D NotificationService: getNotificationHistory for dump pkg=org.thoughtcrime.securesms
+05-07 15:25:34.063  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:34.063   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:34.333   896   912 D ccci_mdinit: (1):monitor_time_update_thread round:12801 ########
+05-07 15:25:34.564  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:34.565   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:35.015  1476  1551 D MARsPolicyManager: triggerAction called!
+05-07 15:25:35.015  1476  1551 I NSLocationMonitor: getGPSUsingApps() called
+05-07 15:25:35.015  1476  1551 W NSLocationMonitor: NSMonitorService is not connected, return null
+05-07 15:25:35.066  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:35.067   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:35.476  1476  1875 D NetdEventListenerService: DNS Requested by 345, 10063(com.facebook.services), SUCCESS, 100ms
+05-07 15:25:35.568  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:35.570   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:35.825   556   556 D io_stats: !@ 179,0 r 3501538 66926646 w 1158375 13697052 d 64859 13404312 f 280338 282254 iot 1174076 0 th 0 0 0 pt 0 inp 0 0 248312.156

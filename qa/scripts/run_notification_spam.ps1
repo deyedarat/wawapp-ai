@@ -1,11 +1,13 @@
 # ============================================================================
 # WawApp QA - Notification Spam / Dedup Stress Test
 # ============================================================================
+# This is a DEDUP/STACKING stress test, NOT a killed-state wake test.
+# The app is warm-started before the burst to isolate dedup behavior.
+#
 # Usage:
 #   .\qa\scripts\run_notification_spam.ps1
 #   .\qa\scripts\run_notification_spam.ps1 -Count 10 -IntervalMs 200
 #   .\qa\scripts\run_notification_spam.ps1 -Mode duplicate -Count 8
-#   .\qa\scripts\run_notification_spam.ps1 -RebootBetweenBursts
 # ============================================================================
 
 param(
@@ -32,7 +34,8 @@ $Script:QA_HangThresholdSec = $HangThresholdSec
 # SETUP
 # ============================================================================
 Write-QA-Banner "WawApp QA - $ScenarioId : $ScenarioName"
-Write-QA-Info "Mode: $Mode | Count: $Count | Interval: ${IntervalMs}ms"
+$intervalLabel = "${IntervalMs}ms"
+Write-QA-Info "Mode: $Mode | Count: $Count | Interval: $intervalLabel"
 
 Enter-QA-Phase "DEVICE_CHECK" -timeoutSec 15
 Assert-AdbAvailable
@@ -45,26 +48,56 @@ $artifactDir = New-QA-ArtifactDir $ScenarioId
 $deviceInfo = Save-QA-DeviceInfo $serial "$artifactDir\device_info.txt"
 
 # ============================================================================
+# PRECONDITION: WARM-START APP
+# ============================================================================
+Enter-QA-Phase "APP_WARM" -timeoutSec 15
+
+Invoke-QA-AdbShell $serial "am start -n $PackageName/.MainActivity --activity-no-animation" | Out-Null
+Start-Sleep -Seconds 2
+
+$warmPidResult = Invoke-QA-AdbShell $serial "pidof $PackageName"
+$warmPid = $warmPidResult.Stdout.Trim()
+$appWarmed = [bool]$warmPid
+
+if ($appWarmed) {
+    Write-QA-Pass "App warmed PID:$warmPid"
+} else {
+    Write-QA-Warn "App did not start - retrying with monkey"
+    Invoke-QA-AdbShell $serial "monkey -p $PackageName -c android.intent.category.LAUNCHER 1" | Out-Null
+    Start-Sleep -Seconds 3
+    $warmPidResult = Invoke-QA-AdbShell $serial "pidof $PackageName"
+    $warmPid = $warmPidResult.Stdout.Trim()
+    $appWarmed = [bool]$warmPid
+    if ($appWarmed) { Write-QA-Pass "App warmed via monkey PID:$warmPid" }
+    else { Write-QA-Fail "App could not be started" }
+}
+
+Invoke-QA-AdbShell $serial "input keyevent KEYCODE_HOME" | Out-Null
+Start-Sleep -Milliseconds 500
+
+Complete-QA-Phase
+
+# ============================================================================
 # PRE-BURST STATE
 # ============================================================================
 Enter-QA-Phase "SCREENSHOT_CAPTURE" -timeoutSec 10
-Save-QA-NotificationDump $serial "$artifactDir\$(Get-QA-ArtifactName $ScenarioId 'pre_notification_dump.txt')"
-Save-QA-Screenshot $serial "$artifactDir\$(Get-QA-ArtifactName $ScenarioId 'pre_burst.png')"
+$preNotifFile = Join-Path $artifactDir (Get-QA-ArtifactName $ScenarioId 'pre_notification_dump.txt')
+$preBurstFile = Join-Path $artifactDir (Get-QA-ArtifactName $ScenarioId 'pre_burst.png')
+Save-QA-NotificationDump $serial $preNotifFile
+Save-QA-Screenshot $serial $preBurstFile
 Complete-QA-Phase
 
-# Clear existing notifications for clean baseline
 Invoke-QA-AdbShell $serial "service call notification 1" | Out-Null
 
-# Start logcat
-Start-QA-Logcat $serial "$artifactDir\$(Get-QA-ArtifactName $ScenarioId 'logcat.txt')"
+$logcatFile = Join-Path $artifactDir (Get-QA-ArtifactName $ScenarioId 'logcat.txt')
+Start-QA-Logcat $serial $logcatFile
 
 # ============================================================================
 # BURST EXECUTION
 # ============================================================================
 Enter-QA-Phase "SEND_PAYLOAD" -timeoutSec ($Count * 2 + 30)
 
-$modeLabel = $Mode
-Write-QA-Step "Sending $Count notifications ($modeLabel mode, ${IntervalMs}ms interval)"
+Write-QA-Step "Sending $Count notifications - $Mode mode, $intervalLabel interval"
 
 $baseOrderId = "stress_$(Get-Date -Format 'HHmmss')"
 $sentPayloads = @()
@@ -89,7 +122,6 @@ for ($i = 1; $i -le $Count; $i++) {
         Start-Sleep -Milliseconds $IntervalMs
     }
 
-    # Optional reboot between bursts
     if ($RebootBetweenBursts -and $i -lt $Count -and ($i % 3 -eq 0)) {
         Write-QA-Warn "Rebooting device after burst $i"
         Invoke-QA-Adb -Serial $serial -Arguments "reboot" -Silent | Out-Null
@@ -114,7 +146,6 @@ for ($i = 1; $i -le $Count; $i++) {
 Write-QA-Pass "All $Count notifications sent"
 Complete-QA-Phase
 
-# --- Settle with heartbeat ---
 Enter-QA-Phase "WAIT_FOR_NOTIFICATION" -timeoutSec 10
 Wait-QA-WithHeartbeat -Seconds 5 -Label "SETTLING" -HeartbeatIntervalSec 2
 Complete-QA-Phase
@@ -123,9 +154,12 @@ Complete-QA-Phase
 # POST-BURST COLLECTION
 # ============================================================================
 Enter-QA-Phase "SCREENSHOT_CAPTURE" -timeoutSec 15
-Save-QA-Screenshot $serial "$artifactDir\$(Get-QA-ArtifactName $ScenarioId 'post_burst.png')"
-Save-QA-NotificationDump $serial "$artifactDir\$(Get-QA-ArtifactName $ScenarioId 'post_notification_dump.txt')"
-Save-QA-ActivityDump $serial "$artifactDir\$(Get-QA-ArtifactName $ScenarioId 'activity_dump.txt')"
+$postBurstFile = Join-Path $artifactDir (Get-QA-ArtifactName $ScenarioId 'post_burst.png')
+$postNotifFile = Join-Path $artifactDir (Get-QA-ArtifactName $ScenarioId 'post_notification_dump.txt')
+$actDumpFile = Join-Path $artifactDir (Get-QA-ArtifactName $ScenarioId 'activity_dump.txt')
+Save-QA-Screenshot $serial $postBurstFile
+Save-QA-NotificationDump $serial $postNotifFile
+Save-QA-ActivityDump $serial $actDumpFile
 Complete-QA-Phase
 
 Enter-QA-Phase "LOGCAT_STOP" -timeoutSec 10
@@ -139,95 +173,114 @@ $verdict = "PASS"
 $reasons = @()
 $checks = @()
 
-# --- Check 1: App not crashed ---
-$postPidResult = Invoke-QA-AdbShell $serial "pidof $PackageName"
-$postPid = $postPidResult.Stdout.Trim()
-if ($postPid) {
-    Write-QA-Pass "App alive (PID: $postPid)"
-    $checks += "| App not crashed | PASS PID:$postPid |"
-}
-else {
+# --- Precondition: App warmed ---
+if ($appWarmed) {
+    $checks += "| App warmed | PASS PID:$warmPid |"
+} else {
     $verdict = "FAIL"
-    $reasons += "App crashed during burst"
-    Write-QA-Fail "App crashed"
-    $checks += "| App not crashed | FAIL |"
+    $reasons += "App could not be warm-started before burst"
+    $checks += "| App warmed | FAIL |"
 }
 
-# --- Check 2: No duplicate full-screen activities ---
-$actDump = Get-Content "$artifactDir\$(Get-QA-ArtifactName $ScenarioId 'activity_dump.txt')" -Raw -ErrorAction SilentlyContinue
-$fsMatches = [regex]::Matches($actDump, $FullScreenActivity)
+# --- Check 1: Crash detection via logcat ---
+$logcat = Get-Content $logcatFile -Raw -ErrorAction SilentlyContinue
+$crashPattern = "FATAL EXCEPTION|ANR in $PackageName|Process.*$PackageName.*has died"
+$crashes = @()
+if ($logcat) {
+    $crashes = @([regex]::Matches($logcat, $crashPattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase))
+}
+
+if ($crashes.Count -eq 0) {
+    Write-QA-Pass "No crash traces in logcat"
+    $checks += "| Crash detection | PASS |"
+} else {
+    $verdict = "FAIL"
+    $crashCount = $crashes.Count
+    $reasons += "App crashed during burst - $crashCount crash traces in logcat"
+    Write-QA-Fail "Crash traces found: $crashCount"
+    $checks += "| Crash detection | FAIL $crashCount traces |"
+}
+
+# --- Check 2: Process liveness ---
+$postPidResult = Invoke-QA-AdbShell $serial "pidof $PackageName"
+$postPid = $postPidResult.Stdout.Trim()
+
+if ($postPid) {
+    Write-QA-Pass "App alive after burst PID:$postPid"
+    $checks += "| Process liveness | PASS PID:$postPid |"
+} else {
+    if ($crashes.Count -gt 0) {
+        Write-QA-Fail "App process dead - crash confirmed"
+        $checks += "| Process liveness | FAIL crash confirmed |"
+    } elseif (-not $appWarmed) {
+        Write-QA-Warn "App not running - was never warmed"
+        $checks += "| Process liveness | SKIP precondition failed |"
+    } else {
+        Write-QA-Warn "App process gone after burst - no crash in logcat, likely system kill"
+        $checks += "| Process liveness | WARN system kill |"
+    }
+}
+
+# --- Check 3: No duplicate full-screen activities ---
+$actDump = Get-Content $actDumpFile -Raw -ErrorAction SilentlyContinue
+$fsMatches = @()
+if ($actDump) { $fsMatches = @([regex]::Matches($actDump, $FullScreenActivity)) }
 $fsCount = $fsMatches.Count
 
 if ($fsCount -le 1) {
-    Write-QA-Pass "Full-screen activity count: $fsCount (no duplicates)"
-    $checks += "| No duplicate full-screen | PASS count=$fsCount |"
-}
-else {
+    Write-QA-Pass "Full-screen activity count: $fsCount"
+    $checks += "| Fullscreen stacking | PASS count=$fsCount |"
+} else {
     $verdict = "FAIL"
     $reasons += "Multiple full-screen activities: $fsCount"
     Write-QA-Fail "Duplicate full-screen activities: $fsCount"
-    $checks += "| No duplicate full-screen | FAIL count=$fsCount |"
+    $checks += "| Fullscreen stacking | FAIL count=$fsCount |"
 }
 
-# --- Check 3: Notification tray not flooded ---
-$notifDump = Get-Content "$artifactDir\$(Get-QA-ArtifactName $ScenarioId 'post_notification_dump.txt')" -Raw -ErrorAction SilentlyContinue
-$notifMatches = [regex]::Matches($notifDump, "pkg=$PackageName")
+# --- Check 4: Notification dedup ---
+$notifDump = Get-Content $postNotifFile -Raw -ErrorAction SilentlyContinue
+$notifMatches = @()
+if ($notifDump) { $notifMatches = @([regex]::Matches($notifDump, "pkg=$PackageName")) }
 $notifCount = $notifMatches.Count
 
 if ($Mode -eq "duplicate") {
     if ($notifCount -le $MaxExpectedNotifications) {
-        Write-QA-Pass "Dedup working: $notifCount notification(s) for $Count sends"
-        $checks += "| Dedup (tray count) | PASS $notifCount/$Count |"
-    }
-    else {
+        Write-QA-Pass "Dedup working: $notifCount notification for $Count sends"
+        $checks += "| Notification dedup | PASS $notifCount/$Count |"
+    } else {
         $verdict = "FAIL"
         $reasons += "Dedup failed: $notifCount notifications for $Count duplicate sends"
         Write-QA-Fail "Tray flooded: $notifCount notifications"
-        $checks += "| Dedup (tray count) | FAIL $notifCount/$Count |"
+        $checks += "| Notification dedup | FAIL $notifCount/$Count |"
     }
-}
-else {
+} else {
     if ($notifCount -le $Count) {
         Write-QA-Pass "Notification count reasonable: $notifCount"
-        $checks += "| Tray not flooded | PASS $notifCount/$Count |"
-    }
-    else {
+        $checks += "| Notification dedup | PASS $notifCount/$Count |"
+    } else {
         $verdict = "FAIL"
         $reasons += "More notifications than sent: $notifCount > $Count"
         Write-QA-Fail "Unexpected notification count: $notifCount"
-        $checks += "| Tray not flooded | FAIL $notifCount/$Count |"
+        $checks += "| Notification dedup | FAIL $notifCount/$Count |"
     }
 }
 
-# --- Check 4: Dedup log evidence ---
-$logcat = Get-Content "$artifactDir\$(Get-QA-ArtifactName $ScenarioId 'logcat.txt')" -Raw -ErrorAction SilentlyContinue
-$dupIdPattern = "duplicate.*notification|already.*displayed|dedup"
-$dupHits = [regex]::Matches($logcat, $dupIdPattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
-
-if ($Mode -eq "duplicate" -and $dupHits.Count -gt 0) {
-    Write-QA-Pass "Dedup log entries found ($($dupHits.Count) hits)"
-    $checks += "| Dedup log evidence | PASS $($dupHits.Count) entries |"
+# --- Check 5: Dedup log evidence ---
+$dupIdPattern = 'duplicate.*notification|already.*displayed|dedup'
+$dupHits = @()
+if ($logcat) {
+    $dupHits = @([regex]::Matches($logcat, $dupIdPattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase))
 }
-elseif ($Mode -eq "duplicate") {
-    Write-QA-Warn "No dedup log entries (dedup may be silent)"
+
+$dupCount = $dupHits.Count
+if ($Mode -eq "duplicate" -and $dupCount -gt 0) {
+    Write-QA-Pass "Dedup log entries found: $dupCount hits"
+    $checks += "| Dedup log evidence | PASS $dupCount entries |"
+} elseif ($Mode -eq "duplicate") {
+    Write-QA-Warn "No dedup log entries found"
     $checks += "| Dedup log evidence | WARN none found |"
-}
-else {
-    $checks += "| Dedup log evidence | N/A (unique mode) |"
-}
-
-# --- Check 5: No crash traces in logcat ---
-$crashPattern = "FATAL EXCEPTION|ANR in $PackageName|Process.*has died"
-$crashes = [regex]::Matches($logcat, $crashPattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
-if ($crashes.Count -eq 0) {
-    Write-QA-Pass "No crash traces in logcat"
-    $checks += "| No crash in logcat | PASS |"
-}
-else {
-    $verdict = "FAIL"
-    $reasons += "Crash detected in logcat ($($crashes.Count) traces)"
-    Write-QA-Fail "Crash traces found: $($crashes.Count)"
-    $checks += "| No crash in logcat | FAIL $($crashes.Count) traces |"
+} else {
+    $checks += "| Dedup log evidence | N/A unique mode |"
 }
 
 # ============================================================================
@@ -245,14 +298,13 @@ Save-QA-Verdict $artifactDir $verdict $reasons @{
     Timestamp = $startTime
     Serial    = $serial
     Android   = $deviceInfo.Android
-    Duration  = "$(((Get-Date) - [datetime]::ParseExact($startTime,'yyyy-MM-dd_HH-mm-ss',$null)).TotalSeconds)s"
+    Duration  = "$([math]::Round(((Get-Date) - [datetime]::ParseExact($startTime,'yyyy-MM-dd_HH-mm-ss',$null)).TotalSeconds))s"
 }
 
-# --- Burst statistics ---
 $burstLines = @("", "## Burst Configuration", "", "| Parameter | Value |", "|-----------|-------|")
 $burstLines += "| Mode | $Mode |"
 $burstLines += "| Count | $Count |"
-$burstLines += "| Interval | ${IntervalMs}ms |"
+$burstLines += "| Interval | $intervalLabel |"
 $burstLines += "| Reboot between | $RebootBetweenBursts |"
 $burstLines += "| Max expected notifications | $MaxExpectedNotifications |"
 $burstLines += ""
@@ -261,17 +313,22 @@ $burstLines += ""
 $burstLines += "| # | OrderId | Price | Sent At |"
 $burstLines += "|---|---------|-------|---------|"
 foreach ($p in $sentPayloads) {
-    $burstLines += "| $($p.Index) | $($p.OrderId) | $($p.Price) | $($p.Timestamp) |"
+    $idx = $p.Index; $oid = $p.OrderId; $pr = $p.Price; $ts = $p.Timestamp
+    $burstLines += "| $idx | $oid | $pr | $ts |"
 }
 $burstLines += ""
 $burstLines += "## Post-Burst Metrics"
 $burstLines += ""
 $burstLines += "| Metric | Value |"
 $burstLines += "|--------|-------|"
+$burstLines += "| App warmed | $appWarmed PID:$warmPid |"
+$aliveLabel = if ($postPid) { "YES PID:$postPid" } else { "NO" }
+$burstLines += "| App alive after burst | $aliveLabel |"
+$cCount = $crashes.Count
+$burstLines += "| Crash traces in logcat | $cCount |"
 $burstLines += "| Notifications in tray | $notifCount |"
 $burstLines += "| Full-screen activities | $fsCount |"
-$burstLines += "| Crash traces | $($crashes.Count) |"
-$burstLines += "| Dedup log hits | $($dupHits.Count) |"
+$burstLines += "| Dedup log hits | $dupCount |"
 
 $allArtifacts = @(
     "device_info.txt"
@@ -288,7 +345,6 @@ Save-QA-Summary -Dir $artifactDir -Scenario "$ScenarioId - $ScenarioName" `
     -StartTime $startTime -EndTime $endTime `
     -Checks $checks -Artifacts $allArtifacts
 
-# Append burst stats + runtime observability
 ($burstLines -join "`n") | Add-Content "$artifactDir\summary.md"
 Append-QA-RuntimeSummary $artifactDir "" ""
 

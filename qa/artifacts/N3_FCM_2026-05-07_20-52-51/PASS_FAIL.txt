@@ -1,0 +1,7 @@
+﻿VERDICT: FAIL
+SCENARIO: N3_FCM - Killed-State Real FCM Certification
+TIMESTAMP: 2026-05-07_20-52-51
+DEVICE: R83Y20PC4EN
+ANDROID: 15
+DURATION: 47s
+REASONS: App did not wake from killed state within 25s; Fullscreen activity not launched within 25s

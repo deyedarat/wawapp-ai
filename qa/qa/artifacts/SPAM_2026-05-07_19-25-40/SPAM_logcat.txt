@@ -1,0 +1,806 @@
+--------- beginning of main
+05-07 15:25:55.120  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.70374066, expanded=true, tracking=false)
+05-07 15:25:55.120  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.70374066
+05-07 15:25:55.120  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.70374066 state : 0
+05-07 15:25:55.136  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.61105376, expanded=true, tracking=false)
+05-07 15:25:55.136  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.61105376
+05-07 15:25:55.137  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.61105376 state : 0
+05-07 15:25:55.152  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.52436155, expanded=true, tracking=false)
+05-07 15:25:55.152  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.52436155
+05-07 15:25:55.153  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.52436155 state : 0
+05-07 15:25:55.169  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.44300407, expanded=true, tracking=false)
+05-07 15:25:55.169  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.44300407
+05-07 15:25:55.169  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.44300407 state : 0
+05-07 15:25:55.185  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.3671328, expanded=true, tracking=false)
+05-07 15:25:55.185  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.3671328
+05-07 15:25:55.185  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.3671328 state : 0
+05-07 15:25:55.200  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.29693234, expanded=true, tracking=false)
+05-07 15:25:55.200  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.29693234
+05-07 15:25:55.201  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.29693234 state : 0
+05-07 15:25:55.217  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.23263048, expanded=true, tracking=false)
+05-07 15:25:55.217  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.23263048
+05-07 15:25:55.217  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.23263048 state : 0
+05-07 15:25:55.233  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.1745126, expanded=true, tracking=false)
+05-07 15:25:55.233  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.1745126
+05-07 15:25:55.233  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.1745126 state : 0
+05-07 15:25:55.248  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.12294116, expanded=true, tracking=false)
+05-07 15:25:55.249  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.12294116
+05-07 15:25:55.249  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.12294116 state : 0
+05-07 15:25:55.264  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.07967053, expanded=true, tracking=false)
+05-07 15:25:55.265  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.07967053
+05-07 15:25:55.265  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.07967053 state : 0
+05-07 15:25:55.280  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.044366725, expanded=true, tracking=false)
+05-07 15:25:55.280  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.044366725
+05-07 15:25:55.280  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.044366725 state : 0
+05-07 15:25:55.293  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:55.293   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:55.296  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.018410506, expanded=true, tracking=false)
+05-07 15:25:55.296  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.018410506
+05-07 15:25:55.297  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.018410506 state : 0
+05-07 15:25:55.312  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.0034900594, expanded=true, tracking=false)
+05-07 15:25:55.312  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.0034900594
+05-07 15:25:55.312  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.0034900594 state : 0
+05-07 15:25:55.328  1928  1928 D QSScrimViewSwitch: 8 => 0: sb: SHADE | cks: GONE | ts: FINISHED | sps: SCREEN_ON | lsse: 0.0 | lse: 0.0 | qe: 1.0 | sba: 0.0
+05-07 15:25:55.328  1928  1928 D QSScrimViewSwitch: set visibility[8 => 0] vis: 0 | pbs: false
+05-07 15:25:55.328  1928  1928 D ScrimController: updateScrimColor main=0xffdad9e0 front=0x0|0.000000|8 noti=0xffdad9e0|0.000000|8 behind=0xff000000|0.000000|0 vis=0
+05-07 15:25:55.328  1928  1928 D ScrimController: updateScrimColor main=0xffdad9e0 front=0x0|0.000000|0 noti=0xffdad9e0|0.000000|8 behind=0xff000000|0.000000|0 vis=0
+05-07 15:25:55.330  1928  1928 I {ChipAnimationController}: animateChipHide() view:ongoing_call_chip state:8 animate:false visibility:8
+05-07 15:25:55.330  1928  1928 D {ChipAnimationController}: cancelAnimation() v:ongoing_call_chip
+05-07 15:25:55.330  1928  1928 D {ChipAnimationController}: hideView() id:ongoing_call_chip state:8
+05-07 15:25:55.330  1928  1928 I {ChipAnimationController}: animateChipHide() view:ongoing_activity_capsule state:8 animate:false visibility:8
+05-07 15:25:55.330  1928  1928 D {ChipAnimationController}: cancelAnimation() v:ongoing_activity_capsule
+05-07 15:25:55.330  1928  1928 D {ChipAnimationController}: hideView() id:ongoing_activity_capsule state:8
+05-07 15:25:55.330  1928  1928 D CollapsedStatusBarFragment_StatusBarVisibilityExt: prv:StatusBarVisibilityModel(showClock=false, showNotificationIcons=false, showOngoingCallChip=false, showOngoingActivityChip=false, showSystemInfo=false)
+05-07 15:25:55.330  1928  1928 D CollapsedStatusBarFragment_StatusBarVisibilityExt: new:StatusBarVisibilityModel(showClock=true, showNotificationIcons=true, showOngoingCallChip=false, showOngoingActivityChip=false, showSystemInfo=true)
+05-07 15:25:55.331  1928  1928 I ComplicationWidgetPluginController: onShadeExpandedChanged false false
+05-07 15:25:55.331  1928  1928 I ComplicationWidgetPluginController: requestAppWidgetListening false , false false true
+05-07 15:25:55.331  1928  1928 I TilesDataController: stopAppWidgetListening, tileType:1Isnitialized: true
+05-07 15:25:55.331  1928  1928 D TilesDataController: stopAppWidgetListening tiletype=1
+05-07 15:25:55.331  1928  1928 D {OngoingActivityController}: onExpandedChanged : shade is close
+05-07 15:25:55.331  1928  1928 D SysUiState: SysUiState changed: old=0x50000800 new=0x10000000
+05-07 15:25:55.331  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: ShadeExpansionChangeEvent(fraction=0.0, expanded=true, tracking=false)
+05-07 15:25:55.331  1928  1928 D SecQpBlurController: onPanelExpansionChanged mPanelExpandedFraction: 0.0
+05-07 15:25:55.332  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.0 state : 0
+05-07 15:25:55.332  1928  1928 D ImmersiveScrollAnimator: clearAnimators
+05-07 15:25:55.332  1928  1928 D SecPanelExpansionStateRepository: NOTIFY !!! OPENING -> CLOSED
+05-07 15:25:55.332  1928  1928 D QuickPanelLog: NPVC | updateExpansionAndVisibility: mExpandedFraction: 0.0, mInstantExpanding: false, isPanelVisibleBecauseOfHeadsUp: false, isTracking(): false, mIsSpringBackAnimation: false, isExpanded: true, isFullyExpanded: false, isFullyCollapsed: true, mHeightAnimator is null: false
+05-07 15:25:55.332  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController.updateExpansionAndVisibility:358
+05-07 15:25:55.332  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController$$ExternalSyntheticLambda13.run:536
+05-07 15:25:55.332  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationShadeWindowControllerImpl.batchApplyWindowLayoutParams:7
+05-07 15:25:55.332  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController.setExpandedHeightInternal:23
+05-07 15:25:55.332  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController$$ExternalSyntheticLambda49.onAnimationUpdate:60
+05-07 15:25:55.332  1928  1928 D QuickPanelLog:  - android.animation.Animator$AnimatorCaller.lambda$static$4:855
+05-07 15:25:55.332  1928  1928 D QuickPanelLog:  - android.animation.Animator$AnimatorCaller$$ExternalSyntheticLambda6.call:0
+05-07 15:25:55.332  1928  1928 D QuickPanelLog:  - android.animation.Animator.callOnList:666
+05-07 15:25:55.332  1928  1928 D QuickPanelLog:  - android.animation.ValueAnimator.animateValue:1645
+05-07 15:25:55.332  1928  1928 D QuickPanelLog:  - android.animation.ValueAnimator.animateBasedOnTime:1405
+05-07 15:25:55.332  2701 23921 I HoneySpace.SystemUiRepository: systemUiFlags: awake
+05-07 15:25:55.334  2701  2765 I HoneySpace.TaskbarEventTracker: invokeEvent() called with: event = SystemUiStateChanged(stateFlags=268435456)
+--------- beginning of system
+05-07 15:25:55.335  1476  2196 D StatusBarManagerService:   setPanelExpandStateToType : state = false, barType = 0
+05-07 15:25:55.335  1928  1928 D SecQSImplAnimatorManager: onPanelClosed
+05-07 15:25:55.335  1928  1928 D QsExpandAnimator: onPanelClosed 
+05-07 15:25:55.335  1476  1476 I MdnieScenarioControlService: action  :  com.samsung.systemui.statusbar.COLLAPSED
+05-07 15:25:55.336  1928  1928 D PanelTransitionAnimator: updateAnimators
+05-07 15:25:55.336  1928  1928 D PanelTransitionAnimator: clearAnimationState QS_STATE
+05-07 15:25:55.336  1928  1928 D PanelSplitOpenAnimator: updateAnimators
+05-07 15:25:55.336  1928  1928 D PanelSplitOpenAnimator: clearAnimationState
+05-07 15:25:55.336  1476  1476 D InputMethodManagerService: mDesktopModeManager null!
+05-07 15:25:55.337  1928  1928 D ColoredBGHelper: getBGColor home 0xff306468
+05-07 15:25:55.338  1476  1754 D MdnieScenarioControlService: currentOpr : -1, mQuickPanelState : 0
+05-07 15:25:55.338  1928  1928 D ShadeExpansionStateManager: updateStateInternal: OPEN -> CLOSED
+05-07 15:25:55.338  1928  1928 D NotificationPanelView: setOnStatusBarDownEvent null ? true
+05-07 15:25:55.339  1928  1928 D QuickPanelLog: QSCI | setExpandImmediate: false
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.QuickSettingsControllerImpl.setExpandImmediate:53
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController$$ExternalSyntheticLambda25.onPanelStateChanged:128
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.ShadeExpansionStateManager.updateStateInternal:51
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController.updateExpansionAndVisibility:75
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController.onFlingEnd:67
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController$12.onAnimationEnd:74
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - android.animation.Animator$AnimatorListener.onAnimationEnd:708
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - android.animation.Animator$AnimatorCaller$$ExternalSyntheticLambda1.call:0
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - android.animation.Animator.callOnList:666
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - android.animation.Animator.notifyListeners:609
+05-07 15:25:55.339  1928  1928 D QuickPanelLog: NPVC | onPanelStateChanged: STATE_CLOSED
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController$$ExternalSyntheticLambda25.onPanelStateChanged:137
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.ShadeExpansionStateManager.updateStateInternal:51
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController.updateExpansionAndVisibility:75
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController.onFlingEnd:67
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController$12.onAnimationEnd:74
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - android.animation.Animator$AnimatorListener.onAnimationEnd:708
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - android.animation.Animator$AnimatorCaller$$ExternalSyntheticLambda1.call:0
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - android.animation.Animator.callOnList:666
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - android.animation.Animator.notifyListeners:609
+05-07 15:25:55.339  1928  1928 D QuickPanelLog:  - android.animation.Animator.notifyEndListeners:634
+05-07 15:25:55.339  1928  1928 D KeyguardVisible: go panelState: OPEN -> CLOSED tracking=false, expanded=true, fraction=0.0
+05-07 15:25:55.339  1928  1928 D ShadeExpansionStateManager: onPanelExpansionChanged: OPEN -> CLOSED
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper: slide ( SHADE_STATE )
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper:  - com.android.systemui.shade.SecPanelSplitHelper.onPanelExpansionChanged:21
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper:  - com.android.systemui.shade.NotificationPanelViewController.updateExpansionAndVisibility:204
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper:  - com.android.systemui.shade.NotificationPanelViewController.onFlingEnd:67
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper:  - com.android.systemui.shade.NotificationPanelViewController$12.onAnimationEnd:74
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper:  - android.animation.Animator$AnimatorListener.onAnimationEnd:708
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper:  - android.animation.Animator$AnimatorCaller$$ExternalSyntheticLambda1.call:0
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper:  - android.animation.Animator.callOnList:666
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper:  - android.animation.Animator.notifyListeners:609
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper:  - android.animation.Animator.notifyEndListeners:634
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper:  - android.animation.ValueAnimator.endAnimation:1306
+05-07 15:25:55.339  1928  1928 D SecPanelSplitHelper: updateState SHADE_STATE
+05-07 15:25:55.339  1928  1928 D PanelTransitionAnimator: clearAnimationState SHADE_STATE
+05-07 15:25:55.340  1928  1928 D SecQSExpansionStateRepository: true => false: pte: true | pts: 1 | lsse: 0.0 | qe: 1.0
+05-07 15:25:55.340  1928  1928 D SecQSExpansionStateRepository: notify expanded[true => false] expanded: false | CS: false | DO: false | DS: false | DC: false
+05-07 15:25:55.340  1928  1928 D SecQSExpansionStateInteractor: notify: false
+05-07 15:25:55.340  1928  1928 D VolumeSeekBar: [QP volume] onQSExpansionStateChanged isShowing = false
+05-07 15:25:55.340  1928  1928 D VolumeSeekBar: [QP volume] updateVolumeModel model: VolumeModel(volume=140, minVolume=0, maxVolume=150, device=0, enable=true, isBroadcast=false, isAllSoundMute=false, isZenMode=0, isZenModeDisabled=false, isSmartViewEnabled=false, isMusicShareEnabled=false, isDisallowAdjustVolume=false) isTracking : false
+05-07 15:25:55.340  1928  1928 D VolumeSeekBar: [QP volume] updateVolumeModel model: VolumeModel(volume=140, minVolume=0, maxVolume=150, device=0, enable=true, isBroadcast=false, isAllSoundMute=false, isZenMode=0, isZenModeDisabled=false, isSmartViewEnabled=false, isMusicShareEnabled=false, isDisallowAdjustVolume=false) isTracking : false
+05-07 15:25:55.340  1928  1928 D SecPanelSplitHelper: updatePanelVisibility SHADE_STATE
+05-07 15:25:55.342  1928  1928 D PanelTransitionAnimator: fraction = 1.0 direction = DOWN stateToChange = SHADE_STATE StatusBar = SHADE panelTransitionState = SHADE_STATE
+05-07 15:25:55.342  1928  1928 D PanelTransitionAnimator: SHADE_STATE
+05-07 15:25:55.342  1928  1928 D PanelTransitionAnimator: clearAnimationState SHADE_STATE
+05-07 15:25:55.342  1928  1928 D KeyguardVisible: go panelState: CLOSED -> CLOSED tracking=false, expanded=false, fraction=0.0
+05-07 15:25:55.342  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.0 state : 0
+05-07 15:25:55.342  1928  1928 D ImmersiveScrollAnimator: clearAnimators
+05-07 15:25:55.342  1928  1928 D KeyguardVisible: shouldPanelBeVisible false / headUpVisible=false, why=0
+05-07 15:25:55.342  1928  2231 D Tile.CustomTile: handleSetListening  false  initialized=true  isTileReady=true  getTileSpec() = custom(com.samsung.android.lool/com.samsung.android.sm.battery.ui.mode.BatteryModeTile)
+05-07 15:25:55.342  1928  2231 D TileLifecycleManager: onStopListening ComponentInfo{com.samsung.android.lool/com.samsung.android.sm.battery.ui.mode.BatteryModeTile}
+05-07 15:25:55.342  1928  2231 D Tile.CustomTile: handleSetListening  false  initialized=true  isTileReady=true  getTileSpec() = custom(com.samsung.android.app.sharelive/.presentation.quickpanel.DeviceVisibilityTileService)
+05-07 15:25:55.342  1928  2231 D TileLifecycleManager: onStopListening ComponentInfo{com.samsung.android.app.sharelive/com.samsung.android.app.sharelive.presentation.quickpanel.DeviceVisibilityTileService}
+05-07 15:25:55.344  1928  2231 D Tile.CustomTile: handleSetListening  false  initialized=true  isTileReady=true  getTileSpec() = custom(com.sec.android.app.camera/.service.QrTileService)
+05-07 15:25:55.344  1928  2231 D TileLifecycleManager: onStopListening ComponentInfo{com.sec.android.app.camera/com.sec.android.app.camera.service.QrTileService}
+05-07 15:25:55.344  1928  2231 D Tile.CustomTile: handleSetListening  false  initialized=true  isTileReady=true  getTileSpec() = custom(com.samsung.android.app.routines/.LifestyleModeTile)
+05-07 15:25:55.344  1928  2231 D TileLifecycleManager: onStopListening ComponentInfo{com.samsung.android.app.routines/com.samsung.android.app.routines.LifestyleModeTile}
+05-07 15:25:55.348  1928  1928 W View    : requestLayout() improperly called by com.android.systemui.qs.SecQSGradationDrawableView{72d12ad V.E...... ......ID 0,0-720,221 #7f0a0978 app:id/qs_gradation_view} during layout: running second layout pass
+05-07 15:25:55.348  1928  1928 W View    : requestLayout() improperly called by android.widget.FrameLayout{8afd9e2 V.E...... ......ID 0,88-720,1510 #7f0a0976 app:id/qs_frame} during layout: running second layout pass
+05-07 15:25:55.358  1928  1928 D FlexPanelStartController: not support state, mMwEnabled=true, mIsTableMode=false, mDesktopMode=false, mFlexModePanelEnabled=true, mIsImeShowing=false, mIsQuickPanelShowing=false, mIsTaskBarAppsEnabled=false, mIsGlobalActionVisible=false, mOnRecentsAnimation=false, isSupportRotation=true, mIsKeyguardVisible=false
+05-07 15:25:55.360  1928  1928 I BLASTBufferQueue_Java: update, w= 720 h= 1600 mName = VRI[NotificationShade]@cf408b0 mNativeObject= 0xb400007d53d91800 sc.mNativeObject= 0xb400007c1183c7c0 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3386 android.view.ViewRootImpl.relayoutWindow:11361 android.view.ViewRootImpl.performTraversals:4544 android.view.ViewRootImpl.doTraversal:3708 android.view.ViewRootImpl$TraversalRunnable.run:12542 android.view.Choreographer$CallbackRecord.run:1751 
+05-07 15:25:55.360  1928  1928 I VRI[NotificationShade]@cf408b0: Relayout returned: old=(0,0,720,1600) new=(0,0,720,1600) relayoutAsync=true req=(720,1600)0 dur=0 res=0x0 s={true 0xb400007bf9f3a800} ch=false seqId=0
+05-07 15:25:55.361  1476  3605 V WindowManager: Relayout Window{f3168a9 u0 NotificationShade}: viewVisibility=0 req=720x1600 ty=2040 d0
+05-07 15:25:55.361  1928  1928 I VRI[NotificationShade]@cf408b0: registerCallbackForPendingTransactions
+05-07 15:25:55.361  1928  1928 D ZenModeController: Removed callback class com.android.systemui.qs.tiles.DndTile$4
+05-07 15:25:55.362  1928  1928 D NavigationBarControllerImpl: setNavigationBarShortcut requestClass : com.android.wm.shell.controlpanel.activity.FlexPanelActivity, remoteViews : null, position : 0, priority : 11
+05-07 15:25:55.362  1928  1928 D RemoteViewPack: OnSetRemoteView RemoteViewShortcut(requestClass=com.android.wm.shell.controlpanel.activity.FlexPanelActivity, remoteViews=null, position=0, priority=11)
+05-07 15:25:55.362  1928  1928 D NavBarStateManager: NavBarStates(0) isGameMode: false
+05-07 15:25:55.362  1928  1928 D Navbar.Store: ----handleEvent(0) OnUpdateRemoteViewContainer(rotation=0, leftContainer=android.widget.LinearLayout{e05791b I.E...... ......ID 0,0-79,90 #7f0a0625 app:id/left_remoteview}, rightContainer=android.widget.LinearLayout{91cfab8 I.E...... ......I. 641,0-720,90 #7f0a09e0 app:id/right_remoteview}, contextualButtonVisible=false, darkIntensity=0.0, displayId=0) [Module] SamsungNavigationBarView
+05-07 15:25:55.362  1928  1928 D Navbar.Store: ------[Band]REMOTE_VIEW_PACK_SET_REMOTEVIEW_CONTAINER
+05-07 15:25:55.362  1928  1928 D Navbar.Store: --------apply(0) NavBarStoreAction$UpdateRemoteViewContainer
+05-07 15:25:55.362  1928  2674 I VRI[NotificationShade]@cf408b0: mWNT: t=0xb400007c11a24700 mBlastBufferQueue=0xb400007d53d91800 fn= 159 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$9.onFrameDraw:6276 android.view.ViewRootImpl$3.onFrameDraw:2440 android.view.ThreadedRenderer$1.onFrameDraw:761 
+05-07 15:25:55.362  1928  1928 D Navbar.Store: --------apply(0) NavBarStoreAction$UpdateRemoteViewDarkIntensity
+05-07 15:25:55.362  1928  1928 D QuickPanelLog: SC | makeExpandedInvisible
+05-07 15:25:55.362  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.ShadeControllerImpl.makeExpandedInvisible:22
+05-07 15:25:55.362  1928  1928 D QuickPanelLog:  - com.android.systemui.statusbar.phone.CentralSurfacesImpl$$ExternalSyntheticLambda29.run:92
+05-07 15:25:55.362  1928  1928 D QuickPanelLog:  - android.os.Handler.handleCallback:959
+05-07 15:25:55.362  1928  1928 D QuickPanelLog:  - android.os.Handler.dispatchMessage:100
+05-07 15:25:55.362  1928  1928 D QuickPanelLog:  - android.os.Looper.loopOnce:257
+05-07 15:25:55.362  1928  1928 D QuickPanelLog:  - android.os.Looper.loop:342
+05-07 15:25:55.362  1928  1928 D QuickPanelLog:  - android.app.ActivityThread.main:9638
+05-07 15:25:55.362  1928  1928 D QuickPanelLog:  - java.lang.reflect.Method.invoke:-2
+05-07 15:25:55.362  1928  1928 D QuickPanelLog:  - com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run:619
+05-07 15:25:55.362  1928  1928 D QuickPanelLog:  - com.android.internal.os.ZygoteInit.main:929
+05-07 15:25:55.362  1928  1928 D KeyguardSecAffordanceView: Cancel reset keyguard not showing LeftShortcut
+05-07 15:25:55.363  1928  1928 D KeyguardSecAffordanceView: Cancel reset keyguard not showing RightShortcut
+05-07 15:25:55.363   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=0.29 dur=3445.49 max=3445.49 min=3445.49
+05-07 15:25:55.364  1476  3605 D WindowManager: Changing focus from Window{f3168a9 u0 NotificationShade} to Window{f702570 u0 com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity} displayId=0 Callers=com.android.server.wm.WindowManagerService.relayoutWindowInner:142 com.android.server.wm.WindowManagerService.relayoutWindow:6 com.android.server.wm.Session.relayout:27 com.android.server.wm.Session.relayoutAsync:26 
+05-07 15:25:55.364  1476  3605 I WindowManager: Cancelling animation restarting=true, leash=Surface(name=Surface(name=d93be82 NavigationBar0)/@0xde0d4c3 - animation-leash of insets_animation)/@0x97a0c61
+05-07 15:25:55.364  1476  3605 I WindowManager: Reparenting to original parent: Surface(name=WindowToken{f9525cd type=2019 android.os.BinderProxy@f1af4f7})/@0xb603140, destroy=false, syncState=0, syncCommitDepth=0, surface=Surface(name=d93be82 NavigationBar0)/@0xde0d4c3
+05-07 15:25:55.364  1476  3605 I WindowManager: Reparenting to leash, surface=Surface(name=d93be82 NavigationBar0)/@0xde0d4c3, syncState=0, syncCommitDepth=0, leashParent=Surface(name=WindowToken{f9525cd type=2019 android.os.BinderProxy@f1af4f7})/@0xb603140
+05-07 15:25:55.365  1928  1928 D MultiSIMPreferredSlotBar: setExpanded : false mShowing : false
+05-07 15:25:55.365   881  2638 I BufferQueueDebug: [Surface(name=d93be82 NavigationBar0)/@0xde0d4c3 - animation-leash of insets_animation#3241](this:0xb400006f691b6898,id:-1,api:0,p:-1,c:-1) BufferQueue core=(881:/system/bin/surfaceflinger)
+05-07 15:25:55.365  1928  1928 D QuickPanelLog: QSCI | setExpanded: expanded: false, getMinExpansionHeight(): 198, getMaxExpansionHeight(): 1510, mStackScrollerOverscrolling: false, mAnimatorExpand: false, mAnimating: false
+05-07 15:25:55.365  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.QuickSettingsControllerImpl.setExpanded:193
+05-07 15:25:55.365  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.QuickSettingsControllerImpl.setExpansionHeight:193
+05-07 15:25:55.365  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.QuickSettingsControllerImpl.closeQs:11
+05-07 15:25:55.365  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController.closeQsIfPossible:52
+05-07 15:25:55.365  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController.resetViews:13
+05-07 15:25:55.365  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.NotificationPanelViewController.collapse:3
+05-07 15:25:55.365  1928  1928 D QuickPanelLog:  - com.android.systemui.shade.ShadeControllerImpl.makeExpandedInvisible:29
+05-07 15:25:55.365  1928  1928 D QuickPanelLog:  - com.android.systemui.statusbar.phone.CentralSurfacesImpl$$ExternalSyntheticLambda29.run:92
+05-07 15:25:55.365  1928  1928 D QuickPanelLog:  - android.os.Handler.handleCallback:959
+05-07 15:25:55.365  1928  1928 D QuickPanelLog:  - android.os.Handler.dispatchMessage:100
+05-07 15:25:55.366   881  2638 I SurfaceFlinger: id=3241 createSurf, flag=24000, Surface(name=d93be82 NavigationBar0)/@0xde0d4c3 - animation-leash of insets_animation#3241
+05-07 15:25:55.366  1476  3605 D WindowManager: makeSurface duration=2 leash=Surface(name=Surface(name=d93be82 NavigationBar0)/@0xde0d4c3 - animation-leash of insets_animation)/@0xe57dee9
+05-07 15:25:55.366  1928  1928 D KeyguardTouchAnimator: reset unlockExecuted=false
+05-07 15:25:55.366  1928  1928 D KeyguardEditModeAnimatorController: reset false
+05-07 15:25:55.366  1928  1928 D KeyguardEditModeAnimatorController: long pressed false
+05-07 15:25:55.366  1928  1928 D KeyguardEditModeAnimatorController: resetViews
+05-07 15:25:55.366  1928  1928 D KeyguardEditModeController: cancel() true
+05-07 15:25:55.366  1928  1928 D KeyguardTouchAnimator: resetChildViewVI(): isUnlockExecuted=false scale=1.0
+05-07 15:25:55.367  1476  3605 D InsetsSourceProvider: updateControlForTarget: control=InsetsSourceControl: {40160001 mType=navigationBars initiallyVisible mSurfacePosition=Point(0, 1510) mInsetsHint=Insets{left=0, top=0, right=0, bottom=90}}, target=Window{f702570 u0 com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity}, from=com.android.server.wm.InsetsStateController.onControlTargetChanged:81 com.android.server.wm.InsetsPolicy.updateBarControlTarget:176 com.android.server.wm.DisplayPolicy.updateSystemBarAttributes:281 com.android.server.wm.WindowManagerService.updateFocusedWindowLocked:375 com.android.server.wm.WindowManagerService.relayoutWindowInner:142 
+05-07 15:25:55.367  1928  1928 D PanelSplitOpenAnimator: onPanelExpansionChanged : 0.0 state : 0
+05-07 15:25:55.367  1928  1928 D ImmersiveScrollAnimator: clearAnimators
+05-07 15:25:55.367  1476  3605 D InsetsSourceProvider: updateFakeControlTarget: fakeControl=InsetsSourceControl: {40160001 mType=navigationBars mSurfacePosition=Point(0, 0) mInsetsHint=Insets{left=0, top=0, right=0, bottom=0}}, fakeTarget=null
+05-07 15:25:55.367  1928  1928 W WindowOnBackDispatcher: sendCancelIfRunning: isInProgress=false callback=com.android.systemui.back.domain.interactor.BackActionInteractor$callback$2@6a93dee
+05-07 15:25:55.367  1476  3605 I WindowManager: Cancelling animation restarting=true, leash=Surface(name=Surface(name=d8c83e1 StatusBar)/@0x670c9be - animation-leash of insets_animation)/@0x9bf8447
+05-07 15:25:55.367  1928  1928 D KeyguardVisible: isExpanded=false
+05-07 15:25:55.367  1928  1928 D KeyguardVisible: !forceCollapsed=1, keyguard=0, panel=0, fadingAway=0, bouncer=0, headsUp=0, scrim=0, blur=0, launchingActivity=0, dozing=0, forceInvisible=0, forceVisibleForUnlockAnimation=0, coverClosed=0, coverApp=0, coverType=0
+05-07 15:25:55.367  1476  3605 I WindowManager: Reparenting to original parent: Surface(name=WindowToken{d903948 type=2000 android.os.BinderProxy@7290f3a})/@0x271fa1f, destroy=false, syncState=0, syncCommitDepth=0, surface=Surface(name=d8c83e1 StatusBar)/@0x670c9be
+05-07 15:25:55.368  1476  3605 I WindowManager: Reparenting to leash, surface=Surface(name=d8c83e1 StatusBar)/@0x670c9be, syncState=0, syncCommitDepth=0, leashParent=Surface(name=WindowToken{d903948 type=2000 android.os.BinderProxy@7290f3a})/@0x271fa1f
+05-07 15:25:55.369   881  2638 I BufferQueueDebug: [Surface(name=d8c83e1 StatusBar)/@0x670c9be - animation-leash of insets_animation#3242](this:0xb400006f691c0898,id:-1,api:0,p:-1,c:-1) BufferQueue core=(881:/system/bin/surfaceflinger)
+05-07 15:25:55.369   881  2638 I SurfaceFlinger: id=3242 createSurf, flag=24000, Surface(name=d8c83e1 StatusBar)/@0x670c9be - animation-leash of insets_animation#3242
+05-07 15:25:55.369  1476  3605 D WindowManager: makeSurface duration=2 leash=Surface(name=Surface(name=d8c83e1 StatusBar)/@0x670c9be - animation-leash of insets_animation)/@0x370ae0f
+05-07 15:25:55.370  1476  3605 D InsetsSourceProvider: updateControlForTarget: control=InsetsSourceControl: {9e6b0000 mType=statusBars initiallyVisible mSurfacePosition=Point(0, 0) mInsetsHint=Insets{left=0, top=43, right=0, bottom=0}}, target=Window{f702570 u0 com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity}, from=com.android.server.wm.InsetsStateController.onControlTargetChanged:81 com.android.server.wm.InsetsPolicy.updateBarControlTarget:163 com.android.server.wm.DisplayPolicy.updateSystemBarAttributes:281 com.android.server.wm.WindowManagerService.updateFocusedWindowLocked:375 com.android.server.wm.WindowManagerService.relayoutWindowInner:142 
+05-07 15:25:55.370  1476  3605 D InsetsSourceProvider: updateFakeControlTarget: fakeControl=InsetsSourceControl: {9e6b0000 mType=statusBars mSurfacePosition=Point(0, 0) mInsetsHint=Insets{left=0, top=0, right=0, bottom=0}}, fakeTarget=null
+05-07 15:25:55.371  1476  3605 D WindowManager: updateSystemBarAttributes: displayId=0, focusedCanBeNavColorWin=false, win=Window{f702570 u0 com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity}, navColorWin=Window{f702570 u0 com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity}, caller=com.android.server.wm.WindowManagerService.updateFocusedWindowLocked:375 com.android.server.wm.WindowManagerService.relayoutWindowInner:142 com.android.server.wm.WindowManagerService.relayoutWindow:6 
+05-07 15:25:55.371  1928  2231 D Tile.SoundModeTile: handleSetListening: listening false
+05-07 15:25:55.372  1476  3605 D WindowManager: updateSystemBarAttributes, bhv=2, apr=0, statusBarAprRegions=[AppearanceRegion{ bounds=[0,0][720,1600]}], requestedVisibilities=-9
+05-07 15:25:55.371  1928  2247 D HWUI    : CacheManager::trimMemory(20)
+05-07 15:25:55.372  1928  2247 I GED     : ged_boost_gpu_freq, level 100, eOrigin 2, final_idx 31, oppidx_max 31, oppidx_min 0
+05-07 15:25:55.372  1476  3605 V SystemKeyManager: updateFocusedWindow() is called, com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity
+05-07 15:25:55.372  1476  3605 I SystemKeyManager: requested systemKeyInfo size=2 focusedWindow=com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity
+05-07 15:25:55.373  1098  9791 I CameraService: onUidStateChanged: uid=10058, procState is changed. (1 -> 0)
+05-07 15:25:55.374  1476  3605 V WindowManager: Relayout hash=f3168a9, pid=0, syncId=-1: mAttrs={(0,0)(fillxfill) gr=TOP CENTER_VERTICAL sim={adjust=pan} layoutInDisplayCutoutMode=always ty=NOTIFICATION_SHADE fmt=TRANSLUCENT
+05-07 15:25:55.374  1476  3605 V WindowManager:   fl=81840048
+05-07 15:25:55.374  1476  3605 V WindowManager:   pfl=10000200
+05-07 15:25:55.374  1476  3605 V WindowManager:   bhv=2
+05-07 15:25:55.374  1476  3605 V WindowManager:   frameRateBoostOnTouch=true
+05-07 15:25:55.374  1476  3605 V WindowManager:   dvrrWindowFrameRateHint=true naviIconColor=0
+05-07 15:25:55.374  1476  3605 V WindowManager:   sfl=40000}
+05-07 15:25:55.375  1928  1928 D KeyguardVisible: visibilityChanged 0 -> 4
+05-07 15:25:55.376  2701  2701 I InsetsSourceConsumer: applyRequestedVisibilityToControl: visible=true, type=navigationBars, host=com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity
+05-07 15:25:55.376  1476  3605 D CoreBackPreview: Window{f3168a9 u0 NotificationShade}: Setting back callback null
+05-07 15:25:55.378  2701  2701 I InsetsSourceConsumer: applyRequestedVisibilityToControl: visible=true, type=statusBars, host=com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity
+05-07 15:25:55.378  1476  1508 D SurfaceComposerClient: Transaction::apply InputWindowCommands.focusRequests timestamp=248331706943262, windowName=f702570 com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity
+05-07 15:25:55.380   881   881 D SurfaceFlinger: Focus addInputWindowCommands timestamp=248331706943262, windowName=f702570 com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity
+05-07 15:25:55.383  1476  3605 V WindowManager: Relayout Window{f3168a9 u0 NotificationShade}: viewVisibility=4 req=720x1600 ty=2040 d0
+05-07 15:25:55.383  1476  3605 E WindowManager: win=Window{f3168a9 u0 NotificationShade} destroySurfaces: appStopped=true cleanupOnResume=false win.mWindowRemovalAllowed=false win.mRemoveOnExit=false win.mViewVisibility=4 caller=com.android.server.wm.WindowManagerService.tryStartExitingAnimation:147 com.android.server.wm.WindowManagerService.relayoutWindowInner:112 com.android.server.wm.WindowManagerService.relayoutWindow:6 com.android.server.wm.Session.relayout:27 android.view.IWindowSession$Stub.onTransact:861 com.android.server.wm.Session.onTransact:1 android.os.Binder.execTransactInternal:1541 
+05-07 15:25:55.383  1476  3605 I WindowManager: Destroying surface Surface(name=NotificationShade$_1928)/@0xa9cde9c called by com.android.server.wm.WindowStateAnimator.destroySurface:11 com.android.server.wm.WindowStateAnimator.destroySurfaceLocked:54 com.android.server.wm.WindowState.destroySurfaceUnchecked:5 com.android.server.wm.WindowState.destroySurface:126 com.android.server.wm.WindowManagerService.tryStartExitingAnimation:147 com.android.server.wm.WindowManagerService.relayoutWindowInner:112 com.android.server.wm.WindowManagerService.relayoutWindow:6 com.android.server.wm.Session.relayout:27 
+05-07 15:25:55.386  1476  3605 V WindowManager: Relayout hash=f3168a9, pid=1928, syncId=-1: mAttrs={(0,0)(fillxfill) gr=TOP CENTER_VERTICAL sim={adjust=pan} layoutInDisplayCutoutMode=always ty=NOTIFICATION_SHADE fmt=TRANSLUCENT
+05-07 15:25:55.386  1476  3605 V WindowManager:   fl=81840048
+05-07 15:25:55.386  1476  3605 V WindowManager:   pfl=11000200
+05-07 15:25:55.386  1476  3605 V WindowManager:   bhv=2
+05-07 15:25:55.386  1476  3605 V WindowManager:   frameRateBoostOnTouch=true
+05-07 15:25:55.386  1476  3605 V WindowManager:   dvrrWindowFrameRateHint=true naviIconColor=0
+05-07 15:25:55.386  1476  3605 V WindowManager:   sfl=40000}
+05-07 15:25:55.387   881  2638 I SurfaceFlinger: onHandleDestroyed: name=Surface(name=d93be82 NavigationBar0)/@0xde0d4c3 - animation-leash of insets_animation#3239, layerId=3239, parentId=0
+05-07 15:25:55.387   881  2638 I SurfaceFlinger: id=3239 Removed Surface(name=d93be82 NavigationBar0)/@0xde0d4c3 - animation-leash of insets_animation#3239 (113)
+05-07 15:25:55.387   881  3020 I SurfaceFlinger: onHandleDestroyed: name=Surface(name=d8c83e1 StatusBar)/@0x670c9be - animation-leash of insets_animation#3240, layerId=3240, parentId=0
+05-07 15:25:55.387   881  3020 I SurfaceFlinger: id=3240 Removed Surface(name=d8c83e1 StatusBar)/@0x670c9be - animation-leash of insets_animation#3240 (113)
+05-07 15:25:55.388  1928  1928 I VRI[NotificationShade]@cf408b0: Relayout returned: old=(0,0,720,1600) new=(0,0,720,1600) relayoutAsync=false req=(720,1600)4 dur=5 res=0x2 s={false 0x0} ch=true seqId=0
+05-07 15:25:55.388  1928  1962 I BLASTBufferQueue: [VRI[NotificationShade]@cf408b0#168](f:0,a:1,s:0) destructor()
+05-07 15:25:55.388   881  1278 D SurfaceFlinger: updateWinowInfo=1, setFocusedWindow timestamp=248331706943262, windowName=f702570 com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity
+05-07 15:25:55.388  1928  1962 D BufferQueueConsumer: [VRI[NotificationShade]@cf408b0#168(BLAST Consumer)168](id:788000000a8,api:0,p:-1,c:1928) disconnect
+05-07 15:25:55.388  1476  3749 D InputDispatcher: Once focus requested (0): f702570 com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity
+05-07 15:25:55.388  1476  3749 D InputDispatcher: Focus left window (0): f3168a9 NotificationShade
+05-07 15:25:55.388  1476  3749 D InputDispatcher: Focus entered window (0): f702570 com.sec.android.app.launcher/com.sec.android.app.launcher.activities.LauncherActivity
+05-07 15:25:55.390  1928  1928 D VRI[NotificationShade]@cf408b0: Not drawing due to not visible. Reason=View.INVISIBLE
+05-07 15:25:55.390  1928  1928 D SystemUIService: SYSUI_RAM_OPTIMIZATION onTrimMemory=20
+05-07 15:25:55.390  1928  1928 D CentralSurfaces: SYSUI_RAM_OPTIMIZATION onTrimMemory=20
+05-07 15:25:55.390  1928  2247 D HWUI    : CacheManager::trimMemory(20)
+05-07 15:25:55.390  1928  2247 I GED     : ged_boost_gpu_freq, level 100, eOrigin 2, final_idx 31, oppidx_max 31, oppidx_min 0
+05-07 15:25:55.390  1476  3605 I InputMethodManagerService: isAccessoryKeyboard 0
+05-07 15:25:55.391  2701  2701 I InputMethodManager: startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+05-07 15:25:55.392  1476  1669 D InputMethodManagerService: setWindowStateInner, windowToken=android.os.BinderProxy@4043bb3, state=ImeTargetWindowState{ imeToken null imeFocusChanged false hasEditorFocused false requestedImeVisible false imeDisplayId 0 softInputModeState STATE_UNSPECIFIED|ADJUST_NOTHING isStartInputByGainFocus true}
+05-07 15:25:55.392  1476  1669 V InputMethodManagerService: Same window without editor will hide input
+05-07 15:25:55.392  1476  1669 I ImeTracker: com.sec.android.app.launcher:a025df27: onRequestHide at ORIGIN_SERVER reason HIDE_SAME_WINDOW_FOCUSED_WITHOUT_EDITOR fromUser false
+05-07 15:25:55.392  1476  1669 V InputMethodManagerService: applyImeVisibility state=5
+05-07 15:25:55.392  1476  1669 D InputMethodManagerService: setWindowStateInner, windowToken=android.os.BinderProxy@4043bb3, state=ImeTargetWindowState{ imeToken android.os.Binder@2d53c7a imeFocusChanged false hasEditorFocused false requestedImeVisible false imeDisplayId 0 softInputModeState STATE_UNSPECIFIED|ADJUST_NOTHING isStartInputByGainFocus true}
+05-07 15:25:55.392  1476  1669 I ImeTracker: com.sec.android.app.launcher:a025df27: onCancelled at PHASE_SERVER_SHOULD_HIDE
+05-07 15:25:55.392  1476  1669 V InputMethodManagerService: hideCurrentInputLocked : canceled, shouldHideSoftInput=false, mInputShown=false, mImeWindowVis=0
+05-07 15:25:55.393  1476  1669 D InputMethodManagerService: mDesktopModeManager null!
+05-07 15:25:55.393  1476  1669 V InputMethodManagerService: semComputeImeDisplayIdForTarget: displayId=0
+05-07 15:25:55.393  1476  1669 D InputMethodManagerService: isImeSwitcherDisabledPackage : false
+05-07 15:25:55.393  1476  1669 D InputMethodManagerService: checkDisplayOfStartInputAndUpdateKeyboard: displayId=0, mFocusedDisplayId=0
+05-07 15:25:55.393  1476  1669 D InputTransport: Input channel constructed: 'ClientS', fd=982
+05-07 15:25:55.394  1476  1669 D InputTransport: Input channel destroyed: 'ClientS', fd=982
+05-07 15:25:55.394  1928  1928 D KeyguardUpdateMonitor: handleStatusBarState( prev:true-> next:false )
+05-07 15:25:55.394  1928  1928 I ImeFocusController: onPreWindowFocus: skipped hasWindowFocus=false mHasImeFocus=false
+05-07 15:25:55.395 15772 15772 I HBD     : HoneyBoardService onFinishInput 
+05-07 15:25:55.395  1928  1928 D KeyguardUpdateMonitor: setFocusForBiometrics : Cannot change focus. current Window is 2, reqWin : 1
+05-07 15:25:55.396  1928  1928 I DymLock|BaseLockContainer: onWindowFocusChanged false
+05-07 15:25:55.396  1928  1928 I DymLock|DynamicLockContainer: onWindowFocusChanged false
+05-07 15:25:55.396   881   881 I Layer   : id=3239 Destroyed Surface(name=d93be82 NavigationBar0)/@0xde0d4c3 - animation-leash of insets_animation#3239
+05-07 15:25:55.396   881   881 I BufferQueueDebug: [Surface(name=d93be82 NavigationBar0)/@0xde0d4c3 - animation-leash of insets_animation#3239](this:0xb400006f6939e898,id:-1,api:0,p:-1,c:881) onDestructor()
+05-07 15:25:55.396   881   881 I Layer   : id=3240 Destroyed Surface(name=d8c83e1 StatusBar)/@0x670c9be - animation-leash of insets_animation#3240
+05-07 15:25:55.396   881   881 I BufferQueueDebug: [Surface(name=d8c83e1 StatusBar)/@0x670c9be - animation-leash of insets_animation#3240](this:0xb400006f693a1898,id:-1,api:0,p:-1,c:881) onDestructor()
+05-07 15:25:55.400  1928  1928 D KeyguardUpdateMonitor: setFocusForBiometrics : true -> false, Focus window : 2 -> 2
+05-07 15:25:55.400  1928  1928 I ImeFocusController: onPostWindowFocus: skipped hasWindowFocus=false mHasImeFocus=false
+05-07 15:25:55.400  1928  1928 D SBluetoothControllerImpl: handleMessage : 4
+05-07 15:25:55.400   881   881 D SurfaceFlinger: Display 4627039422300187648 HWC layers:
+05-07 15:25:55.400   881   881 D SurfaceFlinger:        DEVICE |   0xb400006f68ea0a00 | 0000 | RGBA_8888    |    0.0    0.0  720.0 1600.0 |    0    0  720 1600 | Wallpaper BBQ wrapper 7_systemlock#72 (1)
+05-07 15:25:55.400   881   881 D SurfaceFlinger:        DEVICE |   0xb400006f6d39d440 | 0001 | RGBA_8888    |    0.0    0.0  720.0 1600.0 |    0    0  720 1600 | com.sec.android.app.launcher/com.sec[...]tivities.LauncherActivity$_2701#3230 (11)
+05-07 15:25:55.400   881   881 D SurfaceFlinger:        DEVICE |   0xb400006f9f65a780 | 0001 | RGBA_8888    |    0.0    0.0  720.0   43.0 |    0    0  720   43 | StatusBar$_1928#86 (9854)
+05-07 15:25:55.400   881   881 D SurfaceFlinger:        DEVICE |   0xb400006fa105dbc0 | 0001 | RGBA_8888    |    0.0    0.0  720.0   90.0 |    0 1510  720 1600 | NavigationBar0$_1928#82 (3362)
+05-07 15:25:55.400   881   881 D SurfaceFlinger: 
+05-07 15:25:55.403 15772 15772 I HBD     : a IC have been unbinding,  RemoteInputConnection{idHash=#7e38a88}
+05-07 15:25:55.405 15772 15772 I HBD     : HoneyBoardService [PF_CL][onFinishInput]  10 ms 
+05-07 15:25:55.406 15772 15772 I HBD     : HoneyBoardService [IMI] onStartInput - caller pid : 2701 , caller uid : 10119 
+05-07 15:25:55.406 15772 15772 I HBD     : j updateConfigs 
+05-07 15:25:55.406 15772 15772 I HBD     : j isEnabledNightMode : false 
+05-07 15:25:55.406 15772 15772 I HBD     : a IC have been binding, RemoteInputConnection{idHash=#7e38a88} 
+05-07 15:25:55.406 15772 15772 I HBD     : h [EditorInputType]setPrivateImeOptionsToTable privateImeOptions ( null )
+05-07 15:25:55.406 15772 15772 I HBD     : b incognitoMode : false 
+05-07 15:25:55.406 15772 15772 I HBD     : b needOff = true , isForceOff = false, isNullInputClass : true 
+05-07 15:25:55.406 15772 15772 I HBD     : h getDefaultInputRange : UNKNOWN 
+05-07 15:25:55.406 15772 15772 I HBD     : h getDefaultInputRange : UNKNOWN 
+05-07 15:25:55.406 15772 15772 I HBD     : h getDefaultInputRange : UNKNOWN 
+05-07 15:25:55.407 15772 15772 I HBD     : b needOff = true , isForceOff = false, isNullInputClass : true 
+05-07 15:25:55.407 15772 15772 I HBD     : b update cached prediction status : false 
+05-07 15:25:55.407 15772 15772 I HBD     : h getDefaultInputRange : UNKNOWN 
+05-07 15:25:55.407 15772 15772 I HBD     : a currentState : 0 
+05-07 15:25:55.407 15772 15772 I HBD     : a [UpdatePolicy] [post] a: 0 cl: 1441799 kit: [0/30] vt: 0 ir: 1 
+05-07 15:25:55.407 15772 15772 I HBD     : a [NRIC] resetNoResponseState 
+05-07 15:25:55.408 15772 15772 I HBD     : b needOff = true , isForceOff = false, isNullInputClass : true 
+05-07 15:25:55.408 15772 15772 I HBD     : b update cached prediction status : false 
+05-07 15:25:55.408 15772 15772 I HBD     : b [AiWriter] setContact : com.sec.android.app.launcher
+05-07 15:25:55.408 15772 15772 I HBD     : HoneyBoardService [PF_OP][onStartInput]  2 ms 
+05-07 15:25:55.411   881   881 I SurfaceFlinger: onHandleDestroyed: name=NotificationShade$_1928#3238, layerId=3238, parentId=0
+05-07 15:25:55.411   881   881 I SurfaceFlinger: id=3238 Removed NotificationShade$_1928#3238 (111)
+05-07 15:25:55.421 21818 21893 I NearbyPresence: (REDACTED) %s verified [==] new request %s equals to the old request
+05-07 15:25:55.428   881   881 I Layer   : id=3238 Destroyed NotificationShade$_1928#3238
+05-07 15:25:55.428   881   881 I BufferQueueDebug: [NotificationShade$_1928#3238](this:0xb400006f6939b898,id:-1,api:0,p:-1,c:881) onDestructor()
+05-07 15:25:55.488  1476  3605 I ActivityManager: Broadcasting: Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }
+05-07 15:25:55.489  1476  3605 I ActivityManager: Enqueued broadcast Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }: 0
+05-07 15:25:55.489  1476  1504 I ActivityManager: Broadcast completed: result=0
+05-07 15:25:55.524   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:25:55.794  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:55.795   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:55.817 19444 19492 E fczf    : (REDACTED) Trace %s timed out after %d ms. Complete trace: %s
+05-07 15:25:55.817 19444 19492 E fczf    : fdap: 
+05-07 15:25:55.817 19444 19492 E fczf    : 	at tk_trace.OnOpNotedCallback#onAsyncNoted(Started After:0)
+05-07 15:25:55.837   556   556 D io_stats: !@ 179,0 r 3516379 67282086 w 1159226 13721264 d 64859 13404312 f 280506 282467 iot 1176656 0 th 0 0 0 pt 0 inp 0 0 248332.168
+05-07 15:25:55.889   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:25:56.105 27049 27058 W m.wawapp.driver: userfaultfd: MOVE ioctl seems unsupported: Connection timed out
+05-07 15:25:56.144 27340 27340 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-07 15:25:56.146 27340 27340 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-07 15:25:56.146 27340 27340 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: Settings request failed.
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: java.net.SocketTimeoutException: Read timed out
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at java.net.SocketInputStream.socketRead0(Native Method)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at java.net.SocketInputStream.socketRead(SocketInputStream.java:118)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at java.net.SocketInputStream.read(SocketInputStream.java:173)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at java.net.SocketInputStream.read(SocketInputStream.java:143)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.readFromSocket(ConscryptEngineSocket.java:999)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.processDataFromSocket(ConscryptEngineSocket.java:963)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.org.conscrypt.ConscryptEngineSocket$SSLInputStream.-$$Nest$mprocessDataFromSocket(Unknown Source:0)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.org.conscrypt.ConscryptEngineSocket.doHandshake(ConscryptEngineSocket.java:242)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.org.conscrypt.ConscryptEngineSocket.startHandshake(ConscryptEngineSocket.java:224)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.io.RealConnection.connectTls(RealConnection.java:196)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.io.RealConnection.connectSocket(RealConnection.java:153)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.io.RealConnection.connect(RealConnection.java:116)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.http.StreamAllocation.findConnection(StreamAllocation.java:186)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.http.StreamAllocation.findHealthyConnection(StreamAllocation.java:128)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.http.StreamAllocation.newStream(StreamAllocation.java:97)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.http.HttpEngine.connect(HttpEngine.java:289)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.http.HttpEngine.sendRequest(HttpEngine.java:232)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:465)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.huc.HttpURLConnectionImpl.connect(HttpURLConnectionImpl.java:131)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.huc.DelegatingHttpsURLConnection.connect(DelegatingHttpsURLConnection.java:90)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.android.okhttp.internal.huc.HttpsURLConnectionImpl.connect(HttpsURLConnectionImpl.java:30)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.google.firebase.crashlytics.internal.network.HttpGetRequest.execute(HttpGetRequest.java:80)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.google.firebase.crashlytics.internal.settings.DefaultSettingsSpiCall.invoke(DefaultSettingsSpiCall.java:114)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.google.firebase.crashlytics.internal.settings.SettingsController$1.lambda$then$0$com-google-firebase-crashlytics-internal-settings-SettingsController$1(SettingsController.java:204)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.google.firebase.crashlytics.internal.settings.SettingsController$1$$ExternalSyntheticLambda0.call(D8$$SyntheticClass:0)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.google.firebase.concurrent.CustomThreadFactory.lambda$newThread$0$com-google-firebase-concurrent-CustomThreadFactory(CustomThreadFactory.java:47)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at com.google.firebase.concurrent.CustomThreadFactory$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+05-07 15:25:56.231 27049 27102 E FirebaseCrashlytics: 	at java.lang.Thread.run(Thread.java:1564)
+05-07 15:25:56.296  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:56.297   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:56.504   825 27301 I HYPER-HAL: [RequestManager.cpp]releaseLocked(): Released ID : 5860179
+05-07 15:25:56.506   825 27300 I HYPER-HAL: [RequestManager.cpp]releaseLocked(): Released ID : 5856755
+05-07 15:25:56.775  5451  5673 D DelayedNotifier: notify for scanItem.
+05-07 15:25:56.777  1476  3605 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:25:56.798  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:56.799   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:56.835   881  1266 D SurfaceFlinger: calculateTimeoutTime, triggerInterval = 1 sec + 260066539 nsec
+05-07 15:25:56.849   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=1.35 dur=1485.97 max=1023.63 min=462.34
+05-07 15:25:56.854   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:14.248215,dur:1754.61,max:935.96,min:12.06  
+05-07 15:25:56.989   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:25:57.003   881   881 I BufferQueueProducer: [FramebufferSurface](this:0xb400006fa10828d0,id:-1,api:1,p:881,c:881) queueBuffer: fps=11.02 dur=1904.96 max=1086.28 min=13.10
+05-07 15:25:57.058  1476  3605 I ActivityManager: Broadcasting: Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }
+05-07 15:25:57.058  1476  3605 I ActivityManager: Enqueued broadcast Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }: 0
+05-07 15:25:57.058  1476  1504 I ActivityManager: Broadcast completed: result=0
+05-07 15:25:57.075   825 27312 I mtkpower_client: perf_lock_rel, hdl:3207, tid:27312
+05-07 15:25:57.077   825 27312 I HYPER-HAL: [RequestManager.cpp]releaseLocked(): Released ID : 1118279
+05-07 15:25:57.077   839   922 I libPowerHal: [perfLockRel] hdl:3207, idx:0
+05-07 15:25:57.078   839   922 I libPowerHal: [PD] vendor.samsung. update cmd:400100 param:-1 pr:6
+05-07 15:25:57.080   839   922 I libPowerHal: [recordCPUFreqInfo] set cluster[0] min(-1): -1 max(-1): -1 cluster[1] min(-1): -1 max(-1): -1
+05-07 15:25:57.080   839   922 I libPowerHal: [perfLockRel] Done for hdl : 3207
+05-07 15:25:57.300  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:57.301   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:57.477 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) doesDataKeepChanging: postpone count: 1 - source count: very first = 776, previous = 775, current = 775
+05-07 15:25:57.479 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [AOSP_MP-0] entering in collectChanges():  
+05-07 15:25:57.534 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchInternal values : maxSyncId: 1000004874 indexCount: 772 sourceCount: 771
+05-07 15:25:57.744 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in deleteIndex():  ids.size():1
+05-07 15:25:57.744 26043 26101 I SCS@AiSearch user 0: (IndexManager) getIndexWriter(): indexName com.google.android.providers.media
+05-07 15:25:57.744 26043 26101 I SCS@AiSearch user 0: (IndexManager) [DELETE] indexName=[com.google.android.providers.media], #ids= 1
+05-07 15:25:57.745 26043 26101 I SCS@AiSearch user 0: (IndexSearcherManager) [AOSP_MP-0] entering in refreshSearcherManager():  refreshSearcherManager for com.google.android.providers.media
+05-07 15:25:57.749 26043 26101 I SCS@AiSearch user 0: (IndexSearcherManager) [AOSP_MP-0] leaving from refreshSearcherManager():  
+05-07 15:25:57.749 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-07 15:25:57.749 26043 26140 I SCS@AiSearch user 0: (IndexManager) [pool-8-thread-1] entering in commitIndexWriter():  
+05-07 15:25:57.789 26043 26140 I SCS@AiSearch user 0: (IndexManager) [pool-8-thread-1] leaving from commitIndexWriter():  
+05-07 15:25:57.790 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] leaving from waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-07 15:25:57.790 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) syncDeletedItems: deleted items = 1
+05-07 15:25:57.796 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetch: fetching took  295 ms
+05-07 15:25:57.796 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchChanges: applied 1 items
+05-07 15:25:57.802  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:57.803   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:57.838   556   556 D io_stats: !@ 179,0 r 3516390 67282158 w 1159382 13722748 d 64859 13404312 f 280524 282483 iot 1176684 0 th 0 0 0 pt 0 inp 0 0 248334.169
+05-07 15:25:57.839   556   556 D io_stats: !@ Read_top(KB): roid.honeyboard(15772) 632 ndroid.systemui(1928) 504 system_server:h(1476) 144
+05-07 15:25:57.839   556   556 D io_stats: !@ Write_top(KB): kworker/u16:6:/(21601) 972 f2fs_ckpt-254:5(638) 272 system_server:h(1476) 232
+05-07 15:25:57.855   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=0.99 dur=1005.53 max=1005.53 min=1005.53
+05-07 15:25:57.860   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:1.988258,dur:1005.91,max:855.06,min:150.85  
+05-07 15:25:57.993   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:25:58.002  1476  1564 D PowerManagerService: UserActivityStateListenerState: 0
+05-07 15:25:58.002  1476  1639 D ActivityManager: freezing 19466 com.android.settings
+05-07 15:25:58.008   881   881 I BufferQueueProducer: [FramebufferSurface](this:0xb400006fa10828d0,id:-1,api:1,p:881,c:881) queueBuffer: fps=1.00 dur=1004.69 max=1004.69 min=1004.69
+05-07 15:25:58.011  1476  4679 D PerProcessNandswap$NandswapMsgHandler: startNandswapProcess Frozen-ppn com.android.settings
+05-07 15:25:58.013  1476  4676 D PerProcessNandswap$NandswapHandler: nandswap start for activity com.android.settings(pid 19466) action:16 adj:850 type:3
+05-07 15:25:58.259  1476  4676 D PerProcessNandswap$NandswapHandler: nandswap end for activity com.android.settings(pid 19466) ret:8637988864 adj:850
+05-07 15:25:58.304  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:58.305   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:58.651  1476  3605 I ActivityManager: Broadcasting: Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }
+05-07 15:25:58.652  1476  1504 I ActivityManager: Broadcast completed: result=0
+05-07 15:25:58.652  1476  3605 I ActivityManager: Enqueued broadcast Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }: 0
+05-07 15:25:58.727  1173  1173 I thermal_repeater: socket -1
+05-07 15:25:58.806  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:58.807   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:58.860   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=0.99 dur=1005.08 max=1005.08 min=1005.08
+05-07 15:25:58.864   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:1.990905,dur:1004.57,max:855.27,min:149.30  
+05-07 15:25:59.001   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:25:59.030   881   881 I BufferQueueProducer: [FramebufferSurface](this:0xb400006fa10828d0,id:-1,api:1,p:881,c:881) queueBuffer: fps=0.98 dur=1022.20 max=1022.20 min=1022.20
+05-07 15:25:59.195   617 27164 I keystore2: system/security/keystore2/watchdog/src/lib.rs:319 - Watchdog thread idle -> terminating. Have a great day.
+05-07 15:25:59.308  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:59.309   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: Failed to get service from broker. 
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: java.lang.SecurityException: Unknown calling package name 'com.google.android.gms'.
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3257)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at android.os.Parcel.createException(Parcel.java:3241)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at android.os.Parcel.readException(Parcel.java:3224)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at android.os.Parcel.readException(Parcel.java:3166)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at bhwi.a(:com.google.android.gms@261332029@26.13.32 (190400-895912391):36)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at bhuj.z(:com.google.android.gms@261332029@26.13.32 (190400-895912391):143)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at bhai.run(:com.google.android.gms@261332029@26.13.32 (190400-895912391):42)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at android.os.Handler.handleCallback(Handler.java:959)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at cwhy.mD(:com.google.android.gms@261332029@26.13.32 (190400-895912391):1)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at cwhy.dispatchMessage(:com.google.android.gms@261332029@26.13.32 (190400-895912391):5)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at android.os.Looper.loopOnce(Looper.java:257)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at android.os.Looper.loop(Looper.java:342)
+05-07 15:25:59.792 27049 27268 E GoogleApiManager: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+05-07 15:25:59.793 27049 27268 W GoogleApiManager: Not showing notification since connectionResult is not user-facing: ConnectionResult{statusCode=DEVELOPER_ERROR, resolution=null, message=null, clientMethodKey=null}
+05-07 15:25:59.810  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:25:59.811   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:25:59.829 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) doesDataKeepChanging: postpone count: 0 - source count: very first = 775, previous = 775, current = 775
+05-07 15:25:59.829 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [AOSP_MP-0] entering in collectChanges():  
+05-07 15:25:59.840   556   556 D io_stats: !@ 179,0 r 3516392 67282174 w 1159422 13732988 d 64859 13404312 f 280524 282483 iot 1176716 0 th 0 0 0 pt 0 inp 0 0 248336.171
+05-07 15:25:59.885 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchInternal values : maxSyncId: 1000004874 indexCount: 771 sourceCount: 771
+05-07 15:25:59.918 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in addIndex():  
+05-07 15:25:59.920 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetch: fetching took  71 ms
+05-07 15:25:59.920 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchChanges: applied 0 items
+05-07 15:25:59.920 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) Collect finished. Result: true
+05-07 15:25:59.921 26043 26101 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) enqueue ObserverWorker name: DOCUMENTS policy: KEEP
+05-07 15:25:59.921 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) enqueue ObserverWorker name: com.sec.android.app.myfiles, policy: APPEND_OR_REPLACE
+05-07 15:25:59.922 26043 26097 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=2cb24bd2-bd7a-440a-872b-d14053517a67, tags={ com.sec.android.app.myfiles, com.samsung.android.scs.ai.search.data.collector.base.ObserverWorker } ]
+05-07 15:25:59.931 26043 26043 I SCS@AiSearch user 0: (SearchProvider) onTrimMemory(): 40
+05-07 15:25:59.940  1476  2196 D PackageManager: setEnabledSetting : userId = 0 packageName = com.samsung.android.scs cmp = androidx.work.impl.background.systemalarm.RescheduleReceiver newState = 1 callingPackage = com.samsung.android.scs
+05-07 15:25:59.941  1476  2196 D ApplicationPolicy: getApplicationStateEnabled : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:59.942  1476  2196 D ApplicationPolicy: getApplicationComponentState : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:59.964  1476  3605 D PackageManager: setEnabledSetting : userId = 0 packageName = com.samsung.android.scs cmp = androidx.work.impl.background.systemalarm.RescheduleReceiver newState = 1 callingPackage = com.samsung.android.scs
+05-07 15:25:59.965  1476  3605 D ApplicationPolicy: getApplicationStateEnabled : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:59.965  1476  3605 D ApplicationPolicy: getApplicationComponentState : pkg = com.samsung.android.scs userId : 0
+05-07 15:25:59.995 26043 26043 I SCS@AiSearch user 0: (ObserverWorker::DOCUMENTS) [main] entering in startWork triggered by []():  
+05-07 15:25:59.995  1476  3605 I BatteryService_BatteryPropertiesRegistrar: [getProperty]id:4
+05-07 15:25:59.995  1476  3605 I BatteryService_BatteryPropertiesRegistrar: [getProperty]prop.long:-9223372036854775808 ,prop.string:null
+05-07 15:25:59.997 26043 26043 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) [main] entering in onChange():  
+05-07 15:25:59.998 26043 26161 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) [DOCUMENTS-0] entering in collectChanges():  
+05-07 15:26:00.001 26043 26161 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) fetchInternal values : indexCount: 2 sourceCount: 2
+05-07 15:26:00.002  1476  3605 D PackageManager: setEnabledSetting : userId = 0 packageName = com.samsung.android.scs cmp = androidx.work.impl.background.systemalarm.RescheduleReceiver newState = 1 callingPackage = com.samsung.android.scs
+05-07 15:26:00.002  1928  2720 I DateTimeView: updateAll - getTimeFormat
+05-07 15:26:00.003  1476  3605 D ApplicationPolicy: getApplicationStateEnabled : pkg = com.samsung.android.scs userId : 0
+05-07 15:26:00.003  1476  3605 D ApplicationPolicy: getApplicationComponentState : pkg = com.samsung.android.scs userId : 0
+05-07 15:26:00.004 26043 26161 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) fetch: fetching took  5 ms
+05-07 15:26:00.004 26043 26161 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) fetchChanges: applied 0 items
+05-07 15:26:00.004 26043 26161 I SCS@AiSearch user 0: (BaseCollector::DOCUMENTS) Collect finished. Result: true
+05-07 15:26:00.006  1928  1928 D FaceWidgetPagesController: onTimeChanged()
+05-07 15:26:00.006  1928  2720 D QSClockBellTower: onReceive(android.intent.action.TIME_TICK) mTimeZoneString:Africa/Nouakchott
+05-07 15:26:00.010  1928  1928 D QSClockBellTower: He is ready to ring the bell. (((QSClockBellSound - TimeText:15:26, TimeContentDescription:15:26, DateText:jeu. 7 mai, ShortDateText:jeu. 7 mai, Demo:false)))
+05-07 15:26:00.011  1928  1928 D QSClock : StatusBar clock=15:26 notifyTimeChanged(QSClockBellSound - TimeText:15:26, TimeContentDescription:15:26, DateText:jeu. 7 mai, ShortDateText:jeu. 7 mai, Demo:false) clockVisibleByPolicy=true, clockVisibleByUser=true, visible=true, parent=android.widget.LinearLayout{dccdde5 V.E...... ......ID 0,0-68,39 #7f0a061f app:id/left_clock_container} caller=com.android.systemui.statusbar.phone.fragment.CollapsedStatusBarFragment.animateShow:47 com.android.systemui.statusbar.phone.fragment.CollapsedStatusBarFragment.updateStatusBarVisibilitiesInner:207 com.android.systemui.statusbar.phone.fragment.CollapsedStatusBarFragment$$ExternalSyntheticLambda3.run:5 com.android.systemui.statusbar.phone.fragment.CollapsedStatusBarFragment.updateStatusBarVisibilities:47 com.android.systemui.statusbar.phone.fragment.CollapsedStatusBarFragment.disable:63  
+05-07 15:26:00.011  1928  1928 D QSClockBellTower: Everyone heard the bell. run(currentTime:1778167560009, getTime():Thu May 07 15:26:00 GMT 2026, getTimeZone():libcore.util.ZoneInfo[mDstSavings=0,mUseDst=false,mDelegate=[id="Africa/Nouakchott",mRawOffset=0,mEarliestRawOffset=-968000,transitions=1]])
+05-07 15:26:00.012 26043 26096 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=dac99806-55bc-4cb1-8d75-019dd49b2b59, tags={ com.samsung.android.scs.ai.search.data.collector.base.ObserverWorker, com.samsung.android.scs.documents } ]
+05-07 15:26:00.020 26043 26043 I SCS@AiSearch user 0: (SearchProvider) onTrimMemory(): 40
+05-07 15:26:00.039   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=0.85 dur=1179.10 max=1179.10 min=1179.10
+05-07 15:26:00.042   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:1.698001,dur:1177.86,max:1010.78,min:167.08  
+05-07 15:26:00.189   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:26:00.209   881   881 I BufferQueueProducer: [FramebufferSurface](this:0xb400006fa10828d0,id:-1,api:1,p:881,c:881) queueBuffer: fps=0.85 dur=1178.85 max=1178.85 min=1178.85
+05-07 15:26:00.213  1476  2356 I ActivityManager: Broadcasting: Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }
+05-07 15:26:00.213  1476  1504 I ActivityManager: Broadcast completed: result=0
+05-07 15:26:00.213  1476  2356 I ActivityManager: Enqueued broadcast Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }: 0
+05-07 15:26:00.312  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:00.313   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:00.814  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:00.815   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:01.003  2701 26722 I HoneySpace.LiveIconSupplier: time tick - 72, CLOCK, 15:26 - , view: #8bb9706, parent: ApplistCellLayout#48751c7
+05-07 15:26:01.003  2701 23921 I HoneySpace.LiveIconSupplier: time tick - 75, CALENDAR, 07 - , view: #c0e964c, parent: ApplistCellLayout#48751c7
+05-07 15:26:01.168 27356 27356 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-07 15:26:01.169 27356 27356 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-07 15:26:01.169 27356 27356 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-07 15:26:01.254 21687 27248 W FA-SVC  : Gms url request failed, app: com.wawapp.driver, CONFIG, java.io.IOException: cwet.a(:com.google.android.gms@261332029@26.13.32 (190400-895912391):73)
+05-07 15:26:01.315  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:01.316   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:01.374 21687 21687 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+05-07 15:26:01.787  1476  1605 I ActivityManager: Broadcasting: Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }
+05-07 15:26:01.788  1476  1605 I ActivityManager: Enqueued broadcast Intent { act=com.wawapp.driver.TEST_NOTIFICATION flg=0x400000 (has extras) }: 0
+05-07 15:26:01.788  1476  1504 I ActivityManager: Broadcast completed: result=0
+05-07 15:26:01.817  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:01.818   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:01.841   556   556 D io_stats: !@ 179,0 r 3516415 67283822 w 1159468 13733240 d 64859 13404312 f 280527 282492 iot 1176744 0 th 0 0 0 pt 0 inp 0 0 248338.172
+05-07 15:26:01.842   556   556 D io_stats: !@ Read_top(KB): kworker/u16:2:/(17804) 768 kworker/u16:0:/(26322) 512 id.app.launcher(2701) 204
+05-07 15:26:01.842   556   556 D io_stats: !@ Write_top(KB): kworker/u16:2:/(17804) 5888 kworker/u16:0:/(26322) 4368 ung.android.scs(26043) 164
+05-07 15:26:01.858   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=0.55 dur=1819.36 max=1819.36 min=1819.36
+05-07 15:26:01.863   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:1.098468,dur:1820.72,max:1652.79,min:167.93  
+05-07 15:26:01.908  1476  1616 D SensorService: [SO] 0.121 1.176 9.575
+05-07 15:26:02.009   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:26:02.029   881   881 I BufferQueueProducer: [FramebufferSurface](this:0xb400006fa10828d0,id:-1,api:1,p:881,c:881) queueBuffer: fps=0.55 dur=1819.43 max=1819.43 min=1819.43
+05-07 15:26:02.319  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:02.321   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:02.821  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:02.822   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:02.863   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=1.00 dur=1004.80 max=1004.80 min=1004.80
+05-07 15:26:02.867   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:1.991419,dur:1004.31,max:837.61,min:166.70  
+05-07 15:26:03.009   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:26:03.032   881   881 I BufferQueueProducer: [FramebufferSurface](this:0xb400006fa10828d0,id:-1,api:1,p:881,c:881) queueBuffer: fps=1.00 dur=1003.63 max=1003.63 min=1003.63
+05-07 15:26:03.215 21687 21687 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.auth.cryptauth.cryptauthservice.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+05-07 15:26:03.299 21687 21687 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.pay.service.BIND dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+05-07 15:26:03.323  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:03.324   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:03.725 21818 21818 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.presencemanager.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+05-07 15:26:03.727  1173  1173 I thermal_repeater: socket -1
+05-07 15:26:03.741 21818 21818 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.presencemanager.service.INTERNAL_IDENTITY dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+05-07 15:26:03.825  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:03.826   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:03.843   556   556 D io_stats: !@ 179,0 r 3516418 67284590 w 1159470 13733452 d 64859 13404312 f 280527 282492 iot 1176752 0 th 0 0 0 pt 0 inp 0 0 248340.174
+05-07 15:26:03.869   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=0.99 dur=1005.72 max=1005.72 min=1005.72
+05-07 15:26:03.873   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:1.987858,dur:1006.11,max:840.06,min:166.05  
+05-07 15:26:03.922 21818 21818 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.auth.aang.events.services.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+05-07 15:26:04.013   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:26:04.038   881   881 I BufferQueueProducer: [FramebufferSurface](this:0xb400006fa10828d0,id:-1,api:1,p:881,c:881) queueBuffer: fps=0.99 dur=1006.08 max=1006.08 min=1006.08
+05-07 15:26:04.233   810  3118 D [BT]    : mtk_bt_op: BT_VND_OP_LPM_WAKE_SET_STATE
+05-07 15:26:04.260 21818 21818 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+05-07 15:26:04.327  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:04.328   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:04.364   896   912 D ccci_mdinit: (1):monitor_time_update_thread round:12802 ########
+05-07 15:26:04.674 21687 23952 I gle.android.gms: Explicit concurrent mark compact GC freed 2609KB AllocSpace bytes, 10(264KB) LOS objects, 49% free, 10MB/21MB, paused 700us,7.807ms total 193.767ms
+05-07 15:26:04.829  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:04.830   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:04.964 27049 27266 D ConnectivityManager: StackLog: [android.net.ConnectivityManager.unregisterNetworkCallback(ConnectivityManager.java:5575)] [io.grpc.android.AndroidChannelBuilder$AndroidChannel$1.run(AndroidChannelBuilder.java:223)] [io.grpc.android.AndroidChannelBuilder$AndroidChannel.unregisterNetworkListener(AndroidChannelBuilder.java:246)] [io.grpc.android.AndroidChannelBuilder$AndroidChannel.shutdownNow(AndroidChannelBuilder.java:270)] [com.google.firebase.firestore.remote.GrpcCallProvider.lambda$resetChannel$4$com-google-firebase-firestore-remote-GrpcCallProvider(GrpcCallProvider.java:230)] [com.google.firebase.firestore.remote.GrpcCallProvider$$ExternalSyntheticLambda5.run(D8$$SyntheticClass:0)] [com.google.firebase.firestore.util.AsyncQueue.lambda$enqueue$2(AsyncQueue.java:445)] [com.google.firebase.firestore.util.AsyncQueue$$ExternalSyntheticLambda4.call(D8$$SyntheticClass:0)] [com.google.firebase.firestore.util.AsyncQueue$SynchronizedShutdownAwareExecutor.lambda$executeAndReportResult$1(AsyncQueue.java:330)] [com.google.firebase.firestore.util.AsyncQueue$SynchronizedShutdownAwareExecutor$$ExternalSyntheticLambda2.run(D8$$SyntheticClass:0)] [java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)] [java.util.concurrent.FutureTask.run(FutureTask.java:317)] [java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:348)] [java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)] [java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)] [com.google.firebase.firestore.util.AsyncQueue$SynchronizedShutdownAwareExecutor$DelayedStartFactory.run(AsyncQueue.java:235)] [java.lang.Thread.run(Thread.java:1564)]
+05-07 15:26:04.968  1476  1736 D ConnectivityService:  Removing from current network [345 CELLULAR], leaving 107 requests.
+05-07 15:26:04.978 27049 27266 W Firestore: (25.1.4) [WriteStream]: (64b1e30) Stream closed with status: Status{code=UNAVAILABLE, description=Channel shutdownNow invoked, cause=null}.
+05-07 15:26:04.989 27049 27127 D ConnectivityManager: StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4740)] [android.net.ConnectivityManager.registerDefaultNetworkCallbackForUid(ConnectivityManager.java:5465)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5432)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5406)] [io.grpc.android.AndroidChannelBuilder$AndroidChannel.configureNetworkMonitoring(AndroidChannelBuilder.java:217)] [io.grpc.android.AndroidChannelBuilder$AndroidChannel.<init>(AndroidChannelBuilder.java:198)] [io.grpc.android.AndroidChannelBuilder.build(AndroidChannelBuilder.java:169)] [com.google.firebase.firestore.remote.GrpcCallProvider.initChannel(GrpcCallProvider.java:116)] [com.google.firebase.firestore.remote.GrpcCallProvider.lambda$initChannelTask$6$com-google-firebase-firestore-remote-GrpcCallProvider(GrpcCallProvider.java:242)] [com.google.firebase.firestore.remote.GrpcCallProvider$$ExternalSyntheticLambda4.call(D8$$SyntheticClass:0)] [com.google.android.gms.tasks.zzz.run(com.google.android.gms:play-services-tasks@@18.1.0:1)] [com.google.firebase.firestore.util.ThrottledForwardingExecutor.lambda$execute$0$com-google-firebase-firestore-util-ThrottledForwardingExecutor(ThrottledForwardingExecutor.java:54)] [com.google.firebase.firestore.util.ThrottledForwardingExecutor$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)] [java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)] [java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)] [java.lang.Thread.run(Thread.java:1564)]
+05-07 15:26:04.990  1476  3749 D ConnectivityService: requestNetwork for uid/pid:10372/27049 activeRequest: null callbackRequest: 4522 [NetworkRequest [ REQUEST id=4523, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10372 RequestorUid: 10372 RequestorPkg: com.wawapp.driver UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|BLK
+05-07 15:26:04.992  1476  1736 D ConnectivityService:    accepting network in place of null for NetworkRequest [ REQUEST id=4523, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10372 RequestorUid: 10372 RequestorPkg: com.wawapp.driver UnderlyingNetworks: Null] ]
+05-07 15:26:04.996  1476  1714 D WifiNetworkFactory: got request NetworkRequest [ REQUEST id=4523, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10372 RequestorUid: 10372 RequestorPkg: com.wawapp.driver UnderlyingNetworks: Null] ]
+05-07 15:26:04.996  1476  1714 D UntrustedWifiNetworkFactory: got request NetworkRequest [ REQUEST id=4523, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10372 RequestorUid: 10372 RequestorPkg: com.wawapp.driver UnderlyingNetworks: Null] ]
+05-07 15:26:04.997  1476  1875 D NetdEventListenerService: DNS Requested by 345, 10372(com.wawapp.driver), SUCCESS, 1ms
+05-07 15:26:04.997  1476  1714 D OemPaidWifiNetworkFactory: got request NetworkRequest [ REQUEST id=4523, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10372 RequestorUid: 10372 RequestorPkg: com.wawapp.driver UnderlyingNetworks: Null] ]
+05-07 15:26:04.997  1476  1736 D ConnectivityService: Rematched networks [computed 0ms] [applied 1ms] [issued 4]
+05-07 15:26:04.998  1476  1736 D ConnectivityService: NetworkReassignment :
+05-07 15:26:04.998  1476  1736 D ConnectivityService:   4523 : null → 345
+05-07 15:26:04.998  1476  1714 D MultiInternetWifiNetworkFactory: got request NetworkRequest [ REQUEST id=4523, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10372 RequestorUid: 10372 RequestorPkg: com.wawapp.driver UnderlyingNetworks: Null] ]
+05-07 15:26:05.331  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:05.333   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:05.476 28094 28133 W DGW     : W[onPingFailure:589] ConnectivityManager ping failure TransientError domain: MNSSecureTCP code: 1 detail: SecureTCP connection establish timeout
+05-07 15:26:05.833  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:05.835   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:05.844   556   556 D io_stats: !@ 179,0 r 3516432 67286690 w 1159470 13733452 d 64859 13404312 f 280527 282492 iot 1176764 0 th 0 0 0 pt 0 inp 0 0 248342.175
+05-07 15:26:05.845   556   556 D io_stats: !@ Read_top(KB): kworker/u16:2:/(17804) 2048 kworker/u16:0:/(26322) 768 gle.android.gms(21687) 24
+05-07 15:26:05.845   556   556 D io_stats: !@ Write_top(KB): ung.android.scs(26043) 212
+05-07 15:26:05.862   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=0.50 dur=1992.51 max=1992.51 min=1992.51
+05-07 15:26:05.866   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:1.003645,dur:1992.74,max:1826.69,min:166.05  
+05-07 15:26:06.017   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:26:06.033   881   881 I BufferQueueProducer: [FramebufferSurface](this:0xb400006fa10828d0,id:-1,api:1,p:881,c:881) queueBuffer: fps=0.50 dur=1994.74 max=1994.74 min=1994.74
+05-07 15:26:06.178 27366 27366 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-07 15:26:06.179 27366 27366 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-07 15:26:06.179 27366 27366 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-07 15:26:06.336  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:06.337   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:06.838  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:06.839   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:06.885   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=0.98 dur=1023.19 max=1023.19 min=1023.19
+05-07 15:26:06.889   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:1.954932,dur:1023.05,max:855.08,min:167.97  
+05-07 15:26:07.021   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:26:07.037   881   881 I BufferQueueProducer: [FramebufferSurface](this:0xb400006fa10828d0,id:-1,api:1,p:881,c:881) queueBuffer: fps=1.00 dur=1004.12 max=1004.12 min=1004.12
+05-07 15:26:07.340  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:07.341   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:07.842  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:07.843   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:07.846   556   556 D io_stats: !@ 179,0 r 3516432 67286690 w 1159476 13733500 d 64859 13404312 f 280528 282495 iot 1176768 0 th 0 0 0 pt 0 inp 0 0 248344.177
+05-07 15:26:08.100 27367 27367 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+05-07 15:26:08.102  1476  1605 I EDMNativeHelperService: isScreenCaptureEnabled
+05-07 15:26:08.104  1476  1605 D RestrictionPolicy: isScreenCaptureEnabled : ret=true userId=0
+05-07 15:26:08.104 27367 27367 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+05-07 15:26:08.151 27367 27369 I GrallocExtra: gralloc_extra_query:is_SW3D 0
+05-07 15:26:08.152 27367 27367 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm
+05-07 15:26:08.152 27367 27367 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm-uncached
+05-07 15:26:08.152 27367 27367 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_svp_region
+05-07 15:26:08.152 27367 27367 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_region
+05-07 15:26:08.152 27367 27367 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_wfd_region
+05-07 15:26:08.160  3290 14397 W MediaProvider: isAppCloneUserPair for user 0: false
+05-07 15:26:08.187  5451  5514 D MediaSync: loaded: 19ms, 0
+05-07 15:26:08.191  5451  5513 D SecMediaProvider: UPDATE /local/metadata 29469, 29481
+05-07 15:26:08.344  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:08.345   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:08.550  1476  3749 I ActivityManager: Broadcasting: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x400000 }
+05-07 15:26:08.551  1476  3749 I ActivityManager: Enqueued broadcast Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x400000 }: 0
+05-07 15:26:08.556  3290  3290 I MediaServiceV2: Creating work for intent Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-07 15:26:08.558  3290  3290 I MediaServiceV2: Work enqueued for intent: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-07 15:26:08.559  1476  1504 I ActivityManager: Broadcast completed: result=0
+05-07 15:26:08.582 27367 27367 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x79b4dad848). Use sp<> to manage this object.
+05-07 15:26:08.592 27367 27367 D RefBase :   #00 pc 0000000000097cf0  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+144) (BuildId: 4f9ec6c2efd8ecb128681ec832af69ad)
+05-07 15:26:08.592 27367 27367 D RefBase :   #01 pc 000000000009c688  /apex/com.android.runtime/lib64/bionic/libc.so (exit+24) (BuildId: 4f9ec6c2efd8ecb128681ec832af69ad)
+05-07 15:26:08.592 27367 27367 D RefBase :   #02 pc 00000000000907c8  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+120) (BuildId: 4f9ec6c2efd8ecb128681ec832af69ad)
+05-07 15:26:08.594  3290  3485 D WM-SystemJobScheduler: Scheduling work ID 89f82700-d302-49a3-a542-9db2ba84b3eaJob ID 1202
+05-07 15:26:08.604  3290  3290 D WM-SystemJobService: onStartJob for WorkGenerationalId(workSpecId=89f82700-d302-49a3-a542-9db2ba84b3ea, generation=0)
+05-07 15:26:08.605  3290  3485 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:26:08.605  3290  3485 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:26:08.605  3290  3485 D WM-GreedyScheduler: Starting work for 89f82700-d302-49a3-a542-9db2ba84b3ea
+05-07 15:26:08.611  3290  3485 D WM-Processor: Processor: processing WorkGenerationalId(workSpecId=89f82700-d302-49a3-a542-9db2ba84b3ea, generation=0)
+05-07 15:26:08.614  3290  3485 D WM-Processor: Work WorkGenerationalId(workSpecId=89f82700-d302-49a3-a542-9db2ba84b3ea, generation=0) is already enqueued for processing
+05-07 15:26:08.620  3290  3290 D WM-WorkerWrapper: Starting work for com.android.providers.media.MediaServiceV2
+05-07 15:26:08.621  3290 27377 I MediaServiceV2: Work initiated for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-07 15:26:08.645  3290 27377 I MediaServiceV2: Work ended for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-07 15:26:08.650  3290  3443 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=89f82700-d302-49a3-a542-9db2ba84b3ea, tags={ com.android.providers.media.MediaServiceV2 } ]
+05-07 15:26:08.663  3290  3290 D WM-Processor: Processor 89f82700-d302-49a3-a542-9db2ba84b3ea executed; reschedule = false
+05-07 15:26:08.663  3290  3290 D WM-SystemJobService: 89f82700-d302-49a3-a542-9db2ba84b3ea executed on JobScheduler
+05-07 15:26:08.682  1476  3749 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:26:08.682  5451  5514 D MediaSync: loaded: 36ms, 1
+05-07 15:26:08.682  1476  3749 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:26:08.682  1476  3749 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:26:08.685  5451 14300 D MediaParseTask: scanItem: 1
+05-07 15:26:08.686  1476  3405 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:26:08.686  1476  3405 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:26:08.686  1476  3405 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:26:08.687  3290  3443 D WM-SystemJobScheduler: Scheduling work ID 3d854080-7ad5-4b6d-a081-cee6597c484dJob ID 1203
+05-07 15:26:08.691  3290  3443 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:26:08.691  3290  3443 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:26:08.693  3290  3443 D WM-GreedyScheduler: Cancelling work ID 89f82700-d302-49a3-a542-9db2ba84b3ea
+05-07 15:26:08.693  5451  5513 D SecMediaProvider: UPDATE /local/metadata 29481, 29482
+05-07 15:26:08.695  3290  3443 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:26:08.695  3290  3443 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:26:08.728  1173  1173 I thermal_repeater: socket -1
+05-07 15:26:08.846  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:08.847   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:09.007 27051 27066 W droid.daemonapp: userfaultfd: MOVE ioctl seems unsupported: Connection timed out
+05-07 15:26:09.023 27051 27068 W System  : A resource failed to call AbstractCursor.close. 
+05-07 15:26:09.024 27051 27068 W System  : A resource failed to call AbstractCursor.close. 
+05-07 15:26:09.024 27051 27068 W System  : A resource failed to call AbstractCursor.close. 
+05-07 15:26:09.169 26043 26043 I SCS@AiSearch user 0: (ObserverWorker::AOSP_MP) [main] entering in startWork triggered by [content://media/external/file/1000004871]():  
+05-07 15:26:09.169 26043 26043 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [main] entering in onChange():  
+05-07 15:26:09.170 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [AOSP_MP-0] entering in collectChanges():  
+05-07 15:26:09.173  1476  2196 D PackageManager: setEnabledSetting : userId = 0 packageName = com.samsung.android.scs cmp = androidx.work.impl.background.systemalarm.RescheduleReceiver newState = 1 callingPackage = com.samsung.android.scs
+05-07 15:26:09.175  1476  2196 D ApplicationPolicy: getApplicationStateEnabled : pkg = com.samsung.android.scs userId : 0
+05-07 15:26:09.175  1476  2196 D ApplicationPolicy: getApplicationComponentState : pkg = com.samsung.android.scs userId : 0
+05-07 15:26:09.231 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchInternal values : maxSyncId: 1000004874 indexCount: 771 sourceCount: 772
+05-07 15:26:09.256 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in updateIndex():  
+05-07 15:26:09.256 26043 26101 I SCS@AiSearch user 0: (IndexManager) [UPDATE] index=com.google.android.providers.media, size=1, documents=[1000004871]
+05-07 15:26:09.257 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in updateDocumentList():  index: com.google.android.providers.media, updateList.size:1
+05-07 15:26:09.257 26043 26101 I SCS@AiSearch user 0: (IndexManager) getIndexWriter(): indexName com.google.android.providers.media
+05-07 15:26:09.272 26043 26101 I SCS@AiSearch user 0: (IndexManager) [UPDATE] Done indexName: com.google.android.providers.media updateList.size():1
+05-07 15:26:09.273 26043 26101 I SCS@AiSearch user 0: (IndexSearcherManager) [AOSP_MP-0] entering in refreshSearcherManager():  refreshSearcherManager for com.google.android.providers.media
+05-07 15:26:09.314 26043 26101 I SCS@AiSearch user 0: (IndexSearcherManager) [AOSP_MP-0] leaving from refreshSearcherManager():  
+05-07 15:26:09.314 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] entering in waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-07 15:26:09.314 26043 26140 I SCS@AiSearch user 0: (IndexManager) [pool-8-thread-1] entering in commitIndexWriter():  
+05-07 15:26:09.348  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:09.349   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:09.351 26043 26140 I SCS@AiSearch user 0: (IndexManager) [pool-8-thread-1] leaving from commitIndexWriter():  
+05-07 15:26:09.351 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] leaving from waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-07 15:26:09.351 26043 26101 I SCS@AiSearch user 0: (IndexManager) [AOSP_MP-0] leaving from updateIndex, result = true():  
+05-07 15:26:09.355 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetch: fetching took  157 ms
+05-07 15:26:09.355 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchChanges: applied 1 items
+05-07 15:26:09.848   556   556 D io_stats: !@ 179,0 r 3516498 67286986 w 1159552 13733988 d 64859 13404312 f 280542 282509 iot 1176792 0 th 0 0 0 pt 0 inp 0 0 248346.179
+05-07 15:26:09.848   556   556 D io_stats: !@ Read_top(KB): d.process.media(5451) 144 rs.media.module(3290) 100 kworker/u16:2:/(17804) 28
+05-07 15:26:09.848   556   556 D io_stats: !@ Write_top(KB): f2fs_ckpt-254:5(638) 292 kworker/5:1:/(26805) 100 kworker/4:0:/(26911) 48
+05-07 15:26:09.850  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:09.851   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:10.066  3290  3699 I MediaProvider: Deleted 0 1 0 0 0 0 0 items on external_primary due to com.android.shell
+05-07 15:26:10.088  5451  5514 D MediaSync: loaded: 18ms, 0
+05-07 15:26:10.112  1476  4680 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:26:10.112  5451  5513 D SecMediaProvider: UPDATE /local/metadata 29481, 29487
+05-07 15:26:10.112  1476  4680 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:26:10.113  1476  4680 W IPCThreadState: Sending oneway calls to frozen process.
+05-07 15:26:10.164  3290  3290 D WM-DelayedWorkTracker: Scheduling work 3d854080-7ad5-4b6d-a081-cee6597c484d
+05-07 15:26:10.165  3290  3290 D WM-GreedyScheduler: Starting tracking for 3d854080-7ad5-4b6d-a081-cee6597c484d
+05-07 15:26:10.170  3290  3484 D WM-ConstraintTracker: BatteryNotLowTracker: initial state = true
+05-07 15:26:10.170  3290  3484 D WM-BrdcstRcvrCnstrntTrc: BatteryNotLowTracker: registering receiver
+05-07 15:26:10.173  3290  3484 D WM-GreedyScheduler: Constraints met: Scheduling work ID WorkGenerationalId(workSpecId=3d854080-7ad5-4b6d-a081-cee6597c484d, generation=0)
+05-07 15:26:10.179  3290  3484 D WM-Processor: Processor: processing WorkGenerationalId(workSpecId=3d854080-7ad5-4b6d-a081-cee6597c484d, generation=0)
+05-07 15:26:10.191  3290  3290 D WM-WorkerWrapper: Starting work for com.android.providers.media.photopicker.sync.ProactiveSyncWorker
+05-07 15:26:10.192  3290 27382 I PSyncWorker: Starting proactive picker sync from sync source: 1
+05-07 15:26:10.193  3290 27382 I PickerSyncTracker: Created new sync future java.util.concurrent.CompletableFuture@6acd0d[Not completed, 1 dependents]. Future map: {3d854080-7ad5-4b6d-a081-cee6597c484d=java.util.concurrent.CompletableFuture@6acd0d[Not completed, 1 dependents]}
+05-07 15:26:10.194  3290 27382 D PickerSyncController: syncAllMediaFromProvider() LOCAL, auth=com.android.providers.media.photopicker, retry=true
+05-07 15:26:10.194  3290 27382 D PickerSyncController: getSyncRequestParams() LOCAL, auth=com.android.providers.media.photopicker
+05-07 15:26:10.202  3290 27382 D PickerSyncController:    Latest ID/Gen=1603:0de52dc2-ca4d-425f-a8d9-82309a635c7c:external_primary/29489
+05-07 15:26:10.202  3290 27382 D PickerSyncController:    Cached ID/Gen=1603:0de52dc2-ca4d-425f-a8d9-82309a635c7c:external_primary/29477
+05-07 15:26:10.202  3290 27382 D PickerSyncController:    RESULT=SyncRequestParams{type=MEDIA_INCREMENTAL, gen=29477, latest=Bundle[{last_media_sync_generation=29489, media_collection_id=1603:0de52dc2-ca4d-425f-a8d9-82309a635c7c:external_primary}], pageSize=1000}
+05-07 15:26:10.202  3290 27382 I PickerSyncController: Executing SyncAdd. isLocal: true. authority: com.android.providers.media.photopicker
+05-07 15:26:10.203  3290 27382 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:26:10.203  3290 27382 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-57]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:26:10.203  3290 27382 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:26:10.203  3290 27382 D ExternalDbFacade: Token received for queryMedia = null
+05-07 15:26:10.211  3290 27382 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:26:10.211  3290 27382 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-57]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:26:10.211  3290 27382 D PickerSyncController: Clearing next page token for key: local_provider:media_add:resume
+05-07 15:26:10.211  3290 27382 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:26:10.211  3290 27382 D PickerNotificationSender: Sending a notification for media update
+05-07 15:26:10.212  3290 27382 D PickerNotificationSender: Sending a notification for merged album media update Favorites
+05-07 15:26:10.212  3290 27382 D PickerNotificationSender: Sending a notification for album media update Favorites
+05-07 15:26:10.213  3290 27382 D PickerNotificationSender: Sending a notification for merged album media update Videos
+05-07 15:26:10.213  3290 27382 D PickerNotificationSender: Sending a notification for album media update Videos
+05-07 15:26:10.215  3290 27382 I PickerSyncController: Paged sync successful. QueryArgs: Bundle[{android.provider.extra.SYNC_GENERATION=29477, android.provider.extra.PAGE_SIZE=1000}] Total Rows: 0
+05-07 15:26:10.215  3290 27382 I PickerSyncController: Executing SyncRemove. isLocal: true. authority: com.android.providers.media.photopicker
+05-07 15:26:10.216  3290 27382 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:26:10.216  3290 27382 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-57]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:26:10.216  3290 27382 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:26:10.218  3290 27382 E PickerDbFacade: Could not get first date taken millis for media id: 1000004871
+05-07 15:26:10.219  3290 27382 W PickerDbFacade: Unable to promote cloud media with localId: 1000004871
+05-07 15:26:10.219  3290 27382 D PickerSyncLockManager: Trying to acquire lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = [] with timeout.
+05-07 15:26:10.219  3290 27382 D CloseableReentrantLock: Successfully acquired lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Locked by thread pool-4-thread-57]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:26:10.219  3290 27382 D PickerSyncController: Clearing next page token for key: local_provider:media_remove:resume
+05-07 15:26:10.219  3290 27382 D CloseableReentrantLock: Successfully released lock com.android.providers.media.photopicker.sync.CloseableReentrantLock@f9f06d4[Unlocked]. Lock Name = CLOUD_PROVIDER_LOCK. Threads that may be waiting to acquire this lock = []
+05-07 15:26:10.219  3290 27382 D PickerNotificationSender: Sending a notification for media update
+05-07 15:26:10.221  3290 27382 D PickerNotificationSender: Sending a notification for merged album media update Favorites
+05-07 15:26:10.221  3290 27382 D PickerNotificationSender: Sending a notification for album media update Favorites
+05-07 15:26:10.222  3290 27382 D PickerNotificationSender: Sending a notification for merged album media update Videos
+05-07 15:26:10.222  3290 27382 D PickerNotificationSender: Sending a notification for album media update Videos
+05-07 15:26:10.223  3290 27382 I PickerSyncController: Paged sync successful. QueryArgs: Bundle[{android.provider.extra.SYNC_GENERATION=29477, android.provider.extra.PAGE_SIZE=1000}] Total Rows: 0
+05-07 15:26:10.223  3290 27382 I PickerSyncTracker: Marked sync future complete for work id: 3d854080-7ad5-4b6d-a081-cee6597c484d. Future map: {}
+05-07 15:26:10.224  3290 27382 I PSyncWorker: Completed picker proactive sync complete from local provider.
+05-07 15:26:10.228  3290  3443 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=3d854080-7ad5-4b6d-a081-cee6597c484d, tags={ com.android.providers.media.photopicker.sync.ProactiveSyncWorker } ]
+05-07 15:26:10.234  3290  3290 D WM-Processor: Processor 3d854080-7ad5-4b6d-a081-cee6597c484d executed; reschedule = false
+05-07 15:26:10.234  3290  3290 D WM-GreedyScheduler: Stopping tracking for WorkGenerationalId(workSpecId=3d854080-7ad5-4b6d-a081-cee6597c484d, generation=0)
+05-07 15:26:10.243  3290  3443 D WM-GreedyScheduler: Cancelling work ID 3d854080-7ad5-4b6d-a081-cee6597c484d
+05-07 15:26:10.246  3290  3443 D WM-GreedyScheduler: Ignoring {WorkSpec: a00b2ff5-657b-4fc5-b677-7bd53cc5300a}. Requires device idle.
+05-07 15:26:10.246  3290  3443 D WM-GreedyScheduler: Ignoring {WorkSpec: 5f311dba-bc44-4fe3-99dd-5b604083cc2b}. Requires device idle.
+05-07 15:26:10.246  3290  3443 D WM-BrdcstRcvrCnstrntTrc: BatteryNotLowTracker: unregistering receiver
+05-07 15:26:10.351  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:10.352   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:10.380 21818 26621 I .gms.persistent: Explicit concurrent mark compact GC freed 1164KB AllocSpace bytes, 0(0B) LOS objects, 49% free, 12MB/25MB, paused 629us,8.186ms total 164.465ms
+05-07 15:26:10.853  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:10.854   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:10.887   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=0.25 dur=4002.50 max=4002.50 min=4002.50
+05-07 15:26:10.892   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:0.499656,dur:4002.75,max:3853.70,min:149.06  
+05-07 15:26:10.999  1476  1616 D SensorService: [SO] 0.098 1.164 9.598
+05-07 15:26:11.037   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:26:11.054   881   881 I BufferQueueProducer: [FramebufferSurface](this:0xb400006fa10828d0,id:-1,api:1,p:881,c:881) queueBuffer: fps=0.25 dur=4016.60 max=4016.60 min=4016.60
+05-07 15:26:11.157  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.samsung.android.messaging
+05-07 15:26:11.159  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.verizon.messaging.vzmsgs
+05-07 15:26:11.161  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.kakao.talk
+05-07 15:26:11.164  1476  4680 D NotificationService: getNotificationHistory for dump pkg=jp.naver.line.android
+05-07 15:26:11.166  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.sds.mysinglesquare
+05-07 15:26:11.168  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.samsung.knox.message
+05-07 15:26:11.170  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.google.android.talk
+05-07 15:26:11.173  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.sgiggle.production
+05-07 15:26:11.175  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.nimbuzz
+05-07 15:26:11.177 27386 27386 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-07 15:26:11.178  1476  4680 D NotificationService: getNotificationHistory for dump pkg=kik.android
+05-07 15:26:11.179 27386 27386 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-07 15:26:11.179 27386 27386 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-07 15:26:11.180  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.bsb.hike
+05-07 15:26:11.182  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.tencent.mm
+05-07 15:26:11.185  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.skype.raider
+05-07 15:26:11.187  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.facebook.orca
+05-07 15:26:11.190  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.google.android.apps.tachyon
+05-07 15:26:11.192  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.snapchat.android
+05-07 15:26:11.194  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.discord
+05-07 15:26:11.197  1476  4680 D NotificationService: getNotificationHistory for dump pkg=Uxpp.UC
+05-07 15:26:11.199  1476  4680 D NotificationService: getNotificationHistory for dump pkg=com.google.android.apps.dynamite
+05-07 15:26:11.201  1476  4680 D NotificationService: getNotificationHistory for dump pkg=org.thoughtcrime.securesms
+05-07 15:26:11.355  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:11.357   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:11.395 26043 26101 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) doesDataKeepChanging: postpone count: 0 - source count: very first = 776, previous = 776, current = 775
+05-07 15:26:11.849   556   556 D io_stats: !@ 179,0 r 3516526 67287098 w 1159590 13734932 d 64859 13404312 f 280542 282509 iot 1176796 0 th 0 0 0 pt 0 inp 0 0 248348.181
+05-07 15:26:11.858  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:11.859   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:11.892   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=0.99 dur=1005.25 max=1005.25 min=1005.25
+05-07 15:26:11.897   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:1.989995,dur:1005.03,max:842.23,min:162.80  
+05-07 15:26:12.037   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-07 15:26:12.063   881   881 I BufferQueueProducer: [FramebufferSurface](this:0xb400006fa10828d0,id:-1,api:1,p:881,c:881) queueBuffer: fps=0.99 dur=1008.88 max=1008.88 min=1008.88
+05-07 15:26:12.359  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:12.361   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:12.451 27213 27223 W ateaccesstokens: userfaultfd: MOVE ioctl seems unsupported: Connection timed out
+05-07 15:26:12.862  1062  1325 W VT      : [SRV] [THREAD] get hild fail, try again
+05-07 15:26:12.863   369   369 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-07 15:26:12.897   881   881 I BufferQueueProducer: [StatusBar$_1928#86](this:0xb400006f6903c898,id:-1,api:0,p:-1,c:881) queueBuffer: fps=1.00 dur=1004.79 max=1004.79 min=1004.79
+05-07 15:26:12.901   814   829 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:1.990637,dur:1004.70,max:837.89,min:166.81  
+05-07 15:26:13.041   814  1176 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  

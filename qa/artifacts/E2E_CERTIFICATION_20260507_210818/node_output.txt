@@ -1,0 +1,5 @@
+[SUBMIT_ORDER] Configuring driver profile and location for driver: 49ZGFxTVAMaAMkVd4GQZ9Juyjgf1
+[SUBMIT_ORDER] Creating order document: orders/e2e_a_1778173705296
+ORDER_ID_CREATED:e2e_a_1778173705296
+[SUBMIT_ORDER] Order e2e_a_1778173705296 updated: status=matching, assignedDriver=undefined
+[SUBMIT_ORDER] Timeout waiting for order status accepted

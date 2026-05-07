@@ -1,0 +1,13 @@
+﻿=======================================================
+   WAWAPP END-TO-END DISPATCH RELIABILITY REPORT
+=======================================================
+Timestamp : 20260507_210954
+Device B  : Samsung SM-A065F (R83Y20PC4EN)
+
+SCENARIO RESULTS:
+- Scenario A (Background + Screen OFF) : FAIL (Order: e2e_a_1778173800174)
+- Scenario B (Killed state)            : FAIL (Order: e2e_b_1778173850334)
+- Scenario C (Idle Standby)            : FAIL (Order: e2e_c_1778173900117)
+
+VERDICT: FAIL
+=======================================================

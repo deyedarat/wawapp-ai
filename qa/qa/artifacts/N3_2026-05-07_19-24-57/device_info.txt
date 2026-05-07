@@ -1,0 +1,6 @@
+﻿serial=R83Y20PC4EN
+model=SM-A065F
+sdk=35
+android=15
+manufacturer=samsung
+captured=2026-05-07T19:25:01.7969250+04:00
