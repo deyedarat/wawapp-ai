@@ -247,6 +247,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         if (type != "trip_start_reminder") {
             try {
                 val notificationId = orderId.hashCode()
+                val km = getSystemService(Context.KEYGUARD_SERVICE) as android.app.KeyguardManager
+                val pm = getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
+                val isLocked = km.isKeyguardLocked
+                val isScreenOn = pm.isInteractive
+                Log.d(TAG, "Launch context: locked=$isLocked, screenOn=$isScreenOn, sdk=${Build.VERSION.SDK_INT}")
+
                 val fsIntent = Intent(applicationContext, FullScreenNotificationActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
                     putExtra("orderId", orderId)
@@ -259,15 +265,17 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     putExtra("notificationId", notificationId)
                     putExtra("offerId", offerId)
                 }
-                // On Android 12+: startActivity from background requires SYSTEM_ALERT_WINDOW.
-                // If not granted, the notification's fullScreenIntent handles lock-screen,
-                // and heads-up handles unlocked state (acceptable fallback).
+
+                // On Android 12+: startActivity from background requires SYSTEM_ALERT_WINDOW
+                // OR the notification's fullScreenIntent must handle it.
+                // On locked screen: fullScreenIntent fires automatically (no overlay needed).
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
-                    && !android.provider.Settings.canDrawOverlays(applicationContext)) {
-                    Log.d(TAG, "Overlay permission not granted — relying on fullScreenIntent fallback")
+                    && !android.provider.Settings.canDrawOverlays(applicationContext)
+                    && !isLocked) {
+                    Log.d(TAG, "Overlay not granted + screen unlocked — relying on fullScreenIntent/heads-up fallback")
                 } else {
                     applicationContext.startActivity(fsIntent)
-                    Log.d(TAG, "FullScreenNotificationActivity launched directly for order $orderId")
+                    Log.d(TAG, "FullScreenNotificationActivity launched directly: orderId=$orderId, locked=$isLocked")
                 }
             } catch (e: Exception) {
                 Log.w(TAG, "Direct activity launch failed (notification fallback active): ${e.message}")

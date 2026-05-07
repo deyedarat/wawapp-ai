@@ -1,0 +1,7 @@
+﻿VERDICT: FAIL
+SCENARIO: N3 - Killed-State Notification
+TIMESTAMP: 2026-05-06_22-38-35
+DEVICE: R83Y20PC4EN
+ANDROID: 15
+DURATION: 20s+
+REASONS: Full-screen activity not visible; App not started after FCM

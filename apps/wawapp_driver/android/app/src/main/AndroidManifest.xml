@@ -73,6 +73,8 @@
             android:turnScreenOn="true"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
+            android:directBootAware="true"
+            android:taskAffinity="com.wawapp.driver.fullscreen"
             android:theme="@style/LaunchTheme" />
         <!-- Trip start reminder full-screen activity (amber theme) -->
         <activity

@@ -2,10 +2,12 @@ package com.wawapp.driver
 
 import android.app.Activity
 import android.app.KeyguardManager
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Button
@@ -43,6 +45,7 @@ class FullScreenNotificationActivity : Activity() {
     private var createdAt: Long = 0L
 
     private var orderListener: ListenerRegistration? = null
+    private var wakeLock: PowerManager.WakeLock? = null
 
     private val terminalStatuses = setOf(
         "cancelled", "cancelledByClient", "cancelledByDriver",
@@ -50,40 +53,118 @@ class FullScreenNotificationActivity : Activity() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // CRITICAL: Lock-screen flags MUST be set BEFORE super.onCreate() and setContentView()
+        // to ensure the window is configured before the decor view is created.
+        // This fixes locked-screen failures on Android 12-14 and Xiaomi/MIUI.
+        setupLockScreenFlags()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full_screen_notification)
 
-        setupLockScreenBehavior()
+        // Acquire WakeLock as fallback for devices where setTurnScreenOn is unreliable
+        acquireScreenWakeLock()
+
+        // Dismiss keyguard AFTER layout is inflated (some OEMs require visible window)
+        dismissKeyguard()
+
+        logLockScreenState("onCreate")
+
         loadNotificationData()
         setupButtons()
         startOrderListener()
 
-        // Do NOT cancel notification here — keep it visible as fallback.
-        // Sound from FLAG_INSISTENT continues until user interacts (accept/reject/later).
-        // This ensures full-screen experience is preserved.
-
         Log.d(TAG, "Full-screen notification opened: orderId=$orderId, type=$notificationType, notifId=$notificationId")
     }
 
-    private fun setupLockScreenBehavior() {
+    /**
+     * Set window flags BEFORE super.onCreate(). This is the correct lifecycle ordering
+     * for lock-screen activities. Android's WindowManager reads these flags during
+     * decor view creation — setting them after is too late on some OEMs.
+     */
+    private fun setupLockScreenFlags() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-            keyguardManager.requestDismissKeyguard(this, null)
-        } else {
-            @Suppress("DEPRECATION")
-            window.addFlags(
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-            )
         }
-        // Ensure activity is visible over lock screen and other apps
+
+        // Window flags — applied to ALL API levels for maximum compatibility.
+        // On API 27+ these are redundant with setShowWhenLocked/setTurnScreenOn
+        // but some OEMs (Xiaomi MIUI, Oppo ColorOS) still require the flags.
+        @Suppress("DEPRECATION")
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
+        )
+    }
+
+    /**
+     * Acquire a partial WakeLock with ACQUIRE_CAUSES_WAKEUP to force screen on.
+     * This is the nuclear fallback for devices where setTurnScreenOn(true) fails
+     * (common on Xiaomi MIUI 13+, some Samsung One UI 5+ builds).
+     * Released in onDestroy() — max 60s timeout as safety net.
+     */
+    private fun acquireScreenWakeLock() {
+        try {
+            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+            @Suppress("DEPRECATION")
+            wakeLock = pm.newWakeLock(
+                PowerManager.FULL_WAKE_LOCK or
+                PowerManager.ACQUIRE_CAUSES_WAKEUP or
+                PowerManager.ON_AFTER_RELEASE,
+                "wawapp:fullscreen_notification"
+            ).apply {
+                acquire(60_000L) // 60s max — auto-release safety
+            }
+            Log.d(TAG, "WakeLock acquired (ACQUIRE_CAUSES_WAKEUP)")
+        } catch (e: Exception) {
+            Log.w(TAG, "WakeLock acquisition failed: ${e.message}")
+        }
+    }
+
+    /**
+     * Dismiss keyguard with callback logging. Called AFTER setContentView()
+     * because some OEMs require a visible window before keyguard dismissal.
+     */
+    private fun dismissKeyguard() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+            keyguardManager.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
+                override fun onDismissSucceeded() {
+                    Log.d(TAG, "Keyguard dismissed successfully")
+                }
+                override fun onDismissCancelled() {
+                    Log.w(TAG, "Keyguard dismissal cancelled (user has secure lock?)")
+                }
+                override fun onDismissError() {
+                    Log.w(TAG, "Keyguard dismissal error")
+                }
+            })
+        }
+    }
+
+    /**
+     * Log lock-screen and permission state for QA diagnostics.
+     */
+    private fun logLockScreenState(phase: String) {
+        val km = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        val isLocked = km.isKeyguardLocked
+        val isSecure = km.isDeviceSecure
+        val isScreenOn = pm.isInteractive
+
+        Log.d(TAG, "[$phase] lockState: locked=$isLocked, secure=$isSecure, screenOn=$isScreenOn, sdk=${Build.VERSION.SDK_INT}")
+
+        // Android 14+ full-screen intent permission check
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val canFSI = nm.canUseFullScreenIntent()
+            Log.d(TAG, "[$phase] USE_FULL_SCREEN_INTENT granted=$canFSI")
+            if (!canFSI) {
+                Log.w(TAG, "⚠️ Full-screen intent permission REVOKED on Android 14+ — activity may not show over lock screen via notification fallback")
+            }
         }
     }
 
@@ -263,8 +344,23 @@ class FullScreenNotificationActivity : Activity() {
     override fun onDestroy() {
         orderListener?.remove()
         orderListener = null
+        releaseWakeLock()
         super.onDestroy()
         Log.d(TAG, "Full-screen notification destroyed: orderId=$orderId")
+    }
+
+    private fun releaseWakeLock() {
+        try {
+            wakeLock?.let {
+                if (it.isHeld) {
+                    it.release()
+                    Log.d(TAG, "WakeLock released")
+                }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "WakeLock release error: ${e.message}")
+        }
+        wakeLock = null
     }
 
     companion object {
