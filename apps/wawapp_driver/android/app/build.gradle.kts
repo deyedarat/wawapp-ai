@@ -36,6 +36,8 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+		
+		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     val keystoreProperties = Properties()
@@ -101,4 +103,26 @@ dependencies {
     // ProcessLifecycleOwner — used by MyFirebaseMessagingService to detect foreground
     // state using the same mechanism as Firebase SDK (aligns isAppInForeground() with onMessage)
     implementation("androidx.lifecycle:lifecycle-process:2.8.7")
+
+    // ─── AndroidX Test: Force versions in main configurations ───────────────────
+    // The integration_test Flutter plugin declares open-ended ranges (1.2+) which
+    // resolve to 1.2.0 in debugRuntimeClasspath. AGP consistent resolution then
+    // forces {strictly 1.2.0} onto androidTest configurations, conflicting with
+    // the newer versions we need. Fix: declare constraints so the main classpath
+    // resolves to the same versions we use in androidTest.
+    constraints {
+        implementation("androidx.test:runner:1.6.2")
+        implementation("androidx.test:rules:1.6.1")
+        implementation("androidx.test:monitor:1.7.2")
+        implementation("androidx.test:core:1.6.1")
+        implementation("androidx.test.ext:junit:1.2.1")
+        implementation("androidx.test.services:storage:1.5.0")
+        implementation("androidx.test.espresso:espresso-core:3.6.1")
+    }
+
+    // ─── Instrumentation Test Dependencies ──────────────────────────────────────
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:rules:1.6.1")
+    androidTestImplementation("androidx.test:core:1.6.1")
 }
