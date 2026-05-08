@@ -1,0 +1,298 @@
+# WawApp FCM Notification Certification — Scenario Manifest
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# This manifest defines all certification scenarios in a machine-readable format.
+# External orchestration agents (Antigravity, MCP runtimes, Appium agents,
+# multi-device replay frameworks) can parse this to:
+#
+#   1. Discover available scenarios
+#   2. Understand preconditions and postconditions
+#   3. Generate correct payloads
+#   4. Validate expected device-side events
+#   5. Compose multi-scenario workflows
+#
+# Schema version: 1.0.0
+# Compatible agents: Antigravity ≥0.1, MCP ≥1.0, Appium ≥2.0
+# ═══════════════════════════════════════════════════════════════════════════════
+
+version: "1.0.0"
+kind: notification_certification
+target:
+  app: com.wawapp.driver
+  platform: android
+  min_sdk: 34
+  device_models: ["a15", "a54", "pixel_7"]
+
+# ─── Global Configuration ────────────────────────────────────────────────────
+
+config:
+  fcm_api: "https://fcm.googleapis.com/v1/projects/{project_id}/messages:send"
+  auth_method: "service_account_jwt"
+  auth_scope: "https://www.googleapis.com/auth/firebase.messaging"
+  default_timeout_seconds: 180
+  poll_interval_ms: 2000
+  event_tag: "WAWAPP_EVENT"
+  human_tag: "WAWAPP_TEST"
+
+# ─── Instrumentation Contract ────────────────────────────────────────────────
+
+instrumentation:
+  test_apk: "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
+  app_apk: "app/build/outputs/apk/debug/app-debug.apk"
+  test_class: "com.wawapp.driver.NotificationE2ETest"
+  test_method: "fcmCertification_extractTokenAndWaitForPush"
+  runner: "androidx.test.runner.AndroidJUnitRunner"
+
+  # Events emitted by instrumentation (logcat tag: WAWAPP_EVENT)
+  lifecycle_events:
+    - event: SCENARIO_START
+      description: "Test execution begins"
+      data_schema: { scenario: string, device: string, sdk: int, package: string }
+
+    - event: TOKEN_ACQUIRED
+      description: "FCM token ready for push injection"
+      data_schema: { token: string, length: int }
+      agent_action: "Extract token, begin push injection"
+
+    - event: PHASE_TRANSITION
+      description: "Boundary between test phases"
+      data_schema: { from: string, to: string }
+
+    - event: AWAITING_STIMULUS
+      description: "Test is idle, waiting for external input"
+      data_schema: { stimulus_type: string, timeout_seconds: int, token: string, ready: bool }
+      agent_action: "Send FCM push now"
+
+    - event: STIMULUS_RECEIVED
+      description: "External push arrived and was processed"
+      data_schema: { type: string, success: bool }
+
+    - event: ASSERTION_RESULT
+      description: "Individual check pass/fail"
+      data_schema: { check: string, result: "PASS|FAIL|SKIP", evidence: string }
+
+    - event: SCENARIO_END
+      description: "Test complete with aggregate verdict"
+      data_schema: { scenario: string, push_received: bool, verdict: string }
+
+  # File artifacts produced (retrievable via adb pull or GCS bucket)
+  artifacts:
+    - path: "/data/data/com.wawapp.driver/files/fcm_token.txt"
+      description: "FCM device token"
+    - path: "/data/data/com.wawapp.driver/files/certification_events.ndjson"
+      description: "All structured events as NDJSON"
+    - path: "/sdcard/Android/data/com.wawapp.driver/files/fcm_token.txt"
+      description: "FCM token (external storage, easier adb pull)"
+
+# ─── Orchestration Contract ──────────────────────────────────────────────────
+
+orchestration:
+  script: "fcm-certification.ps1"
+  output_modes:
+    - mode: "human"
+      description: "Colored terminal output for developers"
+      flag: "-OutputFormat human"
+    - mode: "json"
+      description: "NDJSON to stdout for agent consumption"
+      flag: "-OutputFormat json"
+
+  parameters:
+    - name: Token
+      type: string
+      required: true
+      source: "WAWAPP_EVENT:TOKEN_ACQUIRED.data.token"
+    - name: ServiceAccountJson
+      type: file_path
+      required: true
+    - name: ProjectId
+      type: string
+      required: true
+    - name: Scenario
+      type: enum
+      values: [wave_offer, fullscreen, qa_test, dedup, all]
+      default: all
+    - name: OutputFormat
+      type: enum
+      values: [human, json]
+      default: human
+    - name: OutputFile
+      type: file_path
+      required: false
+      description: "NDJSON event log for post-hoc analysis"
+    - name: RunId
+      type: string
+      required: false
+      description: "Correlation ID for multi-step workflows"
+
+  # Events emitted by orchestration script (stdout in json mode)
+  events:
+    - event: ORCHESTRATION_START
+      data_schema: { project: string, scenario: string, runId: string }
+    - event: PUSH_SENT
+      data_schema: { orderId: string, type: string }
+    - event: PUSH_ACCEPTED
+      data_schema: { messageId: string, latencyMs: int, orderId: string }
+    - event: ASSERTION_RESULT
+      data_schema: { check: string, result: "PASS|FAIL", detail: string }
+    - event: ORCHESTRATION_END
+      data_schema: { pass: int, fail: int, total: int, verdict: string, checks: object }
+
+  exit_codes:
+    0: "All checks passed"
+    1: "One or more checks failed"
+
+# ─── Scenarios ───────────────────────────────────────────────────────────────
+
+scenarios:
+  - id: wave_offer
+    name: "Wave Offer Full Pipeline"
+    description: "End-to-end: FCM → MyFirebaseMessagingService → NotificationHelper → FullScreenNotificationActivity → AlarmManager"
+    preconditions:
+      - "App launched (instrumentation handles this)"
+      - "FCM token acquired"
+      - "No active trip (SharedPreferences clean)"
+    payload:
+      notificationType: "wave_offer"
+      type: "wave_offer"
+      orderId: "{generated}"
+      offerId: "{generated}"
+      title: "طلب جديد قريب منك"
+      body: "{pickupLabel} → {dropoffLabel}"
+      pickupLabel: "تيارت"
+      dropoffLabel: "المطار"
+      price: "350"
+      distance: "4.2"
+      createdAt: "{unix_ms}"
+      round: "1"
+      messageId: "{generated}"
+    expected_device_events:
+      - "PUSH_PROCESSED(type=wave_offer)"
+      - "NOTIFICATION_POSTED(type=wave_offer)"
+      - "FULLSCREEN_LAUNCHED(orderId=*)"
+      - "ALARM_SCHEDULED(order=*)"
+    expected_device_state:
+      active_notifications: ">= 1"
+      dedup_entries: ">= 1"
+      sound_repeat_entries: ">= 1"
+    validates:
+      - fcm_delivery
+      - service_routing
+      - notification_channels
+      - fullscreen_intent
+      - alarm_manager
+      - wake_lock
+      - sound_playback
+
+  - id: fullscreen
+    name: "Fullscreen Notification (new_order)"
+    description: "Validates FullScreenNotificationActivity launch, keyguard dismiss, wake behavior"
+    preconditions:
+      - "App launched"
+      - "FCM token acquired"
+    payload:
+      notificationType: "new_order"
+      type: "new_order"
+      orderId: "{generated}"
+      offerId: "{generated}"
+      title: "طلب جديد قريب منك"
+      body: "السوق → المستشفى"
+      pickupLabel: "السوق"
+      dropoffLabel: "المستشفى"
+      price: "500"
+      distance: "2.8"
+      createdAt: "{unix_ms}"
+      round: "1"
+      messageId: "{generated}"
+    expected_device_events:
+      - "PUSH_PROCESSED(type=new_order)"
+      - "NOTIFICATION_POSTED(type=new_order)"
+      - "FULLSCREEN_LAUNCHED(type=new_order)"
+    validates:
+      - fullscreen_intent
+      - wake_lock
+      - keyguard_dismiss
+      - android_14_fsi_permission
+
+  - id: qa_test
+    name: "QA Certification Ping"
+    description: "Minimal FCM delivery validation without notification side effects"
+    preconditions:
+      - "App launched"
+      - "FCM token acquired"
+    payload:
+      notificationType: "qa_test"
+      type: "qa_test"
+      orderId: "{generated}"
+      offerId: ""
+      title: "QA Certification Ping"
+      body: "Timestamp: {iso_time}"
+      messageId: "{generated}"
+    expected_device_events:
+      - "PUSH_PROCESSED(type=qa_test)"
+    expected_device_state:
+      active_notifications: "0"  # qa_test is unknown type, not routed
+    validates:
+      - fcm_delivery
+      - certification_marker_write
+
+  - id: dedup
+    name: "Notification Deduplication"
+    description: "Sends identical payload twice; second must be dropped by SharedPreferences dedup"
+    preconditions:
+      - "App launched"
+      - "FCM token acquired"
+      - "Dedup prefs clean for test orderId"
+    payload:
+      notificationType: "wave_offer"
+      type: "wave_offer"
+      orderId: "cert_dedup_fixed_order"
+      offerId: "cert_dedup_fixed_offer"
+      title: "Dedup Test"
+      body: "Same offer twice"
+      pickupLabel: "A"
+      dropoffLabel: "B"
+      price: "100"
+      distance: "1.0"
+      createdAt: "{unix_ms}"
+      round: "1"
+      messageId: "cert_dedup_msg"
+    steps:
+      - action: send_push
+        delay_after_ms: 3000
+      - action: send_push
+        expect: "dedup_drop"
+    expected_device_events:
+      - "PUSH_PROCESSED(type=wave_offer)"  # first
+      - "NOTIFICATION_POSTED(type=wave_offer)"  # first
+      - "PUSH_PROCESSED(type=wave_offer)"  # second (received but dropped)
+      # NO second NOTIFICATION_POSTED — dedup blocks it
+    validates:
+      - dedup_logic
+      - shared_preferences_ttl
+
+# ─── Agent Integration Patterns ──────────────────────────────────────────────
+
+agent_patterns:
+  # Pattern 1: Antigravity / MCP runtime
+  mcp_tool_definition:
+    name: "wawapp_fcm_certification"
+    description: "Run FCM notification certification against a live device"
+    parameters:
+      scenario: { type: string, enum: [wave_offer, fullscreen, qa_test, dedup, all] }
+      project_id: { type: string }
+      service_account: { type: string, description: "Path to SA JSON" }
+    returns: "NDJSON event stream with ORCHESTRATION_END verdict"
+
+  # Pattern 2: Appium agent (multi-device)
+  appium_hooks:
+    pre_test: "Launch app via instrumentation, wait for AWAITING_STIMULUS"
+    inject: "Send FCM push via orchestration script"
+    verify: "Parse WAWAPP_EVENT from logcat, assert expected events"
+    post_test: "Pull certification_events.ndjson artifact"
+
+  # Pattern 3: Multi-device scenario replay
+  replay_contract:
+    trigger: "AWAITING_STIMULUS event on logcat"
+    action: "Execute fcm-certification.ps1 -OutputFormat json"
+    correlation: "Match RunId across device events and orchestration events"
+    timeout: "SCENARIO_END event or 180s deadline"

@@ -62,6 +62,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
+        // ── WAWAPP_TEST: Certification marker for FCM delivery validation ──
+        Log.d("WAWAPP_TEST", "PUSH_RECEIVED raw_type=${message.data["notificationType"] ?: message.data["type"]}, keys=${message.data.keys}, sentTime=${message.sentTime}")
+        Log.i("WAWAPP_EVENT", "{\"event\":\"PUSH_PROCESSED\",\"ts\":${System.currentTimeMillis()},\"phase\":\"runtime\",\"data\":{\"type\":\"${message.data["notificationType"] ?: message.data["type"] ?: "null"}\",\"orderId\":\"${message.data["orderId"] ?: ""}\",\"sentTime\":${message.sentTime},\"foreground\":${isAppInForeground()}}}")
+        writeCertificationMarker(message)
+
         val type = message.data["notificationType"]
             ?: message.data["type"]
             ?: return
@@ -395,6 +400,22 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val ids = context.getSharedPreferences(PREFS_REJECTED, Context.MODE_PRIVATE)
             .getStringSet(KEY_REJECTED_IDS, emptySet()) ?: emptySet()
         return orderId in ids
+    }
+
+    /**
+     * Write certification marker to SharedPreferences for test instrumentation polling.
+     * Only writes — never blocks or modifies notification flow.
+     */
+    private fun writeCertificationMarker(message: RemoteMessage) {
+        try {
+            val type = message.data["notificationType"] ?: message.data["type"] ?: "unknown"
+            applicationContext.getSharedPreferences("fcm_certification", Context.MODE_PRIVATE)
+                .edit()
+                .putLong("last_push_received_at", System.currentTimeMillis())
+                .putString("last_push_type", type)
+                .putLong("push_sent_at", message.sentTime)
+                .apply()
+        } catch (_: Exception) {}
     }
 
     companion object {

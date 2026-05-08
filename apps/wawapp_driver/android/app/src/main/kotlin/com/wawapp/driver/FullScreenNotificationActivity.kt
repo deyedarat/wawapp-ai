@@ -74,6 +74,8 @@ class FullScreenNotificationActivity : Activity() {
         startOrderListener()
 
         Log.d(TAG, "Full-screen notification opened: orderId=$orderId, type=$notificationType, notifId=$notificationId")
+        Log.d("WAWAPP_TEST", "FULLSCREEN_LAUNCHED orderId=$orderId, type=$notificationType, locked=${(getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager).isKeyguardLocked}")
+        Log.i("WAWAPP_EVENT", "{\"event\":\"FULLSCREEN_LAUNCHED\",\"ts\":${System.currentTimeMillis()},\"phase\":\"runtime\",\"data\":{\"orderId\":\"$orderId\",\"type\":\"$notificationType\",\"locked\":${(getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager).isKeyguardLocked}}}")
     }
 
     /**

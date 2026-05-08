@@ -214,6 +214,8 @@ object NotificationHelper {
 
         nm.notify(notificationId, notification)
         Log.d(TAG, "✓ Silent fallback notification posted: id=$notificationId, order=$orderId")
+        Log.d("WAWAPP_TEST", "NOTIFICATION_POSTED id=$notificationId, order=$orderId, channel=$channelId, type=$notificationType")
+        Log.i("WAWAPP_EVENT", "{\"event\":\"NOTIFICATION_POSTED\",\"ts\":${System.currentTimeMillis()},\"phase\":\"runtime\",\"data\":{\"notificationId\":$notificationId,\"orderId\":\"$orderId\",\"channel\":\"$channelId\",\"type\":\"$notificationType\"}}")
 
         // FIX: Play sound immediately at t=0 on Android 12+ where notification is silent.
         // Android < 12 gets t=0 sound from the channel via buildLegacyFullScreenNotification.
@@ -546,6 +548,7 @@ object NotificationHelper {
         }
 
         Log.d(TAG, "Sound repeats scheduled ($MAX_REPEATS repeats, Handler + AlarmManager) for order $orderId")
+        Log.d("WAWAPP_TEST", "ALARM_SCHEDULED repeats=$MAX_REPEATS, interval=${REPEAT_INTERVAL_MS}ms, order=$orderId")
     }
 
     /**

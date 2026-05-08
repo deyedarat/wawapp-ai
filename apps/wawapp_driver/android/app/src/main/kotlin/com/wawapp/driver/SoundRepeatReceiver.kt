@@ -43,6 +43,7 @@ class SoundRepeatReceiver : BroadcastReceiver() {
         }
 
         Log.d(TAG, "AlarmManager backup: playing repeat $repeatNum for order $orderId")
+        Log.d("WAWAPP_TEST", "ALARM_FIRED repeat=$repeatNum, order=$orderId")
         NotificationHelper.playSoundOnce(context)
     }
 }
