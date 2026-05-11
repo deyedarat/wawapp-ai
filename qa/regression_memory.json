@@ -1,0 +1,111 @@
+{
+  "_meta": {
+    "description": "WawApp Dispatch Reliability Regression Memory. Every confirmed bug is immortalized here as a permanent test. must_never_fail_again=true means this scenario is permanently in the regression suite.",
+    "last_updated": "2026-05-11",
+    "platform_version": "1.0.0"
+  },
+  "regressions": [
+    {
+      "id": "stale_active_trip_suppression",
+      "title": "Stale SharedPreferences active-trip flag suppresses legitimate offers",
+      "phase_discovered": "Phase 4.6",
+      "description": "MyFCMService read driver_has_active_trip=true from SharedPreferences even when the active trip was stale (>15 minutes). This caused the driver to silently suppress valid ride offers while appearing online and healthy.",
+      "root_cause": "SharedPreferences stored a flat boolean with no TTL. On recovery from a crash, the flag was never cleared.",
+      "fix_description": "Replaced flat boolean with structured JSON: {active, orderId, setAt, source}. Added stale threshold (15 min). Added auto-clear on foreground reconciliation.",
+      "fix_build": "post-Phase-4.6",
+      "invariant_protected": "Silent suppression cannot persist indefinitely",
+      "detection_scenario": "stale_active_trip_recovery",
+      "must_never_fail_again": true,
+      "severity": "CRITICAL",
+      "evidence": {
+        "log_marker": "Driver has active trip — suppressing new offer",
+        "suppression_type": "SharedPreferences stale state"
+      }
+    },
+    {
+      "id": "zombie_fullscreen_authority",
+      "title": "Fullscreen offer UI remains interactively alive after accept failure",
+      "phase_discovered": "Phase 4.7",
+      "description": "After acceptOrderV2 returned an error (e.g., 'حدث خطأ'), the FullScreenNotificationActivity remained visible with active Accept/Reject buttons. The driver could continue tapping Accept, generating duplicate backend calls.",
+      "root_cause": "No idempotency guard on the accept button. No _safeDismiss() call on terminal backend error codes.",
+      "fix_description": "Added AcceptanceLockManager singleton. Accept button is disabled immediately on first tap. _safeDismiss() fires on backend errors (already_taken, offer_expired, max retry exceeded).",
+      "fix_build": "post-Phase-4.7",
+      "invariant_protected": "Fullscreen authority never zombifies",
+      "detection_scenario": "zombie_fullscreen_protection",
+      "must_never_fail_again": true,
+      "severity": "CRITICAL",
+      "evidence": {
+        "reproduced_in": ["Phase 4.7 Scenario 2", "Phase 4.7 Scenario 4"],
+        "certified_fixed": "2026-05-11"
+      }
+    },
+    {
+      "id": "stale_cache_resurrection",
+      "title": "Firestore offline cache replays accepted/terminated offers on cold start",
+      "phase_discovered": "Phase 4.8",
+      "description": "When the app was killed while an offer was in the local Firestore persistence cache (status=sent), and the offer was subsequently accepted on the backend, the local cache would replay the stale offer on cold restart. The driver saw a ghost offer for ~765ms before the server reconciliation fired.",
+      "root_cause": "Firestore offline persistence is enabled (persistenceEnabled=true). The watchMyOffers stream does not filter isFromCache emissions. The first snapshot after cold start is always from cache.",
+      "fix_description": "PENDING: Add isFromCache check to orders_service.dart watchMyOffers asyncMap. Only present offers where snapshot.metadata.isFromCache == false OR the sentAt timestamp is within a recent threshold.",
+      "fix_build": "PENDING",
+      "invariant_protected": "Cache snapshots cannot create false authority",
+      "detection_scenario": "stale_cache_resurrection",
+      "must_never_fail_again": true,
+      "severity": "HIGH",
+      "evidence": {
+        "trace": "[FORENSIC_TRACE] Dispatch Snapshot Triggered. docs=1 source=CACHE",
+        "window_ms": 765,
+        "phase_4_8_log": "05-11 07:34:25.175 ... source=CACHE ids=[repro_order_...]"
+      }
+    },
+    {
+      "id": "duplicate_accept",
+      "title": "Rapid double-tap on Accept triggers duplicate acceptOrderV2 calls",
+      "phase_discovered": "Phase 4.7",
+      "description": "A driver could rapidly double-tap the Accept button before the loading state rendered, triggering multiple concurrent acceptOrderV2 Cloud Function calls for the same offer.",
+      "root_cause": "No client-side idempotency guard. Button was not disabled on first tap. AcceptanceLockManager did not exist.",
+      "fix_description": "AcceptanceLockManager uses an in-memory lock + SharedPreferences persistence. First tap acquires lock and disables button. Subsequent taps are dropped.",
+      "fix_build": "post-Phase-4.7",
+      "invariant_protected": "Duplicate accept is impossible",
+      "detection_scenario": "duplicate_accept_guard",
+      "must_never_fail_again": true,
+      "severity": "HIGH",
+      "evidence": {
+        "guard_class": "AcceptanceLockManager",
+        "key": "last_handled_offer_id"
+      }
+    },
+    {
+      "id": "startup_rehydration_offer",
+      "title": "App shows stale offer as actionable on startup rehydration",
+      "phase_discovered": "Phase 4.8",
+      "description": "On cold start after a previous session where an offer was dispatched, the Firestore cache causes the NearbyScreen to briefly render a dead offer as actionable before network sync corrects it.",
+      "root_cause": "Same as stale_cache_resurrection. Firestore cache delivers stale snapshot before network handshake.",
+      "fix_description": "PENDING: Same fix as stale_cache_resurrection — filter isFromCache in watchMyOffers.",
+      "fix_build": "PENDING",
+      "invariant_protected": "Dead offers never resurrect",
+      "detection_scenario": "startup_rehydration",
+      "must_never_fail_again": true,
+      "severity": "HIGH",
+      "evidence": {
+        "reconciliation_window_ms": 765,
+        "server_reconciliation": "docs=0 source=SERVER"
+      }
+    },
+    {
+      "id": "silent_driver_starvation",
+      "title": "Driver appears online but silently receives zero offers",
+      "phase_discovered": "Phase 4.6",
+      "description": "A driver with driver_has_active_trip=true in SharedPreferences would appear online, heartbeat healthy, and location-updating, but every incoming offer was silently suppressed by MyFCMService. The driver would receive zero rides indefinitely.",
+      "root_cause": "Stale SharedPreferences flag without TTL or reconciliation.",
+      "fix_description": "Bounded-trust SharedPreferences with setAt timestamp. Auto-clear on foreground. Suppression telemetry added.",
+      "fix_build": "post-Phase-4.6",
+      "invariant_protected": "Driver cannot be silently starved",
+      "detection_scenario": "stale_active_trip_recovery",
+      "must_never_fail_again": true,
+      "severity": "CRITICAL",
+      "evidence": {
+        "log_marker": "suppression_reason=fresh_active_trip"
+      }
+    }
+  ]
+}

@@ -163,9 +163,7 @@ class MissedNotificationRecovery {
       final orderId = data['orderId'] as String?;
 
       if (kDebugMode) {
-        debugPrint(
-          '[MissedNotificationRecovery] 🔔 Recovering notification: $notificationId ($notificationType)',
-        );
+        debugPrint('[FORENSIC_TRACE] MissedNotificationRecovery TRAP. Recovering notification: $notificationId ($notificationType) from order $orderId');
       }
 
       NotificationService().recoverNotification(data);

@@ -77,7 +77,10 @@ class FullScreenNotificationScreen extends ConsumerStatefulWidget {
 class _FullScreenNotificationScreenState
     extends ConsumerState<FullScreenNotificationScreen> {
   bool _isLoading = false;
+  bool _actionTaken = false; // Prevents zombie re-interaction after any action
+  int _failCount = 0;
   Timer? _elapsedTimer;
+  Timer? _maxLifetimeTimer;
   String _elapsedText = '';
   StreamSubscription<DocumentSnapshot>? _orderSubscription;
 
@@ -88,6 +91,8 @@ class _FullScreenNotificationScreenState
     'completed',
     'accepted',
   };
+  static const _maxLifetime = Duration(minutes: 5);
+  static const _maxRetries = 2;
 
   @override
   void initState() {
@@ -97,6 +102,7 @@ class _FullScreenNotificationScreenState
       const Duration(seconds: 30),
       (_) => _updateElapsed(),
     );
+    // Backend truth reconciliation: auto-dismiss if order becomes non-actionable
     _orderSubscription = FirebaseFirestore.instance
         .collection('orders')
         .doc(widget.data.orderId)
@@ -105,19 +111,31 @@ class _FullScreenNotificationScreenState
       if (!mounted) return;
       final status = snap.data()?['status'] as String?;
       if (!snap.exists || (status != null && _terminalStatuses.contains(status))) {
-        _dismissNotification();
-        NotificationService().clearActiveFullScreen();
-        context.go('/nearby');
+        _safeDismiss();
       }
+    });
+    // Timeout protection: fullscreen cannot survive indefinitely
+    _maxLifetimeTimer = Timer(_maxLifetime, () {
+      if (mounted && !_actionTaken) _safeDismiss();
     });
   }
 
   @override
   void dispose() {
     _elapsedTimer?.cancel();
+    _maxLifetimeTimer?.cancel();
     _orderSubscription?.cancel();
     NotificationService().clearActiveFullScreen();
     super.dispose();
+  }
+
+  /// Safe dismiss: cleans up notification state and navigates away.
+  void _safeDismiss() {
+    if (!mounted) return;
+    _actionTaken = true;
+    _dismissNotification();
+    NotificationService().clearActiveFullScreen();
+    context.go('/nearby');
   }
 
   void _updateElapsed() {
@@ -146,6 +164,8 @@ class _FullScreenNotificationScreenState
   }
 
   Future<void> _accept() async {
+    if (_actionTaken || _isLoading) return; // Debounce + zombie guard
+    _actionTaken = true;
     _dismissNotification();
     NotificationService().clearActiveFullScreen();
     NotificationMethodChannel.cancelSnooze(widget.data.orderId);
@@ -154,32 +174,43 @@ class _FullScreenNotificationScreenState
       final offerId = widget.data.offerId;
       if (offerId == null || offerId.isEmpty) {
         if (!mounted) return;
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('خطأ: العرض غير صالح، حاول مرة أخرى')),
-        );
+        _safeDismiss();
         return;
       }
       await ref.read(ordersServiceProvider).acceptOfferV2(
         offerId: offerId,
         orderId: widget.data.orderId,
       );
-      // Mark order as processed AFTER successful accept to prevent stale notifications
       NotificationService().markOrderAsProcessed(widget.data.orderId);
       if (!mounted) return;
       context.go('/active-order');
     } on Object catch (e) {
       if (!mounted) return;
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toString().contains('already taken')
-                ? 'تم أخذ الطلب بالفعل'
-                : 'حدث خطأ، حاول مرة أخرى',
+      _failCount++;
+      final isFatal = e.toString().contains('already taken') ||
+          e.toString().contains('offer_expired') ||
+          e.toString().contains('already_accepted') ||
+          _failCount > _maxRetries;
+      if (isFatal) {
+        // Non-recoverable: dismiss immediately
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.toString().contains('already taken') || e.toString().contains('already_accepted')
+                  ? 'تم أخذ الطلب بالفعل'
+                  : 'انتهت صلاحية العرض',
+            ),
           ),
-        ),
-      );
+        );
+        _safeDismiss();
+      } else {
+        // Recoverable: allow one more retry
+        _actionTaken = false;
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('حدث خطأ، حاول مرة أخرى')),
+        );
+      }
     }
   }
 
@@ -272,7 +303,7 @@ class _FullScreenNotificationScreenState
               ),
               const Spacer(flex: 3),
               // Action buttons
-              if (_isLoading)
+              if (_isLoading || _actionTaken)
                 const Padding(
                   padding: EdgeInsets.only(bottom: 48),
                   child: CircularProgressIndicator(color: Colors.white),

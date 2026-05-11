@@ -44,7 +44,12 @@ class OrdersService {
           .limit(1)
           .get();
       final hasActive = snap.docs.isNotEmpty;
-      await NotificationMethodChannel.setActiveTripFlag(hasActive);
+      final orderId = hasActive ? snap.docs.first.id : '';
+      await NotificationMethodChannel.setActiveTripFlag(
+        hasActive,
+        orderId: orderId,
+        source: 'syncOnStartup',
+      );
       if (kDebugMode) {
         dev.log('[OrdersService] syncActiveTripFlag: hasActive=$hasActive');
       }
@@ -143,7 +148,7 @@ class OrdersService {
       AnalyticsService.instance.logOrderAcceptedByDriver(orderId: orderId);
 
       // Set native active trip flag so MyFirebaseMessagingService suppresses new offers
-      NotificationMethodChannel.setActiveTripFlag(true);
+      NotificationMethodChannel.setActiveTripFlag(true, orderId: orderId, source: 'acceptOrder');
 
       // Clear lock after 5 seconds (successful acceptance)
       // This gives enough time for Firestore to update and prevents duplicate notifications
@@ -363,7 +368,7 @@ class OrdersService {
       AnalyticsService.instance.logOrderAcceptedByDriver(orderId: orderId);
 
       // Set native active trip flag so MyFirebaseMessagingService suppresses new offers
-      NotificationMethodChannel.setActiveTripFlag(true);
+      NotificationMethodChannel.setActiveTripFlag(true, orderId: orderId, source: 'acceptOfferV2');
 
       // Clear lock after 5 seconds (successful acceptance)
       Future.delayed(const Duration(seconds: 5), () {
@@ -434,10 +439,14 @@ class OrdersService {
   }
 
   /// Watch dispatch offers for this driver (v2.0)
+  /// Cache-gated: suppresses stale Firestore offline cache replay on startup
+  /// until a server-authoritative snapshot confirms current state.
   Stream<List<DispatchOffer>> watchMyOffers(String driverId) {
     if (kDebugMode) {
       dev.log('[DispatchV2] watchMyOffers called for driver: $driverId');
     }
+
+    bool serverConfirmed = false;
 
     // REQUIRED COMPOSITE INDEX: dispatch_offers [driverId ASC, status ASC, expiresAt ASC]
     return _firestore
@@ -445,11 +454,34 @@ class OrdersService {
         .where('driverId', isEqualTo: driverId)
         .where('status', isEqualTo: 'sent')
         .orderBy('sentAt', descending: true)
-        .snapshots()
+        .snapshots(includeMetadataChanges: true)
         .asyncMap((snapshot) async {
+      final isFromCache = snapshot.metadata.isFromCache;
+
       if (kDebugMode) {
-        dev.log(
-            '[DispatchV2] Dispatch offers snapshot: ${snapshot.docs.length} documents');
+        final docIds = snapshot.docs.map((d) => d.id).toList();
+        debugPrint('[FORENSIC_TRACE] Dispatch Snapshot Triggered. docs=${snapshot.docs.length} source=${isFromCache ? "CACHE" : "SERVER"} ids=$docIds');
+      }
+
+      // ── Cache-gating: prevent stale offer resurrection on startup ──
+      // First emission from offline cache is provisional — do not render as actionable.
+      // Only promote to UI after server confirmation or post-server cache updates.
+      if (isFromCache && !serverConfirmed) {
+        if (kDebugMode) {
+          dev.log('[DispatchV2] dispatch_offer_source=cache_blocked_startup resurrect_prevented=true docs=${snapshot.docs.length}');
+        }
+        return <DispatchOffer>[];
+      }
+
+      if (!isFromCache) {
+        serverConfirmed = true;
+        if (kDebugMode) {
+          dev.log('[DispatchV2] dispatch_offer_source=server_authorized docs=${snapshot.docs.length}');
+        }
+      } else {
+        if (kDebugMode) {
+          dev.log('[DispatchV2] dispatch_offer_source=cache_allowed_fresh docs=${snapshot.docs.length}');
+        }
       }
 
       // Load locally rejected order IDs from native SharedPreferences

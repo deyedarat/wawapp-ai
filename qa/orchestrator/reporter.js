@@ -1,0 +1,184 @@
+'use strict';
+/**
+ * Report engine.
+ * Generates per-scenario result.json and result.md in qa/reports/<runId>/<scenario>/
+ */
+const fs   = require('fs');
+const path = require('path');
+
+class Reporter {
+  constructor(runId, scenarioName, reportsDir = 'qa/reports') {
+    this.runId        = runId;
+    this.scenarioName = scenarioName;
+    this.dir = path.join(reportsDir, runId, scenarioName);
+    fs.mkdirSync(this.dir, { recursive: true });
+
+    this._assertions = [];
+    this._failures   = [];
+    this._slaMetrics = [];
+    this._startTs    = Date.now();
+    this._screenshots = [];
+  }
+
+  /** Record a passed assertion. */
+  recordPass(label) {
+    this._assertions.push({ status: 'PASS', label });
+  }
+
+  /** Record a failed assertion with evidence. */
+  recordFail(label, evidence) {
+    this._assertions.push({ status: 'FAIL', label, evidence });
+    this._failures.push({ label, evidence });
+  }
+
+  /** Record an SLA measurement. */
+  recordSLA(label, actualMs, maxMs) {
+    const passed = actualMs !== null && actualMs <= maxMs;
+    this._slaMetrics.push({ label, actualMs, maxMs, passed });
+  }
+
+  /** Register a screenshot path. */
+  registerScreenshot(filePath, label) {
+    this._screenshots.push({ label, path: filePath });
+  }
+
+  /**
+   * Finalize and write report files.
+   * @param {Timeline} timeline
+   * @returns {{ passed: boolean, result: object }}
+   */
+  finalize(timeline) {
+    const endTs   = Date.now();
+    const passed  = this._failures.length === 0;
+    const verdict = passed ? 'PASS' : 'FAIL';
+    const durationMs = endTs - this._startTs;
+
+    const result = {
+      scenario:    this.scenarioName,
+      verdict,
+      passed,
+      durationMs,
+      runId:       this.runId,
+      startTs:     this._startTs,
+      endTs,
+      assertions:  this._assertions,
+      failures:    this._failures,
+      slaMetrics:  this._slaMetrics,
+      screenshots: this._screenshots,
+      timelineFile: timeline ? timeline.filePath : null,
+    };
+
+    // JSON
+    fs.writeFileSync(
+      path.join(this.dir, 'result.json'),
+      JSON.stringify(result, null, 2)
+    );
+
+    // Markdown
+    const md = this._buildMarkdown(result);
+    fs.writeFileSync(path.join(this.dir, 'result.md'), md);
+
+    // Console summary
+    const icon = passed ? '✅' : '❌';
+    console.log(`\n${icon} SCENARIO: ${this.scenarioName}  →  ${verdict}  (${durationMs}ms)\n`);
+    if (!passed) {
+      this._failures.forEach(f => console.log(`   ❌ ${f.label}`));
+    }
+
+    return { passed, result };
+  }
+
+  _buildMarkdown(r) {
+    const lines = [
+      `# ${r.scenario}`,
+      `**Verdict:** ${r.verdict}  |  **Duration:** ${r.durationMs}ms  |  **Run:** ${r.runId}`,
+      '',
+      '## Assertions',
+      ...r.assertions.map(a => `- ${a.status === 'PASS' ? '✅' : '❌'} ${a.label}`),
+      '',
+    ];
+
+    if (r.slaMetrics.length > 0) {
+      lines.push('## SLA Metrics');
+      lines.push('| Metric | Actual | Max | Status |');
+      lines.push('|--------|--------|-----|--------|');
+      r.slaMetrics.forEach(m => {
+        lines.push(`| ${m.label} | ${m.actualMs ?? 'N/A'}ms | ${m.maxMs}ms | ${m.passed ? '✅' : '❌'} |`);
+      });
+      lines.push('');
+    }
+
+    if (r.failures.length > 0) {
+      lines.push('## Failures');
+      r.failures.forEach(f => {
+        lines.push(`### ❌ ${f.label}`);
+        lines.push('```json');
+        lines.push(JSON.stringify(f.evidence, null, 2));
+        lines.push('```');
+      });
+    }
+
+    if (r.screenshots.length > 0) {
+      lines.push('## Screenshots');
+      r.screenshots.forEach(s => lines.push(`- [${s.label}](${s.path})`));
+    }
+
+    return lines.join('\n');
+  }
+}
+
+/**
+ * Generate the final certification report aggregating all scenario results.
+ * @param {string}   runId
+ * @param {object[]} results  - array of {scenario, passed, durationMs, failures, slaMetrics}
+ * @param {string}   reportsDir
+ */
+function writeCertificationReport(runId, results, reportsDir = 'qa/reports') {
+  const dir    = path.join(reportsDir, runId);
+  const passed = results.filter(r => r.passed).length;
+  const failed = results.filter(r => !r.passed).length;
+  const overall = failed === 0 ? 'CERTIFIED' : 'FAILED';
+
+  const md = [
+    `# WawApp Dispatch Reliability Certification`,
+    `**Run ID:** ${runId}`,
+    `**Verdict:** ${overall}  —  ${passed} passed / ${failed} failed`,
+    `**Date:** ${new Date().toISOString()}`,
+    '',
+    '## Scenario Results',
+    '| Scenario | Verdict | Duration |',
+    '|----------|---------|----------|',
+    ...results.map(r =>
+      `| ${r.scenario} | ${r.passed ? '✅ PASS' : '❌ FAIL'} | ${r.durationMs}ms |`
+    ),
+    '',
+  ];
+
+  if (failed > 0) {
+    md.push('## Failures Summary');
+    results.filter(r => !r.passed).forEach(r => {
+      md.push(`### ${r.scenario}`);
+      (r.failures || []).forEach(f => md.push(`- ${f.label}`));
+    });
+  }
+
+  md.push('');
+  md.push('---');
+  md.push('*Generated by WawApp Dispatch Reliability Certification Platform*');
+
+  fs.writeFileSync(path.join(dir, 'certification_report.md'), md.join('\n'));
+  fs.writeFileSync(
+    path.join(dir, 'certification_report.json'),
+    JSON.stringify({ runId, overall, passed, failed, results }, null, 2)
+  );
+
+  console.log(`\n${'═'.repeat(60)}`);
+  console.log(`  WawApp Dispatch Reliability: ${overall}`);
+  console.log(`  ${passed} PASSED  /  ${failed} FAILED`);
+  console.log(`  Report: ${path.join(dir, 'certification_report.md')}`);
+  console.log(`${'═'.repeat(60)}\n`);
+
+  return overall;
+}
+
+module.exports = { Reporter, writeCertificationReport };

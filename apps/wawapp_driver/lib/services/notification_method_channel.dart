@@ -284,9 +284,14 @@ class NotificationMethodChannel {
 
   /// Set the active trip flag readable by native MyFirebaseMessagingService.
   /// When true, native suppresses new-order full-screen notifications.
-  static Future<void> setActiveTripFlag(bool active) async {
+  /// Includes structured metadata (orderId, source, timestamp) for staleness detection.
+  static Future<void> setActiveTripFlag(bool active, {String orderId = '', String source = 'flutter'}) async {
     try {
-      await _channel.invokeMethod('setActiveTripFlag', {'active': active});
+      await _channel.invokeMethod('setActiveTripFlag', {
+        'active': active,
+        'orderId': orderId,
+        'source': source,
+      });
     } on PlatformException catch (e) {
       if (kDebugMode) {
         debugPrint(

@@ -234,12 +234,23 @@ class MainActivity : FlutterActivity() {
                 }
                 "setActiveTripFlag" -> {
                     val active = call.argument<Boolean>("active") ?: false
-                    getSharedPreferences(
+                    val orderId = call.argument<String>("orderId") ?: ""
+                    val source = call.argument<String>("source") ?: "flutter"
+                    val editor = getSharedPreferences(
                         MyFirebaseMessagingService.PREFS_TRIP_STATE,
                         Context.MODE_PRIVATE
                     ).edit()
                         .putBoolean(MyFirebaseMessagingService.KEY_HAS_ACTIVE_TRIP, active)
-                        .apply()
+                    if (active) {
+                        editor.putLong(MyFirebaseMessagingService.KEY_TRIP_SET_AT, System.currentTimeMillis())
+                            .putString(MyFirebaseMessagingService.KEY_TRIP_ORDER_ID, orderId)
+                            .putString(MyFirebaseMessagingService.KEY_TRIP_SOURCE, source)
+                    } else {
+                        editor.remove(MyFirebaseMessagingService.KEY_TRIP_SET_AT)
+                            .remove(MyFirebaseMessagingService.KEY_TRIP_ORDER_ID)
+                            .remove(MyFirebaseMessagingService.KEY_TRIP_SOURCE)
+                    }
+                    editor.apply()
                     result.success(null)
                 }
                 "getRejectedOrderIds" -> {

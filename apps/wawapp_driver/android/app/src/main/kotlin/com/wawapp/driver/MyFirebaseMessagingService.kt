@@ -389,9 +389,37 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     // ── Active trip flag (SharedPreferences, set by Flutter) ──
 
+    /**
+     * Structured active-trip check with staleness detection.
+     * Returns true ONLY if flag is active AND younger than STALE_THRESHOLD_MS.
+     * Auto-clears stale state to prevent indefinite suppression after process death.
+     */
     private fun isDriverOnActiveTrip(context: Context): Boolean {
-        return context.getSharedPreferences(PREFS_TRIP_STATE, Context.MODE_PRIVATE)
-            .getBoolean(KEY_HAS_ACTIVE_TRIP, false)
+        val prefs = context.getSharedPreferences(PREFS_TRIP_STATE, Context.MODE_PRIVATE)
+        val active = prefs.getBoolean(KEY_HAS_ACTIVE_TRIP, false)
+        if (!active) {
+            Log.d(TAG, "suppression_reason=no_active_trip")
+            return false
+        }
+        val setAt = prefs.getLong(KEY_TRIP_SET_AT, 0L)
+        val ageMs = if (setAt > 0) System.currentTimeMillis() - setAt else Long.MAX_VALUE
+        val orderId = prefs.getString(KEY_TRIP_ORDER_ID, null) ?: "unknown"
+        val source = prefs.getString(KEY_TRIP_SOURCE, null) ?: "unknown"
+
+        if (ageMs > STALE_THRESHOLD_MS) {
+            Log.d(TAG, "suppression_reason=stale_state_auto_cleared age_ms=$ageMs orderId=$orderId source=$source")
+            Log.i("WAWAPP_METRIC", "event=stale_suppression_cleared orderId=$orderId age_ms=$ageMs")
+            prefs.edit()
+                .putBoolean(KEY_HAS_ACTIVE_TRIP, false)
+                .remove(KEY_TRIP_SET_AT)
+                .remove(KEY_TRIP_ORDER_ID)
+                .remove(KEY_TRIP_SOURCE)
+                .apply()
+            return false
+        }
+
+        Log.d(TAG, "suppression_reason=fresh_active_trip age_ms=$ageMs orderId=$orderId source=$source")
+        return true
     }
 
     // ── Rejected orders (SharedPreferences, set by native reject paths) ──
@@ -421,8 +449,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     companion object {
         private const val TAG = "MyFCMService"
         private const val DEDUP_TTL_MS = 60L * 60 * 1000 // 60 minutes
+        private const val STALE_THRESHOLD_MS = 20L * 60 * 1000 // 20 minutes (Refined per USER request)
         const val PREFS_TRIP_STATE = "driver_trip_state"
         const val KEY_HAS_ACTIVE_TRIP = "driver_has_active_trip"
+        const val KEY_TRIP_SET_AT = "driver_trip_set_at"
+        const val KEY_TRIP_ORDER_ID = "driver_trip_order_id"
+        const val KEY_TRIP_SOURCE = "driver_trip_source"
         const val PREFS_REJECTED = "driver_rejected_orders_native"
         const val KEY_REJECTED_IDS = "rejected_order_ids"
 
