@@ -146,11 +146,13 @@ function writeCertificationReport(runId, results, reportsDir = 'qa/reports') {
     `**Date:** ${new Date().toISOString()}`,
     '',
     '## Scenario Results',
-    '| Scenario | Verdict | Duration |',
-    '|----------|---------|----------|',
-    ...results.map(r =>
-      `| ${r.scenario} | ${r.passed ? '✅ PASS' : '❌ FAIL'} | ${r.durationMs}ms |`
-    ),
+    '| Scenario | Verdict | Classification | Duration |',
+    '|----------|---------|----------------|----------|',
+    ...results.map(r => {
+      const fail = r.failures?.[0];
+      const cls = r.passed ? '-' : (fail?.evidence?.classification || fail?.classification || 'UNKNOWN');
+      return `| ${r.scenario} | ${r.passed ? '✅ PASS' : '❌ FAIL'} | **${cls}** | ${r.durationMs}ms |`;
+    }),
     '',
   ];
 

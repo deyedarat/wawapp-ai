@@ -1,0 +1,12 @@
+{
+  "driver": {
+    "deviceId": "R8YW40AW58L",
+    "packageName": "com.wawapp.driver",
+    "role": "driver"
+  },
+  "rider": {
+    "deviceId": "RZ8R716T96J",
+    "packageName": "com.wawapp.client",
+    "role": "rider"
+  }
+}

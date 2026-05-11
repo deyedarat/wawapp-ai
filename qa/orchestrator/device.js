@@ -41,6 +41,22 @@ class Device {
   }
 
   // ── App lifecycle ─────────────────────────────────────────────────────────
+  /** Explicit wrapper enforcing correct role binding before execution */
+  launchDriverApp() {
+    if (this.packageName !== 'com.wawapp.driver') {
+      throw new Error(`SECURITY_VIOLATION: Attempted to launch Driver app on non-driver device package: ${this.packageName}`);
+    }
+    return this.launchApp();
+  }
+
+  /** Explicit wrapper enforcing correct role binding before execution */
+  launchRiderApp() {
+    if (this.packageName !== 'com.wawapp.client') {
+      throw new Error(`SECURITY_VIOLATION: Attempted to launch Rider app on non-rider device package: ${this.packageName}`);
+    }
+    return this.launchApp();
+  }
+
   /**
    * Launch via am start — deterministic, no monkey stderr noise.
    * Falls back to monkey if am start fails (some OS versions restrict it).
@@ -174,14 +190,22 @@ class Device {
   }
 
   /**
-   * Read filtered logcat lines since last clearLogcat().
-   * @param {string} [tag] - optional tag filter (e.g. 'FORENSIC_TRACE')
+   * Read filtered logcat lines. JS filtering applied since shell grep fails on Windows.
+   * @param {object} [opts] - options
+   * @param {string} [opts.tag] - keyword/tag filter
+   * @param {number} [opts.limit] - return last N lines
    * @returns {string[]}
    */
-  getLogcat(tag) {
-    const filter = tag ? `| grep "${tag}"` : '';
-    const raw = this._adb(`logcat -d ${filter}`, { ignoreError: true });
-    return raw.split('\n').filter(Boolean);
+  getLogcat(opts = {}) {
+    // -d dumps buffer. -t counts back from bottom.
+    const tParam = opts.limit ? `-t ${opts.limit}` : '-d';
+    const raw = this._adb(`logcat ${tParam}`, { ignoreError: true });
+    let lines = raw.split('\n').filter(Boolean);
+    
+    if (opts.tag) {
+      lines = lines.filter(l => l.includes(opts.tag));
+    }
+    return lines;
   }
 
   /** Returns true if the fullscreen notification activity is currently focused. */

@@ -36,7 +36,7 @@ async function run(runId) {
 
     // Seed the cache
     dev.killApp(); dev.clearLogcat();
-    dev.launchApp();
+    dev.launchDriverApp();
     await sleep(timing.appBootWait);
     dev.tap(drvCfg.nearbyTabBounds.x, drvCfg.nearbyTabBounds.y);
     await sleep(timing.listenerWait + 3000);
@@ -51,7 +51,7 @@ async function run(runId) {
 
     // Cold start
     dev.clearLogcat();
-    dev.launchApp();
+    dev.launchDriverApp();
     await sleep(timing.appBootWait);
     dev.tap(drvCfg.nearbyTabBounds.x, drvCfg.nearbyTabBounds.y);
     tl.emit('COLD_START_NEARBY_OPENED', { orderId, device: 'driver' });

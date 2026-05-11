@@ -23,7 +23,7 @@ async function runKillPoint(dev, tl, label, killAfterMs) {
   tl.emit('ORDER_CREATED', { orderId, device: 'backend', data: { killPoint: label } });
 
   dev.killApp(); dev.clearLogcat();
-  dev.launchApp();
+  dev.launchDriverApp();
   await sleep(timing.appBootWait);
   dev.tap(drvCfg.nearbyTabBounds.x, drvCfg.nearbyTabBounds.y);
   await sleep(killAfterMs);  // wait to the kill point
@@ -33,7 +33,7 @@ async function runKillPoint(dev, tl, label, killAfterMs) {
   await sleep(timing.forceStopWait);
 
   // Relaunch
-  dev.launchApp();
+  dev.launchDriverApp();
   await sleep(timing.appBootWait);
 
   const ghostFullscreen = dev.isFullscreenActive();

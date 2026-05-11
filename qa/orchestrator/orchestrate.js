@@ -41,7 +41,22 @@ const SUITE_MAP = {
 
 // ── Run ────────────────────────────────────────────────────────────────────────
 
+const { validateDeviceRoles } = require('./role_validator');
+const config = require('./config');
+
 async function main() {
+  // 1. Hard-Fail Protect: Immediate Device-Role Binding validation
+  try {
+    validateDeviceRoles(config);
+  } catch (err) {
+    console.error('\n' + '🚨'.repeat(30));
+    console.error(`  FATAL: ${err.message}`);
+    console.error('  [EMERGENCY STOP] SUITE CRASHED TO PROTECT DEVICES FROM CONTAMINATION.');
+    console.error('  FIX: Check qa/device_roles.json against actual connected ADB devices.');
+    console.error('🚨'.repeat(30) + '\n');
+    process.exit(1);
+  }
+
   const suiteArg = process.argv.includes('--suite')
     ? process.argv[process.argv.indexOf('--suite') + 1]
     : 'regression';

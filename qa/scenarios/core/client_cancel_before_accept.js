@@ -30,7 +30,7 @@ async function run(runId) {
     orderId = oid;
     tl.emit('ORDER_CREATED', { orderId, device: 'backend' });
 
-    dev.launchApp();
+    dev.launchDriverApp();
     await sleep(timing.appBootWait);
     dev.tap(drvCfg.nearbyTabBounds.x, drvCfg.nearbyTabBounds.y);
     await sleep(timing.listenerWait);

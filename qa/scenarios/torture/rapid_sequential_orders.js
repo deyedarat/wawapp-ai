@@ -30,7 +30,7 @@ async function run(runId) {
     tl.emit('SCENARIO_START', { device: 'driver', data: { orderCount: ORDER_COUNT } });
     await B.cleanupOrders();
     dev.killApp(); dev.clearLogcat();
-    dev.launchApp();
+    dev.launchDriverApp();
     await sleep(timing.appBootWait);
     dev.tap(drvCfg.nearbyTabBounds.x, drvCfg.nearbyTabBounds.y);
     await sleep(timing.listenerWait);

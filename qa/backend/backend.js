@@ -5,6 +5,7 @@
  */
 const { db, FieldValue, Timestamp, GeoPoint } = require('../orchestrator/firebase');
 const { driver: driverCfg, location } = require('../orchestrator/config');
+const { sleep } = require('../orchestrator/utils');
 
 const DRIVER_ID = driverCfg.id;
 
@@ -37,9 +38,10 @@ async function createOrder(opts = {}) {
 
   await db.collection('driver_locations').doc(DRIVER_ID).set({
     driverId: DRIVER_ID,
-    geopoint: new GeoPoint(lat, lng),
-    timestamp: FieldValue.serverTimestamp(),
-    status: 'online', bearing: 0, speed: 0,
+    lat: lat,
+    lng: lng,
+    updatedAt: FieldValue.serverTimestamp(),
+    status: 'online', heading: 0, speed: 0,
   }, { merge: true });
 
   const orderData = {
@@ -108,7 +110,9 @@ async function cleanupOrders() {
   for (const doc of offers.docs) {
     if (doc.id.startsWith('qa_')) await doc.ref.delete();
   }
-  console.log(`[backend] cleanupOrders → removed ${count} orders`);
+  // Clean driver isolation states
+  await db.collection('driver_dispatch_state').doc(DRIVER_ID).delete();
+  console.log(`[backend] cleanupOrders → removed ${count} orders and cleared driver_dispatch_state`);
   return { removed: count };
 }
 
@@ -146,9 +150,11 @@ async function inspectDriverStatus(driverId = DRIVER_ID) {
 
 async function injectDriverLocation(lat = location.lat, lng = location.lng, driverId = DRIVER_ID) {
   await db.collection('driver_locations').doc(driverId).set({
-    driverId, geopoint: new GeoPoint(lat, lng),
-    timestamp: FieldValue.serverTimestamp(),
-    status: 'online', bearing: 0, speed: 0,
+    driverId,
+    lat,
+    lng,
+    updatedAt: FieldValue.serverTimestamp(),
+    status: 'online', heading: 0, speed: 0,
   }, { merge: true });
   console.log(`[backend] injectDriverLocation → (${lat}, ${lng})`);
 }
@@ -196,6 +202,51 @@ async function inspectFirestoreState(orderId) {
   return { orderId, order, offer, waves };
 }
 
+/**
+ * Polls Firestore until a Wave is created for this order.
+ */
+async function waitForWaveForOrder(orderId, timeoutMs = 60_000) {
+  const start = Date.now();
+  console.log(`  [backend] Waiting for Wave creation for order: ${orderId}`);
+  while (Date.now() - start < timeoutMs) {
+    const snapshot = await db.collection('dispatch_waves')
+      .where('orderId', '==', orderId)
+      .limit(1)
+      .get();
+    
+    if (!snapshot.empty) {
+      const wave = snapshot.docs[0].data();
+      console.log(`  [backend] ✅ Wave detected: ${snapshot.docs[0].id}`);
+      return wave;
+    }
+    await sleep(2000);
+  }
+  throw new Error(`TIMED_OUT: Wave not created within ${timeoutMs}ms`);
+}
+
+/**
+ * Polls Firestore until a dispatch_offer is created for the given order and driver.
+ */
+async function waitForOfferForOrder(orderId, driverId, timeoutMs = 30_000) {
+  const start = Date.now();
+  console.log(`  [backend] Waiting for Dispatch Offer injection for driver: ${driverId}`);
+  while (Date.now() - start < timeoutMs) {
+    const snapshot = await db.collection('dispatch_offers')
+      .where('orderId', '==', orderId)
+      .where('driverId', '==', driverId)
+      .limit(1)
+      .get();
+      
+    if (!snapshot.empty) {
+      const offer = snapshot.docs[0].data();
+      console.log(`  [backend] ✅ Offer detected: ${snapshot.docs[0].id} status=${offer.status}`);
+      return offer;
+    }
+    await sleep(2000);
+  }
+  throw new Error(`TIMED_OUT: Dispatch offer not written within ${timeoutMs}ms`);
+}
+
 module.exports = {
   createOrder,
   cancelOrder,
@@ -209,4 +260,6 @@ module.exports = {
   injectDispatchOffer,
   terminateDispatchOffer,
   inspectFirestoreState,
+  waitForWaveForOrder,
+  waitForOfferForOrder
 };

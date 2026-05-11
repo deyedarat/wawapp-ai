@@ -50,7 +50,7 @@ async function run(runId) {
     tl.emit('OFFER_INJECTED', { orderId, device: 'backend', data: { status: 'sent' } });
 
     // Launch app and navigate to Nearby to trigger listener hydration
-    dev.launchApp();
+    dev.launchDriverApp();
     await sleep(timing.appBootWait);
     dev.tap(drvCfg.nearbyTabBounds.x, drvCfg.nearbyTabBounds.y);
     tl.emit('NEARBY_TAB_ACTIVATED', { orderId, device: 'driver' });
@@ -73,7 +73,7 @@ async function run(runId) {
     // ── Step 4: Relaunch app ───────────────────────────────────────────────
     tl.emit('APP_RELAUNCH', { orderId, device: 'driver' });
     dev.clearLogcat();    // fresh log for this relaunch only
-    dev.launchApp();
+    dev.launchDriverApp();
     await sleep(timing.appBootWait);
     dev.tap(drvCfg.nearbyTabBounds.x, drvCfg.nearbyTabBounds.y);
     tl.emit('NEARBY_TAB_REACTIVATED', { orderId, device: 'driver' });

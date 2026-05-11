@@ -4,6 +4,18 @@
  * Central configuration — all constants live here.
  */
 
+const fs = require('fs');
+const path = require('path');
+
+// Load dynamic device roles with runtime safety fallback
+const rolesPath = path.join(__dirname, '..', 'device_roles.json');
+let roles = { driver: {}, rider: {} };
+try {
+  roles = JSON.parse(fs.readFileSync(rolesPath, 'utf8'));
+} catch (_) {
+  console.warn('[Config] WARNING: Cannot read device_roles.json. Using empty defaults.');
+}
+
 module.exports = {
   // ── Firebase ──────────────────────────────────────────────────────────────
   firebase: {
@@ -14,16 +26,15 @@ module.exports = {
   // ── Actors ────────────────────────────────────────────────────────────────
   driver: {
     id: '49ZGFxTVAMaAMkVd4GQZ9Juyjgf1',
-    deviceId: 'R83Y20PC4EN',         // Samsung SM-A065F, Android 15
-    packageName: 'com.wawapp.driver',
-    nearbyTabBounds: { x: 532, y: 650 },  // center of "Nearby" tab
+    deviceId: roles.driver?.deviceId || null,
+    packageName: roles.driver?.packageName || 'com.wawapp.driver',
+    nearbyTabBounds: { x: 532, y: 650 },
   },
 
   rider: {
-    // Populated once rider device is added.  Scripts gracefully skip rider steps when null.
     id: null,
-    deviceId: null,
-    packageName: 'com.wawapp.client',
+    deviceId: roles.rider?.deviceId || null,
+    packageName: roles.rider?.packageName || 'com.wawapp.client',
   },
 
   // ── Spatial anchor ────────────────────────────────────────────────────────
