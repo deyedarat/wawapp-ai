@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <string name="driver_trip_order_id">qa_phase4_stale_order</string>
+    <string name="driver_trip_source">qa_test</string>
+    <long name="driver_trip_set_at" value="1" />
+    <boolean name="driver_has_active_trip" value="true" />
+</map>

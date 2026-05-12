@@ -1,0 +1,33 @@
+{
+  "scenario": "dispatch_accept_success",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 108168,
+  "runId": "solo_1778513046832",
+  "startTs": 1778513046837,
+  "endTs": 1778513155005,
+  "assertions": [
+    {
+      "status": "FAIL",
+      "label": "Pipeline stage failed: WAVE_NOT_CREATED",
+      "evidence": {
+        "classification": "INFRASTRUCTURE_LATENCY",
+        "evidence": "Cloud Function cold start or execution timeout prevented Wave injection.",
+        "stage": "WAVE_NOT_CREATED"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Pipeline stage failed: WAVE_NOT_CREATED",
+      "evidence": {
+        "classification": "INFRASTRUCTURE_LATENCY",
+        "evidence": "Cloud Function cold start or execution timeout prevented Wave injection.",
+        "stage": "WAVE_NOT_CREATED"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\solo_1778513046832\\timeline.ndjson"
+}

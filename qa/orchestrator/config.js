@@ -32,9 +32,10 @@ module.exports = {
   },
 
   rider: {
-    id: null,
+    id: 'test_rider_001',  // Test rider account ID
     deviceId: roles.rider?.deviceId || null,
     packageName: roles.rider?.packageName || 'com.wawapp.client',
+    phoneNumber: '+966501234001',
   },
 
   // ── Spatial anchor ────────────────────────────────────────────────────────

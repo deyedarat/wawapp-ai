@@ -1,0 +1,78 @@
+{
+  "runId": "reliability_1778510726108",
+  "overall": "FAILED",
+  "passed": 0,
+  "failed": 5,
+  "results": [
+    {
+      "scenario": "stale_cache_resurrection",
+      "passed": false,
+      "durationMs": 8185,
+      "failures": [
+        {
+          "label": "Scenario completed without error",
+          "evidence": {
+            "error": "[Device:driver] ADB error: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nCommand failed: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nadb.exe: device 'R83Y20PC4EN' not found\r\n"
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "zombie_fullscreen_protection",
+      "passed": false,
+      "durationMs": 300000,
+      "failures": [
+        {
+          "label": "[Device:driver] ADB error: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nCommand failed: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nadb.exe: device 'R83Y20PC4EN' not found\r\n",
+          "evidence": {
+            "timedOut": false
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "process_kill_during_offer",
+      "passed": false,
+      "durationMs": 3765,
+      "failures": [
+        {
+          "label": "Scenario completed without error",
+          "evidence": {
+            "error": "[Device:driver] ADB error: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nCommand failed: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nadb.exe: device 'R83Y20PC4EN' not found\r\n"
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "duplicate_accept_guard",
+      "passed": false,
+      "durationMs": 994,
+      "failures": [
+        {
+          "label": "Scenario completed without error",
+          "evidence": {
+            "error": "[Device:driver] ADB error: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nCommand failed: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nadb.exe: device 'R83Y20PC4EN' not found\r\n"
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "startup_rehydration",
+      "passed": false,
+      "durationMs": 4129,
+      "failures": [
+        {
+          "label": "Scenario completed without error",
+          "evidence": {
+            "error": "[Device:driver] ADB error: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nCommand failed: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nadb.exe: device 'R83Y20PC4EN' not found\r\n"
+          }
+        }
+      ],
+      "slaMetrics": []
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "scenario": "zombie_fullscreen_protection",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 61395,
+  "runId": "reliability_1778486831430",
+  "startTs": 1778486894296,
+  "endTs": 1778486955691,
+  "assertions": [
+    {
+      "status": "FAIL",
+      "label": "Fullscreen rendered before poison injection",
+      "evidence": {
+        "timeout": true
+      }
+    },
+    {
+      "status": "PASS",
+      "label": "Zombie fullscreen authority eliminated after accept failure"
+    },
+    {
+      "status": "PASS",
+      "label": "UI dump shows no interactive Accept/Reject buttons"
+    }
+  ],
+  "failures": [
+    {
+      "label": "Fullscreen rendered before poison injection",
+      "evidence": {
+        "timeout": true
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\reliability_1778486831430\\timeline.ndjson"
+}

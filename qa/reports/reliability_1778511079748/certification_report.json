@@ -1,0 +1,81 @@
+{
+  "runId": "reliability_1778511079748",
+  "overall": "FAILED",
+  "passed": 1,
+  "failed": 4,
+  "results": [
+    {
+      "scenario": "stale_cache_resurrection",
+      "passed": true,
+      "durationMs": 63866,
+      "failures": [],
+      "slaMetrics": [
+        {
+          "label": "Cache emission → server reconciliation",
+          "actualMs": 5000,
+          "maxMs": 5000,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scenario": "zombie_fullscreen_protection",
+      "passed": false,
+      "durationMs": 93858,
+      "failures": [
+        {
+          "label": "Pipeline stage failed: WAVE_NOT_CREATED",
+          "evidence": {
+            "classification": "INFRASTRUCTURE_LATENCY",
+            "evidence": "Cloud Function cold start or execution timeout prevented Wave injection.",
+            "stage": "WAVE_NOT_CREATED"
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "process_kill_during_offer",
+      "passed": false,
+      "durationMs": 84276,
+      "failures": [
+        {
+          "label": "Fullscreen appeared before process kill",
+          "evidence": {
+            "timeout": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "duplicate_accept_guard",
+      "passed": false,
+      "durationMs": 59935,
+      "failures": [
+        {
+          "label": "Fullscreen rendered for duplicate tap test",
+          "evidence": {
+            "timeout": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "startup_rehydration",
+      "passed": false,
+      "durationMs": 60499,
+      "failures": [
+        {
+          "label": "Server reconciliation confirmed",
+          "evidence": {
+            "serverLines": 0,
+            "note": "Requires instrumented build"
+          }
+        }
+      ],
+      "slaMetrics": []
+    }
+  ]
+}

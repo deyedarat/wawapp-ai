@@ -1,0 +1,15 @@
+{
+  "runId": "smoke_1778486208292",
+  "overall": "CERTIFIED",
+  "passed": 1,
+  "failed": 0,
+  "results": [
+    {
+      "scenario": "engine_smoke",
+      "passed": true,
+      "durationMs": 100,
+      "failures": [],
+      "slaMetrics": []
+    }
+  ]
+}

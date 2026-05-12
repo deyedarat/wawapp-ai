@@ -1,0 +1,33 @@
+{
+  "scenario": "dispatch_accept_success",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 99999,
+  "runId": "solo_1778513413452",
+  "startTs": 1778513413458,
+  "endTs": 1778513513457,
+  "assertions": [
+    {
+      "status": "FAIL",
+      "label": "Pipeline stage failed: OFFER_NOT_WRITTEN",
+      "evidence": {
+        "classification": "INFRASTRUCTURE_LATENCY",
+        "evidence": "Order was created but Cloud Functions failed to match/inject target Driver into dispatch_offers.",
+        "stage": "OFFER_NOT_WRITTEN"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Pipeline stage failed: OFFER_NOT_WRITTEN",
+      "evidence": {
+        "classification": "INFRASTRUCTURE_LATENCY",
+        "evidence": "Order was created but Cloud Functions failed to match/inject target Driver into dispatch_offers.",
+        "stage": "OFFER_NOT_WRITTEN"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\solo_1778513413452\\timeline.ndjson"
+}

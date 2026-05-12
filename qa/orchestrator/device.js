@@ -231,6 +231,89 @@ class Device {
     const lines = this.getLogcat();
     return lines.filter(l => l.includes(pattern));
   }
+
+  // ── Rider-specific methods ────────────────────────────────────────────────
+  /**
+   * Enter text into the currently focused input field.
+   * Works for both driver and rider apps.
+   */
+  enterText(text) {
+    // Escape special characters for shell
+    const escaped = text.replace(/'/g, "'\\''");
+    this._shell(`input text '${escaped}'`);
+  }
+
+  /**
+   * Find a UI node by text, content-desc, or resource-id hint.
+   * Returns {x, y, text, bounds} or null if not found.
+   * @param {string} xml - UI dump XML
+   * @param {string} hint - search term (case-insensitive)
+   */
+  findNodeByHint(xml, hint) {
+    const regex = new RegExp(`<node[^>]*(?:text|content-desc|resource-id)="[^"]*${hint}[^"]*"[^>]*>`, 'i');
+    const match = xml.match(regex);
+    if (!match) return null;
+
+    const nodeStr = match[0];
+    const boundsMatch = nodeStr.match(/bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/);
+    if (!boundsMatch) return null;
+
+    const [, x1, y1, x2, y2] = boundsMatch.map(Number);
+    const centerX = Math.floor((x1 + x2) / 2);
+    const centerY = Math.floor((y1 + y2) / 2);
+
+    const textMatch = nodeStr.match(/text="([^"]*)"/);
+    const text = textMatch ? textMatch[1] : '';
+
+    return { x: centerX, y: centerY, text, bounds: [x1, y1, x2, y2] };
+  }
+
+  /**
+   * Smart tap by text/hint instead of hardcoded coordinates.
+   * Searches current UI and taps the center of matching element.
+   * @param {string} hint - text/content-desc to search for
+   * @param {string} [tmpDir] - temp directory for UI dump
+   */
+  tapByHint(hint, tmpDir = './qa/artifacts') {
+    const dumpPath = path.join(tmpDir, `ui_${this.label}_${Date.now()}.xml`);
+    const xml = this.dumpUI(dumpPath);
+    const node = this.findNodeByHint(xml, hint);
+
+    if (!node) {
+      throw new Error(`[Device:${this.label}] Cannot find UI element matching: ${hint}`);
+    }
+
+    this.tap(node.x, node.y);
+    return node;
+  }
+
+  /**
+   * Wait for a UI element to appear (by polling UI dumps).
+   * @param {string} hint - text/content-desc to wait for
+   * @param {object} opts
+   * @param {number} opts.timeout - max wait time in ms
+   * @param {number} opts.interval - polling interval in ms
+   */
+  async waitForElement(hint, opts = {}) {
+    const timeout = opts.timeout || 30000;
+    const interval = opts.interval || 1000;
+    const startTime = Date.now();
+    const tmpDir = opts.tmpDir || './qa/artifacts';
+
+    while (Date.now() - startTime < timeout) {
+      try {
+        const dumpPath = path.join(tmpDir, `ui_${this.label}_wait_${Date.now()}.xml`);
+        const xml = this.dumpUI(dumpPath);
+        const node = this.findNodeByHint(xml, hint);
+        if (node) return node;
+      } catch (err) {
+        // UI dump can fail if screen is transitioning; ignore and retry
+      }
+      await new Promise(resolve => setTimeout(resolve, interval));
+    }
+
+    throw new Error(`[Device:${this.label}] Timeout waiting for element: ${hint}`);
+  }
 }
 
 module.exports = Device;

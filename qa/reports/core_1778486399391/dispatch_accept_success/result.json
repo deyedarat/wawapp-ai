@@ -1,0 +1,70 @@
+{
+  "scenario": "dispatch_accept_success",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 56795,
+  "runId": "core_1778486399391",
+  "startTs": 1778486399399,
+  "endTs": 1778486456194,
+  "assertions": [
+    {
+      "status": "FAIL",
+      "label": "Fullscreen notification rendered within 30s",
+      "evidence": {
+        "timeout": true
+      }
+    },
+    {
+      "status": "FAIL",
+      "label": "Order transitioned to accepted in Firestore",
+      "evidence": {
+        "actualStatus": "matching"
+      }
+    },
+    {
+      "status": "PASS",
+      "label": "Dispatch offer is in terminal state"
+    },
+    {
+      "status": "FAIL",
+      "label": "SLA: ORDER_CREATED → FULLSCREEN_RENDERED within 15000ms",
+      "evidence": {
+        "delta": null,
+        "maxMs": 15000,
+        "slaBreached": true
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Fullscreen notification rendered within 30s",
+      "evidence": {
+        "timeout": true
+      }
+    },
+    {
+      "label": "Order transitioned to accepted in Firestore",
+      "evidence": {
+        "actualStatus": "matching"
+      }
+    },
+    {
+      "label": "SLA: ORDER_CREATED → FULLSCREEN_RENDERED within 15000ms",
+      "evidence": {
+        "delta": null,
+        "maxMs": 15000,
+        "slaBreached": true
+      }
+    }
+  ],
+  "slaMetrics": [
+    {
+      "label": "ORDER_CREATED → FULLSCREEN_RENDERED",
+      "actualMs": null,
+      "maxMs": 15000,
+      "passed": false
+    }
+  ],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\core_1778486399391\\timeline.ndjson"
+}

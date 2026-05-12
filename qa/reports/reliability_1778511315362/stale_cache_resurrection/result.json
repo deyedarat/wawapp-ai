@@ -1,0 +1,29 @@
+{
+  "scenario": "stale_cache_resurrection",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 37164,
+  "runId": "reliability_1778511315362",
+  "startTs": 1778511315368,
+  "endTs": 1778511352532,
+  "assertions": [
+    {
+      "status": "FAIL",
+      "label": "Scenario completed without error",
+      "evidence": {
+        "error": "5 NOT_FOUND: No document to update: projects/wawapp-952d6/databases/(default)/documents/dispatch_offers/qa_stale_cache_resurrection_1778511320287_49ZGFxTVAMaAMkVd4GQZ9Juyjgf1"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Scenario completed without error",
+      "evidence": {
+        "error": "5 NOT_FOUND: No document to update: projects/wawapp-952d6/databases/(default)/documents/dispatch_offers/qa_stale_cache_resurrection_1778511320287_49ZGFxTVAMaAMkVd4GQZ9Juyjgf1"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\reliability_1778511315362\\timeline.ndjson"
+}

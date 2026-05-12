@@ -1,0 +1,79 @@
+{
+  "runId": "reliability_1778486831430",
+  "overall": "FAILED",
+  "passed": 1,
+  "failed": 4,
+  "results": [
+    {
+      "scenario": "stale_cache_resurrection",
+      "passed": true,
+      "durationMs": 58853,
+      "failures": [],
+      "slaMetrics": [
+        {
+          "label": "Cache emission → server reconciliation",
+          "actualMs": 5000,
+          "maxMs": 5000,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scenario": "zombie_fullscreen_protection",
+      "passed": false,
+      "durationMs": 61395,
+      "failures": [
+        {
+          "label": "Fullscreen rendered before poison injection",
+          "evidence": {
+            "timeout": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "process_kill_during_offer",
+      "passed": false,
+      "durationMs": 82850,
+      "failures": [
+        {
+          "label": "Fullscreen appeared before process kill",
+          "evidence": {
+            "timeout": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "duplicate_accept_guard",
+      "passed": false,
+      "durationMs": 58268,
+      "failures": [
+        {
+          "label": "Fullscreen rendered for duplicate tap test",
+          "evidence": {
+            "timeout": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "startup_rehydration",
+      "passed": false,
+      "durationMs": 58737,
+      "failures": [
+        {
+          "label": "Server reconciliation confirmed",
+          "evidence": {
+            "serverLines": 0,
+            "note": "Requires instrumented build"
+          }
+        }
+      ],
+      "slaMetrics": []
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "runId": "reliability_1778511315362",
+  "overall": "FAILED",
+  "passed": 0,
+  "failed": 5,
+  "results": [
+    {
+      "scenario": "stale_cache_resurrection",
+      "passed": false,
+      "durationMs": 37164,
+      "failures": [
+        {
+          "label": "Scenario completed without error",
+          "evidence": {
+            "error": "5 NOT_FOUND: No document to update: projects/wawapp-952d6/databases/(default)/documents/dispatch_offers/qa_stale_cache_resurrection_1778511320287_49ZGFxTVAMaAMkVd4GQZ9Juyjgf1"
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "zombie_fullscreen_protection",
+      "passed": false,
+      "durationMs": 93591,
+      "failures": [
+        {
+          "label": "Pipeline stage failed: WAVE_NOT_CREATED",
+          "evidence": {
+            "classification": "INFRASTRUCTURE_LATENCY",
+            "evidence": "Cloud Function cold start or execution timeout prevented Wave injection.",
+            "stage": "WAVE_NOT_CREATED"
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "process_kill_during_offer",
+      "passed": false,
+      "durationMs": 88222,
+      "failures": [
+        {
+          "label": "Fullscreen appeared before process kill",
+          "evidence": {
+            "timeout": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "duplicate_accept_guard",
+      "passed": false,
+      "durationMs": 60186,
+      "failures": [
+        {
+          "label": "Fullscreen rendered for duplicate tap test",
+          "evidence": {
+            "timeout": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "startup_rehydration",
+      "passed": false,
+      "durationMs": 59844,
+      "failures": [
+        {
+          "label": "Server reconciliation confirmed",
+          "evidence": {
+            "serverLines": 0,
+            "note": "Requires instrumented build"
+          }
+        }
+      ],
+      "slaMetrics": []
+    }
+  ]
+}

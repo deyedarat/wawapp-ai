@@ -1,0 +1,33 @@
+{
+  "scenario": "zombie_fullscreen_protection",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 33173,
+  "runId": "reliability_1778510936354",
+  "startTs": 1778511004674,
+  "endTs": 1778511037847,
+  "assertions": [
+    {
+      "status": "FAIL",
+      "label": "Pipeline stage failed: WAVE_NOT_CREATED",
+      "evidence": {
+        "classification": "INFRASTRUCTURE_LATENCY",
+        "evidence": "Cloud Function cold start or execution timeout prevented Wave injection.",
+        "stage": "WAVE_NOT_CREATED"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Pipeline stage failed: WAVE_NOT_CREATED",
+      "evidence": {
+        "classification": "INFRASTRUCTURE_LATENCY",
+        "evidence": "Cloud Function cold start or execution timeout prevented Wave injection.",
+        "stage": "WAVE_NOT_CREATED"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\reliability_1778510936354\\timeline.ndjson"
+}

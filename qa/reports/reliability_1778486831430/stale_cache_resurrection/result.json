@@ -1,0 +1,30 @@
+{
+  "scenario": "stale_cache_resurrection",
+  "verdict": "PASS",
+  "passed": true,
+  "durationMs": 58853,
+  "runId": "reliability_1778486831430",
+  "startTs": 1778486831435,
+  "endTs": 1778486890288,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Stale cache did NOT trigger fullscreen authority after restart"
+    },
+    {
+      "status": "PASS",
+      "label": "Cache emitted stale offer, but server reconciliation occurred (fix working)"
+    }
+  ],
+  "failures": [],
+  "slaMetrics": [
+    {
+      "label": "Cache emission → server reconciliation",
+      "actualMs": 5000,
+      "maxMs": 5000,
+      "passed": true
+    }
+  ],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\reliability_1778486831430\\timeline.ndjson"
+}

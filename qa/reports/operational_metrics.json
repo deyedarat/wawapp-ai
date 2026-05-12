@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-05-11T08:07:05.912Z",
+  "totalRuns": 1,
+  "totalPass": 1,
+  "totalFail": 0,
+  "stabilityPct": 100,
+  "scenarioMetrics": [
+    {
+      "scenario": "engine_smoke",
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "passRate": 100,
+      "p50Ms": 100,
+      "p95Ms": 100,
+      "slaBreaches": 0
+    }
+  ],
+  "regressionMemoryCoverage": [
+    {
+      "id": "stale_active_trip_suppression",
+      "scenario": "stale_active_trip_recovery",
+      "executed": false,
+      "passing": null,
+      "fixPending": false
+    },
+    {
+      "id": "zombie_fullscreen_authority",
+      "scenario": "zombie_fullscreen_protection",
+      "executed": false,
+      "passing": null,
+      "fixPending": false
+    },
+    {
+      "id": "stale_cache_resurrection",
+      "scenario": "stale_cache_resurrection",
+      "executed": false,
+      "passing": null,
+      "fixPending": true
+    },
+    {
+      "id": "duplicate_accept",
+      "scenario": "duplicate_accept_guard",
+      "executed": false,
+      "passing": null,
+      "fixPending": false
+    },
+    {
+      "id": "startup_rehydration_offer",
+      "scenario": "startup_rehydration",
+      "executed": false,
+      "passing": null,
+      "fixPending": true
+    },
+    {
+      "id": "silent_driver_starvation",
+      "scenario": "stale_active_trip_recovery",
+      "executed": false,
+      "passing": null,
+      "fixPending": false
+    }
+  ]
+}

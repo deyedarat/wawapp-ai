@@ -1,0 +1,7 @@
+{"event":"SCENARIO_START","orderId":null,"device":"driver","ts":1778513046839,"data":{"driver":"R8YW40AW58L","rider":"RZ8R716T96J"}}
+{"event":"RIDER_APP_LAUNCH","orderId":null,"device":"rider","ts":1778513063995,"data":null}
+{"event":"ORDER_CREATE_START","orderId":null,"device":"backend","ts":1778513067188,"data":null}
+{"event":"ORDER_CREATED","orderId":"qa_dispatch_accept_success_1778513067189","device":"backend","ts":1778513068450,"data":null}
+{"event":"APP_LAUNCH","orderId":"qa_dispatch_accept_success_1778513067189","device":"driver","ts":1778513068451,"data":null}
+{"event":"NEARBY_TAB_ACTIVATED","orderId":"qa_dispatch_accept_success_1778513067189","device":"driver","ts":1778513082857,"data":null}
+{"event":"PIPELINE_STEP_WAVE_CREATED","orderId":"qa_dispatch_accept_success_1778513067189","device":null,"ts":1778513154110,"data":null}

@@ -1,0 +1,34 @@
+{
+  "scenario": "engine_smoke",
+  "verdict": "PASS",
+  "passed": true,
+  "durationMs": 1,
+  "runId": "smoke_1778486208292",
+  "startTs": 1778486208300,
+  "endTs": 1778486208301,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Config loaded"
+    },
+    {
+      "status": "PASS",
+      "label": "Timeline writes OK"
+    },
+    {
+      "status": "PASS",
+      "label": "Assert engine OK"
+    }
+  ],
+  "failures": [],
+  "slaMetrics": [
+    {
+      "label": "dispatch",
+      "actualMs": 5000,
+      "maxMs": 15000,
+      "passed": true
+    }
+  ],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\smoke_1778486208292\\timeline.ndjson"
+}

@@ -1,0 +1,29 @@
+{
+  "scenario": "process_kill_during_offer",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 3765,
+  "runId": "reliability_1778510726108",
+  "startTs": 1778510756099,
+  "endTs": 1778510759864,
+  "assertions": [
+    {
+      "status": "FAIL",
+      "label": "Scenario completed without error",
+      "evidence": {
+        "error": "[Device:driver] ADB error: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nCommand failed: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nadb.exe: device 'R83Y20PC4EN' not found\r\n"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Scenario completed without error",
+      "evidence": {
+        "error": "[Device:driver] ADB error: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nCommand failed: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nadb.exe: device 'R83Y20PC4EN' not found\r\n"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\reliability_1778510726108\\timeline.ndjson"
+}

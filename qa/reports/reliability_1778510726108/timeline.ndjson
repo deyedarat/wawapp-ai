@@ -1,0 +1,10 @@
+{"event":"SCENARIO_START","orderId":null,"device":"driver","ts":1778510726117,"data":{"scenario":"stale_cache_resurrection"}}
+{"event":"SCENARIO_ERROR","orderId":null,"device":null,"ts":1778510734300,"data":{"error":"[Device:driver] ADB error: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nCommand failed: adb -s R83Y20PC4EN shell am force-stop com.wawapp.driver\nadb.exe: device 'R83Y20PC4EN' not found\r\n"}}
+{"event":"SCENARIO_END","orderId":null,"device":null,"ts":1778510734302,"data":null}
+{"event":"SCENARIO_START","orderId":null,"device":"driver","ts":1778510738335,"data":null}
+{"event":"SCENARIO_START","orderId":null,"device":"driver","ts":1778510756100,"data":null}
+{"event":"SCENARIO_END","orderId":null,"device":null,"ts":1778510759863,"data":null}
+{"event":"SCENARIO_START","orderId":null,"device":"driver","ts":1778510763870,"data":null}
+{"event":"SCENARIO_END","orderId":null,"device":null,"ts":1778510764863,"data":null}
+{"event":"SCENARIO_START","orderId":null,"device":"driver","ts":1778510768871,"data":null}
+{"event":"ORDER_AND_OFFER_CREATED","orderId":"qa_startup_rehydration_1778510769886","device":"backend","ts":1778510772905,"data":null}

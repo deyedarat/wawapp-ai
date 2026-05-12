@@ -1,0 +1,35 @@
+{
+  "scenario": "startup_rehydration",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 60499,
+  "runId": "reliability_1778511079748",
+  "startTs": 1778511397766,
+  "endTs": 1778511458265,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "No actionable fullscreen appeared on startup rehydration of dead offer"
+    },
+    {
+      "status": "FAIL",
+      "label": "Server reconciliation confirmed",
+      "evidence": {
+        "serverLines": 0,
+        "note": "Requires instrumented build"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Server reconciliation confirmed",
+      "evidence": {
+        "serverLines": 0,
+        "note": "Requires instrumented build"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\reliability_1778511079748\\timeline.ndjson"
+}
