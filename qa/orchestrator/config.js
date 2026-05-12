@@ -20,7 +20,7 @@ module.exports = {
   // ── Firebase ──────────────────────────────────────────────────────────────
   firebase: {
     projectId: 'wawapp-952d6',
-    serviceAccountPath: 'C:/Users/hp/Music/wawapp-mcp-debug-server/config/dev-service-account.json',
+    serviceAccountPath: 'C:/Users/user/Music/wawapp-mcp-debug-server/config/dev-service-account.json',
   },
 
   // ── Actors ────────────────────────────────────────────────────────────────

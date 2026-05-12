@@ -1,0 +1,117 @@
+{
+  "runId": "smoke_1778604623348",
+  "overall": "FAILED",
+  "passed": 6,
+  "failed": 3,
+  "results": [
+    {
+      "scenario": "dispatch_accept_success",
+      "passed": false,
+      "durationMs": 79875,
+      "failures": [
+        {
+          "label": "Order did not transition to accepted",
+          "evidence": {
+            "classification": "ACCEPT_FAILED",
+            "actual": "matching"
+          }
+        }
+      ],
+      "slaMetrics": [
+        {
+          "label": "E2E Pipeline Latency",
+          "actualMs": 50209,
+          "maxMs": 15000,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "scenario": "dispatch_reject",
+      "passed": true,
+      "durationMs": 69257,
+      "failures": [],
+      "slaMetrics": [
+        {
+          "label": "ORDER_CREATED → FULLSCREEN_RENDERED",
+          "actualMs": 47800,
+          "maxMs": 15000,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "scenario": "dispatch_timeout",
+      "passed": true,
+      "durationMs": 76257,
+      "failures": [],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "client_cancel_before_accept",
+      "passed": true,
+      "durationMs": 116415,
+      "failures": [],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "stale_cache_resurrection",
+      "passed": true,
+      "durationMs": 59148,
+      "failures": [],
+      "slaMetrics": [
+        {
+          "label": "Cache emission → server reconciliation",
+          "actualMs": 5000,
+          "maxMs": 5000,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scenario": "zombie_fullscreen_protection",
+      "passed": false,
+      "durationMs": 78463,
+      "failures": [
+        {
+          "label": "Pipeline stage failed: FCM_NOT_RECEIVED",
+          "evidence": {
+            "classification": "INFRASTRUCTURE_LATENCY",
+            "evidence": "FCM transport layer failed to deliver the notification to the handset within time limit.",
+            "stage": "FCM_NOT_RECEIVED"
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "process_kill_during_offer",
+      "passed": true,
+      "durationMs": 79779,
+      "failures": [],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "duplicate_accept_guard",
+      "passed": true,
+      "durationMs": 64368,
+      "failures": [],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "startup_rehydration",
+      "passed": false,
+      "durationMs": 60187,
+      "failures": [
+        {
+          "label": "Server reconciliation confirmed",
+          "evidence": {
+            "serverLines": 0,
+            "note": "Requires instrumented build"
+          }
+        }
+      ],
+      "slaMetrics": []
+    }
+  ]
+}

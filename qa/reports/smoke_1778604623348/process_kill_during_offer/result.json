@@ -1,0 +1,27 @@
+{
+  "scenario": "process_kill_during_offer",
+  "verdict": "PASS",
+  "passed": true,
+  "durationMs": 79779,
+  "runId": "smoke_1778604623348",
+  "startTs": 1778605126834,
+  "endTs": 1778605206613,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Fullscreen appeared before process kill"
+    },
+    {
+      "status": "PASS",
+      "label": "No ghost fullscreen on cold start after kill-during-offer"
+    },
+    {
+      "status": "PASS",
+      "label": "Offer state after relaunch: not found"
+    }
+  ],
+  "failures": [],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\smoke_1778604623348\\timeline.ndjson"
+}

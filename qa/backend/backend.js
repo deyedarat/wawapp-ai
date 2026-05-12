@@ -104,12 +104,12 @@ async function cleanupOrders() {
       count++;
     }
   }
-  // Clean orphaned dispatch offers
+  // Clean ALL dispatch offers for this driver (not just qa_ prefixed)
   const offers = await db.collection('dispatch_offers')
-    .where('orderId', '>=', 'qa_').limit(100).get();
-  for (const doc of offers.docs) {
-    if (doc.id.startsWith('qa_')) await doc.ref.delete();
-  }
+    .where('driverId', '==', DRIVER_ID).limit(100).get();
+  const offerBatch = db.batch();
+  for (const doc of offers.docs) offerBatch.delete(doc.ref);
+  if (offers.docs.length > 0) await offerBatch.commit();
   // Clean driver isolation states
   await db.collection('driver_dispatch_state').doc(DRIVER_ID).delete();
   console.log(`[backend] cleanupOrders → removed ${count} orders and cleared driver_dispatch_state`);

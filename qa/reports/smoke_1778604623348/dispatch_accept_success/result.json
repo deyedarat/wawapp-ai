@@ -1,0 +1,46 @@
+{
+  "scenario": "dispatch_accept_success",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 79875,
+  "runId": "smoke_1778604623348",
+  "startTs": 1778604623359,
+  "endTs": 1778604703234,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "End-to-End dispatch pipeline cleared all stages successfully"
+    },
+    {
+      "status": "FAIL",
+      "label": "Order did not transition to accepted",
+      "evidence": {
+        "classification": "ACCEPT_FAILED",
+        "actual": "matching"
+      }
+    },
+    {
+      "status": "PASS",
+      "label": "Driver UI successfully transitioned off offer screen"
+    }
+  ],
+  "failures": [
+    {
+      "label": "Order did not transition to accepted",
+      "evidence": {
+        "classification": "ACCEPT_FAILED",
+        "actual": "matching"
+      }
+    }
+  ],
+  "slaMetrics": [
+    {
+      "label": "E2E Pipeline Latency",
+      "actualMs": 50209,
+      "maxMs": 15000,
+      "passed": false
+    }
+  ],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\smoke_1778604623348\\timeline.ndjson"
+}

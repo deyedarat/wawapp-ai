@@ -1,0 +1,33 @@
+{
+  "scenario": "zombie_fullscreen_protection",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 78463,
+  "runId": "smoke_1778604623348",
+  "startTs": 1778605044358,
+  "endTs": 1778605122821,
+  "assertions": [
+    {
+      "status": "FAIL",
+      "label": "Pipeline stage failed: FCM_NOT_RECEIVED",
+      "evidence": {
+        "classification": "INFRASTRUCTURE_LATENCY",
+        "evidence": "FCM transport layer failed to deliver the notification to the handset within time limit.",
+        "stage": "FCM_NOT_RECEIVED"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Pipeline stage failed: FCM_NOT_RECEIVED",
+      "evidence": {
+        "classification": "INFRASTRUCTURE_LATENCY",
+        "evidence": "FCM transport layer failed to deliver the notification to the handset within time limit.",
+        "stage": "FCM_NOT_RECEIVED"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\smoke_1778604623348\\timeline.ndjson"
+}

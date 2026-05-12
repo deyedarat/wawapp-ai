@@ -1,0 +1,27 @@
+{
+  "scenario": "dispatch_timeout",
+  "verdict": "PASS",
+  "passed": true,
+  "durationMs": 76257,
+  "runId": "smoke_1778604623348",
+  "startTs": 1778604780517,
+  "endTs": 1778604856774,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Fullscreen rendered before timeout"
+    },
+    {
+      "status": "PASS",
+      "label": "Fullscreen auto-dismissed after order expiry"
+    },
+    {
+      "status": "PASS",
+      "label": "Offer is in terminal state after timeout"
+    }
+  ],
+  "failures": [],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\smoke_1778604623348\\timeline.ndjson"
+}

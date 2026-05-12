@@ -1,0 +1,23 @@
+{
+  "scenario": "duplicate_accept_guard",
+  "verdict": "PASS",
+  "passed": true,
+  "durationMs": 64368,
+  "runId": "smoke_1778604623348",
+  "startTs": 1778605210631,
+  "endTs": 1778605274999,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Fullscreen dismissed (not zombie after double-tap)"
+    },
+    {
+      "status": "PASS",
+      "label": "Order in state: matching (no crash = guard worked)"
+    }
+  ],
+  "failures": [],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\smoke_1778604623348\\timeline.ndjson"
+}

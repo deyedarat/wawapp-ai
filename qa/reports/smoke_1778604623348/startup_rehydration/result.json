@@ -1,0 +1,35 @@
+{
+  "scenario": "startup_rehydration",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 60187,
+  "runId": "smoke_1778604623348",
+  "startTs": 1778605279013,
+  "endTs": 1778605339200,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "No actionable fullscreen appeared on startup rehydration of dead offer"
+    },
+    {
+      "status": "FAIL",
+      "label": "Server reconciliation confirmed",
+      "evidence": {
+        "serverLines": 0,
+        "note": "Requires instrumented build"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Server reconciliation confirmed",
+      "evidence": {
+        "serverLines": 0,
+        "note": "Requires instrumented build"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\smoke_1778604623348\\timeline.ndjson"
+}

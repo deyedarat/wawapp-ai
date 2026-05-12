@@ -208,10 +208,22 @@ class Device {
     return lines;
   }
 
-  /** Returns true if the fullscreen notification activity is currently focused. */
+  /** Returns true if the fullscreen notification activity is currently focused,
+   *  OR if the Flutter foreground offer screen is active (foreground path). */
   isFullscreenActive() {
     const focused = this.getFocusedActivity();
-    return focused.includes('FullScreenNotificationActivity');
+    if (focused.includes('FullScreenNotificationActivity')) return true;
+
+    // Foreground path: Flutter renders offer via GoRouter — check logcat for
+    // FcmForegroundBridge delivery or FORENSIC_TRACE offer emission.
+    const logs = this.getLogcat({ limit: 200 });
+    const hasForegroundOffer = logs.some(l =>
+      (l.includes('FcmForegroundBridge') && l.includes('sendMessage')) ||
+      (l.includes('FORENSIC_TRACE') && l.includes('source=SERVER')) ||
+      (l.includes('dispatch_offer_source=server_authorized') && l.includes('docs=1')) ||
+      (l.includes('Critical notification in foreground') )
+    );
+    return hasForegroundOffer;
   }
 
   /** Returns true if any notification for this package is currently posted. */

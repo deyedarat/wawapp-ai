@@ -1,0 +1,27 @@
+{
+  "scenario": "client_cancel_before_accept",
+  "verdict": "PASS",
+  "passed": true,
+  "durationMs": 116415,
+  "runId": "smoke_1778604623348",
+  "startTs": 1778604860779,
+  "endTs": 1778604977194,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Fullscreen rendered before client cancel"
+    },
+    {
+      "status": "PASS",
+      "label": "Fullscreen dismissed after client cancellation"
+    },
+    {
+      "status": "PASS",
+      "label": "Order status is cancelledByClient"
+    }
+  ],
+  "failures": [],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\smoke_1778604623348\\timeline.ndjson"
+}

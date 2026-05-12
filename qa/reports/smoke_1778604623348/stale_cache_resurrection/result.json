@@ -1,0 +1,30 @@
+{
+  "scenario": "stale_cache_resurrection",
+  "verdict": "PASS",
+  "passed": true,
+  "durationMs": 59148,
+  "runId": "smoke_1778604623348",
+  "startTs": 1778604981204,
+  "endTs": 1778605040352,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Stale cache did NOT trigger fullscreen authority after restart"
+    },
+    {
+      "status": "PASS",
+      "label": "No stale cache emission detected at all (optimal)"
+    }
+  ],
+  "failures": [],
+  "slaMetrics": [
+    {
+      "label": "Cache emission → server reconciliation",
+      "actualMs": 5000,
+      "maxMs": 5000,
+      "passed": true
+    }
+  ],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\smoke_1778604623348\\timeline.ndjson"
+}
