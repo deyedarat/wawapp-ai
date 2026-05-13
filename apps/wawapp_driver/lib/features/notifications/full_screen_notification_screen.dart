@@ -187,12 +187,25 @@ class _FullScreenNotificationScreenState
     } on Object catch (e) {
       if (!mounted) return;
       _failCount++;
+
+      // EC1: Before showing error, check if acceptance actually succeeded server-side
+      // (response was lost due to timeout/network)
+      final reconciledOrderId = await OrdersService.reconcileActiveOrder();
+      if (reconciledOrderId != null) {
+        // Success! Server accepted the order, response was just lost.
+        NotificationService().markOrderAsProcessed(widget.data.orderId);
+        if (!mounted) return;
+        context.go('/active-order');
+        return;
+      }
+
       final isFatal = e.toString().contains('already taken') ||
           e.toString().contains('offer_expired') ||
           e.toString().contains('already_accepted') ||
           _failCount > _maxRetries;
       if (isFatal) {
         // Non-recoverable: dismiss immediately
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -207,6 +220,7 @@ class _FullScreenNotificationScreenState
         // Recoverable: allow one more retry
         _actionTaken = false;
         setState(() => _isLoading = false);
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('حدث خطأ، حاول مرة أخرى')),
         );

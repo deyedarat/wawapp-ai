@@ -60,6 +60,71 @@ class OrdersService {
     }
   }
 
+  /// Reconcile active order state from server-authoritative Firestore.
+  ///
+  /// Handles the edge case where acceptOfferV2 succeeds server-side but the
+  /// response never reaches the client (timeout, network loss, process death).
+  ///
+  /// Returns the orderId if an active order was found and state was reconciled,
+  /// null otherwise. Caller is responsible for navigation.
+  ///
+  /// Idempotent: safe to call multiple times. Only reads + sets native flag.
+  /// Does NOT trigger acceptance calls or FCM sends.
+  static Future<String?> reconcileActiveOrder() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return null;
+
+    if (kDebugMode) {
+      dev.log('[OrdersService] [RECONCILIATION] reconciliation_started uid=$uid');
+    }
+
+    try {
+      // Query server-authoritative state (bypass cache)
+      final snap = await FirebaseFirestore.instance
+          .collection('orders')
+          .where('assignedDriverId', isEqualTo: uid)
+          .where('status', whereIn: ['accepted', 'onRoute'])
+          .limit(1)
+          .get(const GetOptions(source: Source.server));
+
+      if (snap.docs.isNotEmpty) {
+        final orderId = snap.docs.first.id;
+        final status = snap.docs.first.data()['status'] as String;
+
+        if (kDebugMode) {
+          dev.log('[OrdersService] [RECONCILIATION] active_trip_found orderId=$orderId status=$status');
+        }
+
+        // Restore native state
+        await NotificationMethodChannel.setActiveTripFlag(
+          true,
+          orderId: orderId,
+          source: 'reconciliation',
+        );
+
+        // Clear any stale acceptance lock
+        await AcceptanceLockManager.clearLock();
+
+        return orderId;
+      }
+
+      if (kDebugMode) {
+        dev.log('[OrdersService] [RECONCILIATION] no_active_trip_found');
+      }
+
+      // No active order — ensure local state is clean
+      await NotificationMethodChannel.setActiveTripFlag(false);
+
+      return null;
+    } on Object catch (e) {
+      if (kDebugMode) {
+        dev.log('[OrdersService] [RECONCILIATION] reconciliation_failed error=$e');
+      }
+      // Fail-open: don't block app flow on reconciliation failure
+      return null;
+    }
+  }
+
   Future<List<Order>> getNearbyOrders(Position driverPosition) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {

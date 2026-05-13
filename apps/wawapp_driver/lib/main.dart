@@ -18,7 +18,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/router/app_router.dart';
 import 'core/router/navigator.dart';
 import 'core/theme/app_theme.dart';
-import 'features/notifications/full_screen_notification_screen.dart';
 import 'features/notifications/trip_start_reminder_screen.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
@@ -27,6 +26,7 @@ import 'services/analytics_service.dart';
 import 'services/notification_dedup_service.dart';
 import 'services/notification_helper.dart';
 import 'services/notification_logger.dart';
+import 'services/orders_service.dart';
 import 'features/update/force_update_provider.dart';
 import 'features/update/force_update_screen.dart';
 import 'services/connectivity_service.dart';
@@ -206,10 +206,11 @@ class MyApp extends ConsumerStatefulWidget {
   ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends ConsumerState<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     // FCM will be initialized after authentication in auth_gate.dart
 
@@ -253,6 +254,28 @@ class _MyAppState extends ConsumerState<MyApp> {
         // Will be triggered from auth_gate after successful login
       }
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // EC1: Reconcile active order on resume (handles lost accept responses)
+      OrdersService.reconcileActiveOrder().then((orderId) {
+        if (orderId != null && mounted) {
+          // Driver has an active order they may not know about — navigate
+          final ctx = context;
+          if (ctx.mounted) {
+            GoRouter.of(ctx).go('/active-order');
+          }
+        }
+      });
+    }
   }
 
   @override

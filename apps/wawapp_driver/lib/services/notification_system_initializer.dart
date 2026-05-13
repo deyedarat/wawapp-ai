@@ -67,7 +67,14 @@ class NotificationSystemInitializer {
       // 5. Sync native active trip flag with Firestore
       await OrdersService.syncActiveTripFlagOnStartup();
 
-      // 6. Start missed notification recovery
+      // 6. Reconcile active order (handles lost accept responses)
+      final reconciledOrderId = await OrdersService.reconcileActiveOrder();
+      if (reconciledOrderId != null && kDebugMode) {
+        debugPrint(
+            '[NotificationSystemInitializer] 🔄 Reconciled active order: $reconciledOrderId');
+      }
+
+      // 7. Start missed notification recovery
       await MissedNotificationRecovery().start();
 
       _initialized = true;

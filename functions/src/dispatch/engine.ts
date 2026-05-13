@@ -43,6 +43,11 @@ const db = admin.firestore();
 
 const LOCK_TTL_SECONDS = 30;
 
+// EC2: Dispatch lifetime cap — prevents infinite waves when no drivers exist
+const MAX_WAVE_COUNT = 10;                        // Hard cap on wave iterations
+const MAX_DISPATCH_LIFETIME_MS = 10 * 60 * 1000; // 10 minutes absolute lifetime
+const MAX_CONSECUTIVE_EMPTY_WAVES = 3;            // Fast-terminate if 3 waves find 0 drivers
+
 // ============================================================================
 // CIRCUIT BREAKER STATE (in-memory, per Cloud Function instance)
 // ============================================================================
@@ -395,8 +400,19 @@ async function sendWaveOffers(orderId: string): Promise<void> {
       order_id: orderId,
       wave: queueData.currentWave,
     });
+    // EC2: Increment consecutive empty wave counter for fast termination
+    await db.collection('dispatch_queue').doc(orderId).update({
+      consecutiveEmptyWaves: admin.firestore.FieldValue.increment(1),
+    }).catch(() => {}); // non-fatal
     // Wait for wave expiration, then try next wave
     return;
+  }
+
+  // EC2: Reset empty wave counter when drivers ARE found
+  if ((queueData as any).consecutiveEmptyWaves > 0) {
+    await db.collection('dispatch_queue').doc(orderId).update({
+      consecutiveEmptyWaves: 0,
+    }).catch(() => {});
   }
 
   console.log('[DispatchEngine] Found eligible drivers', {
@@ -729,6 +745,77 @@ export async function processExpiredWavesForOrder(orderId: string): Promise<void
     }
 
     // Trigger next wave
+    // EC2: Check dispatch lifetime cap before scheduling another wave
+    const lifetimeMs = now.toMillis() - queueData.createdAt.toMillis();
+    const waveCount = queueData.currentWave;
+    const emptyWaves = (queueData as any).consecutiveEmptyWaves ?? 0;
+
+    if (waveCount >= MAX_WAVE_COUNT || lifetimeMs >= MAX_DISPATCH_LIFETIME_MS || emptyWaves >= MAX_CONSECUTIVE_EMPTY_WAVES) {
+      console.warn(JSON.stringify({
+        tag: 'DispatchEngine',
+        stage: 'dispatch_lifetime_expired',
+        orderId,
+        currentWave: waveCount,
+        lifetimeMs,
+        consecutiveEmptyWaves: emptyWaves,
+        reason: waveCount >= MAX_WAVE_COUNT ? 'max_wave_count' :
+                lifetimeMs >= MAX_DISPATCH_LIFETIME_MS ? 'max_lifetime' : 'consecutive_empty_waves',
+        result: 'terminalizing_order',
+      }));
+
+      emitMetric('wave_all_exhausted', { orderId });
+
+      // Expire the order with clear reason
+      await db.collection('orders').doc(orderId).update({
+        status: 'expired',
+        expiredAt: admin.firestore.FieldValue.serverTimestamp(),
+        expiryReason: 'no_drivers_available',
+        dispatchWavesAttempted: waveCount,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // Clean up dispatch_queue
+      await dequeueOrder(orderId);
+
+      console.log(JSON.stringify({
+        tag: 'DispatchEngine',
+        stage: 'dispatch_queue_cleanup_success',
+        orderId,
+        result: 'order_expired_no_drivers',
+      }));
+
+      // Notify client (best-effort)
+      try {
+        const orderDoc = await db.collection('orders').doc(orderId).get();
+        const ownerId = orderDoc.data()?.ownerId as string | undefined;
+        if (ownerId) {
+          const clientDoc = await db.collection('users').doc(ownerId).get();
+          const clientToken = clientDoc.data()?.fcmToken as string | undefined;
+          if (clientToken) {
+            await admin.messaging().send({
+              token: clientToken,
+              data: {
+                orderId,
+                type: 'order_expired_no_drivers',
+                notificationType: 'order_expired_no_drivers',
+                title: '\u0644\u0627 \u064a\u0648\u062c\u062f \u0633\u0627\u0626\u0642\u064a\u0646 \u0645\u062a\u0627\u062d\u064a\u0646',
+                body: '\u0644\u0645 \u0646\u062a\u0645\u0643\u0646 \u0645\u0646 \u0625\u064a\u062c\u0627\u062f \u0633\u0627\u0626\u0642 \u0644\u0637\u0644\u0628\u0643. \u064a\u0631\u062c\u0649 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0644\u0627\u062d\u0642\u0627\u064b.',
+              },
+              android: { priority: 'high' },
+            });
+          }
+        }
+      } catch (notifErr: any) {
+        console.warn('[DispatchEngine] Failed to notify client of expiry', {
+          order_id: orderId,
+          error: notifErr.message,
+        });
+      }
+
+      clearOrderFailure(orderId);
+      return;
+    }
+
     await processNextWave(orderId);
 
     // Success — clear failure counter

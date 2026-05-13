@@ -465,14 +465,14 @@ Scenario: snooze_expired_offer
 
 ## Implementation Priority
 
-| # | Edge Case | Severity | Effort | Priority |
-|---|-----------|----------|--------|----------|
-| 1 | Acceptance response lost | 🔴 Critical | Medium | P0 |
-| 2 | Infinite dispatch waves | 🔴 Critical | Low | P0 |
-| 4 | Fee deduction race | 🟡 Medium | Medium | P1 |
-| 5 | Orphaned dispatch_queue | 🟡 Medium | Low | P1 |
-| 6 | Expired snoozed offers | 🟡 Medium | Low | P2 |
-| 3 | AcceptanceLock stuck | 🟢 Already mitigated | None | — |
+| # | Edge Case | Severity | Effort | Priority | Status |
+|---|-----------|----------|--------|----------|--------|
+| 1 | Acceptance response lost | 🔴 Critical | Medium | P0 | ✅ Implemented |
+| 2 | Infinite dispatch waves | 🔴 Critical | Low | P0 | ✅ Implemented |
+| 4 | Fee deduction race | 🟡 Medium | Medium | P1 | Planned |
+| 5 | Orphaned dispatch_queue | 🟡 Medium | Low | P1 | Planned |
+| 6 | Expired snoozed offers | 🟡 Medium | Low | P2 | Planned |
+| 3 | AcceptanceLock stuck | 🟢 Already mitigated | None | — | N/A |
 
 ---
 
