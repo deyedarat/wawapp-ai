@@ -121,7 +121,6 @@ class OrdersService {
         dev.log('[Matching] ❌ Error calling Cloud Function: $e');
         dev.log('[Matching] ❌ Stack: $stack');
       }
-      print('[NEARBY_PROVIDER] ❌ ERROR: $e');
       // Return empty list on error to avoid crashing UI
       return [];
     }

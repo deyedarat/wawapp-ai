@@ -41,17 +41,25 @@ async function run(runId) {
 
     // ── Stage-Aware Dispatch Trace ──
     // This replaces the previous blind 30s wait. Throws detailed PipelineError on timeout.
+    // Retry once on FCM_NOT_RECEIVED (transient infrastructure latency)
     let renderSuccess = false;
-    try {
-      await waitForDispatchPipeline({ orderId, dev, tl, rep });
-      renderSuccess = true;
-      tl.emit('FULLSCREEN_RENDERED', { orderId, device: 'driver' });
-      rep.recordPass('Fullscreen rendered successfully before poison injection');
-    } catch (e) {
-      // Log the pipeline failure but continue logic check if classification allows
-      console.log(`[Scenario] Pipeline tracking failed: ${e.stage} [${e.classification}]`);
-      // If UI didn't render, we cannot proceed with the Zombie test.
-      throw e; 
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        await waitForDispatchPipeline({ orderId, dev, tl, rep });
+        renderSuccess = true;
+        tl.emit('FULLSCREEN_RENDERED', { orderId, device: 'driver' });
+        rep.recordPass('Fullscreen rendered successfully before poison injection');
+        break;
+      } catch (e) {
+        if (e.stage === 'FCM_NOT_RECEIVED' && attempt === 1) {
+          console.log(`[Scenario] FCM latency spike on attempt 1 — retrying with fresh logcat...`);
+          // FCM may have arrived late; re-check logcat without clearing
+          await sleep(15_000);
+          continue;
+        }
+        console.log(`[Scenario] Pipeline tracking failed: ${e.stage} [${e.classification}]`);
+        throw e;
+      }
     }
 
     if (renderSuccess) {

@@ -315,6 +315,19 @@ class NotificationMethodChannel {
     }
   }
 
+  /// Add an order ID to the native rejected orders set.
+  /// Prevents FCM from re-showing notifications for this order.
+  static Future<void> addRejectedOrderId(String orderId) async {
+    try {
+      await _channel.invokeMethod('addRejectedOrderId', {'orderId': orderId});
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] Error adding rejected order ID: ${e.message}');
+      }
+    }
+  }
+
   /// Check if the app can use full-screen intent (Android 14+).
   /// This permission is required for full-screen notifications on Android 14+.
   static Future<bool> canUseFullScreenIntent() async {

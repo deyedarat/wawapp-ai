@@ -258,6 +258,16 @@ class MainActivity : FlutterActivity() {
                     val ids = prefs.getStringSet("rejected_order_ids", emptySet()) ?: emptySet()
                     result.success(ids.toList())
                 }
+                "addRejectedOrderId" -> {
+                    val orderId = call.argument<String>("orderId") ?: ""
+                    if (orderId.isNotBlank()) {
+                        val prefs = getSharedPreferences("driver_rejected_orders_native", Context.MODE_PRIVATE)
+                        val ids = prefs.getStringSet("rejected_order_ids", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+                        ids.add(orderId)
+                        prefs.edit().putStringSet("rejected_order_ids", ids).apply()
+                    }
+                    result.success(null)
+                }
                 else -> {
                     result.notImplemented()
                 }

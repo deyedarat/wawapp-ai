@@ -220,6 +220,24 @@ class _FullScreenNotificationScreenState
     NotificationService().clearActiveFullScreen();
     NotificationMethodChannel.cancelSnooze(widget.data.orderId);
     setState(() => _isLoading = true);
+
+    final offerId = widget.data.offerId;
+
+    // Call rejectOffer Cloud Function to release the offer for other drivers
+    if (offerId != null && offerId.isNotEmpty) {
+      try {
+        await ref.read(ordersServiceProvider).rejectOffer(offerId: offerId);
+        if (kDebugMode) {
+          debugPrint('[FullScreenNotif] Offer $offerId rejected via Cloud Function');
+        }
+      } on Object catch (e) {
+        if (kDebugMode) {
+          debugPrint('[FullScreenNotif] rejectOffer CF failed (non-blocking): $e');
+        }
+      }
+    }
+
+    // Also persist locally for native dedup (prevents re-showing same offer)
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
       try {
@@ -233,15 +251,16 @@ class _FullScreenNotificationScreenState
             DateTime.now().add(const Duration(hours: 24)),
           ),
         });
-        if (kDebugMode) {
-          debugPrint('[FullScreenNotif] Order ${widget.data.orderId} rejected');
-        }
       } on Object catch (e) {
         if (kDebugMode) {
-          debugPrint('[FullScreenNotif] Failed to write rejection: $e');
+          debugPrint('[FullScreenNotif] Failed to write local rejection: $e');
         }
       }
     }
+
+    // Mark as rejected in native SharedPreferences (prevents FCM re-delivery)
+    await NotificationMethodChannel.addRejectedOrderId(widget.data.orderId);
+
     if (!mounted) return;
     setState(() => _isLoading = false);
     context.go('/');

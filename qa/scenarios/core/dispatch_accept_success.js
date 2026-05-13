@@ -94,11 +94,33 @@ async function run(runId) {
       let acceptX = 360, acceptY = 1300; // fallback defaults
       try {
         const xml = driverDev.dumpUI(uiPath);
-        const match = xml.match(/content-desc="قبول"[^/]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/);
-        if (match) {
-          acceptX = Math.round((parseInt(match[1]) + parseInt(match[3])) / 2);
-          acceptY = Math.round((parseInt(match[2]) + parseInt(match[4])) / 2);
-          console.log(`  [ADB] UI Parser located Arabic 'Accept' button at (${acceptX}, ${acceptY})`);
+        // Try multiple patterns: content-desc="قبول", text="قبول الطلب", text="قبول"
+        const patterns = [
+          /text="قبول الطلب"[^/]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/,
+          /content-desc="قبول[^"]*"[^/]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/,
+          /text="قبول"[^/]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/,
+        ];
+        let found = false;
+        for (const pat of patterns) {
+          const match = xml.match(pat);
+          if (match) {
+            acceptX = Math.round((parseInt(match[1]) + parseInt(match[3])) / 2);
+            acceptY = Math.round((parseInt(match[2]) + parseInt(match[4])) / 2);
+            console.log(`  [ADB] UI Parser located Accept button at (${acceptX}, ${acceptY})`);
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          // Fallback: use tapByHint
+          try {
+            const node = driverDev.findNodeByHint(xml, 'قبول');
+            if (node) {
+              acceptX = node.x;
+              acceptY = node.y;
+              console.log(`  [ADB] findNodeByHint located Accept at (${acceptX}, ${acceptY})`);
+            }
+          } catch (_) {}
         }
       } catch (_) {
          console.log('  [ADB] Falling back to standard device accept coordinates.');
