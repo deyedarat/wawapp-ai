@@ -44,8 +44,8 @@ const db = admin.firestore();
 const LOCK_TTL_SECONDS = 30;
 
 // EC2: Dispatch lifetime cap — prevents infinite waves when no drivers exist
-const MAX_WAVE_COUNT = 10;                        // Hard cap on wave iterations
-const MAX_DISPATCH_LIFETIME_MS = 10 * 60 * 1000; // 10 minutes absolute lifetime
+const MAX_WAVE_COUNT = 20;                        // Hard cap on wave iterations
+const MAX_DISPATCH_LIFETIME_MS = 15 * 60 * 1000; // 15 minutes absolute lifetime
 const MAX_CONSECUTIVE_EMPTY_WAVES = 3;            // Fast-terminate if 3 waves find 0 drivers
 
 // ============================================================================
