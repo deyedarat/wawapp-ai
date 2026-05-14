@@ -15,9 +15,9 @@ class Device {
    * @param {string} [label]    - 'driver' | 'rider'
    */
   constructor(deviceId, packageName, label = 'device') {
-    this.deviceId    = deviceId;
+    this.deviceId = deviceId;
     this.packageName = packageName;
-    this.label       = label;
+    this.label = label;
   }
 
   // ── Internal ──────────────────────────────────────────────────────────────
@@ -157,7 +157,7 @@ class Device {
   }
 
   goOffline() { this.setWifi(false); this.setData(false); }
-  goOnline()  { this.setWifi(true);  this.setData(true);  }
+  goOnline() { this.setWifi(true); this.setData(true); }
 
   // ── Inspection ────────────────────────────────────────────────────────────
   dumpUI(localPath) {
@@ -178,9 +178,13 @@ class Device {
    * Uses Node string filtering (grep not available on Windows).
    */
   getFocusedActivity() {
-    const raw = this._shell('dumpsys activity activities', { ignoreError: true });
+    // Use _adb directly to avoid shell quoting issues with long output
+    const raw = this._adb('shell dumpsys activity activities', { ignoreError: true, timeout: 15000 });
     const lines = raw.split('\n');
-    const resumed = lines.find(l => l.includes('mResumedActivity'));
+    // Try multiple patterns for different Android versions
+    const resumed = lines.find(l => l.includes('mResumedActivity')) ||
+      lines.find(l => l.includes('ResumedActivity:')) ||
+      lines.find(l => l.includes('mFocusedApp'));
     return (resumed || '').trim();
   }
 
@@ -201,7 +205,7 @@ class Device {
     const tParam = opts.limit ? `-t ${opts.limit}` : '-d';
     const raw = this._adb(`logcat ${tParam}`, { ignoreError: true });
     let lines = raw.split('\n').filter(Boolean);
-    
+
     if (opts.tag) {
       lines = lines.filter(l => l.includes(opts.tag));
     }
@@ -221,7 +225,7 @@ class Device {
       (l.includes('FcmForegroundBridge') && l.includes('sendMessage')) ||
       (l.includes('FORENSIC_TRACE') && l.includes('source=SERVER')) ||
       (l.includes('dispatch_offer_source=server_authorized') && l.includes('docs=1')) ||
-      (l.includes('Critical notification in foreground') )
+      (l.includes('Critical notification in foreground'))
     );
     return hasForegroundOffer;
   }

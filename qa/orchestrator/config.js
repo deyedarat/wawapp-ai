@@ -20,7 +20,7 @@ module.exports = {
   // ── Firebase ──────────────────────────────────────────────────────────────
   firebase: {
     projectId: 'wawapp-952d6',
-    serviceAccountPath: 'C:/Users/user/Music/wawapp-mcp-debug-server/config/dev-service-account.json',
+    serviceAccountPath: 'C:/Users/hp/Music/wawapp-mcp-debug-server/config/dev-service-account.json',
   },
 
   // ── Actors ────────────────────────────────────────────────────────────────
@@ -47,31 +47,31 @@ module.exports = {
 
   // ── SLA thresholds (milliseconds) ─────────────────────────────────────────
   sla: {
-    dispatchToFCM:         15_000,   // rider commit → FCM received
-    fcmToFullscreen:        3_000,   // FCM received → fullscreen rendered
-    acceptRoundtrip:        8_000,   // driver tap → Firestore accepted
-    cacheReconciliation:    5_000,   // cache emission → server reconciliation
-    offerExpiryWindow:    120_000,   // max offer lifetime before timeout
+    dispatchToFCM: 15_000,   // rider commit → FCM received
+    fcmToFullscreen: 3_000,   // FCM received → fullscreen rendered
+    acceptRoundtrip: 8_000,   // driver tap → Firestore accepted
+    cacheReconciliation: 5_000,   // cache emission → server reconciliation
+    offerExpiryWindow: 120_000,   // max offer lifetime before timeout
   },
 
   // ── Paths ─────────────────────────────────────────────────────────────────
   paths: {
-    reports:   'qa/reports',
+    reports: 'qa/reports',
     artifacts: 'qa/artifacts',
-    timeline:  'qa/reports',   // timeline.ndjson lives inside run folder
+    timeline: 'qa/reports',   // timeline.ndjson lives inside run folder
   },
 
   // ── Timing ────────────────────────────────────────────────────────────────
   timing: {
-    appBootWait:        14_000,   // ms after am start before tapping (covers Flutter init)
-    listenerWait:       10_000,   // ms for Firestore listener to hydrate
-    fullscreenWaitMs:   90_000,   // ms to wait for fullscreen (covers CF cold start + FCM + wake)
-    offerVisibleWait:   10_000,   // ms to wait for offer card to appear in foreground
-    postAcceptWait:     12_000,   // ms after accept tap before checking state
-    forceStopWait:       3_000,
-    backendTermWait:     3_000,
-    scenarioCooldown:    4_000,   // ms between scenarios for device state to settle
-    notifClearWait:      2_000,   // ms after notification clear before proceeding
+    appBootWait: 14_000,   // ms after am start before tapping (covers Flutter init)
+    listenerWait: 10_000,   // ms for Firestore listener to hydrate
+    fullscreenWaitMs: 90_000,   // ms to wait for fullscreen (covers CF cold start + FCM + wake)
+    offerVisibleWait: 10_000,   // ms to wait for offer card to appear in foreground
+    postAcceptWait: 12_000,   // ms after accept tap before checking state
+    forceStopWait: 3_000,
+    backendTermWait: 3_000,
+    scenarioCooldown: 4_000,   // ms between scenarios for device state to settle
+    notifClearWait: 2_000,   // ms after notification clear before proceeding
   },
 
   // ── Operational invariants ─────────────────────────────────────────────────

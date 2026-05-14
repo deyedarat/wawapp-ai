@@ -2,11 +2,13 @@
   "driver": {
     "deviceId": "R8YW40AW58L",
     "packageName": "com.wawapp.driver",
-    "role": "driver"
+    "role": "driver",
+    "model": "SM-A145P"
   },
   "rider": {
-    "deviceId": "R7ST40EB4DA",
+    "deviceId": "RZ8R716T96J",
     "packageName": "com.wawapp.client",
-    "role": "rider"
+    "role": "rider",
+    "model": "SM-A125F"
   }
 }
