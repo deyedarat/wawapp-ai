@@ -12,7 +12,14 @@ Future<void> showNewOrderAlertDialog(
   required String pickupLabel,
   required String dropoffLabel,
   required double price,
+Future<void> showNewOrderAlertDialog(
+  BuildContext context, {
+  required String orderId,
+  required String pickupLabel,
+  required String dropoffLabel,
+  required double price,
   required double distance,
+  String offerId = '',
   VoidCallback? onSnooze,
 }) {
   return showDialog(
@@ -21,6 +28,7 @@ Future<void> showNewOrderAlertDialog(
     barrierColor: Colors.black54,
     builder: (_) => _NewOrderAlertDialog(
       orderId: orderId,
+      offerId: offerId,
       pickupLabel: pickupLabel,
       dropoffLabel: dropoffLabel,
       price: price,
@@ -33,6 +41,7 @@ Future<void> showNewOrderAlertDialog(
 class _NewOrderAlertDialog extends ConsumerStatefulWidget {
   const _NewOrderAlertDialog({
     required this.orderId,
+    required this.offerId,
     required this.pickupLabel,
     required this.dropoffLabel,
     required this.price,
@@ -41,6 +50,7 @@ class _NewOrderAlertDialog extends ConsumerStatefulWidget {
   });
 
   final String orderId;
+  final String offerId;
   final String pickupLabel;
   final String dropoffLabel;
   final double price;
@@ -59,7 +69,7 @@ class _NewOrderAlertDialogState extends ConsumerState<_NewOrderAlertDialog> {
     setState(() => _isLoading = true);
     try {
       final ordersService = ref.read(ordersServiceProvider);
-      await ordersService.acceptOrder(widget.orderId);
+      await ordersService.acceptOrder(widget.orderId, widget.offerId);
       if (!mounted) return;
       Navigator.of(context).pop();
       context.push('/active-order');

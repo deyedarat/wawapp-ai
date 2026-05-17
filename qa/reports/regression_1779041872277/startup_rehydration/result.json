@@ -1,0 +1,23 @@
+{
+  "scenario": "startup_rehydration",
+  "verdict": "PASS",
+  "passed": true,
+  "durationMs": 61303,
+  "runId": "regression_1779041872277",
+  "startTs": 1779042697267,
+  "endTs": 1779042758570,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "No actionable fullscreen appeared on startup rehydration of dead offer"
+    },
+    {
+      "status": "PASS",
+      "label": "Server reconciliation confirmed (1 events)"
+    }
+  ],
+  "failures": [],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\regression_1779041872277\\timeline.ndjson"
+}

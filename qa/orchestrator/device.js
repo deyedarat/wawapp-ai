@@ -218,9 +218,9 @@ class Device {
     const focused = this.getFocusedActivity();
     if (focused.includes('FullScreenNotificationActivity')) return true;
 
-    // Foreground path: Flutter renders offer via GoRouter — check logcat for
-    // FcmForegroundBridge delivery or FORENSIC_TRACE offer emission.
-    const logs = this.getLogcat({ limit: 200 });
+    // Foreground path: Check if the app is showing the offer dialog
+    // by looking at RECENT logcat entries only (last 30 lines, ~last 10 seconds)
+    const logs = this.getLogcat({ limit: 30 });
     const hasForegroundOffer = logs.some(l =>
       (l.includes('FcmForegroundBridge') && l.includes('sendMessage')) ||
       (l.includes('FORENSIC_TRACE') && l.includes('source=SERVER')) ||

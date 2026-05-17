@@ -1,0 +1,33 @@
+{
+  "scenario": "duplicate_accept_guard",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 63178,
+  "runId": "regression_1779041872277",
+  "startTs": 1779042630072,
+  "endTs": 1779042693250,
+  "assertions": [
+    {
+      "status": "FAIL",
+      "label": "Fullscreen dismissed (not zombie after double-tap)",
+      "evidence": {
+        "zombie": true
+      }
+    },
+    {
+      "status": "PASS",
+      "label": "Order in state: matching (no crash = guard worked)"
+    }
+  ],
+  "failures": [
+    {
+      "label": "Fullscreen dismissed (not zombie after double-tap)",
+      "evidence": {
+        "zombie": true
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\regression_1779041872277\\timeline.ndjson"
+}

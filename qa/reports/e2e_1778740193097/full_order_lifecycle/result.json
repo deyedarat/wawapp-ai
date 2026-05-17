@@ -1,0 +1,50 @@
+{
+  "scenario": "full_order_lifecycle",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 53647,
+  "runId": "e2e_1778740193097",
+  "startTs": 1778740193113,
+  "endTs": 1778740246760,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Both devices prepared and clean"
+    },
+    {
+      "status": "FAIL",
+      "label": "Driver app not in foreground after launch",
+      "evidence": {
+        "classification": "APP_LAUNCH_FAILURE",
+        "focused": ""
+      }
+    },
+    {
+      "status": "FAIL",
+      "label": "Unexpected error: Driver app failed to launch",
+      "evidence": {
+        "classification": "HARNESS_ERROR",
+        "stack": "Error: Driver app failed to launch\n    at run (C:\\Users\\hp\\Music\\wawapp-ai\\qa\\scenarios\\e2e\\full_order_lifecycle.js:96:19)\n    at runNextTicks (node:internal/process/task_queues:60:5)\n    at listOnTimeout (node:internal/timers:545:9)\n    at process.processTimers (node:internal/timers:519:7)"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Driver app not in foreground after launch",
+      "evidence": {
+        "classification": "APP_LAUNCH_FAILURE",
+        "focused": ""
+      }
+    },
+    {
+      "label": "Unexpected error: Driver app failed to launch",
+      "evidence": {
+        "classification": "HARNESS_ERROR",
+        "stack": "Error: Driver app failed to launch\n    at run (C:\\Users\\hp\\Music\\wawapp-ai\\qa\\scenarios\\e2e\\full_order_lifecycle.js:96:19)\n    at runNextTicks (node:internal/process/task_queues:60:5)\n    at listOnTimeout (node:internal/timers:545:9)\n    at process.processTimers (node:internal/timers:519:7)"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\e2e_1778740193097\\timeline.ndjson"
+}

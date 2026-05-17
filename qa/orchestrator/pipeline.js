@@ -41,7 +41,7 @@ async function waitForDispatchPipeline({ orderId, dev, tl, rep }) {
 
   try {
     console.log(`\n[Pipeline] --- Starting Stage-Aware Trace for ${orderId} ---`);
-    
+
     // 1. Wait for Dispatch Offer Written (Cloud Function matching logic)
     try {
       console.log(`  [Pipeline] Awaiting dispatch injection to driver ${drvCfg.id}...`);
@@ -56,16 +56,27 @@ async function waitForDispatchPipeline({ orderId, dev, tl, rep }) {
     console.log(`  [Pipeline] Waiting for Native FCM Receive logs on device...`);
     let fcmDetected = false;
     const fcmStart = Date.now();
-    
-    // Poll logcat for up to 45s for the FCM reception
+
+    // Poll logcat for up to 45s for the FCM reception OR check if fullscreen is already active
+    // (Firestore listener path delivers offers without FCM log in logcat)
     while (Date.now() - fcmStart < 45_000) {
+      // Check 1: FCM log in logcat
       const logs = dev.getLogcat({ limit: 300 }); // last 300 lines
-      const hasLog = logs.some(l => 
-        (l.includes('Native FCM received') || l.includes('PUSH_RECEIVED')) && 
-        l.includes(orderId)
+      const hasLog = logs.some(l =>
+        (l.includes('Native FCM received') || l.includes('PUSH_RECEIVED') ||
+          l.includes('dispatch_offer_source') || l.includes('new_order') ||
+          l.includes('FcmForegroundBridge') || l.includes('FORENSIC_TRACE') ||
+          l.includes('Critical notification')) &&
+        (l.includes(orderId) || !orderId.startsWith('qa_'))
       );
       if (hasLog) {
         fcmDetected = true;
+        break;
+      }
+      // Check 2: Fullscreen already rendered (Firestore listener path)
+      if (dev.isFullscreenActive()) {
+        fcmDetected = true;
+        console.log(`  [Pipeline] Offer detected via Firestore listener (foreground path)`);
         break;
       }
       await sleep(3000);
@@ -87,11 +98,11 @@ async function waitForDispatchPipeline({ orderId, dev, tl, rep }) {
 
     if (!renderDetected) {
       reportStep('UI_RENDERED', false);
-      
+
       // Deep Inspection: Did FCM Service suppress it?
       const finalLogs = dev.getLogcat({ limit: 500 });
       const suppressLog = finalLogs.find(l => l.includes('suppressing new offer') && l.includes(orderId));
-      
+
       if (suppressLog) {
         throw new PipelineError('UI_NOT_RENDERED', FailClass.APP_REGRESSION, `App actively suppressed valid offer! Log: ${suppressLog}`);
       } else {

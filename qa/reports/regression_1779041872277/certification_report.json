@@ -1,0 +1,130 @@
+{
+  "runId": "regression_1779041872277",
+  "overall": "FAILED",
+  "passed": 2,
+  "failed": 7,
+  "results": [
+    {
+      "scenario": "dispatch_accept_success",
+      "passed": false,
+      "durationMs": 88378,
+      "failures": [
+        {
+          "label": "Pipeline stage failed: FCM_NOT_RECEIVED",
+          "evidence": {
+            "classification": "INFRASTRUCTURE_LATENCY",
+            "evidence": "FCM transport layer failed to deliver the notification to the handset within time limit.",
+            "stage": "FCM_NOT_RECEIVED"
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "dispatch_reject",
+      "passed": false,
+      "durationMs": 136279,
+      "failures": [
+        {
+          "label": "Scenario completed without error",
+          "evidence": {
+            "error": "14 UNAVAILABLE: No connection established. Last error: Error: connect EHOSTUNREACH 216.58.204.170:443. Resolution note: "
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "dispatch_timeout",
+      "passed": false,
+      "durationMs": 110490,
+      "failures": [
+        {
+          "label": "Fullscreen auto-dismissed after order expiry",
+          "evidence": {
+            "stillActive": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "client_cancel_before_accept",
+      "passed": false,
+      "durationMs": 170434,
+      "failures": [
+        {
+          "label": "Fullscreen dismissed after client cancellation",
+          "evidence": {
+            "stillActive": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "stale_cache_resurrection",
+      "passed": false,
+      "durationMs": 60638,
+      "failures": [
+        {
+          "label": "Server reconciliation did not occur after cache emission",
+          "evidence": {
+            "cacheLines": 1,
+            "serverLines": 0
+          }
+        }
+      ],
+      "slaMetrics": [
+        {
+          "label": "Cache emission → server reconciliation",
+          "actualMs": 5000,
+          "maxMs": 5000,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "scenario": "zombie_fullscreen_protection",
+      "passed": true,
+      "durationMs": 78077,
+      "failures": [],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "process_kill_during_offer",
+      "passed": false,
+      "durationMs": 85347,
+      "failures": [
+        {
+          "label": "Fullscreen appeared before process kill",
+          "evidence": {
+            "timeout": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "duplicate_accept_guard",
+      "passed": false,
+      "durationMs": 63178,
+      "failures": [
+        {
+          "label": "Fullscreen dismissed (not zombie after double-tap)",
+          "evidence": {
+            "zombie": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "startup_rehydration",
+      "passed": true,
+      "durationMs": 61303,
+      "failures": [],
+      "slaMetrics": []
+    }
+  ]
+}

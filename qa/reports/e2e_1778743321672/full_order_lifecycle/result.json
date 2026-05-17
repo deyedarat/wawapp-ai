@@ -1,0 +1,39 @@
+{
+  "scenario": "full_order_lifecycle",
+  "verdict": "PASS",
+  "passed": true,
+  "durationMs": 155541,
+  "runId": "e2e_1778743321672",
+  "startTs": 1778743321676,
+  "endTs": 1778743477217,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Both devices prepared and clean"
+    },
+    {
+      "status": "PASS",
+      "label": "Driver app launched and listener active"
+    },
+    {
+      "status": "PASS",
+      "label": "Order created via rider UI"
+    },
+    {
+      "status": "PASS",
+      "label": "Driver received offer in 343ms"
+    },
+    {
+      "status": "PASS",
+      "label": "Order accepted — status: accepted"
+    },
+    {
+      "status": "PASS",
+      "label": "Rider sees driver assigned"
+    }
+  ],
+  "failures": [],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\e2e_1778743321672\\timeline.ndjson"
+}

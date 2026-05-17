@@ -1,0 +1,45 @@
+{
+  "scenario": "full_order_lifecycle",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 138032,
+  "runId": "e2e_1778740750476",
+  "startTs": 1778740750485,
+  "endTs": 1778740888517,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Both devices prepared and clean"
+    },
+    {
+      "status": "PASS",
+      "label": "Driver app launched and listener active"
+    },
+    {
+      "status": "FAIL",
+      "label": "Rider UI order creation failed — used backend fallback",
+      "evidence": {
+        "classification": "UI_NAVIGATION_FAILURE"
+      }
+    },
+    {
+      "status": "PASS",
+      "label": "Driver received offer in 7563ms"
+    },
+    {
+      "status": "PASS",
+      "label": "Order accepted — status: accepted"
+    }
+  ],
+  "failures": [
+    {
+      "label": "Rider UI order creation failed — used backend fallback",
+      "evidence": {
+        "classification": "UI_NAVIGATION_FAILURE"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\e2e_1778740750476\\timeline.ndjson"
+}

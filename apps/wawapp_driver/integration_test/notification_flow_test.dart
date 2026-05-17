@@ -84,9 +84,15 @@ class MockOrdersService extends OrdersService {
   String? lastAcceptedOrderId;
 
   @override
-  Future<void> acceptOrder(String orderId) async {
+  Future<void> acceptOrder(String orderId, String offerId) async {
     lastAcceptedOrderId = orderId;
     // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 50));
+  }
+
+  @override
+  Future<void> acceptOfferV2({required String offerId, required String orderId}) async {
+    lastAcceptedOrderId = orderId;
     await Future.delayed(const Duration(milliseconds: 50));
   }
 }

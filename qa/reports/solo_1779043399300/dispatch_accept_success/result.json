@@ -1,0 +1,33 @@
+{
+  "scenario": "dispatch_accept_success",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 86345,
+  "runId": "solo_1779043399300",
+  "startTs": 1779043399304,
+  "endTs": 1779043485649,
+  "assertions": [
+    {
+      "status": "FAIL",
+      "label": "Pipeline stage failed: FCM_NOT_RECEIVED",
+      "evidence": {
+        "classification": "INFRASTRUCTURE_LATENCY",
+        "evidence": "FCM transport layer failed to deliver the notification to the handset within time limit.",
+        "stage": "FCM_NOT_RECEIVED"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Pipeline stage failed: FCM_NOT_RECEIVED",
+      "evidence": {
+        "classification": "INFRASTRUCTURE_LATENCY",
+        "evidence": "FCM transport layer failed to deliver the notification to the handset within time limit.",
+        "stage": "FCM_NOT_RECEIVED"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\solo_1779043399300\\timeline.ndjson"
+}

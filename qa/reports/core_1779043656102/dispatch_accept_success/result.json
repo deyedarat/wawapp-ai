@@ -1,0 +1,34 @@
+{
+  "scenario": "dispatch_accept_success",
+  "verdict": "PASS",
+  "passed": true,
+  "durationMs": 79404,
+  "runId": "core_1779043656102",
+  "startTs": 1779043656110,
+  "endTs": 1779043735514,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "End-to-End dispatch pipeline cleared all stages successfully"
+    },
+    {
+      "status": "PASS",
+      "label": "Firestore confirmed: Order transitioned correctly upon accept"
+    },
+    {
+      "status": "PASS",
+      "label": "Driver UI successfully transitioned off offer screen"
+    }
+  ],
+  "failures": [],
+  "slaMetrics": [
+    {
+      "label": "E2E Pipeline Latency",
+      "actualMs": 47729,
+      "maxMs": 15000,
+      "passed": false
+    }
+  ],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\core_1779043656102\\timeline.ndjson"
+}

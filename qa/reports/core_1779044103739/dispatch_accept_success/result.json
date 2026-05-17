@@ -1,0 +1,57 @@
+{
+  "scenario": "dispatch_accept_success",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 79755,
+  "runId": "core_1779044103739",
+  "startTs": 1779044103747,
+  "endTs": 1779044183502,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "End-to-End dispatch pipeline cleared all stages successfully"
+    },
+    {
+      "status": "FAIL",
+      "label": "Order did not transition to accepted",
+      "evidence": {
+        "classification": "ACCEPT_FAILED",
+        "actual": "matching"
+      }
+    },
+    {
+      "status": "FAIL",
+      "label": "Offer UI persisted after accept click",
+      "evidence": {
+        "classification": "UI_ZOMBIE",
+        "focused": "ResumedActivity: ActivityRecord{ae85743 u0 com.wawapp.driver/.FullScreenNotificationActivity t110}"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Order did not transition to accepted",
+      "evidence": {
+        "classification": "ACCEPT_FAILED",
+        "actual": "matching"
+      }
+    },
+    {
+      "label": "Offer UI persisted after accept click",
+      "evidence": {
+        "classification": "UI_ZOMBIE",
+        "focused": "ResumedActivity: ActivityRecord{ae85743 u0 com.wawapp.driver/.FullScreenNotificationActivity t110}"
+      }
+    }
+  ],
+  "slaMetrics": [
+    {
+      "label": "E2E Pipeline Latency",
+      "actualMs": 47249,
+      "maxMs": 15000,
+      "passed": false
+    }
+  ],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\core_1779044103739\\timeline.ndjson"
+}

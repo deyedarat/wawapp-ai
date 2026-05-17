@@ -1,0 +1,509 @@
+--------- beginning of main
+05-14 07:24:28.228  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:60.911018,dur:1001.46,max:18.20,min:14.16  
+05-14 07:24:28.557  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:28.559   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:28.686  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37734](this:0xb400007d52bf0898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=57.86 dur=1002.40 max=33.42 min=15.57
+--------- beginning of system
+05-14 07:24:28.705   568   568 D io_stats: !@ 179,0 r 31118845 374218214 w 3270120 29765000 d 527093 29319232 f 665954 681335 iot 6099712 0 th 0 0 0 pt 0 inp 0 0 117945.187
+05-14 07:24:28.706   568   568 D io_stats: !@ Read_top(KB): .gms.persistent(22806) 5824 .apps.messaging(15947) 320 rild:normal(1503) 244
+05-14 07:24:28.706   568   568 D io_stats: !@ Write_top(KB): f2fs_ckpt-254:5(3106) 1872 system_server:h(1797) 744 kworker/0:1:/(17399) 644
+05-14 07:24:28.740 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:28.753  1208  1208 I BufferQueueProducer: [com.wawapp.driver/com.wawapp.driver.MainActivity$_18834#37729](this:0xb400007d52bde898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=59.84 dur=1002.63 max=33.13 min=15.06
+05-14 07:24:28.808 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:28.822  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:28.836  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:28.840 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:28.909  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:28.909  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:28.910  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:44, [vAGPS_Auto_Req]:g_FirstDbtt:0,u2BitMap:0x8
+05-14 07:24:28.912  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 2742 bytes:
+05-14 07:24:28.912  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743469000, second = 1778743469000, msec = 0
+05-14 07:24:28.915  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743469000, second = 1778743469000, msec = 0
+05-14 07:24:28.915  1414 19368 D nmea_parser: nmea_reader_update_accuracy: update accuracy: h=3.900000, b= 179.899994, s=2.200000, v=17.200001
+05-14 07:24:28.915  1414 19368 D nmea_parser: nmea_reader_parse: receive PMTKAGC command, agc: 6
+05-14 07:24:28.915  1414 19368 D nmea_parser: nmea_reader_parse: et_mnl_report_mnld = 307492042, tick_in_dsp = 127005, et_mnl_receive_tick = 307491953, et_at_dsp =307491953270935
+05-14 07:24:28.916  1414 19368 D nmea_parser: nmea_reader_parse: report elapsedrealtime, timestampNs = 307491953270935
+05-14 07:24:28.916  1414 19368 D nmea_parser: nmea_reader_parse: fix_mode:3, fix_flag:0xff
+05-14 07:24:28.916  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:2742, [NMEA]$GNGGA,072429.00...
+05-14 07:24:28.916  1414  1470 W MNLD    : Xed[V_8M.*7-$;;3B3',0>lz'WcE?NJWmd[[SbsteTEUYdk[RDU]X]
+05-14 07:24:28.916  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 147 bytes:
+05-14 07:24:28.916  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:147, $PMTKRTK1,0,-522,-259200,0,0,0.000,0000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0,0,0,0,99,0,0,0,0,4,0*5D
+05-14 07:24:28.917  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, nfw don't have white list ret = 16
+05-14 07:24:28.917  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: MTK_GPS_MSG_FIX_READY, GET_RTC_OK, -0.041, 0.007, Age = 2, RTCDiff = 30, Time_interval = 10
+05-14 07:24:28.917  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: get debug data
+05-14 07:24:28.917  1414  1457 D MNLD    : mnld_gps_controller_mnl_nmea_timeout: g_mnld_ctx.gps_status.timer_nmea_monitor start_timer
+05-14 07:24:28.917  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 07:24:28.917  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [167]
+05-14 07:24:28.917  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  gnss_time_sync  utc_time=1778743469000
+05-14 07:24:28.918  1414 19368 D gps_controlller: update_gnss_debug_data: update_gnss_debug_data begin
+05-14 07:24:28.918  1414 19368 D mnl2hal : mnl2hal_report_debug_data: mnl2hal_report_debug_data
+05-14 07:24:29.005 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:29.060  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:29.062   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:29.087 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:29.232  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:60.738449,dur:1004.31,max:18.36,min:14.42  
+05-14 07:24:29.260  1502  1502 E vendor.samsung.hardware.gnss-service: gpsinf_inject_best_location: flags:51, speed:0.000000, bearing:0.000000, h_accuracy:90.959000, v_accuracy:12.420236, s_accuracy:0.000000, b_accuracy:0.000000, timestamp:627008711 
+05-14 07:24:29.260  1414  1470 E mnl2hal : hal2mnl_hdlr: HAL2MNL_GPS_INJECT_BEST_LOCATION h_accuracy:90.959000, timestamp:627008711 
+05-14 07:24:29.261  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, ret = 51
+05-14 07:24:29.261  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [153]
+05-14 07:24:29.261  1491  1504 D agps    : Xed[V_8;|(7C0x)+x\HWcp=;h[Zi=R7&%D`L;2$5=8=-2LG1C`L-5q.)&"),+.wL:5d*~&#'../-*sA$&`6)pA-@q-xx~~     yiSBDG5(b.yO5AFp-pN:<m.qS83ABAo-yiUI7"3=62b%x|lpyiSI5(7CH8$-CBj%x|lpy
+05-14 07:24:29.263  1797  2685 D SLocation: PositionManager - Passive handleLocationChanged [N, A : 90.96, T : 1778743469255, ET : 307492386, h : 19/29]
+05-14 07:24:29.264  1797  2685 W SLocation: GeopointGeofenceManger - refresh wifi to receive loc
+05-14 07:24:29.264  1797  2685 E SLocation: GeopointLastLocation - Last location is more well than current Location.
+05-14 07:24:29.264  1797  2685 D SLocation: GeopointGeofenceManger - Location reported : fix method = 4 / 90.959
+05-14 07:24:29.265  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 53 - dist : 4497.8257 padding : 0.0, accuracy : 90.959, provider : network, dir : 2
+05-14 07:24:29.266  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 54 - dist : 4494.876 padding : 0.0, accuracy : 90.959, provider : network, dir : 2
+05-14 07:24:29.267  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 55 - dist : 739.45795 padding : 0.0, accuracy : 90.959, provider : network, dir : 1
+05-14 07:24:29.269  1797  2685 D SLocation: AlarmManagerWrapper - next alarm time : 311092395 (WK)
+05-14 07:24:29.315 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:29.562  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:29.564   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:29.611 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:29.647 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:29.689  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37734](this:0xb400007d52bf0898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=54.86 dur=1002.55 max=33.06 min=15.52
+05-14 07:24:29.755  1208  1208 I BufferQueueProducer: [com.wawapp.driver/com.wawapp.driver.MainActivity$_18834#37729](this:0xb400007d52bde898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=59.87 dur=1002.20 max=34.25 min=15.44
+05-14 07:24:29.765  1797  2685 D SLocation: WifiBssidMonitor - requestRefresh
+05-14 07:24:29.824  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:29.841  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:29.843  1491  1504 D agps    : [agps][n][AGPS] [MNL] write  pmtk  [$PMTK680,1,FFFFF7C6*09
+05-14 07:24:29.843  1491  1504 D agps    :  ]
+05-14 07:24:29.913  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:29.913  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:29.913  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:44, [vAGPS_Auto_Req]:g_FirstDbtt:0,u2BitMap:0x8
+05-14 07:24:29.914  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 2758 bytes:
+05-14 07:24:29.914  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743470000, second = 1778743470000, msec = 0
+05-14 07:24:29.915  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743470000, second = 1778743470000, msec = 0
+05-14 07:24:29.916  1414 19368 D nmea_parser: nmea_reader_update_accuracy: update accuracy: h=4.200000, b= 179.899994, s=2.200000, v=18.900000
+05-14 07:24:29.916  1414 19368 D nmea_parser: nmea_reader_parse: receive PMTKAGC command, agc: 6
+05-14 07:24:29.916  1414 19368 D nmea_parser: nmea_reader_parse: et_mnl_report_mnld = 307493045, tick_in_dsp = 128005, et_mnl_receive_tick = 307492955, et_at_dsp =307492954721474
+05-14 07:24:29.917  1414 19368 D nmea_parser: nmea_reader_parse: report elapsedrealtime, timestampNs = 307492954721474
+05-14 07:24:29.917  1414 19368 D nmea_parser: nmea_reader_parse: fix_mode:3, fix_flag:0xff
+05-14 07:24:29.917  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:2758, [NMEA]$GNGGA,072430.00...
+05-14 07:24:29.917  1414  1470 W MNLD    : Xed[V_8M.*7-$;;3B3',0>lz'WcE?NJWmd[[SbsteTEUYdk[RDU]X]
+05-14 07:24:29.917  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, nfw don't have white list ret = 16
+05-14 07:24:29.917  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 147 bytes:
+05-14 07:24:29.917  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [167]
+05-14 07:24:29.917  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  gnss_time_sync  utc_time=1778743470000
+05-14 07:24:29.917  1491  1504 D agps    : Xed[V_8;|(7C0x)+x^Sm=;hQcPN=WI;=9E`C3bQ4I=5+2832#&5AF23=62$2LG1CUI=62b.(.//+''+'   
+05-14 07:24:29.918  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:147, $PMTKRTK1,0,-522,-259200,0,0,0.000,0000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0,0,0,0,99,0,0,0,0,4,0*5D
+05-14 07:24:29.918  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: MTK_GPS_MSG_FIX_READY, GET_RTC_OK, -0.033, 0.006, Age = 2, RTCDiff = 30, Time_interval = 10
+05-14 07:24:29.918  1414  1457 D MNLD    : mnld_gps_controller_mnl_nmea_timeout: g_mnld_ctx.gps_status.timer_nmea_monitor start_timer
+05-14 07:24:29.918  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 07:24:29.918  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: get debug data
+05-14 07:24:29.918  1414 19368 D gps_controlller: update_gnss_debug_data: update_gnss_debug_data begin
+05-14 07:24:29.918  1414 19368 D mnl2hal : mnl2hal_report_debug_data: mnl2hal_report_debug_data
+05-14 07:24:29.920  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:30.064  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:30.065   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:30.233  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:59.935436,dur:1001.08,max:34.09,min:13.93  
+05-14 07:24:30.566  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:30.567   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:30.649 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:30.691  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37734](this:0xb400007d52bf0898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=57.88 dur=1002.04 max=48.62 min=15.45
+05-14 07:24:30.697 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:30.757  1208  1208 I BufferQueueProducer: [com.wawapp.driver/com.wawapp.driver.MainActivity$_18834#37729](this:0xb400007d52bde898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=58.90 dur=1001.77 max=49.36 min=15.38
+05-14 07:24:30.822  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:30.840  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:30.862 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:30.911  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:30.911  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:30.912  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:44, [vAGPS_Auto_Req]:g_FirstDbtt:0,u2BitMap:0x8
+05-14 07:24:30.913  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 2750 bytes:
+05-14 07:24:30.913  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743471000, second = 1778743471000, msec = 0
+05-14 07:24:30.915  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743471000, second = 1778743471000, msec = 0
+05-14 07:24:30.915  1414 19368 D nmea_parser: nmea_reader_update_accuracy: update accuracy: h=4.000000, b= 179.899994, s=2.100000, v=18.900000
+05-14 07:24:30.915  1414 19368 D nmea_parser: nmea_reader_parse: receive PMTKAGC command, agc: 6
+05-14 07:24:30.915  1414 19368 D nmea_parser: nmea_reader_parse: et_mnl_report_mnld = 307494044, tick_in_dsp = 129005, et_mnl_receive_tick = 307493953, et_at_dsp =307493953269166
+05-14 07:24:30.916  1414 19368 D nmea_parser: nmea_reader_parse: report elapsedrealtime, timestampNs = 307493953269166
+05-14 07:24:30.916  1414 19368 D nmea_parser: nmea_reader_parse: fix_mode:3, fix_flag:0xff
+05-14 07:24:30.916  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:2750, [NMEA]$GNGGA,072431.00...
+05-14 07:24:30.916  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 147 bytes:
+05-14 07:24:30.917  1414  1470 W MNLD    : Xed[V_8M.*7-$;;3B3',0>lz'WcE?NJWmd[[SbsteTEUYdk[RDU]X]
+05-14 07:24:30.917  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:147, $PMTKRTK1,0,-522,-259200,0,0,0.000,0000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0,0,0,0,99,0,0,0,0,4,0*5D
+05-14 07:24:30.917  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, nfw don't have white list ret = 16
+05-14 07:24:30.917  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: MTK_GPS_MSG_FIX_READY, GET_RTC_OK, -0.028, 0.007, Age = 2, RTCDiff = 30, Time_interval = 10
+05-14 07:24:30.917  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: get debug data
+05-14 07:24:30.917  1414  1457 D MNLD    : mnld_gps_controller_mnl_nmea_timeout: g_mnld_ctx.gps_status.timer_nmea_monitor start_timer
+05-14 07:24:30.917  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 07:24:30.917  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [167]
+05-14 07:24:30.917  1414 19368 D gps_controlller: update_gnss_debug_data: update_gnss_debug_data begin
+05-14 07:24:30.917  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  gnss_time_sync  utc_time=1778743471000
+05-14 07:24:30.917  1414 19368 D mnl2hal : mnl2hal_report_debug_data: mnl2hal_report_debug_data
+05-14 07:24:30.918  1491  1504 D agps    : Xed[V_8;|(7C0x)+x^Sm=;hQcPN=WI;=9E`C3bQ4I=5+2832#&5AF23=62$2LG1CUI=62b.(.//+''+(!  
+05-14 07:24:30.930 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:31.039 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:31.067  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:31.068   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:31.252  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:59.880779,dur:1018.69,max:33.22,min:13.56  
+05-14 07:24:31.311 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:31.342 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:31.449  1495  1495 I thermal_repeater: socket -1
+05-14 07:24:31.568  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:31.569   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:31.693  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37734](this:0xb400007d52bf0898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=52.88 dur=1002.28 max=64.83 min=15.04
+05-14 07:24:31.733 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:31.759  1208  1208 I BufferQueueProducer: [com.wawapp.driver/com.wawapp.driver.MainActivity$_18834#37729](this:0xb400007d52bde898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=57.85 dur=1002.60 max=50.31 min=15.04
+05-14 07:24:31.822  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:31.829  1797  4954 D ActivityManager: Received SERVICE intent 0x7fb6235 Key{startService pkg=com.google.android.gms/com.google.android.gms.findmydevice intent=act=com.google.android.gms.findmydevice.spot.locationreporting.ASSIGN_LOCATION cat=[targeted_intent_op_prefix:.findmydevice.spot.locationreporting.LocationAssigningIntentOperation,SelfLocationUpdate] dat= typ=*/* pkg=com.google.android.gms cmp=com.google.android.gms/.chimera.PersistentIntentOperationService clip={text/vnd.android.intent hasLabel(0) {I:}} flags=0x2000000 u=0} requestCode=0 from uid 10173
+05-14 07:24:31.840  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:31.841  1491  1504 D agps    : [agps][n][AGPS] [MNL] write  pmtk  [$PMTK680,1,FFFFF7B4*0A
+05-14 07:24:31.841  1491  1504 D agps    :  ]
+05-14 07:24:31.846 29044 31015 I ConsentManagerApiServic: (REDACTED) ConsentManagerApiService onGetService success %s
+05-14 07:24:31.865  2402  2495 D Am      : Sardevice : isEnabled: false, deviceId: 2, slot: 0, extId: 0
+05-14 07:24:31.866  1797  4954 D MotionRecognitionService: [SAR] API_enableSARDevice, deviceId =2 : false
+05-14 07:24:31.866  1797  2207 D MotionRecognitionService: [SAR] API_enableSARDevice >> 
+05-14 07:24:31.866  1797  2207 I MotionRecognitionService: [SAR] id : 1 cmd :off  << 
+05-14 07:24:31.866  1797  2207 I MotionRecognitionService: [SAR] PROX disable, slot = 0, mEnabledSlot: 0
+05-14 07:24:31.866  1797  2207 I MotionRecognitionService: [SAR]  id : 1 cmd :off  >> 
+05-14 07:24:31.866  1797  2207 I MotionRecognitionService: [SAR] (-) mRequestedChannelList : 0
+05-14 07:24:31.866  1797  2207 D MotionRecognitionService: [SAR] API_enableSARDevice << action = off deviceID = 2 slot = 0 device_ext = 0
+05-14 07:24:31.912  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:31.912  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:31.912  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:31.912  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:44, [vAGPS_Auto_Req]:g_FirstDbtt:0,u2BitMap:0x8
+05-14 07:24:31.913  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 2751 bytes:
+05-14 07:24:31.913  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743472000, second = 1778743472000, msec = 0
+05-14 07:24:31.913  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  pmtk=[$PMTK738,0*22]
+05-14 07:24:31.913  1491  1504 D agps    : [agps][n][CP] [MD_1] write  pmtk [$PMTK738,0*22]
+05-14 07:24:31.913  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743472000, second = 1778743472000, msec = 0
+05-14 07:24:31.914  1414 19368 D nmea_parser: nmea_reader_update_accuracy: update accuracy: h=3.800000, b= 134.199997, s=1.800000, v=18.600000
+05-14 07:24:31.914  1414 19368 D nmea_parser: nmea_reader_parse: receive PMTKAGC command, agc: 6
+05-14 07:24:31.914  1414 19368 D nmea_parser: nmea_reader_parse: et_mnl_report_mnld = 307495044, tick_in_dsp = 130005, et_mnl_receive_tick = 307494953, et_at_dsp =307494952965166
+05-14 07:24:31.914  1414 19368 D nmea_parser: nmea_reader_parse: report elapsedrealtime, timestampNs = 307494952965166
+05-14 07:24:31.914  1414 19368 D nmea_parser: nmea_reader_parse: fix_mode:3, fix_flag:0xff
+05-14 07:24:31.914  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:2751, [NMEA]$GNGGA,072432.00...
+05-14 07:24:31.914  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 147 bytes:
+05-14 07:24:31.914  1414  1470 W MNLD    : Xed[V_8M.*7-$;;3B3',0>lz'WcE?NJWmd[[SbsteTEUYdk[RDU]X]
+05-14 07:24:31.914  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:147, $PMTKRTK1,0,-522,-259200,0,0,0.000,0000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0,0,0,0,99,0,0,0,0,4,0*5D
+05-14 07:24:31.914  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: MTK_GPS_MSG_FIX_READY, GET_RTC_OK, 0.045, 0.007, Age = 2, RTCDiff = 30, Time_interval = 10
+05-14 07:24:31.914  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: get debug data
+05-14 07:24:31.914  1414  1457 D MNLD    : mnld_gps_controller_mnl_nmea_timeout: g_mnld_ctx.gps_status.timer_nmea_monitor start_timer
+05-14 07:24:31.914  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, nfw don't have white list ret = 16
+05-14 07:24:31.914  1414 19368 D gps_controlller: update_gnss_debug_data: update_gnss_debug_data begin
+05-14 07:24:31.914  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 07:24:31.914  1414 19368 D mnl2hal : mnl2hal_report_debug_data: mnl2hal_report_debug_data
+05-14 07:24:31.914  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [167]
+05-14 07:24:31.914  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  gnss_time_sync  utc_time=1778743472000
+05-14 07:24:31.915  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:31.957  1797  2236 D GnssLocationProvider: reportLocation
+05-14 07:24:31.962  1797  2685 D SLocation: PositionManager - Passive handleLocationChanged [G, A : 3.80, T : 1778743472000, ET : 307494952, E : AS, h : 19/29]
+05-14 07:24:31.963  1797  2685 D SLocation: PositionManager - receive gps location
+05-14 07:24:31.966  1797  4954 D ActivityManager: Received SERVICE intent 0x7fb6235 Key{startService pkg=com.google.android.gms/com.google.android.gms.findmydevice intent=act=com.google.android.gms.findmydevice.spot.locationreporting.ASSIGN_LOCATION cat=[targeted_intent_op_prefix:.findmydevice.spot.locationreporting.LocationAssigningIntentOperation,SelfLocationUpdate] dat= typ=*/* pkg=com.google.android.gms cmp=com.google.android.gms/.chimera.PersistentIntentOperationService clip={text/vnd.android.intent hasLabel(0) {I:}} flags=0x2000000 u=0} requestCode=0 from uid 10173
+05-14 07:24:31.971  1797  2685 D SLocation: PositionManager - Passive handleLocationChanged [F, A : 3.80, T : 1778743471821, ET : 307494952, h : 19/29]
+05-14 07:24:31.971  1797  2685 D SLocation: PositionManager - receive fused location
+05-14 07:24:31.971  1797  2685 D SLocation: DuplicateLocationChecker_PositionManager - fused is duplicated last gps location
+05-14 07:24:31.974 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+05-14 07:24:31.975 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+05-14 07:24:31.977 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+05-14 07:24:31.977 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+05-14 07:24:32.070  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:32.072   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:32.255  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:58.802387,dur:1003.36,max:33.81,min:14.28  
+05-14 07:24:32.323 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:32.390 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:32.504 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:32.568 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:32.572  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:32.573   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:32.695  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37734](this:0xb400007d52bf0898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=53.89 dur=1002.05 max=33.56 min=15.76
+05-14 07:24:32.707   568   568 D io_stats: !@ Write_top(KB): kworker/u16:1:/(18804) 16
+05-14 07:24:32.762  1208  1208 I BufferQueueProducer: [com.wawapp.driver/com.wawapp.driver.MainActivity$_18834#37729](this:0xb400007d52bde898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=57.86 dur=1002.40 max=49.29 min=15.78
+05-14 07:24:32.784 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:32.823  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:32.838  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:32.850 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:32.911  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:32.911  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:32.911  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:44, [vAGPS_Auto_Req]:g_FirstDbtt:0,u2BitMap:0x8
+05-14 07:24:32.913  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 2759 bytes:
+05-14 07:24:32.913  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743473000, second = 1778743473000, msec = 0
+05-14 07:24:32.915  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743473000, second = 1778743473000, msec = 0
+05-14 07:24:32.915  1414 19368 D nmea_parser: nmea_reader_update_accuracy: update accuracy: h=3.600000, b= 179.899994, s=1.100000, v=18.600000
+05-14 07:24:32.916  1414 19368 D nmea_parser: nmea_reader_parse: receive PMTKAGC command, agc: 6
+05-14 07:24:32.916  1414 19368 D nmea_parser: nmea_reader_parse: et_mnl_report_mnld = 307496043, tick_in_dsp = 131005, et_mnl_receive_tick = 307495954, et_at_dsp =307495954149397
+05-14 07:24:32.917  1414 19368 D nmea_parser: nmea_reader_parse: report elapsedrealtime, timestampNs = 307495954149397
+05-14 07:24:32.917  1414 19368 D nmea_parser: nmea_reader_parse: fix_mode:3, fix_flag:0xff
+05-14 07:24:32.917  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:2759, [NMEA]$GNGGA,072433.00...
+05-14 07:24:32.917  1414  1470 W MNLD    : Xed[V_8M.*7-$;;3B3',0>lz'WcE?NJWmd[[SbsteTEUYdk[RDU]X]
+05-14 07:24:32.918  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 147 bytes:
+05-14 07:24:32.918  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, nfw don't have white list ret = 16
+05-14 07:24:32.918  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [167]
+05-14 07:24:32.918  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  gnss_time_sync  utc_time=1778743473000
+05-14 07:24:32.918  1491  1504 D agps    : Xed[V_8;|(7C0x)+x^Sm=;hQcPN=WI;=9E`C3bQ4I=5+2832#&5AF23=62$2LG1CUI=62b.(.//+''+*#  
+05-14 07:24:32.918  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:147, $PMTKRTK1,0,-522,-259200,0,0,0.000,0000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0,0,0,0,99,0,0,0,0,4,0*5D
+05-14 07:24:32.918  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: MTK_GPS_MSG_FIX_READY, GET_RTC_OK, -0.036, 0.006, Age = 2, RTCDiff = 30, Time_interval = 10
+05-14 07:24:32.918  1414  1457 D MNLD    : mnld_gps_controller_mnl_nmea_timeout: g_mnld_ctx.gps_status.timer_nmea_monitor start_timer
+05-14 07:24:32.918  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 07:24:32.918  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: get debug data
+05-14 07:24:32.919  1414 19368 D gps_controlller: update_gnss_debug_data: update_gnss_debug_data begin
+05-14 07:24:32.919  1414 19368 D mnl2hal : mnl2hal_report_debug_data: mnl2hal_report_debug_data
+05-14 07:24:32.954  1797  2236 D GnssLocationProvider_ex: SV Count : 14 / 15      (PRN, Constellation, Type, SNR, Used)
+05-14 07:24:32.954  1797  2236 D GnssLocationProvider_ex: (28, GPS, L1, 35.7, 1) (26, GPS, L1, 38.0, 1) (18, GPS, L1, 33.4, 1) (16, GPS, L1, 36.0, 1) (8, GPS, L1, 37.2, 1) (25, GPS, L1, 32.8, 1) 
+05-14 07:24:32.954  1797  2236 D GnssLocationProvider_ex: (4, GPS, L1, 38.6, 1) (29, GPS, L1, 31.3, 1) (21, GLONASS, L1, 31.2, 1) (22, GLONASS, L1, 31.5, 1) (10, GLONASS, L1, 27.4, 1) (11, GLONASS, L1, 33.5, 1) 
+05-14 07:24:32.954  1797  2236 D GnssLocationProvider_ex: (20, GLONASS, L1, 24.1, 1) (12, GLONASS, L1, 34.7, 0) (35, BEIDOU, L1, 31.9, 1) 
+05-14 07:24:32.995 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:33.004 19423 19423 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-14 07:24:33.006 19423 19423 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-14 07:24:33.006 19423 19423 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-14 07:24:33.030 22806 22806 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.presencemanager.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+05-14 07:24:33.035 22806 22806 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.presencemanager.service.INTERNAL_IDENTITY dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+05-14 07:24:33.074  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:33.076   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:33.107  2402  2495 D Am      : Sardevice : isEnabled: true, deviceId: 2, slot: 0, extId: 0
+05-14 07:24:33.109  1797  2641 D MotionRecognitionService: [SAR] API_enableSARDevice, deviceId =2 : true
+05-14 07:24:33.110  1797  2207 D MotionRecognitionService: [SAR] API_enableSARDevice >> 
+05-14 07:24:33.110  1797  2207 I MotionRecognitionService: [SAR] (+) mRequestedChannelList : 2
+05-14 07:24:33.110  1797  2207 I MotionRecognitionService: [SAR] id : 1 cmd :on  << 
+05-14 07:24:33.110  1797  2207 I MotionRecognitionService: [SAR] PROX enable, slot = 0, mEnabledSlot: 0
+05-14 07:24:33.110  1797  2207 I MotionRecognitionService: [SAR]  id : 1 cmd :on  >> 
+05-14 07:24:33.110  1797  2207 D MotionRecognitionService: [SAR] API_enableSARDevice << action = on deviceID = 2 slot = 0 device_ext = 0
+05-14 07:24:33.238  1208  1208 I BufferQueueProducer: [StatusBar$_2444#98](this:0xb400007d52ae7898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=0.20 dur=5027.74 max=5027.74 min=5027.74
+05-14 07:24:33.257  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:60.902786,dur:1001.60,max:17.77,min:14.57  
+05-14 07:24:33.283 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:33.323  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:33.338  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:33.340  1491  1504 D agps    : [agps][n][AGPS] [MNL] write  pmtk  [$PMTK680,1,FFFFF7B0*0E
+05-14 07:24:33.340  1491  1504 D agps    :  ]
+05-14 07:24:33.343 22806 22810 W .gms.persistent: Missing inline cache for hkst ezec.a(java.io.InputStream)
+05-14 07:24:33.343 22806 22810 W .gms.persistent: Missing inline cache for hkst ezec.a(java.io.InputStream)
+05-14 07:24:33.343 22806 22810 W .gms.persistent: Missing inline cache for hkst ezec.a(java.io.InputStream)
+05-14 07:24:33.343 22806 22810 W .gms.persistent: Missing inline cache for hkst ezec.a(java.io.InputStream)
+05-14 07:24:33.409  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:33.409  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:33.410  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:44, [vAGPS_Auto_Req]:g_FirstDbtt:0,u2BitMap:0x8
+05-14 07:24:33.411  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 2755 bytes:
+05-14 07:24:33.411  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743473500, second = 1778743473000, msec = 500
+05-14 07:24:33.412  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743473500, second = 1778743473000, msec = 500
+05-14 07:24:33.412  1414 19368 D nmea_parser: nmea_reader_update_accuracy: update accuracy: h=3.400000, b= 179.899994, s=1.000000, v=18.500000
+05-14 07:24:33.412  1414 19368 D nmea_parser: nmea_reader_parse: receive PMTKAGC command, agc: 6
+05-14 07:24:33.412  1414 19368 D nmea_parser: nmea_reader_parse: et_mnl_report_mnld = 307496541, tick_in_dsp = 131505, et_mnl_receive_tick = 307496454, et_at_dsp =307496454630089
+05-14 07:24:33.413  1414 19368 D nmea_parser: nmea_reader_parse: report elapsedrealtime, timestampNs = 307496454630089
+05-14 07:24:33.413  1414 19368 D nmea_parser: nmea_reader_parse: fix_mode:3, fix_flag:0xff
+05-14 07:24:33.413  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:2755, [NMEA]$GNGGA,072433.50...
+05-14 07:24:33.413  1414  1470 W MNLD    : Xed[V_8M.*7-$;;3B3',0>lz'WcE?NJWmd[[SbsteTEUYdk[RDU]X]
+05-14 07:24:33.413  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 147 bytes:
+05-14 07:24:33.414  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, nfw don't have white list ret = 16
+05-14 07:24:33.414  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:147, $PMTKRTK1,0,-522,-259200,0,0,0.000,0000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0,0,0,0,99,0,0,0,0,4,0*5D
+05-14 07:24:33.414  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [167]
+05-14 07:24:33.414  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  gnss_time_sync  utc_time=1778743473500
+05-14 07:24:33.414  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: MTK_GPS_MSG_FIX_READY, GET_RTC_OK, 0.178, 0.006, Age = 2, RTCDiff = 30, Time_interval = 10
+05-14 07:24:33.414  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: get debug data
+05-14 07:24:33.414  1414 19368 D gps_controlller: update_gnss_debug_data: update_gnss_debug_data begin
+05-14 07:24:33.414  1414 19368 D mnl2hal : mnl2hal_report_debug_data: mnl2hal_report_debug_data
+05-14 07:24:33.414  1414  1457 D MNLD    : mnld_gps_controller_mnl_nmea_timeout: g_mnld_ctx.gps_status.timer_nmea_monitor start_timer
+05-14 07:24:33.414  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 07:24:33.415  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:33.488 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:33.576 22806 22811 I .gms.persistent: Background concurrent mark compact GC freed 20MB AllocSpace bytes, 26(612KB) LOS objects, 41% free, 33MB/57MB, paused 917us,4.204ms total 286.908ms
+05-14 07:24:33.576  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:33.577   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:33.586 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~fGUBbFxWg4FsLZ6vwbA_Ew==/com.google.android.apps.youtube.kids-B-LeZhhiuJhL4YhExROq3A==/base.apk' with 1 weak references
+05-14 07:24:33.587 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~Y77pY3qZo0R20XNkD1yF5w==/com.google.android.projection.gearhead-2Kj_VVXFjzf26kZhhS70TA==/base.apk' with 1 weak references
+05-14 07:24:33.587 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~Y77pY3qZo0R20XNkD1yF5w==/com.google.android.projection.gearhead-2Kj_VVXFjzf26kZhhS70TA==/split_config.ar.apk' with 1 weak references
+05-14 07:24:33.587 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~Y77pY3qZo0R20XNkD1yF5w==/com.google.android.projection.gearhead-2Kj_VVXFjzf26kZhhS70TA==/split_config.arm64_v8a.apk' with 1 weak references
+05-14 07:24:33.587 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~Y77pY3qZo0R20XNkD1yF5w==/com.google.android.projection.gearhead-2Kj_VVXFjzf26kZhhS70TA==/split_config.en.apk' with 1 weak references
+05-14 07:24:33.588 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~Y77pY3qZo0R20XNkD1yF5w==/com.google.android.projection.gearhead-2Kj_VVXFjzf26kZhhS70TA==/split_config.xxhdpi.apk' with 1 weak references
+05-14 07:24:33.588 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /product/priv-app/Turbo/Turbo.apk' with 1 weak references
+05-14 07:24:33.588 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~w_67nghelJm3Bnx72KERsA==/com.google.android.safetycore-X9i9AcDzQoMMNqDg4UhekA==/base.apk' with 1 weak references
+05-14 07:24:33.589 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~w_67nghelJm3Bnx72KERsA==/com.google.android.safetycore-X9i9AcDzQoMMNqDg4UhekA==/split_config.ar.apk' with 1 weak references
+05-14 07:24:33.589 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~w_67nghelJm3Bnx72KERsA==/com.google.android.safetycore-X9i9AcDzQoMMNqDg4UhekA==/split_config.arm64_v8a.apk' with 1 weak references
+05-14 07:24:33.589 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~w_67nghelJm3Bnx72KERsA==/com.google.android.safetycore-X9i9AcDzQoMMNqDg4UhekA==/split_config.en.apk' with 1 weak references
+05-14 07:24:33.589 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~w_67nghelJm3Bnx72KERsA==/com.google.android.safetycore-X9i9AcDzQoMMNqDg4UhekA==/split_config.fr.apk' with 1 weak references
+05-14 07:24:33.589 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~w_67nghelJm3Bnx72KERsA==/com.google.android.safetycore-X9i9AcDzQoMMNqDg4UhekA==/split_config.xxhdpi.apk' with 1 weak references
+05-14 07:24:33.589 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~LaOPFv7jeqNH3mcYDMuIHQ==/com.google.android.apps.carrier.carrierwifi-xX6p0lvP7NEt94sTAuoVpw==/base.apk' with 1 weak references
+05-14 07:24:33.589 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~S1Wgz-Ntdib4Lqs72xuCXA==/com.google.android.apps.restore-YbO51PTcd4xT_E-95jtQuA==/base.apk' with 1 weak references
+05-14 07:24:33.590 22806 22813 W .gms.persistent: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~S1Wgz-Ntdib4Lqs72xuCXA==/com.google.android.apps.restore-YbO51PTcd4xT_E-95jtQuA==/split_config.xxhdpi.apk' with 1 weak references
+05-14 07:24:33.698  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37734](this:0xb400007d52bf0898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=55.85 dur=1002.68 max=49.18 min=15.37
+05-14 07:24:33.737  1797  2282 I ChimeraAggressivePolicyHandler: executePolicy() - triggerSource: TRIGGER_SOURCE_LMKD
+05-14 07:24:33.739  1797  2282 I ChimeraAggressivePolicyHandler: memAvailable: 814156, memFreeTarget: 870400, releaseTarget:56244, protectedLruCount: 8
+05-14 07:24:33.746  1797  2282 I NSLocationMonitor: getGPSUsingApps() called
+05-14 07:24:33.746  1797  2282 W NSLocationMonitor: NSMonitorService is not connected, return null
+05-14 07:24:33.750  1797  2282 D MARs:OngoingNotiPackageFilter: filter(NotiListener) : com.samsung.android.game.gamehome(0)
+05-14 07:24:33.751  1797  2282 I ChimeraAggressivePolicyHandler: Start doKill, protected policy: NORMAL
+05-14 07:24:33.759  1797  2282 I ChimeraAggressivePolicyHandler: Killed on trigger0 : com.google.android.apps.turbo[17190], freed: 75336, 10170[17190]:G2(0x20000) score=59.4(31 10/5 75336), pids: 17190 / stats: 19 / adjs: 955 
+05-14 07:24:33.762  1797  2282 I ActivityManager: Killing 17190:com.google.android.apps.turbo/u0a170 (adj 955): Chimera #0
+05-14 07:24:33.763  1208  1208 I BufferQueueProducer: [com.wawapp.driver/com.wawapp.driver.MainActivity$_18834#37729](this:0xb400007d52bde898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=59.91 dur=1001.55 max=32.18 min=15.33
+05-14 07:24:33.768  1797  1822 D DisplayManagerService: Drop pending events for gone uid 10170
+05-14 07:24:33.774  1797  2282 D ActivityManager: proc ProcessRecord{53e6a61 17190:com.google.android.apps.turbo/u0a170} already removed. so we skip next process.
+05-14 07:24:33.776  1797  2282 I ChimeraAggressivePolicyHandler: kill complete: killed 1 apps, freed 75336 KB
+05-14 07:24:33.777  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: LR, pids: 18834 7333 15368 8732 20607 
+05-14 07:24:33.777  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: CA, pids: 13178 
+05-14 07:24:33.777  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: PE, pids: 2754 1797 7434 18570 15947 2444 2767 2575 4624 2772 22806 12888 3037 12766 2783 2402 27746 4710 4527 4593 2801 29044 28665 28666 
+05-14 07:24:33.777  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: CA, pids: 19377 13478 10139 15436 11085 
+05-14 07:24:33.777  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: IN, pids: 17096 
+05-14 07:24:33.778  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: VI, pids: 13782 
+05-14 07:24:33.778  1797  2282 I ChimeraAggressivePolicyHandler: Processing time(ms) 41
+05-14 07:24:33.810  1797  1835 I libprocessgroup: Removed cgroup /sys/fs/cgroup/uid_10170/pid_17190
+05-14 07:24:33.810  1797  1812 V ActivityManager: Got obituary of 17190:com.google.android.apps.turbo
+05-14 07:24:33.810  1124  1124 I Zygote  : Process 17190 exited due to signal 9 (Killed)
+05-14 07:24:33.822  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:33.835  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:33.906  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:33.907  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:33.907  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:44, [vAGPS_Auto_Req]:g_FirstDbtt:0,u2BitMap:0x8
+05-14 07:24:33.908  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 2752 bytes:
+05-14 07:24:33.908  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743474000, second = 1778743474000, msec = 0
+05-14 07:24:33.910  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743474000, second = 1778743474000, msec = 0
+05-14 07:24:33.911  1414 19368 D nmea_parser: nmea_reader_update_accuracy: update accuracy: h=3.100000, b= 179.899994, s=0.900000, v=14.700000
+05-14 07:24:33.911  1414 19368 D nmea_parser: nmea_reader_parse: receive PMTKAGC command, agc: 6
+05-14 07:24:33.911  1414 19368 D nmea_parser: nmea_reader_parse: et_mnl_report_mnld = 307497039, tick_in_dsp = 132005, et_mnl_receive_tick = 307496953, et_at_dsp =307496953044551
+05-14 07:24:33.911  1414 19368 D nmea_parser: nmea_reader_parse: report elapsedrealtime, timestampNs = 307496953044551
+05-14 07:24:33.911  1414 19368 D nmea_parser: nmea_reader_parse: fix_mode:3, fix_flag:0xff
+05-14 07:24:33.912  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:2752, [NMEA]$GNGGA,072434.00...
+05-14 07:24:33.912  1414  1470 W MNLD    : Xed[V_8M.*7-$;;3B3',0>lz'WcE?NJWmd[[SbsteTEUYdk[RDU]X]
+05-14 07:24:33.912  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 147 bytes:
+05-14 07:24:33.912  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, nfw don't have white list ret = 16
+05-14 07:24:33.912  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:147, $PMTKRTK1,0,-522,-259200,0,0,0.000,0000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0,0,0,0,99,0,0,0,0,4,0*5D
+05-14 07:24:33.912  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: MTK_GPS_MSG_FIX_READY, GET_RTC_OK, -0.042, 0.007, Age = 2, RTCDiff = 30, Time_interval = 10
+05-14 07:24:33.912  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: get debug data
+05-14 07:24:33.912  1414 19368 D gps_controlller: update_gnss_debug_data: update_gnss_debug_data begin
+05-14 07:24:33.912  1414 19368 D mnl2hal : mnl2hal_report_debug_data: mnl2hal_report_debug_data
+05-14 07:24:33.912  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [167]
+05-14 07:24:33.912  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  gnss_time_sync  utc_time=1778743474000
+05-14 07:24:33.912  1414  1457 D MNLD    : mnld_gps_controller_mnl_nmea_timeout: g_mnld_ctx.gps_status.timer_nmea_monitor start_timer
+05-14 07:24:33.912  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 07:24:34.077  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:34.078   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:34.229  2402  2402 D TelephonyManager: requestModemActivityInfo: Sending result to app: ModemActivityInfo{ mTimestamp=307497359 mSleepTimeMs=162268003 mIdleTimeMs=64740576 mActivityStatsTechSpecificInfo=[{mRat=UNKNOWN,mFrequencyRange=UNKNOWN,mTxTimeMs[]=[26910, 77370, 1590572, 2479684, 1722511],mRxTimeMs=65654248}]}
+05-14 07:24:34.259  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:59.867165,dur:1002.22,max:31.81,min:14.56  
+05-14 07:24:34.299 19425 19425 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+05-14 07:24:34.300  1797  5001 I EDMNativeHelperService: isScreenCaptureEnabled
+05-14 07:24:34.301  1797  5001 D RestrictionPolicy: isScreenCaptureEnabled : ret=true userId=0
+05-14 07:24:34.301 19425 19425 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+05-14 07:24:34.320  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:34.335  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:34.358 19425 19427 I GrallocExtra: gralloc_extra_query:is_SW3D 0
+05-14 07:24:34.360 19425 19425 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm
+05-14 07:24:34.360 19425 19425 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm-uncached
+05-14 07:24:34.360 19425 19425 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_svp_region
+05-14 07:24:34.360 19425 19425 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_region
+05-14 07:24:34.360 19425 19425 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_wfd_region
+05-14 07:24:34.407  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:34.407  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:34.407  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:44, [vAGPS_Auto_Req]:g_FirstDbtt:0,u2BitMap:0x8
+05-14 07:24:34.408  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 2756 bytes:
+05-14 07:24:34.409  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743474500, second = 1778743474000, msec = 500
+05-14 07:24:34.410  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743474500, second = 1778743474000, msec = 500
+05-14 07:24:34.410  1414 19368 D nmea_parser: nmea_reader_update_accuracy: update accuracy: h=2.800000, b= 179.899994, s=0.800000, v=14.000000
+05-14 07:24:34.413  1414 19368 D nmea_parser: nmea_reader_parse: receive PMTKAGC command, agc: 6
+05-14 07:24:34.413  1414 19368 D nmea_parser: nmea_reader_parse: et_mnl_report_mnld = 307497539, tick_in_dsp = 132505, et_mnl_receive_tick = 307497451, et_at_dsp =307497451260474
+05-14 07:24:34.414  1414 19368 D nmea_parser: nmea_reader_parse: report elapsedrealtime, timestampNs = 307497451260474
+05-14 07:24:34.414  1414 19368 D nmea_parser: nmea_reader_parse: fix_mode:3, fix_flag:0xff
+05-14 07:24:34.414  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:2756, [NMEA]$GNGGA,072434.50...
+05-14 07:24:34.414  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 147 bytes:
+05-14 07:24:34.414  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:147, $PMTKRTK1,0,-522,-259200,0,0,0.000,0000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0,0,0,0,99,0,0,0,0,4,0*5D
+05-14 07:24:34.414  1414  1470 W MNLD    : Xed[V_8M.*7-$;;3B3',0>lz'WcE?NJWmd[[SbsteTEUYdk[RDU]X]
+05-14 07:24:34.414  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, nfw don't have white list ret = 16
+05-14 07:24:34.414  1414  1457 D MNLD    : mnld_gps_controller_mnl_nmea_timeout: g_mnld_ctx.gps_status.timer_nmea_monitor start_timer
+05-14 07:24:34.414  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 07:24:34.415  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: MTK_GPS_MSG_FIX_READY, GET_RTC_OK, 0.044, 0.008, Age = 2, RTCDiff = 30, Time_interval = 10
+05-14 07:24:34.415  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: get debug data
+05-14 07:24:34.415  1414 19368 D gps_controlller: update_gnss_debug_data: update_gnss_debug_data begin
+05-14 07:24:34.415  1414 19368 D mnl2hal : mnl2hal_report_debug_data: mnl2hal_report_debug_data
+05-14 07:24:34.415  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [167]
+05-14 07:24:34.415  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  gnss_time_sync  utc_time=1778743474500
+05-14 07:24:34.415  1491  1504 D agps    : Xed[V_8;|(7C0x)+x^Sm=;hQcPN=WI;=9E`C3bQ4I=5+2832#&5AF23=62$2LG1CUI=62b.(.//+''++)% 
+05-14 07:24:34.578  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:34.579   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:34.612  1797  1949 D SensorService: [SO] 0.127 0.082 9.799
+05-14 07:24:34.640 22806 22811 I .gms.persistent: Background concurrent mark compact GC freed 18MB AllocSpace bytes, 59(3360KB) LOS objects, 40% free, 34MB/58MB, paused 2.719ms,4.201ms total 280.708ms
+05-14 07:24:34.672 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:34.699  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37734](this:0xb400007d52bf0898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=57.91 dur=1001.54 max=49.00 min=15.94
+05-14 07:24:34.708   568   568 D io_stats: !@ 179,0 r 31119400 374222610 w 3270125 29765024 d 527093 29319232 f 665954 681335 iot 6099864 0 th 0 0 0 pt 0 inp 0 0 117951.191
+05-14 07:24:34.766  1208  1208 I BufferQueueProducer: [com.wawapp.driver/com.wawapp.driver.MainActivity$_18834#37729](this:0xb400007d52bde898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=58.85 dur=1002.56 max=49.16 min=15.80
+05-14 07:24:34.810  1797  5001 I ActivityManager: Broadcasting: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x400000 }
+05-14 07:24:34.814  1797  5001 I ActivityManager: Enqueued broadcast Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x400000 }: 0
+05-14 07:24:34.818  4593  4593 I MediaServiceV2: Creating work for intent Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-14 07:24:34.819  4593  4593 I MediaServiceV2: Work enqueued for intent: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-14 07:24:34.821  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:34.821  1797  1821 I ActivityManager: Broadcast completed: result=0
+05-14 07:24:34.836  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:34.837  1491  1504 D agps    : [agps][n][AGPS] [MNL] write  pmtk  [$PMTK680,1,FFFFF7A2*0F
+05-14 07:24:34.837  1491  1504 D agps    :  ]
+05-14 07:24:34.842 19425 19425 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x75d8781848). Use sp<> to manage this object.
+05-14 07:24:34.852 19425 19425 D RefBase :   #00 pc 0000000000096c10  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+144) (BuildId: b7d4cc6e214395264fee975672a6cae6)
+05-14 07:24:34.852 19425 19425 D RefBase :   #01 pc 000000000009b5a8  /apex/com.android.runtime/lib64/bionic/libc.so (exit+24) (BuildId: b7d4cc6e214395264fee975672a6cae6)
+05-14 07:24:34.852 19425 19425 D RefBase :   #02 pc 000000000008f7c8  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+120) (BuildId: b7d4cc6e214395264fee975672a6cae6)
+05-14 07:24:34.861  4593  4841 D WM-SystemJobScheduler: Scheduling work ID 8d078959-6621-4ee8-b055-874860f96ea7Job ID 45457
+05-14 07:24:34.876  4593  4841 D WM-GreedyScheduler: Ignoring {WorkSpec: 8a511eed-0c85-411a-af58-537acb63e491}. Requires device idle.
+05-14 07:24:34.876  4593  4841 D WM-GreedyScheduler: Ignoring {WorkSpec: 12f0e158-0f7c-43c9-85a8-2e602e569307}. Requires device idle.
+05-14 07:24:34.876  4593  4841 D WM-GreedyScheduler: Ignoring {WorkSpec: 0809e4b5-3021-41e2-86ce-e7e4c225bff2}. Requires device idle.
+05-14 07:24:34.876  4593  4841 D WM-GreedyScheduler: Starting work for 8d078959-6621-4ee8-b055-874860f96ea7
+05-14 07:24:34.877  4593  4593 D WM-SystemJobService: onStartJob for WorkGenerationalId(workSpecId=8d078959-6621-4ee8-b055-874860f96ea7, generation=0)
+05-14 07:24:34.879  4593  4841 D WM-Processor: Processor: processing WorkGenerationalId(workSpecId=8d078959-6621-4ee8-b055-874860f96ea7, generation=0)
+05-14 07:24:34.880  4593  4841 D WM-Processor: Work WorkGenerationalId(workSpecId=8d078959-6621-4ee8-b055-874860f96ea7, generation=0) is already enqueued for processing
+05-14 07:24:34.889  4593  4593 D WM-WorkerWrapper: Starting work for com.android.providers.media.MediaServiceV2
+05-14 07:24:34.890  4593 19447 I MediaServiceV2: Work initiated for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-14 07:24:34.907  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:34.907  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:34.908  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:44, [vAGPS_Auto_Req]:g_FirstDbtt:0,u2BitMap:0x8
+05-14 07:24:34.909  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 2759 bytes:
+05-14 07:24:34.909  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743475000, second = 1778743475000, msec = 0
+05-14 07:24:34.910  1414 19368 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778743475000, second = 1778743475000, msec = 0
+05-14 07:24:34.910  1414 19368 D nmea_parser: nmea_reader_update_accuracy: update accuracy: h=2.700000, b= 179.899994, s=0.800000, v=13.700000
+05-14 07:24:34.910  1414 19368 D nmea_parser: nmea_reader_parse: receive PMTKAGC command, agc: 6
+05-14 07:24:34.910  1414 19368 D nmea_parser: nmea_reader_parse: et_mnl_report_mnld = 307498039, tick_in_dsp = 133005, et_mnl_receive_tick = 307497952, et_at_dsp =307497951413705
+05-14 07:24:34.911  1414 19368 D nmea_parser: nmea_reader_parse: report elapsedrealtime, timestampNs = 307497951413705
+05-14 07:24:34.911  1414 19368 D nmea_parser: nmea_reader_parse: fix_mode:3, fix_flag:0xff
+05-14 07:24:34.911  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:2759, [NMEA]$GNGGA,072435.00...
+05-14 07:24:34.911  1414  1470 W MNLD    : Xed[V_8M.*7-$;;3B3',0>lz'WcE?NJWmd[[SbsteTEUYdk[RDU]X]
+05-14 07:24:34.911  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 147 bytes:
+05-14 07:24:34.911  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, nfw don't have white list ret = 16
+05-14 07:24:34.911  1414 19368 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:147, $PMTKRTK1,0,-522,-259200,0,0,0.000,0000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0,0,0,0,99,0,0,0,0,4,0*5D
+05-14 07:24:34.911  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [167]
+05-14 07:24:34.911  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  gnss_time_sync  utc_time=1778743475000
+05-14 07:24:34.911  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: MTK_GPS_MSG_FIX_READY, GET_RTC_OK, -0.072, 0.009, Age = 2, RTCDiff = 30, Time_interval = 10
+05-14 07:24:34.911  1414 19368 D gps_controlller: mtk_gps_sys_gps_mnl_callback: get debug data
+05-14 07:24:34.912  1414 19368 D gps_controlller: update_gnss_debug_data: update_gnss_debug_data begin
+05-14 07:24:34.912  1414 19368 D mnl2hal : mnl2hal_report_debug_data: mnl2hal_report_debug_data
+05-14 07:24:34.913  1414  1457 D MNLD    : mnld_gps_controller_mnl_nmea_timeout: g_mnld_ctx.gps_status.timer_nmea_monitor start_timer
+05-14 07:24:34.913  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 07:24:34.914  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:34.954  1797  2236 D GnssLocationProvider: reportLocation
+05-14 07:24:34.959  4593 19447 W SQLiteLog: (28) walCheckpoint: eMode(0), mxFrame(258), /data/data/com.google.android.providers.media.module/databases/external.db-wal
+05-14 07:24:34.964  4593 19447 I MediaServiceV2: Work ended for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-14 07:24:34.967  1797  2685 D SLocation: PositionManager - Passive handleLocationChanged [G, A : 2.70, T : 1778743475000, ET : 307497951, E : AS, h : 19/29]
+05-14 07:24:34.967  1797  2685 D SLocation: PositionManager - receive gps location
+05-14 07:24:34.972  4593  4843 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=8d078959-6621-4ee8-b055-874860f96ea7, tags={ com.android.providers.media.MediaServiceV2 } ]
+05-14 07:24:34.977  1797  2685 D SLocation: PositionManager - Passive handleLocationChanged [F, A : 3.25, T : 1778743474820, ET : 307497951, h : 19/29]
+05-14 07:24:34.978  1797  2685 D SLocation: PositionManager - receive fused location
+05-14 07:24:34.978 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+05-14 07:24:34.982 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+05-14 07:24:34.982  4593  4593 D WM-Processor: Processor 8d078959-6621-4ee8-b055-874860f96ea7 executed; reschedule = false
+05-14 07:24:34.982  4593  4593 D WM-SystemJobService: 8d078959-6621-4ee8-b055-874860f96ea7 executed on JobScheduler
+05-14 07:24:34.983 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+05-14 07:24:34.983 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+05-14 07:24:34.984  1797  2685 W SLocation: GeopointGeofenceManger - refresh wifi to receive loc
+05-14 07:24:34.984  1797  2685 D SLocation: GeopointGeofenceManger - Location reported : fix method = 14 / 3.25
+05-14 07:24:34.986  4593  4843 D WM-GreedyScheduler: Cancelling work ID 8d078959-6621-4ee8-b055-874860f96ea7
+05-14 07:24:34.988  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 53 - dist : 4460.207 padding : 0.0, accuracy : 3.25, provider : fused, dir : 2
+05-14 07:24:34.988  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 54 - dist : 4457.2524 padding : 0.0, accuracy : 3.25, provider : fused, dir : 2
+05-14 07:24:34.988  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 55 - dist : 757.323 padding : 0.0, accuracy : 3.25, provider : fused, dir : 1
+05-14 07:24:34.990  1797  2685 D SLocation: AlarmManagerWrapper - next alarm time : 311098115 (WK)
+05-14 07:24:34.992  4593  4843 D WM-GreedyScheduler: Ignoring {WorkSpec: 8a511eed-0c85-411a-af58-537acb63e491}. Requires device idle.
+05-14 07:24:34.992  4593  4843 D WM-GreedyScheduler: Ignoring {WorkSpec: 12f0e158-0f7c-43c9-85a8-2e602e569307}. Requires device idle.
+05-14 07:24:34.992  4593  4843 D WM-GreedyScheduler: Ignoring {WorkSpec: 0809e4b5-3021-41e2-86ce-e7e4c225bff2}. Requires device idle.
+05-14 07:24:34.998 22806 22810 W .gms.persistent: Missing inline cache for void abxz.onLocationChanged(android.location.Location)
+05-14 07:24:34.998 22806 22810 W .gms.persistent: Missing inline cache for void abxz.onLocationChanged(android.location.Location)
+05-14 07:24:34.998 22806 22810 W .gms.persistent: Missing inline cache for void abxz.onLocationChanged(android.location.Location)
+05-14 07:24:35.002 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:35.016 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:35.053 22806 19183 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+05-14 07:24:35.064 22806 19185 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+05-14 07:24:35.079  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:35.080   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:35.147 18834 18834 W ImageReader_JNI: Unable to acquire a buffer item, very likely client tried to acquire more than maxImages buffers
+05-14 07:24:35.166 22806 19183 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+05-14 07:24:35.242  1208  1208 I BufferQueueProducer: [StatusBar$_2444#98](this:0xb400007d52ae7898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=0.50 dur=2004.48 max=2004.48 min=2004.48
+05-14 07:24:35.260  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:59.966640,dur:1000.56,max:33.29,min:14.53  
+05-14 07:24:35.485  1797  2685 D SLocation: WifiBssidMonitor - requestRefresh
+05-14 07:24:35.528  1123 19454 E Netd    : To use pid in case SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA is false, to remove build error (unused variable)
+05-14 07:24:35.559  1797  2370 D NetdEventListenerService: DNS Requested by 182, 10173(com.google.android.gms,...), SUCCESS, 31ms
+05-14 07:24:35.580  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 07:24:35.581   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 07:24:35.702  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37734](this:0xb400007d52bf0898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=57.87 dur=1002.26 max=33.33 min=15.98
+05-14 07:24:35.767  1208  1208 I BufferQueueProducer: [com.wawapp.driver/com.wawapp.driver.MainActivity$_18834#37729](this:0xb400007d52bde898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=59.89 dur=1001.80 max=33.06 min=15.98
+05-14 07:24:35.821  1414 19368 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 07:24:35.837  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 07:24:35.838  1491  1504 D agps    : [agps][n][AGPS] [MNL] write  pmtk  [$PMTK680,1,FFFFF788*7C
+05-14 07:24:35.838  1491  1504 D agps    :  ]

@@ -1,0 +1,71 @@
+{
+  "runId": "core_1779043656102",
+  "overall": "FAILED",
+  "passed": 1,
+  "failed": 3,
+  "results": [
+    {
+      "scenario": "dispatch_accept_success",
+      "passed": true,
+      "durationMs": 79404,
+      "failures": [],
+      "slaMetrics": [
+        {
+          "label": "E2E Pipeline Latency",
+          "actualMs": 47729,
+          "maxMs": 15000,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "scenario": "dispatch_reject",
+      "passed": false,
+      "durationMs": 77898,
+      "failures": [
+        {
+          "label": "Fullscreen dismissed after reject",
+          "evidence": {
+            "stillActive": true
+          }
+        }
+      ],
+      "slaMetrics": [
+        {
+          "label": "ORDER_CREATED → FULLSCREEN_RENDERED",
+          "actualMs": 55448,
+          "maxMs": 15000,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "scenario": "dispatch_timeout",
+      "passed": false,
+      "durationMs": 66601,
+      "failures": [
+        {
+          "label": "Fullscreen auto-dismissed after order expiry",
+          "evidence": {
+            "stillActive": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    },
+    {
+      "scenario": "client_cancel_before_accept",
+      "passed": false,
+      "durationMs": 63543,
+      "failures": [
+        {
+          "label": "Fullscreen dismissed after client cancellation",
+          "evidence": {
+            "stillActive": true
+          }
+        }
+      ],
+      "slaMetrics": []
+    }
+  ]
+}

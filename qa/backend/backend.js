@@ -9,6 +9,10 @@ const { sleep } = require('../orchestrator/utils');
 
 const DRIVER_ID = driverCfg.id;
 
+function buildOfferId(orderId, driverId, round = 1) {
+  return `${orderId}_${driverId}_w${round}`;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // ORDER LIFECYCLE
 // ─────────────────────────────────────────────────────────────────────────────
@@ -38,6 +42,8 @@ async function createOrder(opts = {}) {
 
   await db.collection('driver_locations').doc(DRIVER_ID).set({
     driverId: DRIVER_ID,
+    latitude: lat,
+    longitude: lng,
     lat: lat,
     lng: lng,
     updatedAt: FieldValue.serverTimestamp(),
@@ -126,7 +132,7 @@ async function inspectOrder(orderId) {
 }
 
 async function inspectDispatchOffer(orderId, driverId = DRIVER_ID) {
-  const offerId = `${orderId}_${driverId}`;
+  const offerId = buildOfferId(orderId, driverId);
   const snap = await db.collection('dispatch_offers').doc(offerId).get();
   return snap.exists ? { id: snap.id, ...snap.data() } : null;
 }
@@ -151,6 +157,8 @@ async function inspectDriverStatus(driverId = DRIVER_ID) {
 async function injectDriverLocation(lat = location.lat, lng = location.lng, driverId = DRIVER_ID) {
   await db.collection('driver_locations').doc(driverId).set({
     driverId,
+    latitude: lat,
+    longitude: lng,
     lat,
     lng,
     updatedAt: FieldValue.serverTimestamp(),
@@ -164,11 +172,12 @@ async function injectDriverLocation(lat = location.lat, lng = location.lng, driv
  * Used in reliability tests to seed the local Firestore cache.
  */
 async function injectDispatchOffer(orderId, driverId = DRIVER_ID, opts = {}) {
-  const offerId = `${orderId}_${driverId}`;
+  const round = opts.round ?? 1;
+  const offerId = buildOfferId(orderId, driverId, round);
   const payload = {
     orderId, driverId,
     status: opts.status ?? 'sent',
-    round:  opts.round  ?? 1,
+    round:  round,
     priority: 1,
     sentAt:   FieldValue.serverTimestamp(),
     expiresAt: Timestamp.fromDate(new Date(Date.now() + (opts.ttlMs ?? 600_000))),
@@ -185,7 +194,7 @@ async function injectDispatchOffer(orderId, driverId = DRIVER_ID, opts = {}) {
  * Terminate a dispatch offer (set status=accepted).
  */
 async function terminateDispatchOffer(orderId, driverId = DRIVER_ID) {
-  const offerId = `${orderId}_${driverId}`;
+  const offerId = buildOfferId(orderId, driverId);
   await db.collection('dispatch_offers').doc(offerId).update({
     status: 'accepted',
     updatedAt: FieldValue.serverTimestamp(),
@@ -248,6 +257,7 @@ async function waitForOfferForOrder(orderId, driverId, timeoutMs = 30_000) {
 }
 
 module.exports = {
+  buildOfferId,
   createOrder,
   cancelOrder,
   expireOrder,

@@ -1,0 +1,12 @@
+{"event":"SCENARIO_START","orderId":null,"device":null,"ts":1778743321709,"data":null}
+{"event":"DEVICES_PREPARED","orderId":null,"device":null,"ts":1778743328797,"data":null}
+{"event":"DRIVER_APP_LAUNCHED","orderId":null,"device":"driver","ts":1778743348982,"data":null}
+{"event":"DRIVER_LISTENER_ACTIVE","orderId":null,"device":"driver","ts":1778743359239,"data":null}
+{"event":"RIDER_APP_LAUNCHED","orderId":null,"device":"rider","ts":1778743379415,"data":null}
+{"event":"ORDER_SUBMITTED_BY_RIDER","orderId":null,"device":"rider","ts":1778743435631,"data":null}
+{"event":"ORDER_CREATED","orderId":"ZCflYF3IPyutyA6LjpiI","device":null,"ts":1778743443916,"data":null}
+{"event":"WAITING_FOR_DISPATCH","orderId":"ZCflYF3IPyutyA6LjpiI","device":null,"ts":1778743443917,"data":null}
+{"event":"OFFER_RECEIVED","orderId":"ZCflYF3IPyutyA6LjpiI","device":null,"ts":1778743444260,"data":null}
+{"event":"DRIVER_ACCEPTED","orderId":"ZCflYF3IPyutyA6LjpiI","device":null,"ts":1778743452856,"data":null}
+{"event":"ORDER_STATUS","orderId":"ZCflYF3IPyutyA6LjpiI","device":null,"ts":1778743465155,"data":null}
+{"event":"EVIDENCE_COLLECTED","orderId":"ZCflYF3IPyutyA6LjpiI","device":null,"ts":1778743476208,"data":null}

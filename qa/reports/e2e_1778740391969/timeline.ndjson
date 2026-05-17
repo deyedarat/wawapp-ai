@@ -1,0 +1,8 @@
+{"event":"SCENARIO_START","orderId":null,"device":null,"ts":1778740391978,"data":null}
+{"event":"DEVICES_PREPARED","orderId":null,"device":null,"ts":1778740399637,"data":null}
+{"event":"DRIVER_APP_LAUNCHED","orderId":null,"device":"driver","ts":1778740419807,"data":null}
+{"event":"DRIVER_LISTENER_ACTIVE","orderId":null,"device":"driver","ts":1778740430199,"data":null}
+{"event":"RIDER_APP_LAUNCHED","orderId":null,"device":"rider","ts":1778740450800,"data":null}
+{"event":"RIDER_SELECTING_PICKUP","orderId":null,"device":"rider","ts":1778740457405,"data":null}
+{"event":"RIDER_SELECTING_DROPOFF","orderId":null,"device":"rider","ts":1778740468697,"data":null}
+{"event":"RIDER_ON_QUOTE_SCREEN","orderId":null,"device":"rider","ts":1778740494590,"data":null}

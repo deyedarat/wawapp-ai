@@ -1,0 +1,52 @@
+{
+  "scenario": "full_order_lifecycle",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 113022,
+  "runId": "e2e_1778740391969",
+  "startTs": 1778740391972,
+  "endTs": 1778740504994,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Both devices prepared and clean"
+    },
+    {
+      "status": "PASS",
+      "label": "Driver app launched and listener active"
+    },
+    {
+      "status": "FAIL",
+      "label": "Failed to submit order from rider UI",
+      "evidence": {
+        "classification": "UI_NAVIGATION_FAILURE"
+      }
+    },
+    {
+      "status": "FAIL",
+      "label": "Unexpected error: Could not complete rider order submission",
+      "evidence": {
+        "classification": "HARNESS_ERROR",
+        "stack": "Error: Could not complete rider order submission\n    at run (C:\\Users\\hp\\Music\\wawapp-ai\\qa\\scenarios\\e2e\\full_order_lifecycle.js:270:19)"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Failed to submit order from rider UI",
+      "evidence": {
+        "classification": "UI_NAVIGATION_FAILURE"
+      }
+    },
+    {
+      "label": "Unexpected error: Could not complete rider order submission",
+      "evidence": {
+        "classification": "HARNESS_ERROR",
+        "stack": "Error: Could not complete rider order submission\n    at run (C:\\Users\\hp\\Music\\wawapp-ai\\qa\\scenarios\\e2e\\full_order_lifecycle.js:270:19)"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\e2e_1778740391969\\timeline.ndjson"
+}

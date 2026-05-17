@@ -101,7 +101,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
           source: 'native_accept_suppress',
         );
       } else {
-        await ref.read(ordersServiceProvider).acceptOrder(orderId);
+        await ref.read(ordersServiceProvider).acceptOrder(orderId, '');
       }
       // Server confirmed — now safe to suppress locally.
       NotificationService().markOrderAsProcessed(orderId);

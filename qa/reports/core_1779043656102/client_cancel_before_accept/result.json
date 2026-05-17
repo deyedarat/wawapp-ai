@@ -1,0 +1,37 @@
+{
+  "scenario": "client_cancel_before_accept",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 63543,
+  "runId": "core_1779043656102",
+  "startTs": 1779043892067,
+  "endTs": 1779043955610,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Fullscreen rendered before client cancel"
+    },
+    {
+      "status": "FAIL",
+      "label": "Fullscreen dismissed after client cancellation",
+      "evidence": {
+        "stillActive": true
+      }
+    },
+    {
+      "status": "PASS",
+      "label": "Order status is cancelledByClient"
+    }
+  ],
+  "failures": [
+    {
+      "label": "Fullscreen dismissed after client cancellation",
+      "evidence": {
+        "stillActive": true
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\core_1779043656102\\timeline.ndjson"
+}

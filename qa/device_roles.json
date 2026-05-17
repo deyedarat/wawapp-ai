@@ -1,9 +1,9 @@
 {
   "driver": {
-    "deviceId": "R8YW40AW58L",
+    "deviceId": "R83Y20PC4EN",
     "packageName": "com.wawapp.driver",
     "role": "driver",
-    "model": "SM-A145P"
+    "model": "SM-A065F"
   },
   "rider": {
     "deviceId": "RZ8R716T96J",

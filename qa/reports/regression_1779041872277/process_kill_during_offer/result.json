@@ -1,0 +1,37 @@
+{
+  "scenario": "process_kill_during_offer",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 85347,
+  "runId": "regression_1779041872277",
+  "startTs": 1779042540704,
+  "endTs": 1779042626051,
+  "assertions": [
+    {
+      "status": "FAIL",
+      "label": "Fullscreen appeared before process kill",
+      "evidence": {
+        "timeout": true
+      }
+    },
+    {
+      "status": "PASS",
+      "label": "No ghost fullscreen on cold start after kill-during-offer"
+    },
+    {
+      "status": "PASS",
+      "label": "Offer state after relaunch: expired"
+    }
+  ],
+  "failures": [
+    {
+      "label": "Fullscreen appeared before process kill",
+      "evidence": {
+        "timeout": true
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\regression_1779041872277\\timeline.ndjson"
+}

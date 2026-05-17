@@ -1,0 +1,37 @@
+{
+  "scenario": "dispatch_timeout",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 110490,
+  "runId": "regression_1779041872277",
+  "startTs": 1779042104993,
+  "endTs": 1779042215483,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Fullscreen rendered before timeout"
+    },
+    {
+      "status": "FAIL",
+      "label": "Fullscreen auto-dismissed after order expiry",
+      "evidence": {
+        "stillActive": true
+      }
+    },
+    {
+      "status": "PASS",
+      "label": "Offer is in terminal state after timeout"
+    }
+  ],
+  "failures": [
+    {
+      "label": "Fullscreen auto-dismissed after order expiry",
+      "evidence": {
+        "stillActive": true
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\regression_1779041872277\\timeline.ndjson"
+}

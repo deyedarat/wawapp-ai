@@ -1,0 +1,37 @@
+{
+  "scenario": "full_order_lifecycle",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 117587,
+  "runId": "e2e_1778741349966",
+  "startTs": 1778741349969,
+  "endTs": 1778741467556,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Both devices prepared and clean"
+    },
+    {
+      "status": "PASS",
+      "label": "Driver app launched and listener active"
+    },
+    {
+      "status": "FAIL",
+      "label": "Error: 13 INTERNAL: Received RST_STREAM with code 2 (Internal server error)",
+      "evidence": {
+        "classification": "HARNESS_ERROR"
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Error: 13 INTERNAL: Received RST_STREAM with code 2 (Internal server error)",
+      "evidence": {
+        "classification": "HARNESS_ERROR"
+      }
+    }
+  ],
+  "slaMetrics": [],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\e2e_1778741349966\\timeline.ndjson"
+}

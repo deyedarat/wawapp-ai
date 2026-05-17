@@ -42,6 +42,9 @@ object NotificationHelper {
     private const val CHANNEL_ID_TRIP_REMINDERS = "trip_reminders_v10"
     private const val CHANNEL_ID_ORDER_UPDATES = "order_updates_v2"
     private const val CHANNEL_ID_ACCEPTANCE = "acceptance_confirmations_v2"
+    // Silent fallback channel — used ONLY for the notification posted alongside
+    // FullScreenNotificationActivity. IMPORTANCE_LOW prevents heads-up banner.
+    private const val CHANNEL_ID_SILENT_FULLSCREEN = "silent_fullscreen_v1"
 
     private const val PREFS_NAME = "sound_repeat_prefs"
     // Sound file (trip_reminder.wav) is ~3 seconds long.
@@ -120,6 +123,22 @@ object NotificationHelper {
                     enableVibration(true)
                 }
             )
+
+            // Silent channel for fullscreen fallback notification.
+            // IMPORTANCE_LOW = no sound, no vibration, no heads-up banner.
+            // The actual UX is FullScreenNotificationActivity + manual sound.
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    CHANNEL_ID_SILENT_FULLSCREEN,
+                    "إشعار صامت (خلفي)",
+                    NotificationManager.IMPORTANCE_LOW
+                ).apply {
+                    description = "إشعار خلفي صامت يظهر فقط في شريط الإشعارات"
+                    enableVibration(false)
+                    setSound(null, null)
+                    lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                }
+            )
         }
     }
 
@@ -170,7 +189,7 @@ object NotificationHelper {
         val channelId = when (notificationType) {
             "trip_start_reminder" -> CHANNEL_ID_TRIP_REMINDERS
             "unassigned_order_reminder" -> CHANNEL_ID_UNASSIGNED_ORDERS
-            else -> CHANNEL_ID_NEW_ORDERS
+            else -> CHANNEL_ID_SILENT_FULLSCREEN  // Silent fallback — no heads-up
         }
 
         // Fixed notification ID per type — forces Android to REPLACE the previous

@@ -1,0 +1,506 @@
+--------- beginning of main
+05-14 06:41:02.669  1432  1620 D MotionRecognitionService:   onReceive : ACTION_BATTERY_CHANGED, Plugged: 2
+05-14 06:41:02.670  1432  1620 I MotionRecognitionService: [TA] In/out: true, curr state: 1
+05-14 06:41:02.670  1432  1432 D PhoneWindowManagerExt: ACTION_BATTERY_CHANGED - Level=34, status=2
+05-14 06:41:02.670  1432  1432 D SemWifiApBroadcastReceiver: Received : android.intent.action.BATTERY_CHANGED
+05-14 06:41:02.672  1856  1856 D SemBigDataInfoController: Intent : android.intent.action.BATTERY_CHANGED
+05-14 06:41:02.672  1856  1856 D SemBigDataInfoController: Intent : android.intent.action.BATTERY_CHANGED
+05-14 06:41:02.673  1875  1875 I PowerUI : mBootCompleted = true |  mFullyConnected = true
+--------- beginning of system
+05-14 06:41:02.673  1875  1875 I PowerUI : BATTERY_HEALTH_CHECK extraHealth=2 mBatteryMiscEvent=65536
+05-14 06:41:02.673  1875  1875 D PowerUI : priorPlugType = 2 mPlugType = 2 priorBatteryStatus = 2 mBatteryStatus = 2
+05-14 06:41:02.673  1875  1875 I PowerUI : oldMisalign : false, curMisalign : false
+05-14 06:41:02.674  1875  1875 D PowerUI.Notification: showChargingNotice oldChargingType : 1 currentChargingType : 1 oldChargingTime : 8160000 mChargingTime : 8160000
+05-14 06:41:02.674  1875  1875 D PowerUI.Notification: There is no change about charging status, so return!
+05-14 06:41:02.674  1875  1875 D PowerUI : Battery swelling mode - priorBatterySwellingMode = 0 mBatterySwellingMode = 0 mBatteryStatus = 2
+05-14 06:41:02.675  1875  1875 I PowerUI : mBatteryMiscEvent = 65536
+05-14 06:41:02.678  1875  1875 D KeyguardUpdateMonitor: received broadcast android.intent.action.BATTERY_CHANGED
+05-14 06:41:02.678  1875  1875 I AODBatteryManager: updateBatteryData: ACTION_BATTERY_CHANGED
+05-14 06:41:02.678  1875  6669 D PowerUI.Notification: 1. restoreScreenTimeOut - saved_value : :
+05-14 06:41:02.678  1875  6669 E PowerUI.Notification: no saved value, so we do nothing !!
+05-14 06:41:02.680  1875  1875 I AODBatteryManager: saveBatteryData : AOD BatteryData [mBatteryLevel=34, mBatteryStatus=CHARGING, mBatteryPlugType=USB, mBatteryPlugged=true, mRemainingChargeTime=8160000, mBatteryChargingType=1, mBatteryChargerType=NORMAL, mBatteryOnline=NOT_DEFINED, mBatterySwellingMode=NONE, mBatteryProtectMode=false]
+05-14 06:41:02.693  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:02.695  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:02.695  1875  1875 V SecQSFragmentAnimatorBase: setQsExpansionPosition 0.0
+05-14 06:41:02.695  1875  1875 V QsExpandAnimator: setQsExpansionPosition 0.0 0
+05-14 06:41:02.696  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:02.699  1875  1875 D IndicatorGardenInputProperty: updateRotation() prv:-1 >> new:0
+05-14 06:41:02.700  1875  1875 D DeviceState: getDeviceResolutionPixelSize - currentDensity = 300 deviceDensity = 300 initialDisplaySizeFactor = 720 currentDisplaySizeFactor = 720 initialDisplayDensity = 300 proportionalDensity = 300 proportionalPixel = 0
+05-14 06:41:02.700  1875  1875 D DeviceState: getDeviceResolutionPixelSize - currentDensity = 300 deviceDensity = 300 initialDisplaySizeFactor = 720 currentDisplaySizeFactor = 720 initialDisplayDensity = 300 proportionalDensity = 300 proportionalPixel = 0
+05-14 06:41:02.700  1875  1875 D DeviceState: getDeviceResolutionPixelSize - currentDensity = 300 deviceDensity = 300 initialDisplaySizeFactor = 720 currentDisplaySizeFactor = 720 initialDisplayDensity = 300 proportionalDensity = 300 proportionalPixel = 8
+05-14 06:41:02.702  1875  1875 D KeyguardUpdateMonitor: handleBatteryUpdate
+05-14 06:41:02.812  6407  6407 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+05-14 06:41:02.989  1875  2077 D MobileStatusTracker(0/1): onDataActivity: direction=0
+05-14 06:41:02.990  1875  2077 D NetworkController.MobileSignalController(0/1): notifyListener: enabled=true, connected=true, dataConnected=true, networkType=LTE (4G), emergencyOnly=false, roaming=false, isDefault=true, fiveGAvailable=false, mmWave=false, showDisabledDataIcon=false, voWifiConnected=false, dataActivity=, simState=LOADED, cardOperator=OTHERS, simCardActivated=1
+05-14 06:41:02.998  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-9 rssnr=2 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:03.001  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:03.022   894   894 I BufferQueueProducer: [StatusBar$_1875#0](this:0xb400007c31e1c948,id:-1,api:0,p:-1,c:894) queueBuffer: fps=1.96 dur=1021.15 max=720.06 min=301.09
+05-14 06:41:03.025   845   945 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:1.957593,dur:1021.66,max:721.07,min:300.60  
+05-14 06:41:03.140  1193  1193 D connsyslogger: Open FIFO for close
+05-14 06:41:03.514   461   461 D io_stats: !@ 179,0 r 3998359 69498572 w 618460 17009012 d 231659 27259288 f 506788 537708 iot 2234752 0 th 102400 51200 44436 pt 168 inp 0 0 92368.008
+05-14 06:41:04.006  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-10 rssnr=2 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:04.011  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:05.000  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-11 rssnr=1 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:05.004  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:06.000  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-12 rssnr=1 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:06.003  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:07.013  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-11 rssnr=1 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:07.016  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:08.013  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-8 rssnr=6 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:08.018  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:08.140  1193  1193 D connsyslogger: Open FIFO for close
+05-14 06:41:09.014  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-9 rssnr=4 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:09.016  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:09.038  1875  2077 D MobileStatusTracker(0/1): onDataActivity: direction=3
+05-14 06:41:09.040  1875  2077 D NetworkController.MobileSignalController(0/1): notifyListener: enabled=true, connected=true, dataConnected=true, networkType=LTE (4G), emergencyOnly=false, roaming=false, isDefault=true, fiveGAvailable=false, mmWave=false, showDisabledDataIcon=false, voWifiConnected=false, dataActivity=inout, simState=LOADED, cardOperator=OTHERS, simCardActivated=1
+05-14 06:41:09.069   894   894 I BufferQueueProducer: [StatusBar$_1875#0](this:0xb400007c31e1c948,id:-1,api:0,p:-1,c:894) queueBuffer: fps=0.17 dur=6046.71 max=6046.71 min=6046.71
+05-14 06:41:09.072   845   945 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:0.165383,dur:6046.57,max:6046.57,min:6046.57  
+05-14 06:41:09.541   461   461 D io_stats: !@ 179,0 r 3998359 69498572 w 618463 17009032 d 231931 27264440 f 506788 537708 iot 2234888 0 th 102400 51200 44436 pt 168 inp 0 0 92374.034
+05-14 06:41:10.013  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-10 rssnr=1 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:10.016  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:10.051  1875  2077 D MobileStatusTracker(0/1): onDataActivity: direction=0
+05-14 06:41:10.053  1875  2077 D NetworkController.MobileSignalController(0/1): notifyListener: enabled=true, connected=true, dataConnected=true, networkType=LTE (4G), emergencyOnly=false, roaming=false, isDefault=true, fiveGAvailable=false, mmWave=false, showDisabledDataIcon=false, voWifiConnected=false, dataActivity=, simState=LOADED, cardOperator=OTHERS, simCardActivated=1
+05-14 06:41:10.087   894   894 I BufferQueueProducer: [StatusBar$_1875#0](this:0xb400007c31e1c948,id:-1,api:0,p:-1,c:894) queueBuffer: fps=0.98 dur=1018.41 max=1018.41 min=1018.41
+05-14 06:41:10.091   845   945 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:0.981118,dur:1019.24,max:1019.24,min:1019.24  
+05-14 06:41:11.012  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-10 rssnr=3 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:11.015  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:12.015  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-10 rssnr=0 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:12.019  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:12.699   846   890 D BatteryDump: wait_for_battery_event : occurred : change@/devices/platform/samsung_mobile_device/samsung_mobile_device:battery/power_supply/battery 
+05-14 06:41:12.702   846   846 E android.hardware.health@2.1-service-samsung: Could not open /sys/class/power_supply/battery/lrp
+05-14 06:41:12.703  1432  1635 D BatteryService: Sending ACTION_BATTERY_CHANGED. scale:100, info:{.chargerAcOnline = false, .chargerUsbOnline = true, .chargerWirelessOnline = false, .maxChargingCurrent = 0, .maxChargingVoltage = 0, .batteryStatus = CHARGING, .batteryHealth = GOOD, .batteryPresent = true, .batteryLevel = 34, .batteryVoltage = 3918, .batteryTemperature = 323, .batteryCurrent = 1138, .batteryCycleCount = 0, .batteryFullCharge = 5000000, .batteryChargeCounter = 1735000, .batteryTechnology = Li-ion}
+05-14 06:41:12.703  1432  1635 D BatteryService: online:5, current avg:1134, charge type:1, POGO powered:false, power sharing:false, high voltage charger:false, charger_type:0, capacity:280000, misc_event:0x10000, current_event:0x8000, current_now:1138
+05-14 06:41:12.706  1432  1620 D MotionRecognitionService:   onReceive : ACTION_BATTERY_CHANGED, Plugged: 2
+05-14 06:41:12.706  1432  1620 I MotionRecognitionService: [TA] In/out: true, curr state: 1
+05-14 06:41:12.707  1432  1432 D PhoneWindowManagerExt: ACTION_BATTERY_CHANGED - Level=34, status=2
+05-14 06:41:12.708  1432  1432 D SemWifiApBroadcastReceiver: Received : android.intent.action.BATTERY_CHANGED
+05-14 06:41:12.709  1875  1875 I PowerUI : mBootCompleted = true |  mFullyConnected = true
+05-14 06:41:12.709  1875  1875 I PowerUI : BATTERY_HEALTH_CHECK extraHealth=2 mBatteryMiscEvent=65536
+05-14 06:41:12.709  1875  1875 D PowerUI : priorPlugType = 2 mPlugType = 2 priorBatteryStatus = 2 mBatteryStatus = 2
+05-14 06:41:12.709  1875  1875 I PowerUI : oldMisalign : false, curMisalign : false
+05-14 06:41:12.711  1856  1856 D SemBigDataInfoController: Intent : android.intent.action.BATTERY_CHANGED
+05-14 06:41:12.711  1856  1856 D SemBigDataInfoController: Intent : android.intent.action.BATTERY_CHANGED
+05-14 06:41:12.712  1875  1875 D PowerUI.Notification: showChargingNotice oldChargingType : 1 currentChargingType : 1 oldChargingTime : 8160000 mChargingTime : 8145000
+05-14 06:41:12.712  1875  1875 D PowerUI.Notification: showChargingNotification()
+05-14 06:41:12.714  1875  3039 D PowerUI.Notification: 1. restoreScreenTimeOut - saved_value : :
+05-14 06:41:12.714  1875  3039 E PowerUI.Notification: no saved value, so we do nothing !!
+05-14 06:41:12.717  1432  4354 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.android.systemui,userId = 0
+05-14 06:41:12.717  1432  4354 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.android.systemui,userId = -1
+05-14 06:41:12.717  1432  4354 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: converting userId from USER_ALLto 0
+05-14 06:41:12.718  1875  1875 D PowerUI : Battery swelling mode - priorBatterySwellingMode = 0 mBatterySwellingMode = 0 mBatteryStatus = 2
+05-14 06:41:12.718  1875  1875 I PowerUI : mBatteryMiscEvent = 65536
+05-14 06:41:12.722  1875  1875 D KeyguardUpdateMonitor: received broadcast android.intent.action.BATTERY_CHANGED
+05-14 06:41:12.723  1875  1875 I AODBatteryManager: updateBatteryData: ACTION_BATTERY_CHANGED
+05-14 06:41:12.725  1875  1875 I AODBatteryManager: saveBatteryData : AOD BatteryData [mBatteryLevel=34, mBatteryStatus=CHARGING, mBatteryPlugType=USB, mBatteryPlugged=true, mRemainingChargeTime=8145000, mBatteryChargingType=1, mBatteryChargerType=NORMAL, mBatteryOnline=NOT_DEFINED, mBatterySwellingMode=NONE, mBatteryProtectMode=false]
+05-14 06:41:12.725  1875  1875 I ChargingInfoManager: updateChargingInfo: newState = AOD ChargingInfo [mState=BATTERY_AND_REMAIN_TIME, mIsCharging=true, mIsFullyCharged=false, mIsBatteryProtectMode=false], oldState = AOD ChargingInfo [mState=BATTERY_AND_REMAIN_TIME, mIsCharging=true, mIsFullyCharged=false, mIsBatteryProtectMode=false]
+05-14 06:41:12.742  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:12.745  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:12.745  1875  1875 V SecQSFragmentAnimatorBase: setQsExpansionPosition 0.0
+05-14 06:41:12.745  1875  1875 V QsExpandAnimator: setQsExpansionPosition 0.0 0
+05-14 06:41:12.746  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:12.749  1875  1875 D IndicatorGardenInputProperty: updateRotation() prv:-1 >> new:0
+05-14 06:41:12.750  1875  1875 D DeviceState: getDeviceResolutionPixelSize - currentDensity = 300 deviceDensity = 300 initialDisplaySizeFactor = 720 currentDisplaySizeFactor = 720 initialDisplayDensity = 300 proportionalDensity = 300 proportionalPixel = 0
+05-14 06:41:12.750  1875  1875 D DeviceState: getDeviceResolutionPixelSize - currentDensity = 300 deviceDensity = 300 initialDisplaySizeFactor = 720 currentDisplaySizeFactor = 720 initialDisplayDensity = 300 proportionalDensity = 300 proportionalPixel = 0
+05-14 06:41:12.750  1875  1875 D DeviceState: getDeviceResolutionPixelSize - currentDensity = 300 deviceDensity = 300 initialDisplaySizeFactor = 720 currentDisplaySizeFactor = 720 initialDisplayDensity = 300 proportionalDensity = 300 proportionalPixel = 8
+05-14 06:41:12.752  1875  1875 D KeyguardUpdateMonitor: handleBatteryUpdate
+05-14 06:41:12.757  1875  1875 D KeyguardSecIndicationController: addIndicationTimeout() returned - unlocking
+05-14 06:41:12.757  1875  1875 D KeyguardSecIndicationController: addIndication() returned - unlocking
+05-14 06:41:12.757  1875  1875 D KeyguardSecIndicationController: addBatteryIndication() status = BatteryStatus{status=2,level=34,plugged=2,health=2,maxChargingWattage=-1,remaining=8145000ultraFastCharger=0}
+05-14 06:41:12.771   894   894 I BufferQueueProducer: [StatusBar$_1875#0](this:0xb400007c31e1c948,id:-1,api:0,p:-1,c:894) queueBuffer: fps=0.37 dur=2683.87 max=2683.87 min=2683.87
+05-14 06:41:12.774   845   945 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:0.372748,dur:2682.78,max:2682.78,min:2682.78  
+05-14 06:41:12.926  1432  1432 W NotificationHistory: Attempted to add notif for locked/gone/disabled user 0
+05-14 06:41:12.930  2371  2371 I Launcher.NotificationListener: onNotificationPosted : com.android.systemui number : 0
+05-14 06:41:12.932  1875  1875 D InterruptionStateProvider: No bubble up: not allowed to bubble: -1|com.android.systemui|2131428820|charging_state|10084
+05-14 06:41:12.934  1875  1875 D InterruptionStateProvider:  no Heads up : edgelighting enabled app. -1|com.android.systemui|2131428820|charging_state|10084
+05-14 06:41:12.940  1875  2077 D PeopleSpaceWidgetMgr: Sbn doesn't contain valid PeopleTileKey: null/-1/com.android.systemui
+05-14 06:41:12.942  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:12.943  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:12.989  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:12.990  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:13.013  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-9 rssnr=2 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:13.016  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:13.141  1193  1193 D connsyslogger: Open FIFO for close
+05-14 06:41:13.446   634   634 E audit   : type=1400 audit(1778740873.443:46139): avc:  denied  { write } for  pid=5766 comm="ThreadPoolForeg" name="traced_producer" dev="tmpfs" ino=10959 scontext=u:r:gmscore_app:s0:c512,c768 tcontext=u:object_r:traced_producer_socket:s0 tclass=sock_file permissive=0 SEPF_SM-A125F_12_0001 audit_filtered
+05-14 06:41:14.015  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-9 rssnr=3 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:14.017  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:15.053  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-9 rssnr=1 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:15.056  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:15.998   634   634 E audit   : type=1400 audit(1778740875.995:46140): avc:  denied  { write } for  pid=5952 comm="ThreadPoolForeg" name="traced_producer" dev="tmpfs" ino=10959 scontext=u:r:gmscore_app:s0:c512,c768 tcontext=u:object_r:traced_producer_socket:s0 tclass=sock_file permissive=0 SEPF_SM-A125F_12_0001 audit_filtered
+05-14 06:41:16.053  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-10 rssnr=5 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:16.057  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:16.677   849   849 D IMGMemtrackHAL: hal_get_memory: memtrack cache rebuild was required
+05-14 06:41:16.685  1432  4354 D SamsungAlarmManager: setInexact (T:3/F:0/AC:false) 20360511T064116 now=414401356 - CU:10197/CP:5766/OP:PendingIntent{beda060: PendingIntentRecord{54ab919 com.google.android.gms/com.google.android.gms.container startService}}
+05-14 06:41:16.685  1432  4354 V SamsungAlarmManager: setLocked to kernel - W:414624761 / NW:414444671, now=414401356
+05-14 06:41:16.690  5766 11074 I GmscoreIpa: Starting mediastore instant index [CONTEXT service_id=255 ]
+05-14 06:41:16.710  1432  1492 E libperflog: [LIBPERFLOG] socket_local_client fail = -1
+05-14 06:41:17.052  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-9 rssnr=3 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:17.056  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:18.054  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-9 rssnr=4 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:18.060  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:18.141  1193  1193 D connsyslogger: Open FIFO for close
+05-14 06:41:18.780   811  1413 I CASS_DEBUG: acquire_wake_lock lock=1 id='client-interface'
+05-14 06:41:18.781   811  1413 I CASS_DEBUG: release_wake_lock id='client-interface'
+05-14 06:41:18.781  1856  1894 I System.out: Broadcasting: Intent { act=com.sec.intent.action.SARDEVICE_CP flg=0x10000000 (has extras) }
+05-14 06:41:18.788  1432  1620 D MotionRecognitionService:   onReceive : SARDEVICE_CP, callAction = off deviceID = 557573 slot = 0
+05-14 06:41:18.789  1432  1620 W MotionRecognitionService: id : 0 cmd :off
+05-14 06:41:18.789  1432  1620 I MotionRecognitionService: [SAR] Received request for MainGrip
+05-14 06:41:18.789  1432  1620 D MotionRecognitionService: [SAR] disableGripSensor : Enabled true  slot 0 (true)
+05-14 06:41:18.789  1432  1620 D SensorService: Calling activate off 33554443
+05-14 06:41:18.790   850   850 I SensorsGrip: [grip_sensor] enable: GripSensor: enable handle = 11 en = 0
+05-14 06:41:18.792  1432  1620 D SensorManager: unregisterListener :: com.samsung.android.gesture.MotionRecognitionSAR$SensorGripEventListener@34f6771
+05-14 06:41:18.792  1432  1620 I MotionRecognitionService: [SAR] size 0
+05-14 06:41:18.792  1432  1620 D MotionRecognitionService: [SAR] clear SAR_DEVICE_GRIP
+05-14 06:41:18.792  1432  1620 D MotionRecognitionService: mSarGripSlot is 0
+05-14 06:41:18.792  1432  1620 W MotionRecognitionService: id : 2 cmd :off
+05-14 06:41:18.792  1432  1620 W MotionRecognitionService: DEFAULT
+05-14 06:41:18.792  1432  1620 W MotionRecognitionService: id : 9 cmd :off
+05-14 06:41:18.792  1432  1620 W MotionRecognitionService: DEFAULT
+05-14 06:41:18.792  1432  1620 W MotionRecognitionService: id : 15 cmd :off
+05-14 06:41:18.792  1432  1620 W MotionRecognitionService: DEFAULT
+05-14 06:41:18.792  1432  1620 W MotionRecognitionService: id : 19 cmd :off
+05-14 06:41:18.792  1432  1620 I MotionRecognitionService: [SAR] Received request for Sub1
+05-14 06:41:18.792  1432  1620 D MotionRecognitionService: [SAR] disabled SubGripSensor : Enabled true  slot 0 (true)
+05-14 06:41:18.793  1432  1620 D SensorService: Calling activate off 33554450
+05-14 06:41:18.793   850   850 I SensorsGrip: [grip_sensor_sub] enable: GripSensor: enable handle = 18 en = 0
+05-14 06:41:18.795  1432  1620 D SensorManager: unregisterListener :: 33554450, A96T3X6 Grip sensor for sub, com.samsung.android.gesture.MotionRecognitionSAR$5@32de40f
+05-14 06:41:18.795  1432  1620 D MotionRecognitionService: mSarGripSubSlot is 0
+05-14 06:41:18.796  1856  2295 I System.out: Broadcast completed: result=0
+05-14 06:41:18.798  1432  1620 E MotionRecognitionService: handleMessage: event 200 value : 1
+05-14 06:41:18.810  1432  1620 I MotionRecognitionService: Reset unknown state
+05-14 06:41:18.810  1432  1620 D MotionRecognitionService: clear TransmitPower  value : 1
+05-14 06:41:18.810  1432  1620 E MotionRecognitionService: handleMessage: event 200 value : 524288
+05-14 06:41:18.821  1432  1620 D MotionRecognitionService: clear TransmitPower  value : 524288
+05-14 06:41:18.955   846   890 D BatteryDump: wait_for_battery_event : occurred : change@/devices/virtual/xt_idletimer/timers 
+05-14 06:41:18.956  1432  1503 D BatteryExternalStatsWorker: update stats : modem-data (4)
+05-14 06:41:18.988  1432  4355 D TelephonyManager: requestModemActivityInfo: Sending result to app: ModemActivityInfo{ mTimestamp=414403658 mSleepTimeMs=331005886 mIdleTimeMs=27495696 mTxTimeMs[]=[25177, 35828, 347133, 1193083, 1844687] mRxTimeMs=56757726}
+05-14 06:41:18.989  1432  1503 D BatteryExternalStatsWorker: ModemActivityInfo was updated
+05-14 06:41:18.989  1432  1503 D BatteryExternalStatsWorker: done updateExternalStatsLocked
+05-14 06:41:18.996   820  1746 D IptablesRestoreController: [iptables debug]iptables-restore execute *filter
+05-14 06:41:18.996   820  1746 D IptablesRestoreController: -nvx -L tetherctrl_counters
+05-14 06:41:18.996   820  1746 D IptablesRestoreController: COMMIT
+05-14 06:41:18.999   820  1746 D IptablesRestoreController: [iptables debug]iptables-restore execute done, res : 0
+05-14 06:41:18.999   820  1746 D IptablesRestoreController: [iptables debug]iptables-restore execute *filter
+05-14 06:41:18.999   820  1746 D IptablesRestoreController: -nvx -L tetherctrl_counters
+05-14 06:41:18.999   820  1746 D IptablesRestoreController: COMMIT
+05-14 06:41:19.000   820  1746 D IptablesRestoreController: [iptables debug]iptables-restore execute done, res : 0
+05-14 06:41:19.485  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-87 rsrq=-13 rssnr=-1 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:19.489  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:19.583   461   461 D io_stats: !@ 179,0 r 3998359 69498572 w 618464 17009036 d 231931 27264440 f 506788 537708 iot 2234888 0 th 102400 51200 44436 pt 168 inp 0 0 92384.077
+05-14 06:41:20.764  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-13 rssnr=-1 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:20.767  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:21.804 11076 11076 D ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+05-14 06:41:21.808  1432  4355 I EDMNativeHelperService: isScreenCaptureEnabled
+05-14 06:41:21.809  1432  4355 D RestrictionPolicy: isScreenCaptureEnabled : ret=true userId=0
+05-14 06:41:21.825   894   894 I SurfaceFlinger: operator()(), mtkRenderCntDebug 531, screenshot (Background for SurfaceView - com.wawapp.client/com.wawapp.client.MainActivity@fe044d9@0#0)
+05-14 06:41:21.826   894   894 I SurfaceFlinger: operator()(), mtkRenderCntDebug 531, screenshot (SurfaceView - com.wawapp.client/com.wawapp.client.MainActivity@fe044d9@0(BLAST)#0)
+05-14 06:41:21.826   894   894 I SurfaceFlinger: operator()(), mtkRenderCntDebug 531, screenshot (com.wawapp.client/com.wawapp.client.MainActivity$_10675#0)
+05-14 06:41:21.826   894   894 I SurfaceFlinger: operator()(), mtkRenderCntDebug 531, screenshot (StatusBar$_1875#0)
+05-14 06:41:21.826   894   894 I SurfaceFlinger: operator()(), mtkRenderCntDebug 531, screenshot (NavigationBar0$_1875#0)
+05-14 06:41:21.831 11076 11078 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+05-14 06:41:21.864 11076 11078 E ion     : ioctl c0044901 failed with code -1: Invalid argument
+05-14 06:41:22.318 11081 11081 D ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+05-14 06:41:22.333  2759  2759 I MediaServiceV2: Creating work for intent Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///sdcard/qa_screencap.png flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-14 06:41:22.334  2759  2759 I MediaServiceV2: Work enqueued for intent: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///sdcard/qa_screencap.png flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-14 06:41:22.347 11076 11076 E IMGSRV  : :2631: GrallocUnregisterBuffer: Cannot free a locked buffer (ID=206107)
+05-14 06:41:22.347 11076 11076 E IMGMapper: freeBuffer:64 Failed to unregister native handle
+05-14 06:41:22.347 11076 11076 E Gralloc4: freeBuffer(0xb4000076d00092a0) failed with 2
+05-14 06:41:22.359 11076 11076 D RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x776b34b910)
+05-14 06:41:22.370 11076 11076 D RefBase : #00 pc 00000000000f0c18  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+288)
+05-14 06:41:22.370 11076 11076 D RefBase : #01 pc 00000000000e1de8  /apex/com.android.runtime/lib64/bionic/libc.so (exit+24)
+05-14 06:41:22.370 11076 11076 D RefBase : #02 pc 0000000000082184  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+100)
+05-14 06:41:22.374  2759  2796 D WM-SystemJobScheduler: Scheduling work ID 6763368e-3a2e-4f73-ae87-a8e3ae38a5d2Job ID 29693
+05-14 06:41:22.380  2759  2796 D WM-GreedyScheduler: Ignoring {WorkSpec: ef71fa5d-b822-49a5-a66a-99d1dc0bf11e}. Requires device idle.
+05-14 06:41:22.380  2759  2796 D WM-GreedyScheduler: Ignoring {WorkSpec: a8e599ce-6627-4820-b45b-48a71c58adc2}. Requires device idle.
+05-14 06:41:22.380  2759  2796 D WM-GreedyScheduler: Ignoring {WorkSpec: b465f189-7a32-427a-8eda-4d9059ac4658}. Requires device idle.
+05-14 06:41:22.380  2759  2796 D WM-GreedyScheduler: Starting work for 6763368e-3a2e-4f73-ae87-a8e3ae38a5d2
+05-14 06:41:22.382  2759  2759 D WM-SystemJobService: onStartJob for WorkGenerationalId(workSpecId=6763368e-3a2e-4f73-ae87-a8e3ae38a5d2, generation=0)
+05-14 06:41:22.384  2759  2796 D WM-Processor: Processor: processing WorkGenerationalId(workSpecId=6763368e-3a2e-4f73-ae87-a8e3ae38a5d2, generation=0)
+05-14 06:41:22.387  2759  2796 D WM-Processor: Work WorkGenerationalId(workSpecId=6763368e-3a2e-4f73-ae87-a8e3ae38a5d2, generation=0) is already enqueued for processing
+05-14 06:41:22.393  2759  2759 D WM-WorkerWrapper: Starting work for com.android.providers.media.MediaServiceV2
+05-14 06:41:22.394  2759 11085 I MediaServiceV2: Work initiated for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-14 06:41:22.425  2759 11085 I MediaServiceV2: Work ended for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-14 06:41:22.428  2759  2968 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=6763368e-3a2e-4f73-ae87-a8e3ae38a5d2, tags={ com.android.providers.media.MediaServiceV2 } ]
+05-14 06:41:22.432  2759  2759 D WM-Processor: Processor 6763368e-3a2e-4f73-ae87-a8e3ae38a5d2 executed; reschedule = false
+05-14 06:41:22.432  2759  2759 D WM-SystemJobService: 6763368e-3a2e-4f73-ae87-a8e3ae38a5d2 executed on JobScheduler
+05-14 06:41:22.433  1432  4355 D SamsungAlarmManager: Cancel Alarm calling from uid:10197 pid :6407 / OP:PendingIntent{359e190: PendingIntentRecord{dfa05fe com.google.android.gms/com.google.android.gms.scheduler broadcastIntent}}
+05-14 06:41:22.433  1432  4355 V SamsungAlarmManager: setLocked to kernel - W:414624761 / NW:414444671, now=414407105
+05-14 06:41:22.435  2759  2968 D WM-GreedyScheduler: Cancelling work ID 6763368e-3a2e-4f73-ae87-a8e3ae38a5d2
+05-14 06:41:22.439  2759  2968 D WM-GreedyScheduler: Ignoring {WorkSpec: ef71fa5d-b822-49a5-a66a-99d1dc0bf11e}. Requires device idle.
+05-14 06:41:22.440  2759  2968 D WM-GreedyScheduler: Ignoring {WorkSpec: a8e599ce-6627-4820-b45b-48a71c58adc2}. Requires device idle.
+05-14 06:41:22.440  2759  2968 D WM-GreedyScheduler: Ignoring {WorkSpec: b465f189-7a32-427a-8eda-4d9059ac4658}. Requires device idle.
+05-14 06:41:22.494  1432  4351 D SamsungAlarmManager: setInexact (T:3/F:0/AC:false) 20260514T065409 now=414407165 - CU:10197/CP:6407/OP:PendingIntent{fa386bc: PendingIntentRecord{dfa05fe com.google.android.gms/com.google.android.gms.scheduler broadcastIntent}}
+05-14 06:41:22.494  1432  4351 V SamsungAlarmManager: setLocked to kernel - W:414624761 / NW:414444671, now=414407165
+05-14 06:41:22.502  6407 11069 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+05-14 06:41:22.509  6407 10988 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+05-14 06:41:22.529  1432  1683 D SamsungAlarmManager: Cancel Alarm calling from uid:10197 pid :6407 / OP:PendingIntent{a79f8a7: PendingIntentRecord{dfa05fe com.google.android.gms/com.google.android.gms.scheduler broadcastIntent}}
+05-14 06:41:22.529  1432  1683 V SamsungAlarmManager: setLocked to kernel - W:414624761 / NW:414444671, now=414407201
+05-14 06:41:22.532  1432  1683 D SamsungAlarmManager: setInexact (T:3/F:0/AC:false) 20260514T065409 now=414407204 - CU:10197/CP:6407/OP:PendingIntent{7dbf154: PendingIntentRecord{dfa05fe com.google.android.gms/com.google.android.gms.scheduler broadcastIntent}}
+05-14 06:41:22.533  1432  1683 V SamsungAlarmManager: setLocked to kernel - W:414624761 / NW:414444671, now=414407204
+05-14 06:41:22.585  8112  8129 D MediaSync: loaded: 161ms, 1
+05-14 06:41:22.585  8112 11091 D LocationService: Begin: com.samsung.intent.action.UPDATE_LOCATION
+05-14 06:41:22.586  8112 11091 D LocationManager: delete null addr: 0
+05-14 06:41:22.590  8112 11091 D ModernSamsungCoreService: applyPending()
+05-14 06:41:22.590  8112 11091 D LocationManager: LocationTask: 5ms
+05-14 06:41:22.590  8112 11091 D LocationService: End: com.samsung.intent.action.UPDATE_LOCATION
+05-14 06:41:22.591  8112  8139 D MediaParser: scanItem: 1
+05-14 06:41:22.728   846   890 D BatteryDump: wait_for_battery_event : occurred : change@/devices/platform/samsung_mobile_device/samsung_mobile_device:battery/power_supply/battery 
+05-14 06:41:22.733   811  1413 I CASS_DEBUG: acquire_wake_lock lock=1 id='client-interface'
+05-14 06:41:22.733   811  1413 I CASS_DEBUG: release_wake_lock id='client-interface'
+05-14 06:41:22.733  1856  1894 I System.out: Broadcasting: Intent { act=com.sec.intent.action.SARDEVICE_CP flg=0x10000000 (has extras) }
+05-14 06:41:22.733   846   846 E android.hardware.health@2.1-service-samsung: Could not open /sys/class/power_supply/battery/lrp
+05-14 06:41:22.735  1432  1636 D BatteryService: Sending ACTION_BATTERY_CHANGED. scale:100, info:{.chargerAcOnline = false, .chargerUsbOnline = true, .chargerWirelessOnline = false, .maxChargingCurrent = 0, .maxChargingVoltage = 0, .batteryStatus = CHARGING, .batteryHealth = GOOD, .batteryPresent = true, .batteryLevel = 34, .batteryVoltage = 3910, .batteryTemperature = 323, .batteryCurrent = 1143, .batteryCycleCount = 0, .batteryFullCharge = 5000000, .batteryChargeCounter = 1740000, .batteryTechnology = Li-ion}
+05-14 06:41:22.735  1432  1636 D BatteryService: online:5, current avg:1111, charge type:1, POGO powered:false, power sharing:false, high voltage charger:false, charger_type:0, capacity:280000, misc_event:0x10000, current_event:0x8000, current_now:1143
+05-14 06:41:22.740  1432  1620 D MotionRecognitionService:   onReceive : SARDEVICE_CP, callAction = on deviceID = 557573 slot = 0
+05-14 06:41:22.740  1432  1620 W MotionRecognitionService: id : 0 cmd :on
+05-14 06:41:22.740  1432  1620 I MotionRecognitionService: [SAR] Received request for MainGrip
+05-14 06:41:22.742  1432  1432 D PhoneWindowManagerExt: ACTION_BATTERY_CHANGED - Level=34, status=2
+05-14 06:41:22.742  1432  1620 D SensorService: [GripSensor] ++ setGripThdWithMCC  (65560)
+05-14 06:41:22.742  1432  1620 D SensorService: GripSensor: MCC Path does not exist 
+05-14 06:41:22.742  1432  1432 D SemWifiApBroadcastReceiver: Received : android.intent.action.BATTERY_CHANGED
+05-14 06:41:22.742  1432  1620 D SensorService: Calling batch handle==33554443 flags=0 rate=200000000 timeout== 0
+05-14 06:41:22.743   850   850 I SensorsGrip: [grip_sensor] enable: GripSensor: enable handle = 11 en = 1
+05-14 06:41:22.744  1856  1856 D SemBigDataInfoController: Intent : android.intent.action.BATTERY_CHANGED
+05-14 06:41:22.745  1856  1856 D SemBigDataInfoController: Intent : android.intent.action.BATTERY_CHANGED
+05-14 06:41:22.746  1875  1875 I PowerUI : mBootCompleted = true |  mFullyConnected = true
+05-14 06:41:22.746   850   901 I SensorsGrip: [grip_sensor] readEvents: GripSensor: grip data = RELEASE
+05-14 06:41:22.746  1875  1875 I PowerUI : BATTERY_HEALTH_CHECK extraHealth=2 mBatteryMiscEvent=65536
+05-14 06:41:22.746  1875  1875 D PowerUI : priorPlugType = 2 mPlugType = 2 priorBatteryStatus = 2 mBatteryStatus = 2
+05-14 06:41:22.746  1875  1875 I PowerUI : oldMisalign : false, curMisalign : false
+05-14 06:41:22.746  1432  1620 D SensorManager: registerListener :: 33554443, A96T3X6 Grip sensor, 200000, 0, com.samsung.android.gesture.MotionRecognitionSAR$SensorGripEventListener@95b754a
+05-14 06:41:22.746  1432  1620 D MotionRecognitionService: [SAR] enableGripSensor
+05-14 06:41:22.746  1432  1620 I MotionRecognitionService: [TA] In/out: true, curr state: 1
+05-14 06:41:22.746  1432  1620 I MotionRecognitionService: [SAR] TA connected before Main grip enabled
+05-14 06:41:22.746  1432  1620 D MotionRecognitionService: mSarGripSlot is 1
+05-14 06:41:22.746  1432  1620 W MotionRecognitionService: id : 2 cmd :on
+05-14 06:41:22.746  1432  1620 W MotionRecognitionService: DEFAULT
+05-14 06:41:22.746  1432  1620 W MotionRecognitionService: id : 9 cmd :on
+05-14 06:41:22.746  1432  1620 W MotionRecognitionService: DEFAULT
+05-14 06:41:22.746  1432  1620 W MotionRecognitionService: id : 15 cmd :on
+05-14 06:41:22.746  1432  1620 W MotionRecognitionService: DEFAULT
+05-14 06:41:22.747  1432  1620 W MotionRecognitionService: id : 19 cmd :on
+05-14 06:41:22.747  1432  1620 I MotionRecognitionService: [SAR] Received request for Sub1
+05-14 06:41:22.747  1432  1620 D MotionRecognitionService: [SAR] enabled SubGripSensor
+05-14 06:41:22.747  1432  1620 D SensorService: Calling batch handle==33554450 flags=0 rate=200000000 timeout== 0
+05-14 06:41:22.748   850   850 I SensorsGrip: [grip_sensor_sub] enable: GripSensor: enable handle = 18 en = 1
+05-14 06:41:22.749  1875  1875 D PowerUI.Notification: showChargingNotice oldChargingType : 1 currentChargingType : 1 oldChargingTime : 8145000 mChargingTime : 8134000
+05-14 06:41:22.749  1875  1875 D PowerUI.Notification: showChargingNotification()
+05-14 06:41:22.750  1875  3647 D PowerUI.Notification: 1. restoreScreenTimeOut - saved_value : :
+05-14 06:41:22.750  1875  3647 E PowerUI.Notification: no saved value, so we do nothing !!
+05-14 06:41:22.750   850   902 I SensorsGrip: [grip_sensor_sub] readEvents: GripSensor: grip data = RELEASE
+05-14 06:41:22.751  1432  1620 D SensorManager: registerListener :: 33554450, A96T3X6 Grip sensor for sub, 200000, 0, com.samsung.android.gesture.MotionRecognitionSAR$5@32de40f
+05-14 06:41:22.751  1432  1620 I MotionRecognitionService: [TA] In/out: true, curr state: 1
+05-14 06:41:22.751  1432  1620 I MotionRecognitionService: [SAR] TA connected before Sub1 grip enabled
+05-14 06:41:22.751  1432  1620 D MotionRecognitionService: mSarGripSubSlot is 1
+05-14 06:41:22.751  1856  2295 I System.out: Broadcast completed: result=0
+05-14 06:41:22.753  1432  4354 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.android.systemui,userId = 0
+05-14 06:41:22.753  1432  4354 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: packageName = com.android.systemui,userId = -1
+05-14 06:41:22.753  1432  4354 D ApplicationPolicy: isStatusBarNotificationAllowedAsUser: converting userId from USER_ALLto 0
+05-14 06:41:22.753  1432  1620 D MotionRecognitionService: [SAR] GET grip value[3] = 0
+05-14 06:41:22.753  1432  1620 D MotionRecognitionService: [SAR] == >> GripVal = 0
+05-14 06:41:22.753  1432  1620 D MotionRecognitionService: clear SAR_DEVICE_GRIP
+05-14 06:41:22.753  1432  1620 I MotionRecognitionService: [SAR] GripWifi disabled 
+05-14 06:41:22.753  1432  1620 D MotionRecognitionService: [SAR] get sub grip value 5
+05-14 06:41:22.753  1432  1620 D MotionRecognitionService: clear SAR_DEVICE_GRIP_SUB
+05-14 06:41:22.753  1432  1620 D MotionRecognitionService:   onReceive : ACTION_BATTERY_CHANGED, Plugged: 2
+05-14 06:41:22.753  1432  1620 I MotionRecognitionService: [TA] In/out: true, curr state: 1
+05-14 06:41:22.753  1432  1620 E MotionRecognitionService: handleMessage: event 200 value : 1
+05-14 06:41:22.754  1875  1875 D PowerUI : Battery swelling mode - priorBatterySwellingMode = 0 mBatterySwellingMode = 0 mBatteryStatus = 2
+05-14 06:41:22.754  1875  1875 I PowerUI : mBatteryMiscEvent = 65536
+05-14 06:41:22.756  1875  1875 D KeyguardUpdateMonitor: received broadcast android.intent.action.BATTERY_CHANGED
+05-14 06:41:22.757  1875  1875 I AODBatteryManager: updateBatteryData: ACTION_BATTERY_CHANGED
+05-14 06:41:22.761  1875  1875 I AODBatteryManager: saveBatteryData : AOD BatteryData [mBatteryLevel=34, mBatteryStatus=CHARGING, mBatteryPlugType=USB, mBatteryPlugged=true, mRemainingChargeTime=8134000, mBatteryChargingType=1, mBatteryChargerType=NORMAL, mBatteryOnline=NOT_DEFINED, mBatterySwellingMode=NONE, mBatteryProtectMode=false]
+05-14 06:41:22.761  1875  1875 I ChargingInfoManager: updateChargingInfo: newState = AOD ChargingInfo [mState=BATTERY_AND_REMAIN_TIME, mIsCharging=true, mIsFullyCharged=false, mIsBatteryProtectMode=false], oldState = AOD ChargingInfo [mState=BATTERY_AND_REMAIN_TIME, mIsCharging=true, mIsFullyCharged=false, mIsBatteryProtectMode=false]
+05-14 06:41:22.761  1432  1620 I MotionRecognitionService: Reset unknown state
+05-14 06:41:22.761  1432  1620 D MotionRecognitionService: clear TransmitPower  value : 1
+05-14 06:41:22.761  1432  1620 E MotionRecognitionService: handleMessage: event 200 value : 524288
+05-14 06:41:22.768  1432  1620 D MotionRecognitionService: clear TransmitPower  value : 524288
+05-14 06:41:22.772   846   890 D BatteryDump: wait_for_battery_event : occurred : change@/devices/virtual/xt_idletimer/timers 
+05-14 06:41:22.774  1432  1742 D ConnectivityService: reportNetworkActive, notify 1 listeners
+05-14 06:41:22.774  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:22.776  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:22.776  1875  1875 V SecQSFragmentAnimatorBase: setQsExpansionPosition 0.0
+05-14 06:41:22.776  1875  1875 V QsExpandAnimator: setQsExpansionPosition 0.0 0
+05-14 06:41:22.777  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:22.779  1875  1875 D IndicatorGardenInputProperty: updateRotation() prv:-1 >> new:0
+05-14 06:41:22.780  1875  1875 D DeviceState: getDeviceResolutionPixelSize - currentDensity = 300 deviceDensity = 300 initialDisplaySizeFactor = 720 currentDisplaySizeFactor = 720 initialDisplayDensity = 300 proportionalDensity = 300 proportionalPixel = 0
+05-14 06:41:22.780  1875  1875 D DeviceState: getDeviceResolutionPixelSize - currentDensity = 300 deviceDensity = 300 initialDisplaySizeFactor = 720 currentDisplaySizeFactor = 720 initialDisplayDensity = 300 proportionalDensity = 300 proportionalPixel = 0
+05-14 06:41:22.780  1875  1875 D DeviceState: getDeviceResolutionPixelSize - currentDensity = 300 deviceDensity = 300 initialDisplaySizeFactor = 720 currentDisplaySizeFactor = 720 initialDisplayDensity = 300 proportionalDensity = 300 proportionalPixel = 8
+05-14 06:41:22.781  1875  1875 D KeyguardUpdateMonitor: handleBatteryUpdate
+05-14 06:41:22.783  1875  1875 D KeyguardSecIndicationController: addIndicationTimeout() returned - unlocking
+05-14 06:41:22.783  1875  1875 D KeyguardSecIndicationController: addIndication() returned - unlocking
+05-14 06:41:22.783  1875  1875 D KeyguardSecIndicationController: addBatteryIndication() status = BatteryStatus{status=2,level=34,plugged=2,health=2,maxChargingWattage=-1,remaining=8134000ultraFastCharger=0}
+05-14 06:41:22.788   894   894 I SurfaceFlinger: SFWD update time=92387288184198
+05-14 06:41:22.789   894   894 I BufferQueueProducer: [StatusBar$_1875#0](this:0xb400007c31e1c948,id:-1,api:0,p:-1,c:894) queueBuffer: fps=0.20 dur=10017.57 max=9833.39 min=184.18
+05-14 06:41:22.791   845   945 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:0.199651,dur:10017.49,max:9833.48,min:184.01  
+05-14 06:41:22.940  7605  7605 I SCS@AiSearch user 0: (ObserverWorker::AOSP_MP) [main] entering in startWork():  
+05-14 06:41:22.940  7605  7605 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [main] entering in onChange():  
+05-14 06:41:22.941  7605  7773 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) [pool-11-thread-1] entering in collectChanges():  
+05-14 06:41:22.946  1432  4351 D PackageManager: setEnabledSetting : userId = 0 packageName = com.samsung.android.scs cmp = androidx.work.impl.background.systemalarm.RescheduleReceiver newState = 1 callingPackage = 10099/com.samsung.android.scs
+05-14 06:41:22.951  1432  4351 V SamsungAlarmManager: setLocked to kernel - W:414624761 / NW:414444671, now=414407622
+05-14 06:41:22.951  1432  4351 D SamsungAlarmManager: setInexact (T:3/F:0/AC:false) 20260514T064422 now=414407623 - CU:1000/CP:1432/L:3186e4a:*job.delay*
+05-14 06:41:22.951  1432  4351 V SamsungAlarmManager: setLocked to kernel - W:414624761 / NW:414444671, now=414407623
+05-14 06:41:22.961  2371  2371 I Launcher.NotificationListener: onNotificationPosted : com.android.systemui number : 0
+05-14 06:41:22.961  1875  1875 D InterruptionStateProvider: No bubble up: not allowed to bubble: -1|com.android.systemui|2131428820|charging_state|10084
+05-14 06:41:22.963  1875  1875 D InterruptionStateProvider:  no Heads up : edgelighting enabled app. -1|com.android.systemui|2131428820|charging_state|10084
+05-14 06:41:22.966  1875  2077 D PeopleSpaceWidgetMgr: Sbn doesn't contain valid PeopleTileKey: null/-1/com.android.systemui
+05-14 06:41:22.969 11092 11092 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+05-14 06:41:22.978  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:22.978  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:22.985 11092 11092 I AndroidRuntime: Using default boot image
+05-14 06:41:22.985 11092 11092 I AndroidRuntime: Leaving lock profiling enabled
+05-14 06:41:22.986 11092 11092 D SecNativeFeatureCppIf: encoded
+05-14 06:41:22.986 11092 11092 D SecNativeFeatureCppIf: decoding and unzip finish
+05-14 06:41:22.986 11092 11092 D SecNativeFeatureCppIf: use unCompDataBuff. encoded
+05-14 06:41:22.986 11092 11092 D SecNativeFeatureCppIf: Free unCompDataBuff
+05-14 06:41:22.986 11092 11092 D AndroidRuntime: addProductProperty: pBrand1 is not null
+05-14 06:41:22.987 11092 11092 D AndroidRuntime: addProductProperty: not brand or 7
+05-14 06:41:22.997 11092 11092 I app_process: Using CollectorTypeCC GC.
+05-14 06:41:23.017  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:23.017  1875  1875 D QS      : setQSExpansion 0.0 -78.575
+05-14 06:41:23.115  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-10 rssnr=1 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:23.118  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:23.142  1193  1193 D connsyslogger: Open FIFO for close
+05-14 06:41:23.181  1875  2077 D MobileStatusTracker(0/1): onDataActivity: direction=3
+05-14 06:41:23.182  1875  2077 D NetworkController.MobileSignalController(0/1): notifyListener: enabled=true, connected=true, dataConnected=true, networkType=LTE (4G), emergencyOnly=false, roaming=false, isDefault=true, fiveGAvailable=false, mmWave=false, showDisabledDataIcon=false, voWifiConnected=false, dataActivity=inout, simState=LOADED, cardOperator=OTHERS, simCardActivated=1
+05-14 06:41:23.234 11092 11092 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+05-14 06:41:23.265 11092 11092 D nativeloader: Load libicu_jni.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+05-14 06:41:23.265 11092 11092 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+05-14 06:41:23.266 11092 11092 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt68l.dat
+05-14 06:41:23.268 11092 11092 D nativeloader: Load libjavacore.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+05-14 06:41:23.271 11092 11092 D nativeloader: Load libopenjdk.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+05-14 06:41:23.275 11092 11092 W app_process: Using default priority map due to SDK version
+05-14 06:41:23.311 11092 11092 E SemDvfsManager_JNI: SemDvfsManager: registerfunction enter
+05-14 06:41:23.311 11092 11092 E SemAffinityControl: SemAffinityControl: registerfunction enter
+05-14 06:41:23.344 11092 11092 D ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+05-14 06:41:23.345 11092 11092 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+05-14 06:41:23.357   894  1279 I SurfaceFlinger: id=15384 createSurf (0x0),-1 flag=80004, WindowToken{ddb3aab android.os.Binder@263c4fa}#0
+05-14 06:41:23.359  1432  4351 D SettingsProvider: isChangeAllowed() : name = accessibility_enabled
+05-14 06:41:23.361  1432  4351 I GenerationRegistry: mBackingStore.isClosed() : false
+05-14 06:41:23.368  1432  4354 D SettingsProvider: isChangeAllowed() : name = accessibility_enabled
+05-14 06:41:23.369  1432  4354 I GenerationRegistry: mBackingStore.isClosed() : false
+05-14 06:41:23.373  1432  1432 D BatterySaverPolicy: accessibility changed to true, updating policy.
+05-14 06:41:23.374  1432  1432 I AccessibilityManagerService: semIsAccessibilityServiceEnabled()
+05-14 06:41:23.375  1432  1432 I AccessibilityManagerService: accesibilityService is null
+05-14 06:41:23.375  1432  1432 I AccessibilityManagerService: semIsAccessibilityServiceEnabled()
+05-14 06:41:23.375  1432  1432 I AccessibilityManagerService: accesibilityService is null
+05-14 06:41:23.376  1432  1432 D AS.AudioService: Accessibility volume enabled = false
+05-14 06:41:23.392   894   894 I BufferQueueProducer: [com.wawapp.client/com.wawapp.client.MainActivity$_10675#0](this:0xb400007c31e7f948,id:-1,api:0,p:-1,c:894) queueBuffer: fps=0.03 dur=38861.83 max=38861.83 min=38861.83
+05-14 06:41:23.392   894   894 I BufferQueueProducer: [SurfaceView - com.wawapp.client/com.wawapp.client.MainActivity@fe044d9@0(BLAST)#0](this:0xb400007c2ce7d948,id:-1,api:0,p:-1,c:894) queueBuffer: fps=0.05 dur=38895.52 max=38861.71 min=33.81
+05-14 06:41:23.393  2371 17399 I TouchInteractionService: onActiveNavBarRegionChanges, region : SkRegion((0,1510,258,1600)(259,1510,460,1600)(461,1510,640,1600))
+05-14 06:41:23.393  1875  1875 V Navbar.Store: ----handleEvent [EventType] ON_UPDATE_REMOTEVIEW [Module] SamsungNavigationBarView  KEYS_LEFT_REMOTEVIEW_CONTAINER=android.widget.LinearLayout{de4b145 I.E...... ......I. 0,0-79,90 #7f0b0478 app:id/left_remoteview}  KEYS_RIGHT_REMOTEVIEW_CONTAINER=android.widget.LinearLayout{8c0b09a I.E...... ......I. 641,0-720,90 #7f0b070a app:id/right_remoteview}  KEYS_CONTEXTUALBUTTON_VISIBLE=false  KEYS_NAVBAR_DARK_INTENSITY=0.0
+05-14 06:41:23.393  1875  1875 V Navbar.Store: ------[Band]REMOTE_VIEW_PACK_SET_REMOTEVIEW_CONTAINER
+05-14 06:41:23.393  1875  1875 V Navbar.Store: --------apply(UPDATE_NAVBAR_REMOTEVIEW_CONTAINER)
+05-14 06:41:23.394  1875  1875 V Navbar.Store: --------apply(UPDATE_NAVBAR_RIGHT_REMOTEVIEW_VISIBILITY)
+05-14 06:41:23.394  1875  1875 V Navbar.Store: --------getValue(FLOAT_REMOTEVIEW_DARK_INTENSITY)=0.0
+05-14 06:41:23.394  1875  1875 V Navbar.Store: handleEvent [EventType] ON_NAVBAR_UPDATE_A11Y_SERVICE [Module] NavigationBar  KEYS_LONG_CLICKABLE=false  KEYS_CLICKABLE=false
+05-14 06:41:23.394  1875  1875 V Navbar.Store: --[Band]SETUPWIZARD_PACK_UPDATE_A11Y_SERVICE
+05-14 06:41:23.394  1875  1875 V Navbar.Store: ----getValue(BOOL_NAVBAR_BUTTON_FORCED_VISIBLE)=false
+05-14 06:41:23.394  1875  1875 V Navbar.Store: ----getValue(BOOL_NAVBAR_SETUPWIZARD_STYLE)=false
+05-14 06:41:23.409  1875  1875 V Navbar.Store: handleEvent [EventType] GET_BOOL_NAVBAR_CAN_MOVE_STATE [Module] SamsungNavigationBarView  KEYS_DEFAULT=true
+05-14 06:41:23.409  1875  1875 V Navbar.Store: --[Band]CONFIG_PACK_GET_NAVBAR_CAN_MOVE
+05-14 06:41:23.409  1875  1875 V Navbar.Store: ----getValue(BOOL_NAVBAR_CAN_MOVE)=true
+05-14 06:41:23.411  2371 17399 I TouchInteractionService: onActiveNavBarRegionChanges, region : SkRegion((0,1510,258,1600)(259,1510,460,1600)(461,1510,640,1600))
+05-14 06:41:23.601   461   461 D io_stats: !@ 179,0 r 3998384 69498672 w 618492 17009308 d 231931 27264440 f 506793 537717 iot 2234916 0 th 102400 51200 44436 pt 168 inp 0 0 92388.094
+05-14 06:41:23.699  1432  4354 D SamsungAlarmManager: Cancel Alarm calling from uid:10197 pid :5766 / OP:PendingIntent{a4804a1: PendingIntentRecord{54ab919 com.google.android.gms/com.google.android.gms.container startService}}
+05-14 06:41:23.699  1432  4354 V SamsungAlarmManager: setLocked to kernel - W:414624761 / NW:414444671, now=414408371
+05-14 06:41:23.963   634   634 E audit   : type=1400 audit(1778740883.959:46141): avc:  denied  { write } for  pid=6407 comm="ThreadPoolForeg" name="traced_producer" dev="tmpfs" ino=10959 scontext=u:r:gmscore_app:s0:c512,c768 tcontext=u:object_r:traced_producer_socket:s0 tclass=sock_file permissive=0 SEPF_SM-A125F_12_0001 audit_filtered
+05-14 06:41:24.118  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-12 rssnr=0 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:24.121  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:24.192  1875  2077 D MobileStatusTracker(0/1): onDataActivity: direction=0
+05-14 06:41:24.193  1875  2077 D NetworkController.MobileSignalController(0/1): notifyListener: enabled=true, connected=true, dataConnected=true, networkType=LTE (4G), emergencyOnly=false, roaming=false, isDefault=true, fiveGAvailable=false, mmWave=false, showDisabledDataIcon=false, voWifiConnected=false, dataActivity=, simState=LOADED, cardOperator=OTHERS, simCardActivated=1
+05-14 06:41:24.225   894   894 I BufferQueueProducer: [StatusBar$_1875#0](this:0xb400007c31e1c948,id:-1,api:0,p:-1,c:894) queueBuffer: fps=2.09 dur=1436.41 max=1017.06 min=202.42
+05-14 06:41:24.229   845   945 I hwcomposer: [HWCDisplay] [Display_0 (type:1)] fps:4.174270,dur:1437.38,max:834.12,min:15.26  
+05-14 06:41:24.397 11092 11092 D SemCscFeature: Encoded
+05-14 06:41:24.415 11092 11092 W AccessibilityNodeInfoDumper: Fetch time: 14ms
+05-14 06:41:24.417  1432  2380 W WindowManager: removeWindowToken: Attempted to remove non-existing token: android.os.Binder@263c4fa
+05-14 06:41:24.418  1432  2380 D SettingsProvider: isChangeAllowed() : name = accessibility_enabled
+05-14 06:41:24.419  1432  2380 I GenerationRegistry: mBackingStore.isClosed() : false
+05-14 06:41:24.421  1432  2380 D SettingsProvider: isChangeAllowed() : name = accelerometer_rotation
+05-14 06:41:24.421  1432  2380 D SettingsProvider: isChangeAllowed() : name = user_rotation
+05-14 06:41:24.422  1432  1432 D BatterySaverPolicy: accessibility changed to false, updating policy.
+05-14 06:41:24.422  1432  2380 V WindowManager: rotationForOrientation(orient=SCREEN_ORIENTATION_UNSPECIFIED (-1), last=ROTATION_0 (0)); user=ROTATION_0 (0) USER_ROTATION_LOCKED
+05-14 06:41:24.422  1432  2380 D WindowManager: rotationForOrientation, orientationSource=ActivityRecord{9361be6 u0 com.wawapp.client/.MainActivity t400}
+05-14 06:41:24.423  1432  2380 V WindowManager: Computed rotation=ROTATION_0 (0) for display id=0 based on lastOrientation=SCREEN_ORIENTATION_UNSPECIFIED (-1) and oldRotation=ROTATION_0 (0), caller=com.android.server.wm.DisplayContent.updateRotationUnchecked:2339 com.android.server.wm.WindowManagerService.updateRotationUnchecked:4514 com.android.server.wm.WindowManagerService.freezeDisplayRotation:4414 com.android.server.wm.WindowManagerService.freezeRotation:4373 android.view.IWindowManager$Stub.onTransact:2449 com.android.server.wm.WindowManagerService.onTransact:1601 
+05-14 06:41:24.425   894   894 I BufferQueueProducer: [SurfaceView - com.wawapp.client/com.wawapp.client.MainActivity@fe044d9@0(BLAST)#0](this:0xb400007c2ce7d948,id:-1,api:0,p:-1,c:894) queueBuffer: fps=0.97 dur=1032.56 max=1032.56 min=1032.56
+05-14 06:41:24.429 11092 11092 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+05-14 06:41:24.429 11092 11092 D AndroidRuntime: Shutting down VM
+05-14 06:41:24.442   894   894 I Layer   : id=15384 removedFromDrawingState WindowToken{ddb3aab android.os.Binder@263c4fa}#0 (126)
+05-14 06:41:24.443   894   894 I SurfaceFlinger: id=15384 Removed WindowToken{ddb3aab android.os.Binder@263c4fa}#0 (126)
+05-14 06:41:24.444   894   894 I Layer   : id=15384 Destroyed WindowToken{ddb3aab android.os.Binder@263c4fa}#0
+05-14 06:41:24.458   894   894 I BufferQueueProducer: [com.wawapp.client/com.wawapp.client.MainActivity$_10675#0](this:0xb400007c31e7f948,id:-1,api:0,p:-1,c:894) queueBuffer: fps=0.94 dur=1066.54 max=1066.54 min=1066.54
+05-14 06:41:25.115  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-12 rssnr=-1 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:25.119  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:25.273 11092 11092 D RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x72e5be3910)
+05-14 06:41:25.286 11092 11092 D RefBase : #00 pc 00000000000f0c18  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+288)
+05-14 06:41:25.286 11092 11092 D RefBase : #01 pc 00000000000e1de8  /apex/com.android.runtime/lib64/bionic/libc.so (exit+24)
+05-14 06:41:25.287 11092 11092 D RefBase : #02 pc 0000000000082184  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+100)
+05-14 06:41:25.366  2821  3097 I SDHMS:C : SIOP:: AP:242(358,100) BAT:323(323,0) USB:0(0,0) CHG:366(366,0) PA:337(337,0) BLK:0(0,0) SUBBAT:0(0,0) LRP:329(329,0) LRF:325(325) LRB:329(329) 
+05-14 06:41:25.434  7605  7773 I SCS@AiSearch user 0: (IndexManager) [pool-11-thread-1] entering in updateIndex():  
+05-14 06:41:25.434  7605  7773 I SCS@AiSearch user 0: (IndexManager) Update com.google.android.providers.media index with Docs size = 1
+05-14 06:41:25.434  7605  7773 I SCS@AiSearch user 0: (IndexManager) [UPDATE] indexName=[com.google.android.providers.media], luceneDocument=[1000205092]
+05-14 06:41:25.435  7605  7773 I SCS@AiSearch user 0: (IndexManager) [pool-11-thread-1] entering in updateDocumentList():  index: com.google.android.providers.media, updateList.size:1
+05-14 06:41:25.435  7605  7773 I SCS@AiSearch user 0: (IndexManager) getIndexWriter(): indexName com.google.android.providers.media
+05-14 06:41:25.441  7605  7773 I SCS@AiSearch user 0: (IndexManager) [UPDATE] Done indexName: com.google.android.providers.media updateList.size():1
+05-14 06:41:25.442  7605  7773 I SCS@AiSearch user 0: (IndexSearcherManager) [pool-11-thread-1] entering in refreshSearcherManager():  refreshSearcherManager for pkg com.google.android.providers.media
+05-14 06:41:25.490  7605  7773 I SCS@AiSearch user 0: (IndexSearcherManager) [pool-11-thread-1] leaving from refreshSearcherManager():  
+05-14 06:41:25.490  7605  7773 I SCS@AiSearch user 0: (IndexManager) [pool-11-thread-1] entering in waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-14 06:41:25.491  7605  8199 I SCS@AiSearch user 0: (IndexManager) [pool-16-thread-1] entering in commitIndexWriter():  
+05-14 06:41:25.537  7605  8199 I SCS@AiSearch user 0: (IndexManager) [pool-16-thread-1] leaving from commitIndexWriter():  
+05-14 06:41:25.538  7605  7773 I SCS@AiSearch user 0: (IndexManager) [pool-11-thread-1] leaving from waitUntilCommitTaskFinished (idx=com.google.android.providers.media)():  
+05-14 06:41:25.538  7605  7773 I SCS@AiSearch user 0: (IndexManager) [pool-11-thread-1] leaving from updateIndex():  
+05-14 06:41:25.541  7605  7773 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetch: fetching took  1789 ms
+05-14 06:41:25.541  7605  7773 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) fetchChanges: applied 1 items
+05-14 06:41:25.541  7605  7773 I SCS@AiSearch user 0: (BaseCollector::AOSP_MP) notifyIndexChange
+05-14 06:41:25.610   461   461 D io_stats: !@ 179,0 r 3998384 69498672 w 618525 17010748 d 231931 27264440 f 506836 537760 iot 2234952 0 th 102400 51200 44436 pt 168 inp 0 0 92390.104
+05-14 06:41:26.120  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-9 rssnr=3 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:26.124  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:26.812 11110 11110 D ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+05-14 06:41:26.815  1432  3242 I EDMNativeHelperService: isScreenCaptureEnabled
+05-14 06:41:26.816  1432  3242 D RestrictionPolicy: isScreenCaptureEnabled : ret=true userId=0
+05-14 06:41:26.827   894   894 I SurfaceFlinger: operator()(), mtkRenderCntDebug 532, screenshot (Background for SurfaceView - com.wawapp.client/com.wawapp.client.MainActivity@fe044d9@0#0)
+05-14 06:41:26.827   894   894 I SurfaceFlinger: operator()(), mtkRenderCntDebug 532, screenshot (SurfaceView - com.wawapp.client/com.wawapp.client.MainActivity@fe044d9@0(BLAST)#0)
+05-14 06:41:26.827   894   894 I SurfaceFlinger: operator()(), mtkRenderCntDebug 532, screenshot (com.wawapp.client/com.wawapp.client.MainActivity$_10675#0)
+05-14 06:41:26.827   894   894 I SurfaceFlinger: operator()(), mtkRenderCntDebug 532, screenshot (StatusBar$_1875#0)
+05-14 06:41:26.827   894   894 I SurfaceFlinger: operator()(), mtkRenderCntDebug 532, screenshot (NavigationBar0$_1875#0)
+05-14 06:41:26.834 11110 11112 D hw-ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+05-14 06:41:26.869 11110 11112 E ion     : ioctl c0044901 failed with code -1: Invalid argument
+05-14 06:41:27.081  1432  1484 E Watchdog: !@Sync: 3075 heap: 80 / 96 [2026-05-14 06:41:27.081] sdogWay: softdog FD: 874
+05-14 06:41:27.112  1875  2077 D MobileStatusTracker(0/1): onSignalStrengthsChanged signalStrength=SignalStrength:{mCdma=Invalid,mGsm=Invalid,mWcdma=Invalid,mTdscdma=Invalid,mLte=CellSignalStrengthLte: rssi=-87 rsrp=-86 rsrq=-9 rssnr=4 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=4 parametersUseForLevel=0,mNr=Invalid,SignalBarInfo{ lteLevel=4 },rat=14,primary=CellSignalStrengthLte} level=4
+05-14 06:41:27.114  1875  2077 D NetworkController: SignalStrength from intent slotId=0
+05-14 06:41:27.337 11114 11114 D ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+05-14 06:41:27.347  2759  2759 I MediaServiceV2: Creating work for intent Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///sdcard/qa_screencap.png flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-14 06:41:27.348  2759  2759 I MediaServiceV2: Work enqueued for intent: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///sdcard/qa_screencap.png flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-14 06:41:27.363 11110 11110 E IMGSRV  : :2631: GrallocUnregisterBuffer: Cannot free a locked buffer (ID=206116)
+05-14 06:41:27.363 11110 11110 E IMGMapper: freeBuffer:64 Failed to unregister native handle
+05-14 06:41:27.363 11110 11110 E Gralloc4: freeBuffer(0xb400007e22a092a0) failed with 2
+05-14 06:41:27.377 11110 11110 D RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x7ea67f5910)
+05-14 06:41:27.390 11110 11110 D RefBase : #00 pc 00000000000f0c18  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+288)
+05-14 06:41:27.390 11110 11110 D RefBase : #01 pc 00000000000e1de8  /apex/com.android.runtime/lib64/bionic/libc.so (exit+24)
+05-14 06:41:27.390 11110 11110 D RefBase : #02 pc 0000000000082184  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+100)
+05-14 06:41:27.396  2759  2969 D WM-SystemJobScheduler: Scheduling work ID 606a29c3-dd6f-4a8c-90cc-40fb78af00f3Job ID 29694
+05-14 06:41:27.402  2759  2969 D WM-GreedyScheduler: Ignoring {WorkSpec: ef71fa5d-b822-49a5-a66a-99d1dc0bf11e}. Requires device idle.
+05-14 06:41:27.402  2759  2969 D WM-GreedyScheduler: Ignoring {WorkSpec: a8e599ce-6627-4820-b45b-48a71c58adc2}. Requires device idle.
+05-14 06:41:27.402  2759  2969 D WM-GreedyScheduler: Ignoring {WorkSpec: b465f189-7a32-427a-8eda-4d9059ac4658}. Requires device idle.
+05-14 06:41:27.402  2759  2969 D WM-GreedyScheduler: Starting work for 606a29c3-dd6f-4a8c-90cc-40fb78af00f3
+05-14 06:41:27.404  2759  2759 D WM-SystemJobService: onStartJob for WorkGenerationalId(workSpecId=606a29c3-dd6f-4a8c-90cc-40fb78af00f3, generation=0)
+05-14 06:41:27.406  2759  2969 D WM-Processor: Processor: processing WorkGenerationalId(workSpecId=606a29c3-dd6f-4a8c-90cc-40fb78af00f3, generation=0)
+05-14 06:41:27.409  2759  2969 D WM-Processor: Work WorkGenerationalId(workSpecId=606a29c3-dd6f-4a8c-90cc-40fb78af00f3, generation=0) is already enqueued for processing
+05-14 06:41:27.414  2759  2759 D WM-WorkerWrapper: Starting work for com.android.providers.media.MediaServiceV2
+05-14 06:41:27.416  2759 11117 I MediaServiceV2: Work initiated for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-14 06:41:27.446  2759 11117 I MediaServiceV2: Work ended for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-14 06:41:27.449  2759  2796 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=606a29c3-dd6f-4a8c-90cc-40fb78af00f3, tags={ com.android.providers.media.MediaServiceV2 } ]
+05-14 06:41:27.453  2759  2759 D WM-Processor: Processor 606a29c3-dd6f-4a8c-90cc-40fb78af00f3 executed; reschedule = false
+05-14 06:41:27.453  2759  2759 D WM-SystemJobService: 606a29c3-dd6f-4a8c-90cc-40fb78af00f3 executed on JobScheduler
+05-14 06:41:27.460  2759  2796 D WM-GreedyScheduler: Cancelling work ID 606a29c3-dd6f-4a8c-90cc-40fb78af00f3
+05-14 06:41:27.467  2759  2796 D WM-GreedyScheduler: Ignoring {WorkSpec: ef71fa5d-b822-49a5-a66a-99d1dc0bf11e}. Requires device idle.
+05-14 06:41:27.467  2759  2796 D WM-GreedyScheduler: Ignoring {WorkSpec: a8e599ce-6627-4820-b45b-48a71c58adc2}. Requires device idle.
+05-14 06:41:27.467  2759  2796 D WM-GreedyScheduler: Ignoring {WorkSpec: b465f189-7a32-427a-8eda-4d9059ac4658}. Requires device idle.
+05-14 06:41:27.612  8112  8145 D DelayedNotifier: notify for scanItem.
+05-14 06:41:27.615   461   461 D io_stats: !@ 179,0 r 3998398 69498728 w 618525 17010748 d 231931 27264440 f 506836 537760 iot 2234956 0 th 102400 51200 44436 pt 168 inp 0 0 92392.111
+05-14 06:41:27.615  8112  8129 D MediaSync: loaded: 170ms, 1
+05-14 06:41:27.617  8112 11119 D LocationService: Begin: com.samsung.intent.action.UPDATE_LOCATION
+05-14 06:41:27.620  8112 11119 D LocationManager: delete null addr: 0
+05-14 06:41:27.625  8112  9362 D MediaParser: scanItem: 1
+05-14 06:41:27.626  8112 11119 D ModernSamsungCoreService: applyPending()
+05-14 06:41:27.626  8112 11119 D LocationManager: LocationTask: 9ms
+05-14 06:41:27.626  8112 11119 D LocationService: End: com.samsung.intent.action.UPDATE_LOCATION

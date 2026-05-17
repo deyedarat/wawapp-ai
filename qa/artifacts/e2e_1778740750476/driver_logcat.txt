@@ -1,0 +1,514 @@
+--------- beginning of main
+05-14 06:41:02.096  1208  1208 I SurfaceFlinger: onHandleDestroyed: name=WindowToken{8c9f194 type=2032 android.os.Binder@dad1e7}#37655, layerId=37655, parentId=0
+05-14 06:41:02.096  1208  1208 I SurfaceFlinger: id=37655 Removed WindowToken{8c9f194 type=2032 android.os.Binder@dad1e7}#37655 (145)
+05-14 06:41:02.098 22806 10737 I SelfLocationFetcher: Starting self-location fetching naive strategy. [CONTEXT service_id=284 ]
+05-14 06:41:02.108 22806 10737 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+05-14 06:41:02.110  1208  1208 I BufferQueueProducer: [com.wawapp.driver/com.wawapp.driver.MainActivity$_15669#37646](this:0xb400007d8174f898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=0.76 dur=1314.72 max=1314.72 min=1314.72
+05-14 06:41:02.111  1208  1208 I Layer   : id=37655 Destroyed WindowToken{8c9f194 type=2032 android.os.Binder@dad1e7}#37655
+05-14 06:41:02.111  1208  1208 I BufferQueueDebug: [WindowToken{8c9f194 type=2032 android.os.Binder@dad1e7}#37655](this:0xb400007d8174c898,id:-1,api:0,p:-1,c:1208) onDestructor()
+05-14 06:41:02.201  1139  1493 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-14 06:41:02.210  1159  1181 I mtkpower@impl: [setMode] type:6, enabled:1
+05-14 06:41:02.210  1159  1181 E mtkpower@impl: [setMode] unknown type
+05-14 06:41:02.215  1208  1208 I BufferQueueProducer: [FramebufferSurface](this:0xb400007d832828d0,id:-1,api:1,p:1208,c:1208) queueBuffer: fps=0.96 dur=2085.20 max=1329.96 min=755.24
+05-14 06:41:02.282  1159  1181 I mtkpower@impl: [setMode] type:6, enabled:0
+05-14 06:41:02.282  1159  1181 E mtkpower@impl: [setMode] unknown type
+05-14 06:41:02.290   366   366 I lmkd    : 0(delay), 0(swap), 50(freelimit), 0(reentrymode) memory pressure events were skipped after a kill!
+05-14 06:41:02.387  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:02.388   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:02.532 12766 12795 D MediaSync: loaded: 2997ms, 1
+05-14 06:41:02.537 12766 13210 D MediaParseTask: scanItem: 1
+05-14 06:41:02.542 12766 12794 D SecMediaProvider: UPDATE /local/metadata 3146850, 3146863
+05-14 06:41:02.823  1414 16278 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=24
+05-14 06:41:02.823  1414 16278 D mpe     : mtk_gps_mnl_trigger_mpe: MPE not enable
+05-14 06:41:02.839  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 06:41:02.841  1491  1504 D agps    : [agps][n][AGPS] [MNL] write  pmtk  [$PMTK680,1,FFFFF6AE*79
+05-14 06:41:02.841  1491  1504 D agps    :  ]
+05-14 06:41:02.888  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:02.889   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:02.911  1414 16278 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=24
+05-14 06:41:02.911  1414 16278 D mpe     : mtk_gps_mnl_trigger_mpe: MPE not enable
+05-14 06:41:02.911  1414 16278 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 06:41:02.911  1414 16278 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:44, [vAGPS_Auto_Req]:g_FirstDbtt:0,u2BitMap:0x8
+05-14 06:41:02.913  1414 16278 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 2742 bytes:
+05-14 06:41:02.914  1414 16278 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778740863000, second = 1778740863000, msec = 0
+05-14 06:41:02.916  1414 16278 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778740863000, second = 1778740863000, msec = 0
+05-14 06:41:02.916  1414 16278 D nmea_parser: nmea_reader_update_accuracy: update accuracy: h=4.000000, b= 179.899994, s=2.900000, v=19.100000
+05-14 06:41:02.916  1414 16278 D nmea_parser: nmea_reader_parse: receive PMTKAGC command, agc: 6
+05-14 06:41:02.917  1414 16278 D nmea_parser: nmea_reader_parse: et_mnl_report_mnld = 304886044, tick_in_dsp = 92293, et_mnl_receive_tick = 304885954, et_at_dsp =304885953507165
+05-14 06:41:02.918  1414 16278 D nmea_parser: nmea_reader_parse: report elapsedrealtime, timestampNs = 304885953507165
+05-14 06:41:02.918  1414 16278 D nmea_parser: nmea_reader_parse: fix_mode:3, fix_flag:0xff
+05-14 06:41:02.918  1414 16278 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:2742, [NMEA]$GNGGA,064103.00...
+05-14 06:41:02.918  1414  1470 W MNLD    : Xed[V_8M.*7-$;;3B3',0>lz'WcE?NJWmd[[SbsteTEUYdk[RDU]X]
+05-14 06:41:02.918  1414 16278 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 147 bytes:
+05-14 06:41:02.919  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [167]
+05-14 06:41:02.919  1414 16278 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:147, $PMTKRTK1,0,-522,-259200,0,0,0.000,0000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0,0,0,0,99,0,0,0,0,4,0*5D
+05-14 06:41:02.919  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  gnss_time_sync  utc_time=1778740863000
+05-14 06:41:02.919  1491  1504 D agps    : Xed[V_8;|(7C0x)+x^Sm=;hQcPN=WI;=9E`C3bQ4I=5+2832#&5AF23=62$2LG1CUI=62b.(.//+$(.)#  
+05-14 06:41:02.919  1414 16278 D gps_controlller: mtk_gps_sys_gps_mnl_callback: MTK_GPS_MSG_FIX_READY,GET_RTC_FAIL
+05-14 06:41:02.919  1414 16278 D gps_controlller: mtk_gps_sys_gps_mnl_callback: get debug data
+05-14 06:41:02.918  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, nfw don't have white list ret = 16
+05-14 06:41:02.919  1414  1457 D MNLD    : mnld_gps_controller_mnl_nmea_timeout: g_mnld_ctx.gps_status.timer_nmea_monitor start_timer
+05-14 06:41:02.919  1414 16278 D gps_controlller: update_gnss_debug_data: update_gnss_debug_data begin
+05-14 06:41:02.919  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 06:41:02.919  1414 16278 D mnl2hal : mnl2hal_report_debug_data: mnl2hal_report_debug_data
+05-14 06:41:02.920  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 06:41:02.955  1797  2236 D GnssLocationProvider_ex: SV Count : 11 / 12      (PRN, Constellation, Type, SNR, Used)
+05-14 06:41:02.956  1797  2236 D GnssLocationProvider_ex: (31, GPS, L1, 45.6, 1) (18, GPS, L1, 40.7, 1) (26, GPS, L1, 41.4, 1) (16, GPS, L1, 43.1, 1) (32, GPS, L1, 28.2, 1) (29, GPS, L1, 31.3, 1) 
+05-14 06:41:02.956  1797  2236 D GnssLocationProvider_ex: (4, GPS, L1, 38.4, 0) (20, GLONASS, L1, 33.2, 1) (11, GLONASS, L1, 37.5, 1) (22, GLONASS, L1, 33.7, 1) (31, BEIDOU, L1, 36.8, 1) (24, BEIDOU, L1, 36.7, 1) 
+05-14 06:41:02.959  1797  2236 D GnssLocationProvider: reportLocation
+05-14 06:41:02.964 16359 16359 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x7b155e5848). Use sp<> to manage this object.
+05-14 06:41:02.968  1797  2685 D SLocation: PositionManager - Active handleLocationChanged [G, A : 4.00, T : 1778740863000, ET : 304885953, E : OD, h : 19/29]
+05-14 06:41:02.968  1797  2685 D SLocation: PositionManager - receive gps location
+05-14 06:41:02.969 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+05-14 06:41:02.969 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+05-14 06:41:02.970 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+05-14 06:41:02.970 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+05-14 06:41:02.971  1797  2685 D SLocation: PositionManager - Passive handleLocationChanged [G, A : 4.00, T : 1778740863000, ET : 304885953, E : OD, h : 19/29]
+05-14 06:41:02.972  1797  2685 D SLocation: PositionManager - receive gps location
+05-14 06:41:02.972  1797  2685 D SLocation: DuplicateLocationChecker_PositionManager - gps is duplicated last gps location
+05-14 06:41:02.972  1797  2685 D SLocation: PositionManager - Passive handleLocationChanged [F, A : 4.70, T : 1778740862823, ET : 304885953, h : 19/29]
+05-14 06:41:02.973  1797  2685 D SLocation: PositionManager - receive fused location
+05-14 06:41:02.973 16359 16359 D RefBase :   #00 pc 0000000000096c10  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+144) (BuildId: b7d4cc6e214395264fee975672a6cae6)
+05-14 06:41:02.973 16359 16359 D RefBase :   #01 pc 000000000009b5a8  /apex/com.android.runtime/lib64/bionic/libc.so (exit+24) (BuildId: b7d4cc6e214395264fee975672a6cae6)
+05-14 06:41:02.973 16359 16359 D RefBase :   #02 pc 000000000008f7c8  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+120) (BuildId: b7d4cc6e214395264fee975672a6cae6)
+05-14 06:41:02.973  1797  2685 D SLocation: GeofenceLocationFilter - location sent before 1577, need to filter / provider : gps, accuracy : 4.0
+05-14 06:41:02.973  1797  2685 I SLocation: GeofenceLocationFilter - alarm set, next time to send location : 304890527, D.U@280b392
+05-14 06:41:02.976  1797  2685 D SLocation: DuplicateLocationChecker_GeofenceLocationFilter - fused is duplicated last gps location
+05-14 06:41:02.999 22806 22806 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+05-14 06:41:03.238   366   366 I lmkd    : 0(delay), 0(swap), 50(freelimit), 0(reentrymode) memory pressure events were skipped after a kill!
+05-14 06:41:03.266 16404 16404 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-14 06:41:03.267 16404 16404 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-14 06:41:03.268 16404 16404 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-14 06:41:03.280  1797  2615 D InputDispatcher: Inject motion (16407/2000): action=0x0, time=115339761000000, f=0x0, d=0 dsdx=1.000000 dtdx=0.000000
+05-14 06:41:03.281  1797  1993 I InputDispatcher: Delivering touch to (2444): action: 0x4, f=0x0, d=0, '4602b85', t=1 
+05-14 06:41:03.281  1797  1993 I InputDispatcher: Delivering touch to (15669): action: 0x0, f=0x0, d=0, '64371e9', t=1 
+--------- beginning of system
+05-14 06:41:03.282  1797  1993 D PowerManagerService: [api] userActivityFromNative : touch displayId=0 eventTime=115339761
+05-14 06:41:03.283 15669 15669 I VRI[MainActivity]@5815bee: ViewPostIme pointer 0
+05-14 06:41:03.284  1797  1822 I GestureDetector: obtain mCurrentDownEvent. id: -588061157 caller: com.android.server.wm.SystemGesturesPointerEventListener.onPointerEvent:17 com.android.server.wm.PointerEventDispatcher.onInputEvent:51 android.view.InputEventReceiver.dispatchInputEvent:385 
+05-14 06:41:03.284  1797  1822 I GestureDetector: obtain mCurrentDownEvent. id: -588061157 caller: com.android.server.wm.SystemPerformancePointerEventListener.onPointerEvent:13 com.android.server.wm.PointerEventDispatcher.onInputEvent:51 android.view.InputEventReceiver.dispatchInputEvent:385 
+05-14 06:41:03.284 15669 15669 I VRI[MainActivity]@5815bee: call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@5815bee
+05-14 06:41:03.285  1208  1579 D SurfaceFlinger: calculateTimeoutTime, triggerInterval = 2 sec + 999999616 nsec
+05-14 06:41:03.286  1797  1993 D PowerManagerService: UserActivityStateListenerState: 1
+05-14 06:41:03.287  1797  2615 D InputDispatcher: Inject motion (16407/2000): action=0x1, time=115339761000000, f=0x0, d=0 dsdx=1.000000 dtdx=0.000000
+05-14 06:41:03.287  1797  1993 I InputDispatcher: Delivering touch to (15669): action: 0x1, f=0x0, d=0, '64371e9', t=1 
+05-14 06:41:03.288  1797  1822 I GestureDetector: obtain mCurrentMotionEventRaw. action: 1 id: -956798345
+05-14 06:41:03.288  1797  1822 I GestureDetector: obtain mCurrentMotionEventRaw. action: 1 id: -956798345
+05-14 06:41:03.370 15669 15669 I VRI[MainActivity]@5815bee: ViewPostIme pointer 1
+05-14 06:41:03.385   568   568 D io_stats: !@ 179,0 r 30977553 372520150 w 3251240 29633932 d 521952 29131208 f 664565 678037 iot 6071196 0 th 0 0 0 pt 0 inp 0 2 115339.868
+05-14 06:41:03.386   568   568 D io_stats: !@ Read_top(KB): rs.media.module(4593) 99392 sh:normal(16359) 19616 .akilee.mounsif(7333) 5968
+05-14 06:41:03.386   568   568 D io_stats: !@ Write_top(KB): kworker/u16:4:/(9080) 564 system_server:h(1797) 144 droid.daemonapp(16210) 128
+05-14 06:41:03.390  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:03.391   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:03.409  1797  2685 D SLocation: GPSManager - removeUpdates - GPS
+05-14 06:41:03.410  1797  2685 I NSLocationProviderHelper: updateRemoveInfo, uid=1000
+05-14 06:41:03.411  1797  2685 D LocationManagerService: gps provider removed registration from 1000/android[SLocationService]/D38E263F
+05-14 06:41:03.411  1797  2685 D LocationManagerService: gps provider request changed to ProviderRequest[@+30s0ms, HIGH_ACCURACY, WorkSource{10241 com.wawapp.driver}]
+05-14 06:41:03.412  1797  2236 D GnssLocationProvider: setRequest ProviderRequest[@+30s0ms, HIGH_ACCURACY, WorkSource{10241 com.wawapp.driver}]
+05-14 06:41:03.414  1797  2236 D GnssLocationProvider: mStarted =  true, isEnabled = true
+05-14 06:41:03.415  1797  2236 D GnssLocationProvider: stopBatching
+05-14 06:41:03.416  1414  1470 D MNLD    : hal_gps_set_position_mode: hal_gps_set_position_mode  mode=1 recurrence=0 min_interval=30000 preferred_acc=0 preferred_time=0 lowPowerMode=0
+05-14 06:41:03.417  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [162]
+05-14 06:41:03.417  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  set_position_mode  mode=1
+05-14 06:41:03.441  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37651](this:0xb400007d54fe5898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=1.43 dur=1396.18 max=1314.77 min=81.41
+05-14 06:41:03.444  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:4.299166,dur:1395.62,max:1228.40,min:14.96  
+05-14 06:41:03.516 15669 15669 D NotificationHelper: Sound repeats cancelled for order qa_full_order_lifecycle_1778740846208
+05-14 06:41:03.521 15669 15669 D SnoozeScheduler: 🔕 Snooze cancelled: orderId=qa_full_order_lifecycle_1778740846208
+05-14 06:41:03.521 15669 15669 D NotificationHelper: Notification cancelled for order qa_full_order_lifecycle_1778740846208
+05-14 06:41:03.525  1139  1493 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-14 06:41:03.526 15669 15669 D SnoozeScheduler: 🔕 Snooze cancelled: orderId=qa_full_order_lifecycle_1778740846208
+05-14 06:41:03.534 15669 15669 I flutter : [NotificationMethodChannel] 🔕 Snooze cancelled: orderId=qa_full_order_lifecycle_1778740846208
+05-14 06:41:03.547  1159  1181 I mtkpower@impl: [setMode] type:6, enabled:1
+05-14 06:41:03.547  1159  1181 E mtkpower@impl: [setMode] unknown type
+05-14 06:41:03.554  1208  1208 I BufferQueueProducer: [FramebufferSurface](this:0xb400007d832828d0,id:-1,api:1,p:1208,c:1208) queueBuffer: fps=0.75 dur=1339.76 max=1339.76 min=1339.76
+05-14 06:41:03.560  1159  1181 I mtkpower@impl: [setMode] type:6, enabled:0
+05-14 06:41:03.560  1159  1181 E mtkpower@impl: [setMode] unknown type
+05-14 06:41:03.578 15669 15761 I m.wawapp.driver: hiddenapi: Accessing hidden method Ldalvik/system/CloseGuard;->get()Ldalvik/system/CloseGuard; (runtime_flags=CorePlatformApi, domain=core-platform, api=unsupported,core-platform-api) from Lokhttp3/internal/platform/AndroidPlatform$CloseGuard; (domain=app, TargetSdkVersion=36) using reflection: allowed
+05-14 06:41:03.578 15669 15761 I m.wawapp.driver: hiddenapi: Accessing hidden method Ldalvik/system/CloseGuard;->open(Ljava/lang/String;)V (runtime_flags=CorePlatformApi, domain=core-platform, api=unsupported,core-platform-api) from Lokhttp3/internal/platform/AndroidPlatform$CloseGuard; (domain=app, TargetSdkVersion=36) using reflection: allowed
+05-14 06:41:03.578 15669 15761 I m.wawapp.driver: hiddenapi: Accessing hidden method Ldalvik/system/CloseGuard;->warnIfOpen()V (runtime_flags=CorePlatformApi, domain=core-platform, api=unsupported,core-platform-api) from Lokhttp3/internal/platform/AndroidPlatform$CloseGuard; (domain=app, TargetSdkVersion=36) using reflection: allowed
+05-14 06:41:03.584  1797  1797 I GestureDetector: handleMessage TAP
+05-14 06:41:03.584  1797  1822 I GestureDetector: handleMessage TAP
+05-14 06:41:03.665  1123 16424 E Netd    : To use pid in case SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA is false, to remove build error (unused variable)
+05-14 06:41:03.750  1797  2370 D NetdEventListenerService: DNS Requested by 182, 10241(com.wawapp.driver), SUCCESS, 86ms
+05-14 06:41:03.822  1414 16278 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 06:41:03.838  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [150]
+05-14 06:41:03.891  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:03.892   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:03.912  1414 16278 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 06:41:03.912  1414 16278 D mpe     : mtk_gps_mnl_trigger_mpe: mpemsg len=0
+05-14 06:41:03.915  1414 16278 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:44, [vAGPS_Auto_Req]:g_FirstDbtt:0,u2BitMap:0x8
+05-14 06:41:03.916  1414 16278 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 2749 bytes:
+05-14 06:41:03.916  1414 16278 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778740864000, second = 1778740864000, msec = 0
+05-14 06:41:03.918  1414 16278 D nmea_parser: nmea_reader_update_time: nmea_reader_update_time: timestamp = 1778740864000, second = 1778740864000, msec = 0
+05-14 06:41:03.918  1414 16278 D nmea_parser: nmea_reader_update_accuracy: update accuracy: h=4.200000, b= 94.500000, s=1.600000, v=20.100000
+05-14 06:41:03.918  1414 16278 D nmea_parser: nmea_reader_parse: receive PMTKAGC command, agc: 6
+05-14 06:41:03.918  1414 16278 D nmea_parser: nmea_reader_parse: et_mnl_report_mnld = 304887047, tick_in_dsp = 93293, et_mnl_receive_tick = 304886953, et_at_dsp =304886953159472
+05-14 06:41:03.919  1414 16278 D nmea_parser: nmea_reader_parse: report elapsedrealtime, timestampNs = 304886953159472
+05-14 06:41:03.919  1414 16278 D nmea_parser: nmea_reader_parse: fix_mode:3, fix_flag:0xff
+05-14 06:41:03.919  1414 16278 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:2749, [NMEA]$GNGGA,064104.00...
+05-14 06:41:03.919  1414 16278 D pseudo  : mtk_gps_sys_nmea_output_to_mnld: received 147 bytes:
+05-14 06:41:03.919  1414 16278 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:147, $PMTKRTK1,0,-522,-259200,0,0,0.000,0000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0,0,0,0,99,0,0,0,0,4,0*5D
+05-14 06:41:03.919  1414 16278 D gps_controlller: mtk_gps_sys_gps_mnl_callback: MTK_GPS_MSG_FIX_READY, GET_RTC_OK, 0.033, 0.007, Age = 2, RTCDiff = 30, Time_interval = 10
+05-14 06:41:03.919  1414 16278 D gps_controlller: mtk_gps_sys_gps_mnl_callback: get debug data
+05-14 06:41:03.920  1414 16278 D gps_controlller: update_gnss_debug_data: update_gnss_debug_data begin
+05-14 06:41:03.920  1414 16278 D mnl2hal : mnl2hal_report_debug_data: mnl2hal_report_debug_data
+05-14 06:41:03.920  1414  1470 W MNLD    : Xed[V_8M.*7-$;;3B3',0>lz'WcE?NJWmd[[SbsteTEUYdk[RDU]X]
+05-14 06:41:03.921  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, nfw don't have white list ret = 16
+05-14 06:41:03.921  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [167]
+05-14 06:41:03.921  1491  1504 D agps    : [agps][n][AGPS] [MNL] read  gnss_time_sync  utc_time=1778740864000
+05-14 06:41:03.921  1491  1504 D agps    : Xed[V_8;|(7C0x)+x^Sm=;hQcPN=WI;=9E`C3bQ4I=5+2832#&5AF23=62$2LG1CUI=62b.(.//+$(.*$  
+05-14 06:41:03.921  1414  1457 D MNLD    : mnld_gps_controller_mnl_nmea_timeout: g_mnld_ctx.gps_status.timer_nmea_monitor start_timer
+05-14 06:41:03.921  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 06:41:03.937  1797  2282 I ChimeraAggressivePolicyHandler: executePolicy() - triggerSource: TRIGGER_SOURCE_LMKD
+05-14 06:41:03.939  1797  2282 I ChimeraAggressivePolicyHandler: available memory: 861884, free memory target: 870400, quit chimera
+05-14 06:41:03.956  1797  2236 D GnssLocationProvider_ex: SV Count : 13 / 14      (PRN, Constellation, Type, SNR, Used)
+05-14 06:41:03.956  1797  2236 D GnssLocationProvider_ex: (31, GPS, L1, 45.6, 1) (18, GPS, L1, 40.6, 1) (26, GPS, L1, 41.4, 1) (16, GPS, L1, 43.2, 1) (32, GPS, L1, 28.2, 1) (29, GPS, L1, 31.9, 1) 
+05-14 06:41:03.956  1797  2236 D GnssLocationProvider_ex: (4, GPS, L1, 38.3, 0) (21, GLONASS, L1, 26.6, 1) (20, GLONASS, L1, 32.9, 1) (11, GLONASS, L1, 37.2, 1) (22, GLONASS, L1, 34.6, 1) (8, GLONASS, L1, 29.2, 1) 
+05-14 06:41:03.956  1797  2236 D GnssLocationProvider_ex: (31, BEIDOU, L1, 36.8, 1) (24, BEIDOU, L1, 36.7, 1) 
+05-14 06:41:03.958  1414  1470 W MNLD    : hal_gps_stop: hal_gps_stop
+05-14 06:41:03.958  1414  1470 W MNLD    : mnld_fsm: mnld_fsm() state=[STARTED] event=[STOP], user=0x00000000
+05-14 06:41:03.958  1414  1470 D MNLD    : fsm_gps_state_started: g_mnld_ctx.gps_status.timer_stop start_timer
+05-14 06:41:03.958  1414  1470 W MNLD    : mnld_gps_suspend_mode_entry_check: suspend check: to_go = 1, scr = -1, timeout_sec = 120000, nmea_timeout = 0, meta_or_factory = 0, agps_open_gps_flag= 0, suspend_ext:EN:1, AV:1, suspend EN:1
+05-14 06:41:03.958  1414  1457 D MNLD    : mnld_gps_stop_nmea_monitor: g_mnld_ctx.gps_status.timer_nmea_monitor stop_timer
+05-14 06:41:03.958  1414  1457 D gps_controlller: mnld_gps_stop_or_suspend_impl: MNL exiting, is_suspend = 1
+05-14 06:41:03.958  1414  1457 D DC_RTCM_CONTROLLER: agps_data_center_stop_rtcm_request: agps_data_center_stop_rtcm_request, status:0
+05-14 06:41:03.958  1414  1457 D DC_LPP_CONTROLLER: agps_data_center_stop_lpp_request: agps_data_center_stop_lpp_request, status:0
+05-14 06:41:03.959  1414 16276 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:23, thread dsp input exit
+05-14 06:41:03.959  1414 16276 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:33, uninstall timer for tigger EE:0
+05-14 06:41:03.960  1414  1457 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:16, (0)ThreadLeaveOK
+05-14 06:41:03.960  1414  1457 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:16, Thread,0,Exit,OK
+05-14 06:41:03.960  1797  2236 D GnssLocationProvider: reportLocation
+05-14 06:41:03.961  1414 16278 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:17, thread mnl exit
+05-14 06:41:03.962  1414  1457 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:16, (3)ThreadLeaveOK
+05-14 06:41:03.962  1414  1457 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:16, Thread,3,Exit,OK
+05-14 06:41:03.962  1414 16277 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:30, thread agent get msg failed:1
+05-14 06:41:03.962  1414  1457 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:16, (4)ThreadLeaveOK
+05-14 06:41:03.962  1414  1457 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:16, Thread,4,Exit,OK
+05-14 06:41:03.963  1414  1457 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:19, Uninit GPS DSP Uart
+05-14 06:41:03.963  1414  1457 D pseudo  : mtk_gps_sys_nmea_output_to_app: len:21, mtk gps Uninit done
+05-14 06:41:03.963  1414  1457 D gps_dbg_log: gps_stop_dbglog_release_condition: exit while, gps_dbg_log thread exit
+05-14 06:41:03.963  1414 16275 D gps_dbg_log: gps_dbg_log_thread: close log file
+05-14 06:41:03.963  1414  1457 D gps_dbg_log: gps_dbg_log_exit_flush: gpsdbglog and gps_rawmea_dbglog thread exit OK!
+05-14 06:41:03.965  1414  1457 D gps_controlller: mnld_do_gps_suspend_resume: (fd:26)op = 1, ioctl_ret = 0, hw suspend mode: 1
+05-14 06:41:03.965  1414 16427 D gps_controlller: gps_device_rst_listener_main: start @sid = 176l
+05-14 06:41:03.965  1414  1457 D gps_controlller: mnld_gps_suspend: mnld_gps_suspend success
+05-14 06:41:03.965  1414  1457 D gps_controlller: gps_control_thread: gps_control_thread wait
+05-14 06:41:03.966  1414  1470 W MNLD    : main_event_hdlr: GPS2MAIN_EVENT_SUSPEND_DONE
+05-14 06:41:03.966  1414  1470 W MNLD    : mnld_fsm: mnld_fsm() state=[STOPPING] event=[SUSPEND_DONE], user=0x00000000
+05-14 06:41:03.966  1414  1470 D MNLD    : fsm_gps_state_stopping: g_mnld_ctx.gps_status.timer_stop stop_timer
+05-14 06:41:03.966  1414  1470 D mnl2hal : mnl2hal_gps_status: mnl2hal_gps_status  status=2
+05-14 06:41:03.967  1414  1470 D mnl2hal : mnl2hal_gps_status: mnl2hal_gps_status  status=4
+05-14 06:41:03.967  1414  1470 D MNL2AGPS: mnl2agps_gps_close: mnl2agps_gps_close
+05-14 06:41:03.967  1502  2629 E GnssAidl: [15.08] statusCb: 2
+05-14 06:41:03.967  1414  1470 D MNLD    : fsm_gps_state_stopping: Change from clock ext suspend mode to close after 120000 ms
+05-14 06:41:03.968  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [124]
+05-14 06:41:03.968  1491  1504 D agps    : [agps] WARNING: [AGPS] [MNL] read  gps_close
+05-14 06:41:03.968  1797  2643 D GnssManager: reportStatus : 2
+05-14 06:41:03.969  1797  2685 V GnssSatellitesUtil: onStopped
+05-14 06:41:03.969  1502  2629 E GnssAidl: [15.08] statusCb: 4
+05-14 06:41:03.969  1797  4975 D GnssManager: reportStatus : 4
+05-14 06:41:03.969  1502  2629 I GnssAidl: updateWakelock: GNSS HAL Wakelock released
+05-14 06:41:03.972  1797  2685 D SLocation: PositionManager - Passive handleLocationChanged [G, A : 4.20, T : 1778740864000, ET : 304886953, E : NO, h : 19/29]
+05-14 06:41:03.973  1797  2685 D SLocation: PositionManager - receive gps location
+05-14 06:41:03.974  1797  2685 D SLocation: PositionManager - Passive handleLocationChanged [F, A : 4.57, T : 1778740863822, ET : 304886953, h : 19/29]
+05-14 06:41:03.974  1797  2685 D SLocation: PositionManager - receive fused location
+05-14 06:41:03.974  1797  2685 D SLocation: GeofenceLocationFilter - location sent before 2578, need to filter / provider : fused, accuracy : 4.575
+05-14 06:41:03.976 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+05-14 06:41:03.976 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+05-14 06:41:03.978 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+05-14 06:41:03.978 22806 23017 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+05-14 06:41:04.081  1208  1208 I BufferQueueProducer: [StatusBar$_2444#98](this:0xb400007d52ae7898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=0.50 dur=2003.97 max=2003.97 min=2003.97
+05-14 06:41:04.393  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:04.394   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:04.443  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37651](this:0xb400007d54fe5898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=53.88 dur=1002.30 max=100.66 min=14.16
+05-14 06:41:04.446  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:54.873199,dur:1002.31,max:95.90,min:5.32  
+05-14 06:41:04.698 29044 29044 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+05-14 06:41:04.895  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:04.896   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:05.084  1208  1208 I BufferQueueProducer: [StatusBar$_2444#98](this:0xb400007d52ae7898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=1.00 dur=1002.48 max=1002.48 min=1002.48
+05-14 06:41:05.387   568   568 D io_stats: !@ 179,0 r 30978184 372537290 w 3251285 29634844 d 521952 29131208 f 664565 678037 iot 6071376 0 th 0 0 0 pt 0 inp 0 0 115341.869
+05-14 06:41:05.397  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:05.398   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:05.445  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37651](this:0xb400007d54fe5898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=60.86 dur=1002.28 max=17.44 min=15.49
+05-14 06:41:05.448  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:60.868095,dur:1002.17,max:18.11,min:14.71  
+05-14 06:41:05.898  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:05.900   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:06.050  1495  1495 I thermal_repeater: socket -1
+05-14 06:41:06.086  1208  1208 I BufferQueueProducer: [StatusBar$_2444#98](this:0xb400007d52ae7898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=1.00 dur=1002.44 max=1002.44 min=1002.44
+05-14 06:41:06.236 15669 15669 I flutter : [TRACKING] Active orders count: 0
+05-14 06:41:06.287  1797  1881 D PowerManagerService: UserActivityStateListenerState: 0
+05-14 06:41:06.358 15669 15669 I flutter : [Analytics NO-OP] order_accepted_by_driver
+05-14 06:41:06.363 15669 15669 I flutter : [ROUTER] Navigation check | location=/active-order | user=49ZGFxTVAMaAMkVd4GQZ9Juyjgf1 | pinStatus=PinStatus.hasPin | canOtp=false | isPinResetFlow=false
+05-14 06:41:06.363 15669 15669 I flutter : [ROUTER] ✓ Authenticated - allowing access to /active-order
+05-14 06:41:06.400  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:06.401   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:06.435 15669 15669 I VRI[MainActivity]@5815bee: call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@5815bee
+05-14 06:41:06.448  1208  1208 I BufferQueueProducer: [SurfaceView[com.wawapp.driver/com.wawapp.driver.MainActivity]@0(BLAST)#37651](this:0xb400007d54fe5898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=56.86 dur=1002.51 max=65.39 min=15.48
+05-14 06:41:06.450  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:56.874996,dur:1002.20,max:65.10,min:14.98  
+05-14 06:41:06.465 15669 15669 W WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application.
+05-14 06:41:06.465 15669 15669 W WindowOnBackDispatcher: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+05-14 06:41:06.492 29044 29044 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+05-14 06:41:06.492 29044 29044 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+05-14 06:41:06.559 29044 16194 D AdvertisingIdClient: AdvertisingIdClient already created.
+05-14 06:41:06.564 29044 16194 I AdvertisingIdClient: shouldSendLog 304123129
+05-14 06:41:06.564 29044 16194 I AdvertisingIdClient: GetInfoInternal elapse 5ms
+05-14 06:41:06.789  1139  1493 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-14 06:41:06.794  1159  1181 I mtkpower@impl: [setMode] type:6, enabled:1
+05-14 06:41:06.794  1159  1181 E mtkpower@impl: [setMode] unknown type
+05-14 06:41:06.798  1208  1208 I BufferQueueProducer: [FramebufferSurface](this:0xb400007d832828d0,id:-1,api:1,p:1208,c:1208) queueBuffer: fps=0.31 dur=3244.02 max=3244.02 min=3244.02
+05-14 06:41:06.870  1159  1181 I mtkpower@impl: [setMode] type:6, enabled:0
+05-14 06:41:06.870  1159  1181 E mtkpower@impl: [setMode] unknown type
+05-14 06:41:06.902  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:06.902   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:06.953   366   366 I lmkd    : 0(delay), 0(swap), 50(freelimit), 0(reentrymode) memory pressure events were skipped after a kill!
+05-14 06:41:07.104  1208  1208 I BufferQueueProducer: [StatusBar$_2444#98](this:0xb400007d52ae7898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=0.98 dur=1017.67 max=1017.67 min=1017.67
+05-14 06:41:07.170  1139  1493 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-14 06:41:07.190  1159  1181 I mtkpower@impl: [setMode] type:6, enabled:1
+05-14 06:41:07.191  1159  1181 E mtkpower@impl: [setMode] unknown type
+05-14 06:41:07.215  1152  1222 I libPerfCtl: xgfGetFPS pid:-1 fps:0
+05-14 06:41:07.215  1152  1222 I libPerfCtl: xgfGetFPS ioctl_ret:-1
+05-14 06:41:07.252  1159  1181 I mtkpower@impl: [setMode] type:6, enabled:0
+05-14 06:41:07.252  1159  1181 E mtkpower@impl: [setMode] unknown type
+05-14 06:41:07.388   568   568 D io_stats: !@ 179,0 r 30978222 372537486 w 3251519 29636096 d 521952 29131208 f 664578 678065 iot 6071404 0 th 0 0 0 pt 0 inp 0 0 115343.871
+05-14 06:41:07.389   568   568 D io_stats: !@ Read_top(KB): m.wawapp.driver(15669) 16760 kworker/7:1H:/(13047) 172 kworker/6:5H:/(16364) 100
+05-14 06:41:07.389   568   568 D io_stats: !@ Write_top(KB): kworker/u16:4:/(9080) 648 kworker/4:1:/(6383) 400 m.wawapp.driver(15669) 396
+05-14 06:41:07.398  1797  2685 W SLocation: GeopointGeofenceManger - refresh wifi to receive loc
+05-14 06:41:07.398  1797  2685 D SLocation: GeopointGeofenceManger - Location reported : fix method = 3 / 4.0
+05-14 06:41:07.401  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 53 - dist : 4453.9434 padding : 0.0, accuracy : 4.0, provider : gps, dir : 2
+05-14 06:41:07.401  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 54 - dist : 4450.9893 padding : 0.0, accuracy : 4.0, provider : gps, dir : 2
+05-14 06:41:07.402  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 55 - dist : 758.9385 padding : 0.0, accuracy : 4.0, provider : gps, dir : 1
+05-14 06:41:07.403  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:07.404   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:07.406  1797  2685 D SLocation: AlarmManagerWrapper - next alarm time : 308490529 (WK)
+05-14 06:41:07.443  1797  1949 D SensorService: [SO] 0.127 0.044 9.761
+05-14 06:41:07.588 12766 13212 D DelayedNotifier: notify for scanItem.
+05-14 06:41:07.628  1797  1973 D ActivityManager: freezing 16312 com.samsung.android.lool
+05-14 06:41:07.900  1797  2685 D SLocation: WifiBssidMonitor - requestRefresh
+05-14 06:41:07.905  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:07.906   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:08.108  1208  1208 I BufferQueueProducer: [StatusBar$_2444#98](this:0xb400007d52ae7898,id:-1,api:0,p:-1,c:1208) queueBuffer: fps=1.00 dur=1003.53 max=1003.53 min=1003.53
+05-14 06:41:08.112  1139  1150 I hwcomposer: [HWCDisplay] (0 updateFps():3732), (type:1, mode:2) fps:9.628656,dur:1661.71,max:912.47,min:15.30  
+05-14 06:41:08.254  1139  1493 I hwcomposer: [HWC] (0)fire a callback of refresh to SF[4]  
+05-14 06:41:08.263 16429 16429 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-14 06:41:08.265 16429 16429 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-14 06:41:08.265 16429 16429 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-14 06:41:08.275  1159  1181 I mtkpower@impl: [setMode] type:6, enabled:1
+05-14 06:41:08.275  1159  1181 E mtkpower@impl: [setMode] unknown type
+05-14 06:41:08.285  1208  1208 I BufferQueueProducer: [FramebufferSurface](this:0xb400007d832828d0,id:-1,api:1,p:1208,c:1208) queueBuffer: fps=1.34 dur=1487.03 max=1086.66 min=400.38
+05-14 06:41:08.336  1159  1181 I mtkpower@impl: [setMode] type:6, enabled:0
+05-14 06:41:08.337  1159  1181 E mtkpower@impl: [setMode] unknown type
+05-14 06:41:08.406  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:08.408   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:08.908  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:08.909   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:08.938  1797  2282 I ChimeraAggressivePolicyHandler: executePolicy() - triggerSource: TRIGGER_SOURCE_LMKD
+05-14 06:41:08.939  1797  2282 I ChimeraAggressivePolicyHandler: memAvailable: 845652, memFreeTarget: 870400, releaseTarget:24748, protectedLruCount: 8
+05-14 06:41:08.946  1797  2282 I NSLocationMonitor: getGPSUsingApps() called
+05-14 06:41:08.946  1797  2282 W NSLocationMonitor: NSMonitorService is not connected, return null
+05-14 06:41:08.951  1797  2282 D MARs:OngoingNotiPackageFilter: filter(NotiListener) : com.samsung.android.game.gamehome(0)
+05-14 06:41:08.951  1797  2282 I ChimeraAggressivePolicyHandler: Start doKill, protected policy: HEAVY
+05-14 06:41:08.957  1797  2282 I ChimeraAggressivePolicyHandler: kill complete: killed 0 apps, freed 0 KB
+05-14 06:41:08.957  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: LR, pids: 15669 7333 15368 8732 20607 
+05-14 06:41:08.957  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: CA, pids: 16071 15947 16210 16312 13178 
+05-14 06:41:08.957  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: PE, pids: 2754 1797 7434 2444 2767 2575 13455 4624 2772 3037 12766 2783 2402 4710 4527 4593 2801 28665 
+05-14 06:41:08.958  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: CA, pids: 19377 10139 15436 11085 
+05-14 06:41:08.958  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: IN, pids: 15794 
+05-14 06:41:08.958  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: VI, pids: 13782 11387 14174 
+05-14 06:41:08.958  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: SE, pids: 16259 
+05-14 06:41:08.958  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: UI, pids: 15846 
+05-14 06:41:08.958  1797  2282 I ChimeraAggressivePolicyHandler: Skipped reason: AD, pids: 10371 11140 13478 3271 4654 13074 2645 28662 
+05-14 06:41:08.958  1797  2282 I ChimeraAggressivePolicyHandler: Processing time(ms) 20
+05-14 06:41:09.085  1797  2235 W DeviceStorageMonitorService: check(/data) oldLevel:1, newLevel:1 (usableBytes=4636352512)
+05-14 06:41:09.085  1797  2235 W DeviceStorageMonitorService: updateBroadcasts(/data) oldLevel:1, newLevel:1, seq:1
+05-14 06:41:09.087  1797  2235 D DeviceStorageMonitorService: Available File Node Number is [12232944]
+05-14 06:41:09.087  1797  2235 W DeviceStorageMonitorService: updateBroadcasts_filenode(/data) fn_oldLevel:0, fn_newLevel:0, seq:1
+05-14 06:41:09.390   568   568 D io_stats: !@ 179,0 r 30978226 372537502 w 3251523 29636124 d 521952 29131208 f 664578 678065 iot 6071408 0 th 0 0 0 pt 0 inp 0 0 115345.872
+05-14 06:41:09.410  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:09.411   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:09.912  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:09.913   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:09.950   615 16252 I keystore2: system/security/keystore2/watchdog/src/lib.rs:319 - Watchdog thread idle -> terminating. Have a great day.
+05-14 06:41:10.414  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:10.415   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:10.916  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:10.916   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:11.050  1495  1495 I thermal_repeater: socket -1
+05-14 06:41:11.391   568   568 D io_stats: !@ Read_top(KB): ndroid.systemui(2444) 276 .gms.persistent(22806) 68 sait.sohservice(15846) 32
+05-14 06:41:11.391   568   568 D io_stats: !@ Write_top(KB): kworker/u16:2:/(30143) 164 sait.sohservice(15846) 28 m.wawapp.driver(15669) 16
+05-14 06:41:11.393  2402  2495 D Am      : Sardevice : isEnabled: false, deviceId: 2, slot: 0, extId: 0
+05-14 06:41:11.395  1797  1938 D MotionRecognitionService: [SAR] API_enableSARDevice, deviceId =2 : false
+05-14 06:41:11.395  1797  2207 D MotionRecognitionService: [SAR] API_enableSARDevice >> 
+05-14 06:41:11.396  1797  2207 I MotionRecognitionService: [SAR] id : 1 cmd :off  << 
+05-14 06:41:11.396  1797  2207 I MotionRecognitionService: [SAR] PROX disable, slot = 0, mEnabledSlot: 0
+05-14 06:41:11.396  1797  2207 I MotionRecognitionService: [SAR]  id : 1 cmd :off  >> 
+05-14 06:41:11.396  1797  2207 I MotionRecognitionService: [SAR] (-) mRequestedChannelList : 0
+05-14 06:41:11.396  1797  2207 D MotionRecognitionService: [SAR] API_enableSARDevice << action = off deviceID = 2 slot = 0 device_ext = 0
+05-14 06:41:11.417  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:11.418   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:11.784 29044 29044 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.onboardingconsent.api.ConsentManagerApiService.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+05-14 06:41:11.918  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:11.920   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:11.995  1213  1228 D ccci_mdinit: (1):monitor_time_update_thread round:17172 ########
+05-14 06:41:12.420  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:12.421   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:12.922  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:12.923   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:13.011  1797 12949 D PerProcessNandswap$NandswapMsgHandler: startNandswapProcess to-delay Cached-ppn com.whatsapp
+05-14 06:41:13.030  8732  8807 D HWUI    : CacheManager::trimMemory(40)
+05-14 06:41:13.031  8732  8807 I GED     : ged_boost_gpu_freq, level 100, eOrigin 2, final_idx 29, oppidx_max 29, oppidx_min 0
+05-14 06:41:13.081  8732  8807 I GED     : ged_boost_gpu_freq, level 100, eOrigin 2, final_idx 29, oppidx_max 29, oppidx_min 0
+05-14 06:41:13.264 16430 16430 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-14 06:41:13.266 16430 16430 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-14 06:41:13.266 16430 16430 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-14 06:41:13.392   568   568 D io_stats: !@ 179,0 r 30978458 372539582 w 3251535 29636312 d 521952 29131208 f 664578 678065 iot 6071464 0 th 0 0 0 pt 0 inp 0 0 115349.875
+05-14 06:41:13.424  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:13.425   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:13.444  4710  8702 I FASProvider: makeValuesForFasUpdate contentValues = package_name=com.microsoft.skydrive uid=10079 level=1 resetTime=1778740873437
+05-14 06:41:13.925  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:13.926   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:14.427  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:14.428   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:14.929  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:14.930   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:15.393   568   568 D io_stats: !@ 179,0 r 30978542 372540590 w 3251546 29636500 d 521952 29131208 f 664578 678065 iot 6071492 0 th 0 0 0 pt 0 inp 0 0 115351.876
+05-14 06:41:15.394   568   568 D io_stats: !@ Read_top(KB): system_server:h(1797) 1164 com.whatsapp:lo(8732) 616 .gms.persistent(22806) 520
+05-14 06:41:15.394   568   568 D io_stats: !@ Write_top(KB): kworker/u16:2:/(30143) 188
+05-14 06:41:15.431  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:15.432   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:15.932  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:15.933   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:16.051  1495  1495 I thermal_repeater: socket -1
+05-14 06:41:16.401  1797  1949 D SensorService: [SO] 0.146 0.082 9.799
+05-14 06:41:16.434  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:16.435   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:16.577 29044 29044 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+05-14 06:41:16.580  1797  2644 I ActivityManager: Changes in 99070 3 to 10, 56 to 0
+05-14 06:41:16.728  1502  1568 E vendor.samsung.hardware.gnss-service: gpsinf_inject_best_location: flags:51, speed:0.000000, bearing:0.000000, h_accuracy:100.000000, v_accuracy:23.351654, s_accuracy:0.000000, b_accuracy:0.000000, timestamp:624416178 
+05-14 06:41:16.728  1414  1470 E mnl2hal : hal2mnl_hdlr: HAL2MNL_GPS_INJECT_BEST_LOCATION h_accuracy:100.000000, timestamp:624416178 
+05-14 06:41:16.729  1414  1470 D MNLD    : mnld_nfw_mnl2agps_location_sync: mnl2agps_location_sync success, ret = 51
+05-14 06:41:16.729  1491  1504 D agps    : [agps][n][AGPS] [MNL] mnl2agps [153]
+05-14 06:41:16.729  1491  1504 D agps    : Xed[V_8;|(7C0x)+x\HWcp=;h[Zi=R7&%D`L;2$5=8=-2LG1C`L-5q.)&"),&*xL:5d*~&#'../))vA$&`.! pA-@q-xx~~     yiSBDG5(b.yO5AFp-pN:<m.qS83ABAo-yiUI7"3=62b%x|lpyiSI5(7CH8$-CBj%x|lpy
+05-14 06:41:16.731  1797  2685 D SLocation: PositionManager - Passive handleLocationChanged [N, A : 100.00, T : 1778740876722, ET : 304899853, h : 19/29]
+05-14 06:41:16.732  1797  2685 W SLocation: GeopointGeofenceManger - refresh wifi to receive loc
+05-14 06:41:16.734  1797  2685 E SLocation: GeopointLastLocation - Last location is more well than current Location.
+05-14 06:41:16.734  1797  2685 D SLocation: GeopointGeofenceManger - Location reported : fix method = 4 / 100.0
+05-14 06:41:16.735  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 53 - dist : 4494.813 padding : 0.0, accuracy : 100.0, provider : network, dir : 2
+05-14 06:41:16.736  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 54 - dist : 4491.8604 padding : 0.0, accuracy : 100.0, provider : network, dir : 2
+05-14 06:41:16.736  1797  2685 D SLocation: LocationProcessingAlgorithm - entry condition 55 - dist : 745.91705 padding : 0.0, accuracy : 100.0, provider : network, dir : 1
+05-14 06:41:16.740  1797  2685 D SLocation: AlarmManagerWrapper - next alarm time : 308499866 (WK)
+05-14 06:41:16.936  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:16.937   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:17.237  1797  2685 D SLocation: WifiBssidMonitor - requestRefresh
+05-14 06:41:17.396   568   568 D io_stats: !@ 179,0 r 30978576 372540902 w 3251546 29636500 d 521952 29131208 f 664578 678065 iot 6071504 0 th 0 0 0 pt 0 inp 0 0 115353.878
+05-14 06:41:17.438  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:17.439   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:17.906  1797  1952 I UsageStatsService: User[0] Flushing usage stats to disk
+05-14 06:41:17.939  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:17.940   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:18.014 22806 22806 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+05-14 06:41:18.283 16433 16433 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-14 06:41:18.284 16433 16433 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-14 06:41:18.284 16433 16433 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-14 06:41:18.441  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:18.442   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:18.904 16071 16095 V CpEventLog(u0): cp_state: [                 contacts = {contacts=2248, raw_contacts=4334, data=20035, account={secphone(1)=295, google(2)=1961, sim(3)=169, sim2(4)=0, agg(5)=0, duo(8)=193, google(9)=0, whatsapp(12)=1292, google(24)=0, telegram(35)=398, com.reddit.account(38)=0, com.microsoft.workaccount(40)=0, google(41)=0, com.opera.mini.native.ping(42)=0}, trash=0, trash_acc={}, trash_sync=26, database=contacts2.db} ]
+05-14 06:41:18.904 16071 16095 V CpEventLog(u0): cp_state: [               aggregated = {[1,12,35,8]=1, [1,12,35]=55, [1,12,8,35]=9, [1,12,8]=19, [1,12]=124, [1,35,12]=3, [1,35]=10, [1,8,35]=1, [1,8]=3, [12,1]=3, [12,8,3]=1, [12,8]=1, [12]=3, [1]=66, [2,1,35,35]=1, [2,12,12,35,35]=1, [2,12,12,35]=1, [2,12,35,35,3]=1, [2,12,35,3]=8, [2,12,35]=196, [2,12,3]=71, [2,12,8,35,3]=2, [2,12,8,35]=36, [2,12,8,3]=5, [2,12,8]=75, [2,12]=644, [2,2,12,35]=1, [2,2,12]=6, [2,2]=1, [2,3,12]=5, [2,35,12]=8, [2,35,3]=5, [2,35]=38, [2,3]=69, [2,8,12,35]=4, [2,8,12]=7, [2,8,35]=4, [2,8,3]=2, [2,8]=22, [2]=740, [35]=10, [8]=1} ]
+05-14 06:41:18.904 16071 16095 V CpEventLog(u0): cp_state: [                  request = {ALL(0)={avg=32, cnt=7, dur=226, ops={query=6, delete=1}}, com.google.android.apps.messaging(15947)={avg=49, cnt=4, dur=199, ops={query=4}}, acore(16071)={avg=10, cnt=2, dur=20, ops={query=1, delete=1}}, gms(29044)={avg=7, cnt=1, dur=7, ops={query=1}}} ]
+05-14 06:41:18.904 16071 16095 V CpEventLog(u0): cp_state: [                    calls = {types={[100]=2000}, database=calllog.db} ]
+05-14 06:41:18.904 16071 16095 V CpEventLog(u0): cp_state: [                  profile = {contacts=0, raw_contacts=0, data=0, account={secphone(1)=0, google(2)=0, sim(3)=0, sim2(4)=0, agg(5)=0, duo(8)=0, google(9)=0, whatsapp(12)=0, google(20)=0, telegram(28)=0, com.reddit.account(29)=0, com.microsoft.workaccount(30)=0, google(31)=0, com.opera.mini.native.ping(32)=0}, trash=0, trash_acc={}, trash_sync=0, database=profile.db} ]
+05-14 06:41:18.904 16071 16095 V CpEventLog(u0): cp_state: [               sa_profile = {contacts=1, raw_contacts=1, data=1, account={secphone(1)=1, google(2)=0, sim(3)=0, sim2(4)=0, agg(5)=0, duo(8)=0, google(9)=0, whatsapp(12)=0, google(20)=0, telegram(28)=0, com.reddit.account(29)=0, com.microsoft.workaccount(30)=0, google(31)=0, com.opera.mini.native.ping(32)=0}, trash=0, trash_acc={}, trash_sync=0, database=profile_sa.db} ]
+05-14 06:41:18.904 16071 16095 V CpEventLog(u0): cp_state: [                      etc = {binders=0, country_iso=MR, version=15.4.34, db_version=1901, csc=/, sec_enabled=false, is_roaming=false} ]
+05-14 06:41:18.904 16071 16095 V CpEventLog(u0): cp_state: ------------------------------------------------------------------------------
+05-14 06:41:18.942  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:18.943   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:19.039  1797 12948 D PerProcessNandswap$NandswapHandler: nandswap start for activity com.whatsapp(pid 8732) action:9 adj:900 type:1
+05-14 06:41:19.396   568   568 D io_stats: !@ 179,0 r 30979906 372548326 w 3251571 29637284 d 521952 29131208 f 664581 678072 iot 6071744 0 th 0 0 0 pt 0 inp 0 0 115355.879
+05-14 06:41:19.396   568   568 D io_stats: !@ Read_top(KB): d.process.acore(16071) 5880 .android.chrome(15368) 636 hbox:interactor(4654) 616
+05-14 06:41:19.397   568   568 D io_stats: !@ Write_top(KB): system_server:h(1797) 760 sait.sohservice(15846) 24
+05-14 06:41:19.400  1797 12948 D PerProcessNandswap$NandswapHandler: nandswap end for activity com.whatsapp(pid 8732) ret:10737397760 adj:900
+05-14 06:41:19.444  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:19.445   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:19.946  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:19.947   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:20.448  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:20.449   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:20.950  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:20.951   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:21.052  1495  1495 I thermal_repeater: socket -1
+05-14 06:41:21.397   568   568 D io_stats: !@ 179,0 r 30979926 372548562 w 3251587 29637384 d 521952 29131208 f 664581 678072 iot 6071760 0 th 0 0 0 pt 0 inp 0 0 115357.880
+05-14 06:41:21.452  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:21.453   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:21.954  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:21.955   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:22.456  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:22.457   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:22.958  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:22.960   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:23.285 16434 16434 I vtservice_aidl: [VT][SRV]before VTService_AiDL_instantiate
+05-14 06:41:23.286 16434 16434 E vtservice_aidl: [VT][SRV] VideoTelephony AIDL add service failed!!
+05-14 06:41:23.286 16434 16434 I vtservice_aidl: [VT][SRV] VideoTelephony : aidl service is terminating...
+05-14 06:41:23.399   568   568 D io_stats: !@ Read_top(KB): ocessService0:8(11085) 148 m.wawapp.driver(15669) 72 sait.sohservice(15846) 32
+05-14 06:41:23.399   568   568 D io_stats: !@ Write_top(KB): kworker/u16:2:/(30143) 100
+05-14 06:41:23.460  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:23.461   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:23.962  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:23.963   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:24.464  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:24.465   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:24.966  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:24.967   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:25.208 16435 16435 W BpBinder: Linking to death on android.gui.ISurfaceComposer but there are no threads (yet?) listening to incoming transactions. See ProcessState::startThreadPool and ProcessState::setThreadPoolMaxThreadCount. Generally you should setup the binder threadpool before other initialization steps.
+05-14 06:41:25.208  1797  1938 I EDMNativeHelperService: isScreenCaptureEnabled
+05-14 06:41:25.211  1797  1938 D RestrictionPolicy: isScreenCaptureEnabled : ret=true userId=0
+05-14 06:41:25.212 16435 16435 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+05-14 06:41:25.266 16435 16437 I GrallocExtra: gralloc_extra_query:is_SW3D 0
+05-14 06:41:25.266 16435 16435 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm
+05-14 06:41:25.266 16435 16435 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_mm-uncached
+05-14 06:41:25.267 16435 16435 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_svp_region
+05-14 06:41:25.267 16435 16435 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_prot_region
+05-14 06:41:25.267 16435 16435 I DMABUFHEAPS: Using DMA-BUF heap named: mtk_wfd_region
+05-14 06:41:25.360  1797  1949 D SensorService: [SO] 0.127 0.082 9.799
+05-14 06:41:25.400   568   568 D io_stats: !@ 179,0 r 30980043 372549202 w 3251596 29637464 d 521952 29131208 f 664581 678072 iot 6071788 0 th 0 0 0 pt 0 inp 0 0 115361.883
+05-14 06:41:25.468  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:25.469   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:25.635  1797  1938 I ActivityManager: Broadcasting: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x400000 }
+05-14 06:41:25.637  1797  1938 I ActivityManager: Enqueued broadcast Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x400000 }: 0
+05-14 06:41:25.640  4593  4593 I MediaServiceV2: Creating work for intent Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-14 06:41:25.641  4593  4593 I MediaServiceV2: Work enqueued for intent: Intent { act=android.intent.action.MEDIA_SCANNER_SCAN_FILE dat=file:///... flg=0x1400010 cmp=com.google.android.providers.media.module/com.android.providers.media.MediaServiceV2 }
+05-14 06:41:25.644  1797  1821 I ActivityManager: Broadcast completed: result=0
+05-14 06:41:25.671 16435 16435 W RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x79819ff848). Use sp<> to manage this object.
+05-14 06:41:25.676  4593  4800 D WM-SystemJobScheduler: Scheduling work ID b9ce61f1-9884-4b3a-836b-c0d0b0703448Job ID 45454
+05-14 06:41:25.682 16435 16435 D RefBase :   #00 pc 0000000000096c10  /apex/com.android.runtime/lib64/bionic/libc.so (__cxa_finalize+144) (BuildId: b7d4cc6e214395264fee975672a6cae6)
+05-14 06:41:25.682 16435 16435 D RefBase :   #01 pc 000000000009b5a8  /apex/com.android.runtime/lib64/bionic/libc.so (exit+24) (BuildId: b7d4cc6e214395264fee975672a6cae6)
+05-14 06:41:25.682 16435 16435 D RefBase :   #02 pc 000000000008f7c8  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+120) (BuildId: b7d4cc6e214395264fee975672a6cae6)
+05-14 06:41:25.685  4593  4593 D WM-SystemJobService: onStartJob for WorkGenerationalId(workSpecId=b9ce61f1-9884-4b3a-836b-c0d0b0703448, generation=0)
+05-14 06:41:25.686  4593  4800 D WM-GreedyScheduler: Ignoring {WorkSpec: 8a511eed-0c85-411a-af58-537acb63e491}. Requires device idle.
+05-14 06:41:25.686  4593  4800 D WM-GreedyScheduler: Ignoring {WorkSpec: 12f0e158-0f7c-43c9-85a8-2e602e569307}. Requires device idle.
+05-14 06:41:25.686  4593  4800 D WM-GreedyScheduler: Ignoring {WorkSpec: 0809e4b5-3021-41e2-86ce-e7e4c225bff2}. Requires device idle.
+05-14 06:41:25.686  4593  4800 D WM-GreedyScheduler: Starting work for b9ce61f1-9884-4b3a-836b-c0d0b0703448
+05-14 06:41:25.689  4593  4800 D WM-Processor: Processor: processing WorkGenerationalId(workSpecId=b9ce61f1-9884-4b3a-836b-c0d0b0703448, generation=0)
+05-14 06:41:25.691  4593  4800 D WM-Processor: Work WorkGenerationalId(workSpecId=b9ce61f1-9884-4b3a-836b-c0d0b0703448, generation=0) is already enqueued for processing
+05-14 06:41:25.699  4593  4593 D WM-WorkerWrapper: Starting work for com.android.providers.media.MediaServiceV2
+05-14 06:41:25.700  4593 16448 I MediaServiceV2: Work initiated for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-14 06:41:25.723  4593 16448 I MediaServiceV2: Work ended for action [ android.intent.action.MEDIA_SCANNER_SCAN_FILE ]
+05-14 06:41:25.725  4593  4841 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=b9ce61f1-9884-4b3a-836b-c0d0b0703448, tags={ com.android.providers.media.MediaServiceV2 } ]
+05-14 06:41:25.732  4593  4593 D WM-Processor: Processor b9ce61f1-9884-4b3a-836b-c0d0b0703448 executed; reschedule = false
+05-14 06:41:25.733  4593  4593 D WM-SystemJobService: b9ce61f1-9884-4b3a-836b-c0d0b0703448 executed on JobScheduler
+05-14 06:41:25.739  4593  4841 D WM-GreedyScheduler: Cancelling work ID b9ce61f1-9884-4b3a-836b-c0d0b0703448
+05-14 06:41:25.743  4593  4841 D WM-GreedyScheduler: Ignoring {WorkSpec: 8a511eed-0c85-411a-af58-537acb63e491}. Requires device idle.
+05-14 06:41:25.743  4593  4841 D WM-GreedyScheduler: Ignoring {WorkSpec: 12f0e158-0f7c-43c9-85a8-2e602e569307}. Requires device idle.
+05-14 06:41:25.743  4593  4841 D WM-GreedyScheduler: Ignoring {WorkSpec: 0809e4b5-3021-41e2-86ce-e7e4c225bff2}. Requires device idle.
+05-14 06:41:25.803 22806 15879 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+05-14 06:41:25.813 22806 16067 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+05-14 06:41:25.863 12766 12795 D MediaSync: loaded: 138ms, 1
+05-14 06:41:25.867 12766 12871 D MediaParseTask: scanItem: 1
+05-14 06:41:25.870 12766 12794 D SecMediaProvider: UPDATE /local/metadata 3146850, 3146865
+05-14 06:41:25.970  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:25.971   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:26.053  1495  1495 I thermal_repeater: socket -1
+05-14 06:41:26.424  1797  1827 E Watchdog: !@Sync: 3841 heap(MB): 115 / 118 FD: 1094 [2026-05-14 06:41:26.424]
+05-14 06:41:26.471  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:26.472   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.
+05-14 06:41:26.548 16259 16264 W droid.rubin.app: userfaultfd: MOVE ioctl seems unsupported: Connection timed out
+05-14 06:41:26.973  1364  1648 W VT      : [SRV] [THREAD] get hild fail, try again
+05-14 06:41:26.974   368   368 I hwservicemanager: getTransport: Cannot find entry vendor.mediatek.hardware.videotelephony@1.0::IVideoTelephony/default in either framework or device VINTF manifest.

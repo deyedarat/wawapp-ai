@@ -1,0 +1,34 @@
+{
+  "scenario": "dispatch_reject",
+  "verdict": "PASS",
+  "passed": true,
+  "durationMs": 74220,
+  "runId": "core_1779044103739",
+  "startTs": 1779044187530,
+  "endTs": 1779044261750,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Fullscreen rendered for reject scenario"
+    },
+    {
+      "status": "PASS",
+      "label": "Fullscreen dismissed after reject"
+    },
+    {
+      "status": "PASS",
+      "label": "Order not accepted after driver reject"
+    }
+  ],
+  "failures": [],
+  "slaMetrics": [
+    {
+      "label": "ORDER_CREATED → FULLSCREEN_RENDERED",
+      "actualMs": 47771,
+      "maxMs": 15000,
+      "passed": false
+    }
+  ],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\core_1779044103739\\timeline.ndjson"
+}

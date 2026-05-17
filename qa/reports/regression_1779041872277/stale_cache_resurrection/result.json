@@ -1,0 +1,42 @@
+{
+  "scenario": "stale_cache_resurrection",
+  "verdict": "FAIL",
+  "passed": false,
+  "durationMs": 60638,
+  "runId": "regression_1779041872277",
+  "startTs": 1779042393960,
+  "endTs": 1779042454598,
+  "assertions": [
+    {
+      "status": "PASS",
+      "label": "Stale cache did NOT trigger fullscreen authority after restart"
+    },
+    {
+      "status": "FAIL",
+      "label": "Server reconciliation did not occur after cache emission",
+      "evidence": {
+        "cacheLines": 1,
+        "serverLines": 0
+      }
+    }
+  ],
+  "failures": [
+    {
+      "label": "Server reconciliation did not occur after cache emission",
+      "evidence": {
+        "cacheLines": 1,
+        "serverLines": 0
+      }
+    }
+  ],
+  "slaMetrics": [
+    {
+      "label": "Cache emission → server reconciliation",
+      "actualMs": 5000,
+      "maxMs": 5000,
+      "passed": true
+    }
+  ],
+  "screenshots": [],
+  "timelineFile": "qa\\reports\\regression_1779041872277\\timeline.ndjson"
+}

@@ -1,0 +1,4 @@
+{"event":"SCENARIO_START","orderId":null,"device":null,"ts":1778740193126,"data":null}
+{"event":"DEVICES_PREPARED","orderId":null,"device":null,"ts":1778740211139,"data":null}
+{"event":"DRIVER_APP_LAUNCHED","orderId":null,"device":"driver","ts":1778740231392,"data":null}
+{"event":"DRIVER_LISTENER_ACTIVE","orderId":null,"device":"driver","ts":1778740241753,"data":null}

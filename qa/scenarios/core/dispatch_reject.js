@@ -6,12 +6,12 @@
  * Order must NOT transition to 'accepted'.
  * The fullscreen UI must dismiss cleanly.
  */
-const path   = require('path');
-const Device  = require('../../orchestrator/device');
+const path = require('path');
+const Device = require('../../orchestrator/device');
 const Timeline = require('../../orchestrator/timeline');
 const { Reporter } = require('../../orchestrator/reporter');
-const A       = require('../../orchestrator/assertions');
-const B       = require('../../backend/backend');
+const A = require('../../orchestrator/assertions');
+const B = require('../../backend/backend');
 const { prepareScenario } = require('../../orchestrator/watchdog');
 const { sleep, waitFor } = require('../../orchestrator/utils');
 const { driver: drvCfg, timing, sla } = require('../../orchestrator/config');
@@ -19,7 +19,7 @@ const { driver: drvCfg, timing, sla } = require('../../orchestrator/config');
 const SCENARIO = 'dispatch_reject';
 
 async function run(runId) {
-  const tl  = new Timeline(runId);
+  const tl = new Timeline(runId);
   const rep = new Reporter(runId, SCENARIO);
   const dev = new Device(drvCfg.deviceId, drvCfg.packageName, 'driver');
 
@@ -50,7 +50,14 @@ async function run(runId) {
       tl.emit('FULLSCREEN_RENDERED', { orderId, device: 'driver' });
       rep.recordPass('Fullscreen rendered for reject scenario');
       tl.emit('REJECT_TAP', { orderId, device: 'driver' });
-      dev.tap(360, 1400);
+
+      // Dynamic reject button detection
+      try {
+        const node = dev.tapByHint('رفض', './qa/artifacts');
+        console.log(`  [ADB] Tapped Reject at (${node.x}, ${node.y})`);
+      } catch (_) {
+        dev.tap(360, 1400); // fallback
+      }
       await sleep(timing.postAcceptWait);
       tl.emit('REJECT_TAP_DONE', { orderId, device: 'driver' });
     } else {
