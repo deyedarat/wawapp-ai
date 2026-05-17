@@ -45,6 +45,7 @@ class FullScreenNotificationActivity : Activity() {
     private var createdAt: Long = 0L
 
     private var orderListener: ListenerRegistration? = null
+    private var offerListener: ListenerRegistration? = null
     private var wakeLock: PowerManager.WakeLock? = null
 
     private val terminalStatuses = setOf(
@@ -331,6 +332,38 @@ class FullScreenNotificationActivity : Activity() {
                     finish()
                 }
             }
+
+        // Also monitor the specific dispatch_offer for this driver.
+        // When the offer expires/is cancelled (even if order stays 'matching'
+        // because another wave is being tried), dismiss the fullscreen.
+        startOfferListener()
+    }
+
+    private fun startOfferListener() {
+        if (offerId.isBlank()) return
+        offerListener?.remove()
+        offerListener = FirebaseFirestore.getInstance()
+            .collection("dispatch_offers")
+            .document(offerId)
+            .addSnapshotListener { snap, error ->
+                if (error != null) {
+                    Log.w(TAG, "Offer listener error: ${error.message}")
+                    return@addSnapshotListener
+                }
+                if (snap == null || !snap.exists()) {
+                    Log.d(TAG, "Offer $offerId deleted — finishing")
+                    cancelNotification()
+                    finish()
+                    return@addSnapshotListener
+                }
+                val status = snap.getString("status")
+                val offerTerminalStatuses = setOf("expired", "cancelled", "accepted", "rejected")
+                if (status != null && status in offerTerminalStatuses) {
+                    Log.d(TAG, "Offer $offerId reached terminal status '$status' — finishing")
+                    cancelNotification()
+                    finish()
+                }
+            }
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -346,6 +379,8 @@ class FullScreenNotificationActivity : Activity() {
     override fun onDestroy() {
         orderListener?.remove()
         orderListener = null
+        offerListener?.remove()
+        offerListener = null
         releaseWakeLock()
         super.onDestroy()
         Log.d(TAG, "Full-screen notification destroyed: orderId=$orderId")

@@ -83,6 +83,7 @@ class _FullScreenNotificationScreenState
   Timer? _maxLifetimeTimer;
   String _elapsedText = '';
   StreamSubscription<DocumentSnapshot>? _orderSubscription;
+  StreamSubscription<DocumentSnapshot>? _offerSubscription;
 
   static const _terminalStatuses = {
     'cancelledByClient',
@@ -114,6 +115,23 @@ class _FullScreenNotificationScreenState
         _safeDismiss();
       }
     });
+    // Also monitor the specific dispatch_offer — dismiss if offer expires/cancelled
+    // even when order stays 'matching' (another wave being tried)
+    final offerId = widget.data.offerId;
+    if (offerId != null && offerId.isNotEmpty) {
+      _offerSubscription = FirebaseFirestore.instance
+          .collection('dispatch_offers')
+          .doc(offerId)
+          .snapshots()
+          .listen((snap) {
+        if (!mounted || _actionTaken) return;
+        final status = snap.data()?['status'] as String?;
+        const offerTerminal = {'expired', 'cancelled', 'accepted', 'rejected'};
+        if (!snap.exists || (status != null && offerTerminal.contains(status))) {
+          _safeDismiss();
+        }
+      });
+    }
     // Timeout protection: fullscreen cannot survive indefinitely
     _maxLifetimeTimer = Timer(_maxLifetime, () {
       if (mounted && !_actionTaken) _safeDismiss();
@@ -125,6 +143,7 @@ class _FullScreenNotificationScreenState
     _elapsedTimer?.cancel();
     _maxLifetimeTimer?.cancel();
     _orderSubscription?.cancel();
+    _offerSubscription?.cancel();
     NotificationService().clearActiveFullScreen();
     super.dispose();
   }
