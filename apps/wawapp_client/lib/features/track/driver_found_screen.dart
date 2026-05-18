@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../core/maps/safe_camera_helper.dart';
 import '../../widgets/error_screen.dart';
 import '../map/providers/district_layer_provider.dart';
+import 'data/orders_repository.dart';
 import 'providers/order_tracking_provider.dart';
 
 class DriverFoundScreen extends ConsumerWidget {
@@ -184,14 +185,14 @@ class DriverFoundScreen extends ConsumerWidget {
 }
 
 /// Shown when the order is reassigned back to matching after driver timeout.
-class _ReassignmentView extends StatelessWidget {
+class _ReassignmentView extends ConsumerWidget {
   const _ReassignmentView({required this.orderId, this.previousDriverId});
 
   final String orderId;
   final String? previousDriverId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -223,7 +224,13 @@ class _ReassignmentView extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           OutlinedButton(
-            onPressed: () => context.go('/'),
+            onPressed: () async {
+              try {
+                final repo = ref.read(ordersRepositoryProvider);
+                await repo.cancelOrder(orderId);
+              } catch (_) {}
+              if (context.mounted) context.go('/');
+            },
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.red,
               side: const BorderSide(color: Colors.red),

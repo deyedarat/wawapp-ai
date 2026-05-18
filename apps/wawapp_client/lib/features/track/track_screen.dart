@@ -85,6 +85,24 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
               context.go('/trip-completed/$_orderId');
             }
           });
+        } else if ((statusStr == 'cancelledByClient' ||
+                    statusStr == 'cancelledByDriver' ||
+                    statusStr == 'expired') && !_hasNavigated) {
+          _hasNavigated = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(statusStr == 'expired'
+                      ? 'لم يتم العثور على سائق. حاول مرة أخرى.'
+                      : 'تم إلغاء الطلب'),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 4),
+                ),
+              );
+              context.go('/');
+            }
+          });
         }
       }
     });

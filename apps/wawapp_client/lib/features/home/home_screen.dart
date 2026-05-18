@@ -1,5 +1,6 @@
 import 'dart:developer' as dev;
 
+import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore, QuerySnapshot;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -752,54 +753,109 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildCurrentShipmentCard(
       BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
+    final user = FirebaseAuth.instance.currentUser;
 
-    // Placeholder: No active shipment
-    return WawCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.local_shipping_outlined,
-                color: theme.colorScheme.primary,
-              ),
-              const SizedBox(width: WawAppSpacing.xs),
-              Text(
-                l10n.current_shipment,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('orders')
+          .where('ownerId', isEqualTo: user.uid)
+          .where('status', whereIn: ['matching', 'accepted', 'onRoute'])
+          .limit(1)
+          .snapshots(),
+      builder: (context, snapshot) {
+        final hasActiveOrder = snapshot.hasData && snapshot.data!.docs.isNotEmpty;
+
+        if (!hasActiveOrder) {
+          return WawCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.local_shipping_outlined, color: theme.colorScheme.primary),
+                    const SizedBox(width: WawAppSpacing.xs),
+                    Text(l10n.current_shipment, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: WawAppSpacing.sm),
-          Center(
-            child: Padding(
-              padding: const EdgeInsetsDirectional.symmetric(
-                vertical: WawAppSpacing.sm,
-              ),
-              child: Column(
-                children: [
-                  const Icon(
-                    Icons.inbox_outlined,
-                    size: 40,
-                    color: WawAppColors.textSecondaryLight,
-                  ),
-                  const SizedBox(height: WawAppSpacing.xs),
-                  Text(
-                    l10n.no_active_shipments,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: WawAppColors.textSecondaryLight,
+                const SizedBox(height: WawAppSpacing.sm),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.symmetric(vertical: WawAppSpacing.sm),
+                    child: Column(
+                      children: [
+                        const Icon(Icons.inbox_outlined, size: 40, color: WawAppColors.textSecondaryLight),
+                        const SizedBox(height: WawAppSpacing.xs),
+                        Text(l10n.no_active_shipments, style: theme.textTheme.bodyMedium?.copyWith(color: WawAppColors.textSecondaryLight), textAlign: TextAlign.center),
+                      ],
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final orderDoc = snapshot.data!.docs.first;
+        final orderData = orderDoc.data() as Map<String, dynamic>;
+        final status = orderData['status'] as String? ?? 'matching';
+        final orderId = orderDoc.id;
+
+        String statusText;
+        IconData statusIcon;
+        Color statusColor;
+        switch (status) {
+          case 'matching':
+            statusText = 'جاري البحث عن سائق...';
+            statusIcon = Icons.search;
+            statusColor = Colors.orange;
+            break;
+          case 'accepted':
+            statusText = 'تم قبول طلبك — السائق في الطريق';
+            statusIcon = Icons.check_circle;
+            statusColor = Colors.green;
+            break;
+          case 'onRoute':
+            statusText = 'الرحلة جارية';
+            statusIcon = Icons.local_shipping;
+            statusColor = theme.colorScheme.primary;
+            break;
+          default:
+            statusText = status;
+            statusIcon = Icons.info;
+            statusColor = Colors.grey;
+        }
+
+        return InkWell(
+          onTap: () {
+            if (status == 'accepted') {
+              context.push('/driver-found/$orderId');
+            } else {
+              context.push('/track/$orderId');
+            }
+          },
+          child: WawCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(statusIcon, color: statusColor),
+                    const SizedBox(width: WawAppSpacing.xs),
+                    Expanded(child: Text(l10n.current_shipment, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600))),
+                    Icon(Icons.arrow_forward_ios, size: 16, color: WawAppColors.textSecondaryLight),
+                  ],
+                ),
+                const SizedBox(height: WawAppSpacing.sm),
+                Text(statusText, style: theme.textTheme.bodyMedium?.copyWith(color: statusColor, fontWeight: FontWeight.w500)),
+              ],
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
