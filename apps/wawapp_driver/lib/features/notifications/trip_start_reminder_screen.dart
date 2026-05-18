@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_shared/core_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -67,7 +68,18 @@ class _TripStartReminderScreenState
   @override
   void initState() {
     super.initState();
-    _elapsedSeconds = widget.data.elapsedMinutes * 60;
+    // Calculate elapsed from acceptedAt if available, otherwise use elapsedMinutes from FCM
+    if (widget.data.createdAtMs != null && widget.data.createdAtMs! > 0) {
+      // createdAt in the reminder payload is the current time when reminder was sent
+      // Use elapsedMinutes from FCM as the base (time since acceptance)
+      _elapsedSeconds = widget.data.elapsedMinutes * 60;
+    } else {
+      _elapsedSeconds = widget.data.elapsedMinutes * 60;
+    }
+    // If still 0, try to calculate from order's acceptedAt via Firestore
+    if (_elapsedSeconds == 0) {
+      _fetchAcceptedAt();
+    }
     _startCountdown();
   }
 
@@ -84,6 +96,26 @@ class _TripStartReminderScreenState
         setState(() => _elapsedSeconds++);
       },
     );
+  }
+
+  Future<void> _fetchAcceptedAt() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(widget.data.orderId)
+          .get();
+      final acceptedAt = doc.data()?['acceptedAt'];
+      if (acceptedAt != null && acceptedAt is Timestamp) {
+        final elapsed = DateTime.now().difference(acceptedAt.toDate());
+        if (mounted) {
+          setState(() {
+            _elapsedSeconds = elapsed.inSeconds;
+          });
+        }
+      }
+    } catch (_) {
+      // Non-fatal — keep counting from 0
+    }
   }
 
   String get _formattedTime {

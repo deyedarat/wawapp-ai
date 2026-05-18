@@ -83,6 +83,33 @@ class TripReminderActivity : Activity() {
         findViewById<TextView>(R.id.pickup_label).text = pickupLabel
         findViewById<TextView>(R.id.dropoff_label).text = dropoffLabel
         updateTimerDisplay()
+
+        // If elapsedMinutes is 0, fetch acceptedAt from Firestore for accurate timer
+        if (elapsedSeconds == 0) {
+            fetchAcceptedAt()
+        }
+    }
+
+    private fun fetchAcceptedAt() {
+        Thread {
+            try {
+                val task = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                    .collection("orders")
+                    .document(orderId)
+                    .get()
+                val snapshot = com.google.android.gms.tasks.Tasks.await(task, 5, java.util.concurrent.TimeUnit.SECONDS)
+                val acceptedAt = snapshot.getTimestamp("acceptedAt")
+                if (acceptedAt != null) {
+                    val elapsed = (System.currentTimeMillis() - acceptedAt.toDate().time) / 1000
+                    runOnUiThread {
+                        elapsedSeconds = elapsed.toInt()
+                        updateTimerDisplay()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to fetch acceptedAt: ${e.message}")
+            }
+        }.start()
     }
 
     private fun setupButtons() {
