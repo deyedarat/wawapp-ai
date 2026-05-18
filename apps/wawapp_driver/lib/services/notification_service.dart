@@ -19,6 +19,7 @@ import 'notification_helper.dart';
 import 'notification_logger.dart';
 import 'notification_method_channel.dart';
 import 'orders_service.dart';
+import 'package:core_shared/core_shared.dart' show OrderStatus;
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -366,7 +367,8 @@ class NotificationService {
         _navigateTo('/');
         break;
       case 'start_trip':
-        _navigateTo('/active-order');
+        // Transition order to onRoute (trip started) then navigate
+        _executeStartTrip(orderId);
         break;
       default:
         _navigateFromMessage(data);
@@ -832,6 +834,24 @@ class NotificationService {
         debugPrint('[NotificationService] Native accept failed: $e');
       }
       // Even on failure, navigate to active-order (reconciliation will handle it)
+      _navigateTo('/active-order');
+    }
+  }
+
+  /// Execute start trip from native TripReminderActivity intent.
+  /// Transitions order from 'accepted' to 'onRoute' then navigates.
+  Future<void> _executeStartTrip(String orderId) async {
+    try {
+      if (kDebugMode) {
+        debugPrint('[NotificationService] Executing start trip: orderId=$orderId');
+      }
+      final ordersService = OrdersService();
+      await ordersService.transition(orderId, OrderStatus.onRoute);
+      _navigateTo('/active-order');
+    } on Object catch (e) {
+      if (kDebugMode) {
+        debugPrint('[NotificationService] Start trip failed: $e — navigating anyway');
+      }
       _navigateTo('/active-order');
     }
   }
