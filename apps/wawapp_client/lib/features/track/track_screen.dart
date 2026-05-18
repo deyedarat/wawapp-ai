@@ -117,6 +117,11 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(kReleaseMode ? l10n.track : '${l10n.track} • DEBUG'),
+          leading: IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () => context.go('/'),
+            tooltip: 'الرئيسية',
+          ),
         ),
         body: SafeArea(
           child: OrderTrackingView(

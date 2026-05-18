@@ -24,31 +24,60 @@ class DriverLocation {
 // Use order-based tracking instead.
 final driverLocationProvider =
     StreamProvider.family.autoDispose<DriverLocation?, String>((ref, orderId) {
-  // P0-FATAL FIX: Read location from the order document, not driver_locations
+  // Read location from the order document's driverLocation field.
+  // The driver's tracking service writes here when the order is active.
+  // Fallback: if driverLocation is not yet written, try reading from
+  // driver_locations/{driverId} using the order's assignedDriverId.
   return FirebaseFirestore.instance
       .collection('orders')
       .doc(orderId)
       .snapshots()
-      .map((snapshot) {
+      .asyncMap((snapshot) async {
     try {
       if (!snapshot.exists) return null;
 
       final data = snapshot.data();
-      if (data == null || !data.containsKey('driverLocation')) return null;
+      if (data == null) return null;
 
-      final locData = data['driverLocation'] as Map<String, dynamic>;
+      // Primary: read from order.driverLocation
+      if (data.containsKey('driverLocation') && data['driverLocation'] != null) {
+        final locData = data['driverLocation'] as Map<String, dynamic>;
+        final lat = (locData['lat'] as num?)?.toDouble();
+        final lng = (locData['lng'] as num?)?.toDouble();
+
+        DateTime? updatedAt;
+        if (locData['updatedAt'] is Timestamp) {
+          updatedAt = (locData['updatedAt'] as Timestamp).toDate();
+        }
+
+        if (lat != null && lng != null) {
+          return DriverLocation(
+            position: LatLng(lat, lng),
+            lastUpdated: updatedAt ?? DateTime.now(),
+          );
+        }
+      }
+
+      // Fallback: read from driver_locations/{driverId}
+      final driverId = data['driverId'] as String? ?? data['assignedDriverId'] as String?;
+      if (driverId == null || driverId.isEmpty) return null;
+
+      final locDoc = await FirebaseFirestore.instance
+          .collection('driver_locations')
+          .doc(driverId)
+          .get();
+
+      if (!locDoc.exists) return null;
+      final locData = locDoc.data()!;
       final lat = (locData['lat'] as num?)?.toDouble();
       final lng = (locData['lng'] as num?)?.toDouble();
 
-      // Parse timestamp
+      if (lat == null || lng == null) return null;
+
       DateTime? updatedAt;
       if (locData['updatedAt'] is Timestamp) {
         updatedAt = (locData['updatedAt'] as Timestamp).toDate();
-      } else if (locData['updatedAt'] is String) {
-        updatedAt = DateTime.tryParse(locData['updatedAt']);
       }
-
-      if (lat == null || lng == null) return null;
 
       return DriverLocation(
         position: LatLng(lat, lng),

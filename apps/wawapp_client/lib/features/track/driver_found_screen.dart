@@ -20,7 +20,14 @@ class DriverFoundScreen extends ConsumerWidget {
     final orderAsync = ref.watch(orderTrackingProvider(orderId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('تم العثور على سائق')),
+      appBar: AppBar(
+        title: const Text('تم العثور على سائق'),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          onPressed: () => context.go('/'),
+          tooltip: 'الرئيسية',
+        ),
+      ),
       body: orderAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) {
