@@ -18,6 +18,7 @@ import 'notification_dedup_service.dart';
 import 'notification_helper.dart';
 import 'notification_logger.dart';
 import 'notification_method_channel.dart';
+import 'orders_service.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -345,6 +346,17 @@ class NotificationService {
     );
 
     switch (action) {
+      case 'accept_order':
+        // Native FullScreenNotificationActivity already showed the offer.
+        // Execute acceptance directly and navigate to active-order.
+        final offerId = data['offerId'] as String? ?? '';
+        if (offerId.isNotEmpty) {
+          _executeNativeAccept(orderId, offerId);
+        } else {
+          // No offerId — just navigate to active-order (acceptance may have already happened)
+          _navigateTo('/active-order');
+        }
+        break;
       case 'reject_order':
         markOrderAsProcessed(orderId);
         _navigateTo('/');
@@ -793,6 +805,30 @@ class NotificationService {
       // PATCH-09 (RC-06): Fail-closed. If we cannot reach the server we must
       // not show a reminder — the order may have been cancelled or completed.
       return false;
+    }
+  }
+
+  /// Execute acceptance from native FullScreenNotificationActivity intent.
+  /// Calls acceptOfferV2 and navigates to /active-order on success.
+  Future<void> _executeNativeAccept(String orderId, String offerId) async {
+    try {
+      if (kDebugMode) {
+        debugPrint('[NotificationService] Executing native accept: orderId=$orderId, offerId=$offerId');
+      }
+      // Clear any active fullscreen state
+      clearActiveFullScreen();
+      markOrderAsProcessed(orderId);
+
+      final ordersService = OrdersService();
+      await ordersService.acceptOfferV2(orderId: orderId, offerId: offerId);
+
+      _navigateTo('/active-order');
+    } on Object catch (e) {
+      if (kDebugMode) {
+        debugPrint('[NotificationService] Native accept failed: $e');
+      }
+      // Even on failure, navigate to active-order (reconciliation will handle it)
+      _navigateTo('/active-order');
     }
   }
 

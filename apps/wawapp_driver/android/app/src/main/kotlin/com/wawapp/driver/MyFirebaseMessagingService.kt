@@ -260,7 +260,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 Log.d(TAG, "Launch context: locked=$isLocked, screenOn=$isScreenOn, sdk=${Build.VERSION.SDK_INT}")
 
                 val fsIntent = Intent(applicationContext, FullScreenNotificationActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                            Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                            Intent.FLAG_ACTIVITY_SINGLE_TOP
                     putExtra("orderId", orderId)
                     putExtra("pickupLabel", pickupLabel)
                     putExtra("dropoffLabel", dropoffLabel)
