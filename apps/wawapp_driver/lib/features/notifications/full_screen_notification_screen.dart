@@ -321,13 +321,18 @@ class _FullScreenNotificationScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: const Color(0xFF1B5E20),
-        body: SafeArea(
-          child: Column(
-            children: [
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _safeDismiss();
+      },
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: const Color(0xFF1B5E20),
+          body: SafeArea(
+            child: Column(
+              children: [
               const Spacer(flex: 2),
               // Header
               const Icon(
@@ -440,6 +445,7 @@ class _FullScreenNotificationScreenState
             ],
           ),
         ),
+      ),
       ),
     );
   }

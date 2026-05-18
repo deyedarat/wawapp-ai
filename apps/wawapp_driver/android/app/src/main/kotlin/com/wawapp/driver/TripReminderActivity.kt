@@ -198,6 +198,12 @@ class TripReminderActivity : Activity() {
         super.onDestroy()
     }
 
+    @Deprecated("Use onBackPressedDispatcher")
+    override fun onBackPressed() {
+        cancelNotification()
+        super.onBackPressed()
+    }
+
     companion object {
         private const val TAG = "TripReminderActivity"
     }

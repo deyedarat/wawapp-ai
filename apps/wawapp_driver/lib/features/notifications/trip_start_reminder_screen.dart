@@ -163,8 +163,13 @@ class _TripStartReminderScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _dismiss();
+      },
+      child: Directionality(
+        textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: const Color(0xFFF59E0B), // Amber warning color
         body: SafeArea(
@@ -362,6 +367,7 @@ class _TripStartReminderScreenState
             ],
           ),
         ),
+      ),
       ),
     );
   }

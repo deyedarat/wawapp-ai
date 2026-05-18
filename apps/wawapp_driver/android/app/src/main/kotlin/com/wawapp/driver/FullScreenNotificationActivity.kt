@@ -386,6 +386,13 @@ class FullScreenNotificationActivity : Activity() {
         Log.d(TAG, "Full-screen notification destroyed: orderId=$orderId")
     }
 
+    @Deprecated("Use onBackPressedDispatcher")
+    override fun onBackPressed() {
+        // Cancel notification + sound on back press (prevents orphaned notification)
+        cancelNotification()
+        super.onBackPressed()
+    }
+
     private fun releaseWakeLock() {
         try {
             wakeLock?.let {
