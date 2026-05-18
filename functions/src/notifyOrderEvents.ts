@@ -384,9 +384,9 @@ export const notifyOrderEvents = functions.firestore
       }
     }
 
-    // STEP 3B: Clean up dispatch when client cancels from 'matching' state
-    // (order was never accepted — just cancel all pending offers and dequeue)
-    if (beforeStatus === 'matching' && afterStatus === 'cancelledByClient') {
+    // STEP 3B: Clean up dispatch when order leaves 'matching' state
+    // (cancelled by client OR expired — cancel all pending offers and dequeue)
+    if (beforeStatus === 'matching' && (afterStatus === 'cancelledByClient' || afterStatus === 'expired')) {
       // Cancel all pending dispatch_offers
       const offersSnap = await admin.firestore()
         .collection('dispatch_offers')
