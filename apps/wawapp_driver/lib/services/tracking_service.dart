@@ -288,6 +288,9 @@ class TrackingService {
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
+      // Also write location to the active order document so the client can track
+      _updateActiveOrderLocation(driverId, position);
+
       final writeDuration =
           DateTime.now().difference(writeStartTime).inMilliseconds;
 
@@ -324,6 +327,35 @@ class TrackingService {
       dev.log('[tracking] write-error: $e');
       rethrow;
     }
+  }
+
+  /// Write driver location to the active order document so the client can track.
+  /// Best-effort — failures don't block the main location write.
+  void _updateActiveOrderLocation(String driverId, Position position) {
+    _firestore
+        .collection('orders')
+        .where('driverId', isEqualTo: driverId)
+        .where('status', whereIn: ['accepted', 'onRoute'])
+        .limit(1)
+        .get()
+        .then((snap) {
+      if (snap.docs.isNotEmpty) {
+        snap.docs.first.reference.update({
+          'driverLocation': {
+            'lat': position.latitude,
+            'lng': position.longitude,
+            'heading': position.heading,
+            'speed': position.speed,
+            'updatedAt': FieldValue.serverTimestamp(),
+          },
+        });
+      }
+    }).catchError((Object e) {
+      // Non-fatal — client tracking is best-effort
+      if (kDebugMode) {
+        debugPrint('$_logTag ⚠️ Failed to update order location: $e');
+      }
+    });
   }
 
   void _stopLocationUpdates() {

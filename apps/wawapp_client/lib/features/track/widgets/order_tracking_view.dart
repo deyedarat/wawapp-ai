@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_shared/core_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -317,6 +318,48 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
     });
   }
 
+  Widget _buildDriverInfo(BuildContext context) {
+    final driverId = widget.order?.driverId ?? widget.order?.assignedDriverId;
+    if (driverId == null || driverId.isEmpty) {
+      return const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('السائق: جاري البحث...'),
+          Text('المركبة: ---'),
+        ],
+      );
+    }
+
+    return FutureBuilder<DocumentSnapshot>(
+      future: FirebaseFirestore.instance.collection('drivers').doc(driverId).get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('السائق: جاري التحميل...'),
+              Text('المركبة: ---'),
+            ],
+          );
+        }
+
+        final data = snapshot.data?.data() as Map<String, dynamic>?;
+        final name = data?['name'] as String? ?? 'السائق';
+        final phone = data?['phone'] as String? ?? '';
+        final vehicle = data?['vehicle'] as String? ?? 'غير محدد';
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('السائق: $name'),
+            if (phone.isNotEmpty) Text('الهاتف: $phone'),
+            Text('المركبة: $vehicle'),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -455,8 +498,7 @@ class _OrderTrackingViewState extends ConsumerState<OrderTrackingView>
                   Text('الحالة: في الطريق',
                       style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 8),
-                const Text('السائق: ---'),
-                const Text('المركبة: ---'),
+                _buildDriverInfo(context),
                 Text(
                     'السعر: ${widget.order?.price.round() ?? '---'} ${l10n.currency}'),
                 if (widget.order != null) ...[
