@@ -11,10 +11,10 @@
  * Last Updated: 2025-11-21
  */
 
-import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
-import { writeAdminNotification } from './helpers/adminNotifications';
+import * as functions from 'firebase-functions/v1';
 import { releaseDriverState } from './dispatch/state';
+import { writeAdminNotification } from './helpers/adminNotifications';
 
 /**
  * Notification configuration
@@ -110,9 +110,9 @@ async function sendNotification(
   const notificationLogRef = admin.firestore()
     .collection('notification_log')
     .doc(notificationId);
-    
+
   const alreadySent = await notificationLogRef.get();
-  
+
   if (alreadySent.exists) {
     console.log('[NotifyOrderEvents] Notification already sent, skipping (idempotent)', {
       notification_id: notificationId,
@@ -125,27 +125,27 @@ async function sendNotification(
 
   // Generate deep link based on notification type
   let deepLink: string;
-  
+
   switch (config.type) {
     case 'driver_accepted':
     case 'driver_on_route':
       deepLink = `/order/${orderId}/tracking`;
       break;
-    
+
     case 'trip_completed':
       deepLink = `/order/${orderId}/completed`;
       break;
-    
+
     case 'order_expired':
       deepLink = '/error?message=Order expired';
       break;
-    
+
     case 'order_cancelled_by_client':
     case 'trip_cancelled_by_client':
     case 'cancelled_by_driver':
       deepLink = '/orders/nearby';
       break;
-        
+
     case 'order_expired_driver':
       deepLink = '/orders/nearby';
       break;
@@ -153,7 +153,7 @@ async function sendNotification(
     case 'order_cancelled_by_system':
       deepLink = '/';
       break;
-    
+
     default:
       deepLink = '/';
   }
@@ -227,7 +227,7 @@ async function sendNotification(
       sentAt: admin.firestore.FieldValue.serverTimestamp(),
       messageId: response,
     });
-    
+
     console.log('[NotifyOrderEvents] Notification logged for idempotency', {
       notification_id: notificationId,
     });
@@ -246,7 +246,7 @@ async function sendNotification(
   } catch (error: any) {
     // Handle invalid/expired FCM tokens
     if (error.code === 'messaging/invalid-registration-token' ||
-        error.code === 'messaging/registration-token-not-registered') {
+      error.code === 'messaging/registration-token-not-registered') {
       console.warn('[NotifyOrderEvents] Invalid FCM token, removing from user', {
         user_id: userId,
         error_code: error.code,
@@ -350,7 +350,7 @@ export const notifyOrderEvents = functions.firestore
 
     // STEP 3A: Notify assigned driver if client cancelled
     if ((beforeStatus === 'accepted' || beforeStatus === 'onRoute') &&
-        afterStatus === 'cancelledByClient') {
+      afterStatus === 'cancelledByClient') {
       const assignedDriverId = afterData.assignedDriverId as string | undefined;
 
       if (assignedDriverId) {
@@ -382,6 +382,37 @@ export const notifyOrderEvents = functions.firestore
           deleted_count: offersSnap.size,
         });
       }
+    }
+
+    // STEP 3B: Clean up dispatch when client cancels from 'matching' state
+    // (order was never accepted — just cancel all pending offers and dequeue)
+    if (beforeStatus === 'matching' && afterStatus === 'cancelledByClient') {
+      // Cancel all pending dispatch_offers
+      const offersSnap = await admin.firestore()
+        .collection('dispatch_offers')
+        .where('orderId', '==', orderId)
+        .where('status', '==', 'sent')
+        .get();
+      if (!offersSnap.empty) {
+        const batch = admin.firestore().batch();
+        offersSnap.docs.forEach((doc) => {
+          batch.update(doc.ref, {
+            status: 'cancelled',
+            respondedAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+        });
+        await batch.commit();
+        console.log('[NotifyOrderEvents] Cancelled dispatch_offers for client-cancelled matching order', {
+          order_id: orderId,
+          cancelled_count: offersSnap.size,
+        });
+      }
+
+      // Remove from dispatch_queue
+      await admin.firestore().collection('dispatch_queue').doc(orderId).delete().catch(() => { });
+      console.log('[NotifyOrderEvents] Dequeued client-cancelled order from dispatch_queue', {
+        order_id: orderId,
+      });
     }
 
     // Write admin notification for expired orders
