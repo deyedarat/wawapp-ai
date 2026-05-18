@@ -348,12 +348,16 @@ class NotificationService {
     switch (action) {
       case 'accept_order':
         // Native FullScreenNotificationActivity already showed the offer.
+        // Mark as rejected locally so watchMyOffers filters it out immediately
+        // (prevents the offer from appearing in NearbyScreen during acceptance)
+        NotificationMethodChannel.addRejectedOrderId(orderId);
+        markOrderAsProcessed(orderId);
+        clearActiveFullScreen();
         // Execute acceptance directly and navigate to active-order.
         final offerId = data['offerId'] as String? ?? '';
         if (offerId.isNotEmpty) {
           _executeNativeAccept(orderId, offerId);
         } else {
-          // No offerId — just navigate to active-order (acceptance may have already happened)
           _navigateTo('/active-order');
         }
         break;
