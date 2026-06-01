@@ -537,7 +537,7 @@ object NotificationHelper {
     // Sound repeat scheduling via AlarmManager
     // =========================================================================
 
-    private fun scheduleSoundRepeats(context: Context, orderId: String, notificationId: Int) {
+    fun scheduleSoundRepeats(context: Context, orderId: String, notificationId: Int) {
         val appContext = context.applicationContext
 
         // Mark all repeat slots as pending

@@ -964,6 +964,11 @@ class NotificationService {
       orderId: notificationData.orderId,
     );
 
+    // Play sound via native MediaPlayer (USAGE_ALARM bypasses DND).
+    // Background path handles this in NotificationHelper.showFullScreenNotification(),
+    // but foreground path skips native notification entirely — so we trigger sound here.
+    NotificationMethodChannel.playSoundWithRepeats(notificationData.orderId);
+
     // Navigate directly to full-screen route (no heads-up delay)
     _navigateToFullScreen(notificationData);
   }

@@ -209,7 +209,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                     cells: [
                                       DataCell(
                                         Text(
-                                          (order.id ?? 'N/A').substring(0, 8).toUpperCase(),
+                                          _safeSubstring(order.id ?? 'N/A', 8).toUpperCase(),
                                           style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'monospace'),
                                         ),
                                       ),
@@ -219,7 +219,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                               ? () => _showClientQuickInfo(context, order.ownerId!)
                                               : null,
                                           child: Text(
-                                            (order.ownerId ?? 'N/A').substring(0, 8),
+                                            _safeSubstring(order.ownerId ?? 'N/A', 8),
                                             style: const TextStyle(
                                               decoration: TextDecoration.underline,
                                               color: AdminAppColors.activeBlue,
@@ -233,7 +233,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                             ? InkWell(
                                                 onTap: () => _showDriverQuickInfo(context, order.assignedDriverId!),
                                                 child: Text(
-                                                  order.assignedDriverId!.substring(0, 8),
+                                                  _safeSubstring(order.assignedDriverId!, 8),
                                                   style: const TextStyle(
                                                     decoration: TextDecoration.underline,
                                                     color: AdminAppColors.activeBlue,
@@ -375,11 +375,16 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
     return formatter.format(date);
   }
 
+  String _safeSubstring(String value, int length) {
+    if (value.length <= length) return value;
+    return value.substring(0, length);
+  }
+
   void _showOrderDetails(BuildContext context, Order order) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('تفاصيل الطلب ${(order.id ?? 'N/A').substring(0, 8)}'),
+        title: Text('تفاصيل الطلب ${_safeSubstring(order.id ?? 'N/A', 8)}'),
         content: SizedBox(
           width: 500,
           child: SingleChildScrollView(

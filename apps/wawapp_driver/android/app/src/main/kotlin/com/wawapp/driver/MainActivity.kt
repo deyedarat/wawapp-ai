@@ -153,6 +153,12 @@ class MainActivity : FlutterActivity() {
                     NotificationHelper.createNotificationChannels(this)
                     result.success(null)
                 }
+                "playSoundWithRepeats" -> {
+                    val orderId = call.argument<String>("orderId") ?: ""
+                    NotificationHelper.playSoundOnce(this)
+                    NotificationHelper.scheduleSoundRepeats(this, orderId, orderId.hashCode())
+                    result.success(null)
+                }
                 "cancelSoundRepeats" -> {
                     val orderId = call.argument<String>("orderId") ?: ""
                     NotificationHelper.cancelSoundRepeats(this, orderId)

@@ -217,6 +217,24 @@ class NotificationMethodChannel {
     }
   }
 
+  /// Play notification sound once and schedule repeats (7 repeats at 8s intervals).
+  /// Used when showing full-screen notification in foreground (Flutter UI handles display,
+  /// but sound must be triggered via native MediaPlayer with USAGE_ALARM to bypass DND).
+  static Future<void> playSoundWithRepeats(String orderId) async {
+    try {
+      await _channel.invokeMethod('playSoundWithRepeats', {'orderId': orderId});
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] ✅ Sound playing with repeats for order: $orderId');
+      }
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+            '[NotificationMethodChannel] Error playing sound: ${e.message}');
+      }
+    }
+  }
+
   /// Cancel the native Android notification and all sound repeats for an order.
   /// Call when order is accepted, rejected, snoozed, or notification is dismissed.
   static Future<void> cancelOrderNotification(String orderId) async {
