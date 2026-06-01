@@ -724,48 +724,23 @@ class NotificationService {
 
   void _showTripReminderNotification(Map<String, dynamic> data) async {
     final orderId = data['orderId'] as String? ?? '';
-    final remaining = data['elapsedMinutes'] as String? ?? '?';
 
     if (kDebugMode) {
-      debugPrint('[NotificationService] 🔔 Trip reminder: order=$orderId, elapsed=$remaining min');
+      debugPrint(
+        '[NotificationService] 🔔 Trip reminder received: order=$orderId — handled by native TripReminderActivity',
+      );
     }
 
-    // Guard: verify order is still 'accepted' before showing reminder
-    if (orderId.isNotEmpty) {
-      final stillAccepted = await _isOrderStillAccepted(orderId);
-      if (!stillAccepted) {
-        if (kDebugMode) {
-          debugPrint('[NotificationService] ⛔ Trip reminder dropped — order $orderId no longer accepted');
-        }
-        NotificationLogger.instance.log(
-          eventType: 'skipped',
-          notificationType: 'trip_start_reminder',
-          appState: 'foreground',
-          orderId: orderId,
-          escalationLevel: 'order_not_accepted',
-        );
-        return;
-      }
-    }
-
+    // Native TripReminderActivity handles the full-screen UI directly.
+    // No Flutter navigation needed — just log it.
     NotificationLogger.instance.log(
       eventType: 'displayed',
       notificationType: 'trip_start_reminder',
       appState: 'foreground',
-      displayMode: 'full_screen',
+      displayMode: 'native_activity',
       orderId: orderId,
       escalationLevel: data['escalationLevel'] as String?,
     );
-
-    // Open full-screen trip start reminder UI directly
-    final reminderData = TripStartReminderData.tryParse(data);
-    if (reminderData != null) {
-      _navigateToTripStartReminder(reminderData);
-    } else {
-      if (!_isOnActiveOrder()) {
-        _navigateTo('/active-order');
-      }
-    }
   }
 
   /// Check if order is still in 'accepted' status (for trip_start_reminder guard).
@@ -1083,11 +1058,8 @@ class NotificationService {
     // Full-screen types → route based on specific type
     if (NotificationHelper.isFullScreenType(type)) {
       if (type == 'trip_start_reminder') {
-        final reminderData = TripStartReminderData.tryParse(data);
-        if (reminderData != null) {
-          _navigateToTripStartReminder(reminderData);
-          return;
-        }
+        // Handled by native TripReminderActivity — skip Flutter navigation
+        return;
       } else {
         final notificationData = FullScreenNotificationData.tryParse(data);
         if (notificationData != null) {

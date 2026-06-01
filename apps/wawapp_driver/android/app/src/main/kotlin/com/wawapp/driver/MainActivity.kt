@@ -469,28 +469,34 @@ class MainActivity : FlutterActivity() {
      */
     private fun dispatchActionIntent(intent: Intent?) {
         val action = intent?.getStringExtra("action") ?: return
+        val orderId = intent.getStringExtra("orderId")
+        val offerId = intent.getStringExtra("offerId")
+
+        android.util.Log.d("MainActivity", "dispatchActionIntent: action=$action, orderId=$orderId, offerId=$offerId, sinkReady=${newIntentEventSink != null}")
 
         val data = mapOf<String, Any?>(
             "action" to action,
-            "orderId" to intent.getStringExtra("orderId"),
+            "orderId" to orderId,
             "notificationType" to intent.getStringExtra("notificationType"),
-            "offerId" to intent.getStringExtra("offerId")
+            "offerId" to offerId
         )
 
         // Path 1: EventChannel (immediate delivery if Flutter is listening)
         if (newIntentEventSink != null) {
             newIntentEventSink?.success(data)
+            android.util.Log.d("MainActivity", "dispatchActionIntent: sent via EventChannel")
             // Clear cache — EventChannel delivery succeeded
             getSharedPreferences(PREFS_PENDING_ACTION, Context.MODE_PRIVATE)
                 .edit().clear().apply()
         } else {
             // Path 2: Cache to SharedPreferences (Flutter will read on startup)
+            android.util.Log.d("MainActivity", "dispatchActionIntent: cached to SharedPreferences (EventSink null)")
             val prefs = getSharedPreferences(PREFS_PENDING_ACTION, Context.MODE_PRIVATE)
             prefs.edit()
                 .putString("action", action)
-                .putString("orderId", intent.getStringExtra("orderId"))
+                .putString("orderId", orderId)
                 .putString("notificationType", intent.getStringExtra("notificationType"))
-                .putString("offerId", intent.getStringExtra("offerId"))
+                .putString("offerId", offerId)
                 .putLong("timestamp", System.currentTimeMillis())
                 .apply()
         }

@@ -152,7 +152,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         nm.cancel(orderId.hashCode())
                     }
                     FcmForegroundBridge.sendMessage(message.data)
-                    // return removed to always build native notification
+                    return // Flutter handles display in foreground — no native duplicate
                 }
                 handleSimpleNotification(message, type, orderId)
             }
@@ -173,7 +173,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         nm.cancel(orderId.hashCode())
                     }
                     FcmForegroundBridge.sendMessage(message.data)
-                    // return removed to always build native notification
+                    return // Flutter handles display in foreground — no native duplicate
                 }
                 handleSimpleNotification(message, type, orderId)
             }

@@ -235,9 +235,28 @@ class FullScreenNotificationActivity : Activity() {
         // Cancel any pending snooze alarm for this order (prevents ghost notification)
         SnoozeScheduler.cancel(this, orderId)
 
+        // Mark this order in native dedup so subsequent FCM waves are dropped
+        val dedupPrefs = getSharedPreferences("fcm_dedup", Context.MODE_PRIVATE)
+        dedupPrefs.edit()
+            .putLong(offerId.ifBlank { orderId }, System.currentTimeMillis())
+            .putLong(orderId, System.currentTimeMillis())
+            .apply()
+
+        // Set active trip flag so FCM handler suppresses new_order notifications
+        val tripPrefs = getSharedPreferences(MyFirebaseMessagingService.PREFS_TRIP_STATE, Context.MODE_PRIVATE)
+        tripPrefs.edit()
+            .putBoolean(MyFirebaseMessagingService.KEY_HAS_ACTIVE_TRIP, true)
+            .putLong(MyFirebaseMessagingService.KEY_TRIP_SET_AT, System.currentTimeMillis())
+            .putString(MyFirebaseMessagingService.KEY_TRIP_ORDER_ID, orderId)
+            .putString(MyFirebaseMessagingService.KEY_TRIP_SOURCE, "native_accept")
+            .apply()
+
+        Log.d(TAG, "onAcceptClicked: launching MainActivity with action=accept_order, orderId=$orderId, offerId=$offerId")
+
         // Open MainActivity with orderId
+        // FLAG_ACTIVITY_SINGLE_TOP ensures onNewIntent() is called on existing instance
         val intent = Intent(this, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             putExtra("orderId", orderId)
             putExtra("notificationType", notificationType)
             putExtra("action", "accept_order")

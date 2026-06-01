@@ -95,11 +95,9 @@ class LocationService {
 
   /// Get current position with timeout
   /// This is used for the "first fix guarantee" when going online
-  Future<Position> getCurrentPosition(
-      {Duration timeout = const Duration(seconds: 20)}) async {
+  Future<Position> getCurrentPosition({Duration timeout = const Duration(seconds: 20)}) async {
     if (kDebugMode) {
-      debugPrint(
-          '$_logTag Getting current position (timeout: ${timeout.inSeconds}s)...');
+      debugPrint('$_logTag Getting current position (timeout: ${timeout.inSeconds}s)...');
     }
 
     final enabled = await Geolocator.isLocationServiceEnabled();
@@ -114,8 +112,7 @@ class LocationService {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
+    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
       if (kDebugMode) {
         debugPrint('$_logTag ❌ Location permission denied');
       }
@@ -123,22 +120,21 @@ class LocationService {
     }
 
     try {
-      _lastPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      ).timeout(timeout);
+      _lastPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high).timeout(timeout);
 
       if (kDebugMode) {
         debugPrint(
-            '$_logTag ✅ Got position: lat=${_lastPosition!.latitude}, lng=${_lastPosition!.longitude}, accuracy=${_lastPosition!.accuracy}m');
+          '$_logTag ✅ Got position: lat=${_lastPosition!.latitude}, lng=${_lastPosition!.longitude}, accuracy=${_lastPosition!.accuracy}m',
+        );
       }
       return _lastPosition!;
     } on TimeoutException {
       if (kDebugMode) {
-        debugPrint(
-            '$_logTag ❌ Timeout getting position after ${timeout.inSeconds}s');
+        debugPrint('$_logTag ❌ Timeout getting position after ${timeout.inSeconds}s');
       }
       throw TimeoutException(
-          'Could not obtain GPS fix within ${timeout.inSeconds} seconds. Please ensure you have clear sky view.');
+        'Could not obtain GPS fix within ${timeout.inSeconds} seconds. Please ensure you have clear sky view.',
+      );
     } on Object catch (e) {
       if (kDebugMode) {
         debugPrint('$_logTag ❌ Error getting position: $e');
@@ -149,10 +145,7 @@ class LocationService {
 
   /// Start listening to position stream with error handling
   /// This provides continuous location updates
-  void startPositionStream({
-    required Function(Position) onPosition,
-    required Function(Object) onError,
-  }) {
+  void startPositionStream({required Function(Position) onPosition, required Function(Object) onError}) {
     if (kDebugMode) {
       debugPrint('$_logTag Starting position stream...');
     }
@@ -170,12 +163,9 @@ class LocationService {
         foregroundNotificationConfig: const ForegroundNotificationConfig(
           notificationTitle: 'WawApp Driver',
           notificationText: 'يتم تتبع موقعك لاستقبال الطلبات',
-          // ✅ Use vector drawable instead of mipmap to fix "broken notification" warning
-          notificationIcon:
-              AndroidResource(name: 'ic_notification', defType: 'drawable'),
+          notificationIcon: AndroidResource(name: 'ic_launcher', defType: 'mipmap'),
           enableWakeLock: true,
-          // ✅ Add color for Material Design compliance (Android 14+)
-          color: Color(0xFF4CAF50),
+          setOngoing: true,
         ),
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -187,19 +177,15 @@ class LocationService {
         showBackgroundLocationIndicator: true,
       );
     } else {
-      locationSettings = const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 50,
-      );
+      locationSettings = const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 50);
     }
 
-    _positionStreamSubscription = Geolocator.getPositionStream(
-      locationSettings: locationSettings,
-    ).listen(
+    _positionStreamSubscription = Geolocator.getPositionStream(locationSettings: locationSettings).listen(
       (Position position) {
         if (kDebugMode) {
           debugPrint(
-              '$_logTag Stream update: lat=${position.latitude}, lng=${position.longitude}, accuracy=${position.accuracy}m');
+            '$_logTag Stream update: lat=${position.latitude}, lng=${position.longitude}, accuracy=${position.accuracy}m',
+          );
         }
         _lastPosition = position;
         _controller.add(position);

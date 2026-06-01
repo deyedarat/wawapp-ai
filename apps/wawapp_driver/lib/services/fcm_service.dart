@@ -31,15 +31,10 @@ class FCMService extends BaseFCMService {
   Future<void> saveTokenToFirestore(String token) async {}
 
   @override
-  Future<void> handleNotificationTap(
-    BuildContext context,
-    RemoteMessage message,
-    String appState,
-  ) async {
+  Future<void> handleNotificationTap(BuildContext context, RemoteMessage message, String appState) async {
     try {
       final orderId = message.data['orderId'] as String?;
-      final type = message.data['notificationType'] as String? ??
-          message.data['type'] as String?;
+      final type = message.data['notificationType'] as String? ?? message.data['type'] as String?;
 
       if (orderId == null || type == null) {
         if (kDebugMode) {
@@ -49,11 +44,7 @@ class FCMService extends BaseFCMService {
       }
 
       // Track notification tap
-      AnalyticsService.instance.logNotificationTapped(
-        notificationType: type,
-        orderId: orderId,
-        appState: appState,
-      );
+      AnalyticsService.instance.logNotificationTapped(notificationType: type, orderId: orderId, appState: appState);
       NotificationLogger.instance.log(
         eventType: 'tapped',
         notificationType: type,
@@ -79,8 +70,7 @@ class FCMService extends BaseFCMService {
               final isValid = await _verifyOrderStillMatching(data.orderId);
               if (!isValid) {
                 if (kDebugMode) {
-                  debugPrint(
-                      '[FCM] Order ${data.orderId} is no longer matching, skipping notification');
+                  debugPrint('[FCM] Order ${data.orderId} is no longer matching, skipping notification');
                 }
                 return;
               }
@@ -93,12 +83,7 @@ class FCMService extends BaseFCMService {
           break;
 
         case 'trip_start_reminder':
-          final reminderData = TripStartReminderData.tryParse(message.data);
-          if (reminderData != null) {
-            context.push('/trip-start-reminder', extra: reminderData);
-          } else {
-            context.go('/active-order');
-          }
+          // Handled by native TripReminderActivity — no Flutter navigation needed
           break;
 
         case 'order_cancelled_by_client':

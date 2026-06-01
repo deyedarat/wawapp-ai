@@ -191,7 +191,7 @@ object NotificationHelper {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val channelId = when (notificationType) {
-            "trip_start_reminder" -> CHANNEL_ID_TRIP_REMINDERS
+            "trip_start_reminder" -> CHANNEL_ID_SILENT_FULLSCREEN  // Silent — TripReminderActivity handles UX
             "unassigned_order_reminder" -> CHANNEL_ID_UNASSIGNED_ORDERS
             else -> CHANNEL_ID_SILENT_FULLSCREEN  // Silent fallback — no heads-up
         }
@@ -597,9 +597,14 @@ object NotificationHelper {
             activeMediaPlayer?.release()
             activeMediaPlayer = null
 
-            val soundUri = Uri.parse("android.resource://${context.packageName}/raw/trip_reminder")
+            val afd = context.resources.openRawResourceFd(R.raw.trip_reminder)
+                ?: run {
+                    Log.e(TAG, "Cannot open raw resource trip_reminder")
+                    return
+                }
             activeMediaPlayer = MediaPlayer().apply {
-                setDataSource(context, soundUri)
+                setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                afd.close()
                 setAudioAttributes(
                     AudioAttributes.Builder()
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)

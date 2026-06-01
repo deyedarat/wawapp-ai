@@ -91,15 +91,12 @@ class _AuthGateState extends ConsumerState<AuthGate> {
   Future<void> _handleNativeAccept(String orderId, {String? offerId}) async {
     try {
       if (offerId != null && offerId.isNotEmpty) {
-        await ref.read(ordersServiceProvider).acceptOfferV2(
-          offerId: offerId,
-          orderId: orderId,
-        );
+        await ref.read(ordersServiceProvider).acceptOfferV2(offerId: offerId, orderId: orderId);
         // Server confirmed — now safe to suppress the offer
-        NotificationService().handleIncomingOffer(
-          {'orderId': orderId, 'offerId': offerId},
-          source: 'native_accept_suppress',
-        );
+        NotificationService().handleIncomingOffer({
+          'orderId': orderId,
+          'offerId': offerId,
+        }, source: 'native_accept_suppress');
       } else {
         await ref.read(ordersServiceProvider).acceptOrder(orderId, '');
       }
@@ -109,16 +106,14 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       if (mounted) context.go('/active-order');
     } on Object catch (e) {
       if (!mounted) return;
-      final msg = e.toString().contains('already taken') ||
-              e.toString().contains('failed-precondition')
+      final msg = e.toString().contains('already taken') || e.toString().contains('failed-precondition')
           ? 'تم أخذ الطلب بالفعل'
           : 'تعذّر قبول الطلب، حاول مرة أخرى';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(msg), backgroundColor: const Color(0xFFE53935)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: const Color(0xFFE53935)));
     }
   }
-
 
   Future<void> _handleNativeStartTrip(String orderId) async {
     try {
@@ -126,12 +121,10 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       if (mounted) context.go('/active-order');
     } on Object catch (e) {
       if (!mounted) return;
-      final msg = e.toString().contains('Invalid status')
-          ? 'الرحلة بدأت بالفعل'
-          : 'تعذّر بدء الرحلة، حاول مرة أخرى';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(msg), backgroundColor: const Color(0xFFE53935)),
-      );
+      final msg = e.toString().contains('Invalid status') ? 'الرحلة بدأت بالفعل' : 'تعذّر بدء الرحلة، حاول مرة أخرى';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: const Color(0xFFE53935)));
     }
   }
 
@@ -162,15 +155,11 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
       try {
-        await FirebaseFirestore.instance
-            .collection('driver_rejected_orders')
-            .add({
+        await FirebaseFirestore.instance.collection('driver_rejected_orders').add({
           'driverId': uid,
           'orderId': orderId,
           'rejectedAt': FieldValue.serverTimestamp(),
-          'expiresAt': Timestamp.fromDate(
-            DateTime.now().add(const Duration(hours: 24)),
-          ),
+          'expiresAt': Timestamp.fromDate(DateTime.now().add(const Duration(hours: 24))),
         });
         if (kDebugMode) {
           debugPrint('[AuthGate] Order $orderId rejected from native activity');
@@ -189,13 +178,7 @@ class _AuthGateState extends ConsumerState<AuthGate> {
   }
 
   void _handleNativeTripReminder(Map<String, String?> data) {
-    if (!mounted) return;
-    final reminderData = TripStartReminderData.tryParse(data);
-    if (reminderData != null) {
-      context.push('/trip-start-reminder', extra: reminderData);
-    } else {
-      context.go('/active-order');
-    }
+    // Handled by native TripReminderActivity — no Flutter navigation needed
   }
 
   @override
