@@ -90,7 +90,7 @@ class _FullScreenNotificationScreenState
     'cancelledByDriver',
     'expired',
     'completed',
-    'accepted',
+    'accepted'
   };
   static const _maxLifetime = Duration(minutes: 5);
   static const _maxRetries = 2;
@@ -99,19 +99,20 @@ class _FullScreenNotificationScreenState
   void initState() {
     super.initState();
     _updateElapsed();
-    _elapsedTimer = Timer.periodic(
-      const Duration(seconds: 30),
-      (_) => _updateElapsed(),
-    );
+    _elapsedTimer =
+        Timer.periodic(const Duration(seconds: 30), (_) => _updateElapsed());
     // Backend truth reconciliation: auto-dismiss if order becomes non-actionable
     _orderSubscription = FirebaseFirestore.instance
         .collection('orders')
         .doc(widget.data.orderId)
         .snapshots()
-        .listen((snap) {
+        .listen((
+      snap,
+    ) {
       if (!mounted) return;
       final status = snap.data()?['status'] as String?;
-      if (!snap.exists || (status != null && _terminalStatuses.contains(status))) {
+      if (!snap.exists ||
+          (status != null && _terminalStatuses.contains(status))) {
         _safeDismiss();
       }
     });
@@ -123,11 +124,14 @@ class _FullScreenNotificationScreenState
           .collection('dispatch_offers')
           .doc(offerId)
           .snapshots()
-          .listen((snap) {
+          .listen((
+        snap,
+      ) {
         if (!mounted || _actionTaken) return;
         final status = snap.data()?['status'] as String?;
         const offerTerminal = {'expired', 'cancelled', 'accepted', 'rejected'};
-        if (!snap.exists || (status != null && offerTerminal.contains(status))) {
+        if (!snap.exists ||
+            (status != null && offerTerminal.contains(status))) {
           _safeDismiss();
         }
       });
@@ -144,7 +148,14 @@ class _FullScreenNotificationScreenState
     _maxLifetimeTimer?.cancel();
     _orderSubscription?.cancel();
     _offerSubscription?.cancel();
-    NotificationService().clearActiveFullScreen();
+    // FIX: Only clear the full-screen guard if the user took an action (accept/reject/snooze).
+    // When GoRouter rebuilds the route (e.g., new wave arrives and re-navigates to same route),
+    // dispose() is called on the old widget. Clearing the guard here allows the next wave
+    // to bypass the guard and show a duplicate full-screen. If no action was taken,
+    // the guard should remain active so subsequent waves are blocked.
+    if (_actionTaken) {
+      NotificationService().clearActiveFullScreen();
+    }
     super.dispose();
   }
 
@@ -163,9 +174,8 @@ class _FullScreenNotificationScreenState
       setState(() => _elapsedText = '—');
       return;
     }
-    final diff = DateTime.now().difference(
-      DateTime.fromMillisecondsSinceEpoch(ms),
-    );
+    final diff =
+        DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(ms));
     setState(() {
       if (diff.inHours > 0) {
         _elapsedText = '${diff.inHours} س';
@@ -196,10 +206,9 @@ class _FullScreenNotificationScreenState
         _safeDismiss();
         return;
       }
-      await ref.read(ordersServiceProvider).acceptOfferV2(
-        offerId: offerId,
-        orderId: widget.data.orderId,
-      );
+      await ref
+          .read(ordersServiceProvider)
+          .acceptOfferV2(offerId: offerId, orderId: widget.data.orderId);
       NotificationService().markOrderAsProcessed(widget.data.orderId);
       if (!mounted) return;
       context.go('/active-order');
@@ -228,7 +237,8 @@ class _FullScreenNotificationScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              e.toString().contains('already taken') || e.toString().contains('already_accepted')
+              e.toString().contains('already taken') ||
+                      e.toString().contains('already_accepted')
                   ? 'تم أخذ الطلب بالفعل'
                   : 'انتهت صلاحية العرض',
             ),
@@ -241,8 +251,7 @@ class _FullScreenNotificationScreenState
         setState(() => _isLoading = false);
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('حدث خطأ، حاول مرة أخرى')),
-        );
+            const SnackBar(content: Text('حدث خطأ، حاول مرة أخرى')));
       }
     }
   }
@@ -261,11 +270,13 @@ class _FullScreenNotificationScreenState
       try {
         await ref.read(ordersServiceProvider).rejectOffer(offerId: offerId);
         if (kDebugMode) {
-          debugPrint('[FullScreenNotif] Offer $offerId rejected via Cloud Function');
+          debugPrint(
+              '[FullScreenNotif] Offer $offerId rejected via Cloud Function');
         }
       } on Object catch (e) {
         if (kDebugMode) {
-          debugPrint('[FullScreenNotif] rejectOffer CF failed (non-blocking): $e');
+          debugPrint(
+              '[FullScreenNotif] rejectOffer CF failed (non-blocking): $e');
         }
       }
     }
@@ -280,9 +291,8 @@ class _FullScreenNotificationScreenState
           'driverId': uid,
           'orderId': widget.data.orderId,
           'rejectedAt': FieldValue.serverTimestamp(),
-          'expiresAt': Timestamp.fromDate(
-            DateTime.now().add(const Duration(hours: 24)),
-          ),
+          'expiresAt':
+              Timestamp.fromDate(DateTime.now().add(const Duration(hours: 24))),
         });
       } on Object catch (e) {
         if (kDebugMode) {
@@ -300,16 +310,23 @@ class _FullScreenNotificationScreenState
   }
 
   void _snooze() {
+    _actionTaken = true;
     _dismissNotification();
     NotificationService().clearActiveFullScreen();
-    // Clear dedup for this offer so the snooze alarm can re-show it.
+    // Clear ALL dedup layers for this ORDER (not just this offer) so that
+    // the next wave from dispatch engine can show full-screen immediately.
+    // Previously, only the current offerId was cleared, meaning the driver
+    // had to wait 5 minutes (snooze alarm) even though new waves arrived sooner.
     final offerKey = widget.data.offerId ?? widget.data.orderId;
     NotificationService().clearSnoozedOffer(offerKey);
-    // Schedule via Android AlarmManager (survives Doze + process death)
+    // Also clear the orderId from recently-shown so next wave isn't debounced
+    NotificationService().clearSnoozedOffer(widget.data.orderId);
+    // Schedule snooze alarm as fallback (in case no new wave arrives)
+    // Reduced from 300s to 60s — dispatch engine sends waves every 15-45s anyway
     NotificationMethodChannel.scheduleSnooze(
       orderId: widget.data.orderId,
       offerId: widget.data.offerId ?? '',
-      delaySeconds: 300,
+      delaySeconds: 60,
       pickupLabel: widget.data.pickupLabel,
       dropoffLabel: widget.data.dropoffLabel,
       price: widget.data.price,
@@ -333,119 +350,116 @@ class _FullScreenNotificationScreenState
           body: SafeArea(
             child: Column(
               children: [
-              const Spacer(flex: 2),
-              // Header
-              const Icon(
-                Icons.local_shipping_rounded,
-                size: 72,
-                color: Colors.white,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'طلب جديد قريب منك',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                const Spacer(flex: 2),
+                // Header
+                const Icon(Icons.local_shipping_rounded,
+                    size: 72, color: Colors.white),
+                const SizedBox(height: 16),
+                const Text(
+                  'طلب جديد قريب منك',
+                  style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
-              ),
-              const SizedBox(height: 32),
-              // Order details card
-              OrderDetailsCard(
-                pickupLabel: widget.data.pickupLabel,
-                dropoffLabel: widget.data.dropoffLabel,
-                price: widget.data.price,
-                distance: widget.data.distance,
-                elapsedText: _elapsedText,
-              ),
-              const Spacer(flex: 3),
-              // Action buttons
-              if (_isLoading || _actionTaken)
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 48),
-                  child: CircularProgressIndicator(color: Colors.white),
-                )
-              else
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 48),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Accept button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton.icon(
-                          onPressed: _accept,
-                          icon: const Icon(Icons.check_circle, size: 28),
-                          label: const Text(
-                            'قبول الطلب',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF1B5E20),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                const SizedBox(height: 32),
+                // Order details card
+                OrderDetailsCard(
+                  pickupLabel: widget.data.pickupLabel,
+                  dropoffLabel: widget.data.dropoffLabel,
+                  price: widget.data.price,
+                  distance: widget.data.distance,
+                  elapsedText: _elapsedText,
+                ),
+                const Spacer(flex: 3),
+                // Action buttons
+                if (_isLoading || _actionTaken)
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 48),
+                    child: CircularProgressIndicator(color: Colors.white),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 48),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Accept button
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton.icon(
+                            onPressed: _accept,
+                            icon: const Icon(Icons.check_circle, size: 28),
+                            label: const Text(
+                              'قبول الطلب',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: const Color(0xFF1B5E20),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16)),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Reject + Snooze row
-                      Row(
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              height: 48,
-                              child: ElevatedButton.icon(
-                                onPressed: _reject,
-                                icon: const Icon(Icons.close, size: 22),
-                                label: const Text('رفض',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold)),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFE53935),
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                        const SizedBox(height: 12),
+                        // Reject + Snooze row
+                        Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 48,
+                                child: ElevatedButton.icon(
+                                  onPressed: _reject,
+                                  icon: const Icon(Icons.close, size: 22),
+                                  label: const Text('رفض',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold)),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFE53935),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: SizedBox(
-                              height: 48,
-                              child: ElevatedButton.icon(
-                                onPressed: _snooze,
-                                icon: const Icon(Icons.schedule, size: 22),
-                                label: const Text('لاحقاً',
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: SizedBox(
+                                height: 48,
+                                child: ElevatedButton.icon(
+                                  onPressed: _snooze,
+                                  icon: const Icon(Icons.schedule, size: 22),
+                                  label: const Text(
+                                    'لاحقاً',
                                     style: TextStyle(
                                         fontSize: 16,
-                                        fontWeight: FontWeight.bold)),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFF59E0B),
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFF59E0B),
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }

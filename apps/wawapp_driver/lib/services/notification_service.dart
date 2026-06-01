@@ -26,8 +26,7 @@ class NotificationService {
   factory NotificationService() => _instance;
   NotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _localNotifications =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
   StreamSubscription<Map<String, dynamic>>? _newIntentSubscription;
 
@@ -94,9 +93,7 @@ class NotificationService {
   }
 
   Future<void> _initializeLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings();
 
     await _localNotifications.initialize(
@@ -114,16 +111,14 @@ class NotificationService {
   /// - Android 12+ (API 31+): SCHEDULE_EXACT_ALARM
   /// - Android 14+ (API 34+): USE_FULL_SCREEN_INTENT (separate explicit grant)
   Future<void> _requestFullScreenIntentPermission() async {
-    final android = _localNotifications.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final android = _localNotifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
     if (android == null) return;
 
     // 1. Exact alarm permission (Android 12+ / API 31+)
     final canSchedule = await android.canScheduleExactNotifications() ?? false;
     if (kDebugMode) {
-      debugPrint(
-          '[NotificationService] canScheduleExactNotifications: $canSchedule');
+      debugPrint('[NotificationService] canScheduleExactNotifications: $canSchedule');
     }
     if (!canSchedule) {
       await android.requestExactAlarmsPermission();
@@ -135,8 +130,7 @@ class NotificationService {
     try {
       await android.requestFullScreenIntentPermission();
       if (kDebugMode) {
-        debugPrint(
-            '[NotificationService] requestFullScreenIntentPermission called');
+        debugPrint('[NotificationService] requestFullScreenIntentPermission called');
       }
     } catch (e) {
       // Permission request not supported on this Android version — safe to ignore
@@ -162,14 +156,12 @@ class NotificationService {
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint(
-            '[NotificationService] ⚠️ Native channel creation failed: $e');
+        debugPrint('[NotificationService] ⚠️ Native channel creation failed: $e');
       }
     }
 
     // Clean up ALL legacy channels (v1-v9). Native Kotlin creates v10 channels.
-    final android = _localNotifications.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final android = _localNotifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     if (android != null) {
       for (final id in [
         'new_orders',
@@ -248,9 +240,7 @@ class NotificationService {
     final cachedAction = await NotificationMethodChannel.getPendingActionFromCache();
     if (cachedAction != null && cachedAction['action'] != null) {
       if (kDebugMode) {
-        debugPrint(
-          '[NotificationService] 📦 Recovered cached native action: ${cachedAction['action']}',
-        );
+        debugPrint('[NotificationService] 📦 Recovered cached native action: ${cachedAction['action']}');
       }
       await NotificationMethodChannel.clearPendingActionCache();
       _handleNativeActionIntent(cachedAction);
@@ -263,17 +253,13 @@ class NotificationService {
       final initOfferKey = _extractOfferKey(initialMessage.data);
       if (initOfferKey.isNotEmpty && await _isReplayedOffer(initOfferKey)) {
         if (kDebugMode) {
-          debugPrint(
-            '[NotificationService] ⛔ initialMessage REPLAY blocked: $initOfferKey',
-          );
+          debugPrint('[NotificationService] ⛔ initialMessage REPLAY blocked: $initOfferKey');
         }
       } else {
         _handleNotificationTapFromFCM(initialMessage);
       }
     }
   }
-
-
 
   /// Handle notification tap from FCM (background or killed state).
   /// Routes to the correct screen based on notification type and orderId.
@@ -304,18 +290,14 @@ class NotificationService {
     // ── Dedup: don't re-show offer if already handled ──
     if (orderId != null && _isStaleNotification(orderId)) {
       if (kDebugMode) {
-        debugPrint(
-          '[NotificationService] ⛔ Tap blocked — order $orderId already processed',
-        );
+        debugPrint('[NotificationService] ⛔ Tap blocked — order $orderId already processed');
       }
       return;
     }
     final offerKey = _extractOfferKey(data);
     if (offerKey.isNotEmpty && _isSeenOffer(offerKey)) {
       if (kDebugMode) {
-        debugPrint(
-          '[NotificationService] ⛔ Tap blocked — offer $offerKey already seen',
-        );
+        debugPrint('[NotificationService] ⛔ Tap blocked — offer $offerKey already seen');
       }
       // Still navigate to home so user isn't stuck
       _navigateTo('/');
@@ -332,9 +314,7 @@ class NotificationService {
     final orderId = data['orderId'] as String?;
 
     if (kDebugMode) {
-      debugPrint(
-        '[NotificationService] ← Native action intent: action=$action, orderId=$orderId',
-      );
+      debugPrint('[NotificationService] ← Native action intent: action=$action, orderId=$orderId');
     }
 
     if (action == null || orderId == null) return;
@@ -442,9 +422,13 @@ class NotificationService {
   /// Persist [offerId] to SharedPreferences so a restart cannot replay it.
   /// Fire-and-forget — never blocks the notification pipeline.
   void _persistLastOfferId(String offerId) {
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.setString(_kLastOfferId, offerId);
-    }).catchError((_) {/* storage failure is non-fatal */});
+    SharedPreferences.getInstance()
+        .then((prefs) {
+          prefs.setString(_kLastOfferId, offerId);
+        })
+        .catchError((_) {
+          /* storage failure is non-fatal */
+        });
   }
 
   /// Check if [offerId] matches the last persisted offer (replay protection).
@@ -472,10 +456,7 @@ class NotificationService {
   /// 6. Process → mark seen (memory + disk)
   ///
   /// [source] is for logging only ('onMessage' | 'bridge' | 'recovery').
-  Future<void> handleIncomingOffer(
-    Map<String, dynamic> data, {
-    String source = 'unknown',
-  }) async {
+  Future<void> handleIncomingOffer(Map<String, dynamic> data, {String source = 'unknown'}) async {
     final offerId = _extractOfferKey(data);
 
     // ── 1. TTL prune (cheap, keeps map small) ──
@@ -487,9 +468,7 @@ class NotificationService {
     // the first call had written to _seenOfferIds. Synchronous check is now first.
     if (offerId.isNotEmpty && _isSeenOffer(offerId)) {
       if (kDebugMode) {
-        debugPrint(
-          '[NotificationService] ⛔ DUPLICATE blocked (offerId=$offerId, source=$source)',
-        );
+        debugPrint('[NotificationService] ⛔ DUPLICATE blocked (offerId=$offerId, source=$source)');
       }
       NotificationLogger.instance.log(
         eventType: 'duplicate_blocked',
@@ -504,9 +483,7 @@ class NotificationService {
     // ── 3. Race-condition lock (synchronous) ──
     if (offerId.isNotEmpty && _processingOffers.containsKey(offerId)) {
       if (kDebugMode) {
-        debugPrint(
-          '[NotificationService] ⏳ RACE blocked — waiting on offerId=$offerId (source=$source)',
-        );
+        debugPrint('[NotificationService] ⏳ RACE blocked — waiting on offerId=$offerId (source=$source)');
       }
       await _processingOffers[offerId]!.future;
       return;
@@ -520,9 +497,7 @@ class NotificationService {
     // ── 5. Replay protection (async — SharedPrefs survives app restart) ──
     if (offerId.isNotEmpty && await _isReplayedOffer(offerId)) {
       if (kDebugMode) {
-        debugPrint(
-          '[NotificationService] ⛔ REPLAY blocked (offerId=$offerId, source=$source)',
-        );
+        debugPrint('[NotificationService] ⛔ REPLAY blocked (offerId=$offerId, source=$source)');
       }
       NotificationLogger.instance.log(
         eventType: 'duplicate_blocked',
@@ -546,9 +521,7 @@ class NotificationService {
       // server confirms. Without this the lock existed but was never consulted.
       if (await AcceptanceLockManager.isWithinAcceptanceWindow()) {
         if (kDebugMode) {
-          debugPrint(
-            '[NotificationService] ⛔ Acceptance lock active — suppressing offer (source=$source)',
-          );
+          debugPrint('[NotificationService] ⛔ Acceptance lock active — suppressing offer (source=$source)');
         }
         return;
       }
@@ -754,9 +727,7 @@ class NotificationService {
     final remaining = data['elapsedMinutes'] as String? ?? '?';
 
     if (kDebugMode) {
-      debugPrint(
-        '[NotificationService] 🔔 Trip reminder: order=$orderId, elapsed=$remaining min',
-      );
+      debugPrint('[NotificationService] 🔔 Trip reminder: order=$orderId, elapsed=$remaining min');
     }
 
     // Guard: verify order is still 'accepted' before showing reminder
@@ -764,9 +735,7 @@ class NotificationService {
       final stillAccepted = await _isOrderStillAccepted(orderId);
       if (!stillAccepted) {
         if (kDebugMode) {
-          debugPrint(
-            '[NotificationService] ⛔ Trip reminder dropped — order $orderId no longer accepted',
-          );
+          debugPrint('[NotificationService] ⛔ Trip reminder dropped — order $orderId no longer accepted');
         }
         NotificationLogger.instance.log(
           eventType: 'skipped',
@@ -908,9 +877,7 @@ class NotificationService {
     // Synchronous lock check FIRST (before any await in the caller path).
     if (_isNavigatingToFullScreen) {
       if (kDebugMode) {
-        debugPrint(
-          '[NotificationService] ⛔ Navigation lock active — skipping ${notificationData.orderId}',
-        );
+        debugPrint('[NotificationService] ⛔ Navigation lock active — skipping ${notificationData.orderId}');
       }
       NotificationLogger.instance.log(
         eventType: 'skipped',
@@ -940,37 +907,33 @@ class NotificationService {
     }
 
     if (kDebugMode) {
-      debugPrint(
-        '[NotificationService] 🚀 Full-screen notification for order: ${notificationData.orderId}',
-      );
+      debugPrint('[NotificationService] 🚀 Full-screen notification for order: ${notificationData.orderId}');
     }
 
     final type = NotificationHelper.resolveType(data);
 
-    // Mark notification as shown (for debouncing) and set navigation guard
+    // Mark notification as shown (for debouncing)
     _markNotificationShown(dedupeKey);
-    _isNavigatingToFullScreen = true;
+    // Track active order for Flutter-side dedup (cleared by clearActiveFullScreen)
     _activeFullScreenOrderId = notificationData.orderId;
 
-    // FOREGROUND: Skip Native notification (Android shows it as heads-up, not full-screen).
-    // Navigate directly to the full-screen Flutter UI instead.
-    // Native notification is only useful in background/locked (handled by main.dart BGHandler).
+    // UNIFIED PATH: Native FullScreenNotificationActivity handles display + sound
+    // in BOTH foreground and background. Flutter only tracks state here.
+    // The native activity (launched by MyFirebaseMessagingService) will:
+    // - Show the full-screen UI with accept/reject buttons
+    // - Play sound with repeats via NotificationHelper
+    // - On accept: call Flutter via MethodChannel → navigate to /active-order
 
     NotificationLogger.instance.log(
       eventType: 'displayed',
       notificationType: type ?? 'unknown',
       appState: 'foreground',
-      displayMode: 'full_screen',
+      displayMode: 'native_full_screen',
       orderId: notificationData.orderId,
     );
 
-    // Play sound via native MediaPlayer (USAGE_ALARM bypasses DND).
-    // Background path handles this in NotificationHelper.showFullScreenNotification(),
-    // but foreground path skips native notification entirely — so we trigger sound here.
-    NotificationMethodChannel.playSoundWithRepeats(notificationData.orderId);
-
-    // Navigate directly to full-screen route (no heads-up delay)
-    _navigateToFullScreen(notificationData);
+    // Cache the notification data so Flutter can recover if needed
+    cacheFullScreenNotification(notificationData);
   }
 
   /// Navigate to the full-screen notification screen via GoRouter.
@@ -989,18 +952,14 @@ class NotificationService {
         'createdAt': data.createdAtMs,
       };
       if (kDebugMode) {
-        debugPrint(
-          '[NotificationService] Context not ready, scheduling retry for full-screen notification',
-        );
+        debugPrint('[NotificationService] Context not ready, scheduling retry for full-screen notification');
       }
       _schedulePendingNavigation(() => _navigateToFullScreen(data));
       return;
     }
 
     if (kDebugMode) {
-      debugPrint(
-        '[NotificationService] ✅ Navigating to /full-screen-notification',
-      );
+      debugPrint('[NotificationService] ✅ Navigating to /full-screen-notification');
     }
 
     try {
@@ -1034,8 +993,7 @@ class NotificationService {
         'createdAt': data.createdAtMs,
       };
       if (kDebugMode) {
-        debugPrint(
-            '[NotificationService] Context not ready, scheduling retry for trip reminder');
+        debugPrint('[NotificationService] Context not ready, scheduling retry for trip reminder');
       }
       _schedulePendingNavigation(() => _navigateToTripStartReminder(data));
       return;
@@ -1063,8 +1021,7 @@ class NotificationService {
   void _schedulePendingNavigation(VoidCallback callback, {int retryCount = 0}) {
     if (retryCount >= 3) {
       if (kDebugMode) {
-        debugPrint(
-            '[NotificationService] ❌ Max retries reached for pending navigation');
+        debugPrint('[NotificationService] ❌ Max retries reached for pending navigation');
       }
       // Release navigation lock to prevent permanent deadlock
       _isNavigatingToFullScreen = false;
@@ -1080,8 +1037,7 @@ class NotificationService {
         // Still no context, retry after delay with exponential backoff
         final delayMs = 200 * (retryCount + 1); // 200ms, 400ms, 600ms
         if (kDebugMode) {
-          debugPrint(
-              '[NotificationService] ⏱️ Retry ${retryCount + 1}/3 after ${delayMs}ms');
+          debugPrint('[NotificationService] ⏱️ Retry ${retryCount + 1}/3 after ${delayMs}ms');
         }
         Future.delayed(Duration(milliseconds: delayMs), () {
           _schedulePendingNavigation(callback, retryCount: retryCount + 1);
@@ -1119,9 +1075,7 @@ class NotificationService {
 
   void _navigateFromMessage(Map<String, dynamic> data) {
     if (kDebugMode) {
-      debugPrint(
-        '[NotificationService] _navigateFromMessage called with data: $data',
-      );
+      debugPrint('[NotificationService] _navigateFromMessage called with data: $data');
     }
 
     final type = NotificationHelper.resolveType(data);
@@ -1321,11 +1275,8 @@ class NotificationService {
     // Flush any pending navigation from notifications received before context was ready
     if (_navigatorKey?.currentContext != null) {
       // Handle pending full-screen notification
-      if (_pendingRoute == '/full-screen-notification' &&
-          _pendingNotificationData != null) {
-        final data = FullScreenNotificationData.tryParse(
-          _pendingNotificationData!,
-        );
+      if (_pendingRoute == '/full-screen-notification' && _pendingNotificationData != null) {
+        final data = FullScreenNotificationData.tryParse(_pendingNotificationData!);
         _pendingRoute = null;
         _pendingNotificationData = null;
         if (data != null) {
@@ -1335,8 +1286,7 @@ class NotificationService {
       }
 
       // Handle pending trip start reminder
-      if (_pendingTripReminderRoute == '/trip-start-reminder' &&
-          _pendingTripReminderData != null) {
+      if (_pendingTripReminderRoute == '/trip-start-reminder' && _pendingTripReminderData != null) {
         final data = TripStartReminderData.tryParse(_pendingTripReminderData!);
         _pendingTripReminderRoute = null;
         _pendingTripReminderData = null;

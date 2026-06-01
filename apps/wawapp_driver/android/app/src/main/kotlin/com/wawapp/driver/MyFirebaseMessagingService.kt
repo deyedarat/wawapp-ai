@@ -97,7 +97,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         // Route notifications based on type and app state
         when {
-            // Critical notifications: Full-screen (background only)
+            // Critical notifications: Full-screen (unified path for foreground + background)
             type in listOf(
                 "new_order",
                 "wave_offer",
@@ -111,19 +111,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                         Log.d(TAG, "⛔ Order already rejected (foreground) — suppressing: orderId=$orderId")
                         return
                     }
-                    Log.d(TAG, "Critical notification in foreground → forwarding to Flutter via FcmForegroundBridge")
                     // Cancel any system-displayed notification from the notification block
-                    // to prevent duplicate (Flutter handles foreground display directly)
                     if (orderId.isNotBlank()) {
                         val nm = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
                         nm.cancel(orderId.hashCode())
-                        // Also cancel fixed-ID notifications to prevent stale display
                         nm.cancel(2000) // NOTIF_ID_NEW_ORDER
                         nm.cancel(2001) // NOTIF_ID_UNASSIGNED
                     }
+                    // Also forward to Flutter for dedup tracking
                     FcmForegroundBridge.sendMessage(message.data)
-                    // Foreground: Flutter handles display — skip native notification
-                    return
+                    Log.d(TAG, "Critical notification in foreground → using unified native path (same as background)")
                 }
                 // Verify order is still valid before showing notification (race condition fix)
                 if (orderId.isNotBlank()) {

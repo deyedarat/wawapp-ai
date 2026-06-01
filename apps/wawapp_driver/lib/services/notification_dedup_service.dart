@@ -45,12 +45,14 @@ class NotificationDedupService {
   }
 
   void _cleanup() {
-    final cutoff = DateTime.now().millisecondsSinceEpoch - _maxAge.inMilliseconds;
+    final cutoff =
+        DateTime.now().millisecondsSinceEpoch - _maxAge.inMilliseconds;
     final before = _processed.length;
     _processed.removeWhere((_, ts) => ts < cutoff);
     if (_processed.length != before) {
       if (kDebugMode) {
-        debugPrint('[NotificationDedup] 🧹 Cleaned ${before - _processed.length} stale entries');
+        debugPrint(
+            '[NotificationDedup] 🧹 Cleaned ${before - _processed.length} stale entries');
       }
       _save();
     }

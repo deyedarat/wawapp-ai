@@ -64,6 +64,10 @@ object NotificationHelper {
     @Volatile
     private var activeOrderId: String? = null
 
+    // Hold reference to prevent GC during playback
+    @Volatile
+    private var activeMediaPlayer: MediaPlayer? = null
+
     // =========================================================================
     // Channel creation
     // =========================================================================
@@ -537,7 +541,7 @@ object NotificationHelper {
     // Sound repeat scheduling via AlarmManager
     // =========================================================================
 
-    fun scheduleSoundRepeats(context: Context, orderId: String, notificationId: Int) {
+    private fun scheduleSoundRepeats(context: Context, orderId: String, notificationId: Int) {
         val appContext = context.applicationContext
 
         // Mark all repeat slots as pending
@@ -589,8 +593,12 @@ object NotificationHelper {
      */
     fun playSoundOnce(context: Context) {
         try {
+            // Release previous player if still active
+            activeMediaPlayer?.release()
+            activeMediaPlayer = null
+
             val soundUri = Uri.parse("android.resource://${context.packageName}/raw/trip_reminder")
-            MediaPlayer().apply {
+            activeMediaPlayer = MediaPlayer().apply {
                 setDataSource(context, soundUri)
                 setAudioAttributes(
                     AudioAttributes.Builder()
@@ -598,8 +606,15 @@ object NotificationHelper {
                         .setUsage(AudioAttributes.USAGE_ALARM)
                         .build()
                 )
-                setOnCompletionListener { it.release() }
-                setOnErrorListener { mp, _, _ -> mp.release(); true }
+                setOnCompletionListener { mp ->
+                    mp.release()
+                    activeMediaPlayer = null
+                }
+                setOnErrorListener { mp, _, _ ->
+                    mp.release()
+                    activeMediaPlayer = null
+                    true
+                }
                 prepare()
                 start()
             }

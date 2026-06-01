@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- WawApp Driver - Dark Launch Splash Screen -->
+<!-- WawApp Driver - Launch Splash Screen -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Dark background color #000609 -->
+    <!-- Brand green background -->
     <item android:drawable="@color/splash_background" />
 
     <!-- Centered driver logo -->
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@mipmap/ic_launcher_foreground" />
+            android:src="@drawable/splash_logo" />
     </item>
 </layer-list>

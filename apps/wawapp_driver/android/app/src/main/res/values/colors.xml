@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- WawApp Driver - Dark brand color for splash screen -->
-    <color name="splash_background">#000609</color>
-    <color name="splash_background_color">#000609</color>
+    <!-- WawApp Driver - Brand green for splash screen -->
+    <color name="splash_background">#1B5E20</color>
+    <color name="splash_background_color">#1B5E20</color>
 
     <!-- Full-Screen Notification Colors (from DriverAppColors.dart) -->
     <color name="primary_green">#00704A</color>
@@ -20,4 +20,5 @@
     <color name="success_green">#10B981</color>
     <color name="error_red">#EF4444</color>
     <color name="amber_warning">#F59E0B</color>
+	<color name="ic_launcher_background">#1B5E20</color>
 </resources>

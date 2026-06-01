@@ -79,7 +79,8 @@ class FCMService extends BaseFCMService {
               final isValid = await _verifyOrderStillMatching(data.orderId);
               if (!isValid) {
                 if (kDebugMode) {
-                  debugPrint('[FCM] Order ${data.orderId} is no longer matching, skipping notification');
+                  debugPrint(
+                      '[FCM] Order ${data.orderId} is no longer matching, skipping notification');
                 }
                 return;
               }
