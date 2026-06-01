@@ -7,29 +7,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:core_shared/core_shared.dart';
+import 'audit_log_service.dart';
 
 class AdminDriversService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final AuditLogService _auditLog = AuditLogService();
 
   /// Get drivers stream
-  Stream<List<DriverProfile>> getDriversStream({
-    bool? onlineOnly,
-    int limit = 100,
-  }) {
+  Stream<List<DriverProfile>> getDriversStream({bool? onlineOnly, int limit = 100}) {
     Query<Map<String, dynamic>> query = _firestore
         .collection('drivers')
         .orderBy('createdAt', descending: true)
         .limit(limit);
 
-    if (onlineOnly == true) {
-      query = query.where('isOnline', isEqualTo: true);
+    if (onlineOnly != null) {
+      query = query.where('isOnline', isEqualTo: onlineOnly);
     }
 
     return query.snapshots().map((snapshot) {
-      return snapshot.docs
-          .map((doc) => DriverProfile.fromFirestore(doc))
-          .toList();
+      return snapshot.docs.map((doc) => DriverProfile.fromFirestore(doc)).toList();
     });
   }
 
@@ -62,6 +59,14 @@ class AdminDriversService {
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
+      await _auditLog.log(
+        action: 'driver_blocked',
+        category: 'driver',
+        targetId: driverId,
+        targetType: 'driver',
+        details: {'reason': reason ?? 'Blocked by admin'},
+      );
+
       return true;
     } catch (e) {
       if (kDebugMode) {
@@ -85,6 +90,8 @@ class AdminDriversService {
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
+      await _auditLog.log(action: 'driver_unblocked', category: 'driver', targetId: driverId, targetType: 'driver');
+
       return true;
     } catch (e) {
       if (kDebugMode) {
@@ -106,6 +113,8 @@ class AdminDriversService {
         'verifiedBy': user.uid,
         'updatedAt': FieldValue.serverTimestamp(),
       });
+
+      await _auditLog.log(action: 'driver_verified', category: 'driver', targetId: driverId, targetType: 'driver');
 
       return true;
     } catch (e) {
@@ -166,6 +175,14 @@ class AdminDriversService {
         });
       });
 
+      await _auditLog.log(
+        action: 'driver_balance_added',
+        category: 'finance',
+        targetId: driverId,
+        targetType: 'driver',
+        details: {'amount': amount, 'note': note},
+      );
+
       return true;
     } catch (e) {
       if (kDebugMode) {
@@ -187,6 +204,8 @@ class AdminDriversService {
         'unverifiedBy': user.uid,
         'updatedAt': FieldValue.serverTimestamp(),
       });
+
+      await _auditLog.log(action: 'driver_unverified', category: 'driver', targetId: driverId, targetType: 'driver');
 
       return true;
     } catch (e) {
@@ -214,12 +233,7 @@ class AdminDriversService {
         if (data['isBlocked'] == true) blockedDrivers++;
       }
 
-      return {
-        'total': totalDrivers,
-        'online': onlineDrivers,
-        'verified': verifiedDrivers,
-        'blocked': blockedDrivers,
-      };
+      return {'total': totalDrivers, 'online': onlineDrivers, 'verified': verifiedDrivers, 'blocked': blockedDrivers};
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching driver stats: $e');

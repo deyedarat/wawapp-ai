@@ -8,6 +8,7 @@ import '../utils/responsive_helper.dart';
 import 'admin_sidebar.dart';
 import 'notifications_dropdown.dart';
 import '../../features/notifications/providers/admin_notifications_provider.dart';
+import '../../providers/theme_provider.dart';
 
 class AdminScaffold extends ConsumerStatefulWidget {
   final Widget? child;
@@ -25,15 +26,13 @@ class AdminScaffold extends ConsumerStatefulWidget {
     this.actions,
     this.searchController,
     this.onSearchChanged,
-  }) : assert(child != null || body != null,
-            'Either child or body must be provided');
+  }) : assert(child != null || body != null, 'Either child or body must be provided');
 
   @override
   ConsumerState<AdminScaffold> createState() => _AdminScaffoldState();
 }
 
-class _AdminScaffoldState extends ConsumerState<AdminScaffold>
-    with SingleTickerProviderStateMixin {
+class _AdminScaffoldState extends ConsumerState<AdminScaffold> with SingleTickerProviderStateMixin {
   bool _isSidebarCollapsed = false;
   late TextEditingController _searchController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -92,13 +91,8 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                 AnimatedContainer(
                   duration: AdminAnimations.normal,
                   curve: AdminAnimations.defaultCurve,
-                  width: _isSidebarCollapsed
-                      ? AdminSpacing.sidebarWidthCollapsed
-                      : AdminSpacing.sidebarWidth,
-                  child: AdminSidebar(
-                    isCollapsed: _isSidebarCollapsed,
-                    onToggle: _toggleSidebar,
-                  ),
+                  width: _isSidebarCollapsed ? AdminSpacing.sidebarWidthCollapsed : AdminSpacing.sidebarWidth,
+                  child: AdminSidebar(isCollapsed: _isSidebarCollapsed, onToggle: _toggleSidebar),
                 ),
 
               // Main content area
@@ -111,22 +105,13 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                       height: appBarHeight,
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
-                        border: const Border(
-                          bottom: BorderSide(color: AdminAppColors.borderLight),
-                        ),
+                        border: const Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
                         boxShadow: const [
-                          BoxShadow(
-                            color: AdminAppColors.shadowLight,
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                          ),
+                          BoxShadow(color: AdminAppColors.shadowLight, blurRadius: 4, offset: Offset(0, 2)),
                         ],
                       ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal:
-                              isMobile ? AdminSpacing.md : AdminSpacing.lg,
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: isMobile ? AdminSpacing.md : AdminSpacing.lg),
                         child: Row(
                           children: [
                             // Hamburger menu on mobile
@@ -144,17 +129,9 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                             Expanded(
                               child: Text(
                                 widget.title,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineSmall
-                                    ?.copyWith(
-                                      fontSize:
-                                          ResponsiveHelper.responsiveFontSize(
-                                        context,
-                                        mobile: 18,
-                                        desktop: 24,
-                                      ),
-                                    ),
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontSize: ResponsiveHelper.responsiveFontSize(context, mobile: 18, desktop: 24),
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -164,46 +141,33 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                             // Search bar
                             AnimatedContainer(
                               duration: AdminAnimations.fast,
-                              width: ResponsiveHelper.responsiveWidth(
-                                context,
-                                mobile: 150,
-                                tablet: 250,
-                                desktop: 300,
-                              ),
+                              width: ResponsiveHelper.responsiveWidth(context, mobile: 150, tablet: 250, desktop: 300),
                               child: TextField(
                                 controller: _searchController,
                                 decoration: InputDecoration(
                                   hintText: 'بحث...',
-                                  prefixIcon:
-                                      const Icon(Icons.search, size: 20),
+                                  prefixIcon: const Icon(Icons.search, size: 20),
                                   suffixIcon: _searchController.text.isNotEmpty
                                       ? IconButton(
-                                          icon:
-                                              const Icon(Icons.clear, size: 18),
+                                          icon: const Icon(Icons.clear, size: 18),
                                           onPressed: () {
                                             _searchController.clear();
                                           },
                                         )
                                       : null,
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      AdminSpacing.radiusFull,
-                                    ),
+                                    borderRadius: BorderRadius.circular(AdminSpacing.radiusFull),
                                     borderSide: BorderSide.none,
                                   ),
                                   filled: true,
                                   fillColor: AdminAppColors.backgroundLight,
                                   contentPadding: EdgeInsets.symmetric(
-                                    horizontal: isMobile
-                                        ? AdminSpacing.sm
-                                        : AdminSpacing.md,
+                                    horizontal: isMobile ? AdminSpacing.sm : AdminSpacing.md,
                                     vertical: AdminSpacing.sm,
                                   ),
                                   isDense: true,
                                 ),
-                                style: TextStyle(
-                                  fontSize: isMobile ? 12 : 14,
-                                ),
+                                style: TextStyle(fontSize: isMobile ? 12 : 14),
                               ),
                             ),
 
@@ -215,9 +179,7 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                               onViewAll: () => context.go('/notifications'),
                               onNotificationTap: (id) {
                                 // Find notification and navigate to its route
-                                final notification = notifications
-                                    .where((n) => n.id == id)
-                                    .firstOrNull;
+                                final notification = notifications.where((n) => n.id == id).firstOrNull;
                                 if (notification != null) {
                                   service.markAsRead(id);
                                   if (notification.actionRoute != null) {
@@ -229,13 +191,16 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold>
                             ),
 
                             // Theme toggle (hide on very small mobile)
-                            if (!isMobile ||
-                                MediaQuery.of(context).size.width > 400)
+                            if (!isMobile || MediaQuery.of(context).size.width > 400)
                               HoverAnimatedContainer(
                                 child: IconButton(
-                                  icon: const Icon(Icons.brightness_6_outlined),
+                                  icon: Icon(
+                                    ref.watch(themeModeProvider) == ThemeMode.dark
+                                        ? Icons.light_mode_outlined
+                                        : Icons.dark_mode_outlined,
+                                  ),
                                   onPressed: () {
-                                    debugPrint('Theme toggle tapped');
+                                    ref.read(themeModeProvider.notifier).toggle();
                                   },
                                   tooltip: 'تبديل السمة',
                                 ),

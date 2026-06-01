@@ -1,4 +1,5 @@
 import 'package:core_shared/core_shared.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,7 @@ import '../../core/utils/responsive_helper.dart';
 import '../../core/widgets/admin_scaffold.dart';
 import '../../core/widgets/status_badge.dart';
 import '../../providers/admin_data_providers.dart';
+import '../../services/audit_log_service.dart';
 
 class DriversScreen extends ConsumerStatefulWidget {
   const DriversScreen({super.key});
@@ -37,9 +39,7 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
         const SizedBox(width: AdminSpacing.md),
         ElevatedButton.icon(
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('إضافة سائق قريباً')),
-            );
+            _showAddDriverDialog(context);
           },
           icon: const Icon(Icons.add),
           label: const Text('إضافة سائق'),
@@ -69,29 +69,18 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.drive_eta,
-                                  color: AdminAppColors.primaryGreen,
-                                  size: 24,
-                                ),
+                                const Icon(Icons.drive_eta, color: AdminAppColors.primaryGreen, size: 24),
                                 const SizedBox(width: AdminSpacing.sm),
-                                Text(
-                                  'إجمالي السائقين',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
+                                Text('إجمالي السائقين', style: Theme.of(context).textTheme.titleMedium),
                               ],
                             ),
                             const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$totalDrivers',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge
-                                  ?.copyWith(
-                                    color: AdminAppColors.primaryGreen,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                color: AdminAppColors.primaryGreen,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -108,29 +97,18 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.check_circle,
-                                  color: AdminAppColors.onlineGreen,
-                                  size: 24,
-                                ),
+                                const Icon(Icons.check_circle, color: AdminAppColors.onlineGreen, size: 24),
                                 const SizedBox(width: AdminSpacing.sm),
-                                Text(
-                                  'متصلون الآن',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
+                                Text('متصلون الآن', style: Theme.of(context).textTheme.titleMedium),
                               ],
                             ),
                             const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$onlineDrivers',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge
-                                  ?.copyWith(
-                                    color: AdminAppColors.onlineGreen,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                color: AdminAppColors.onlineGreen,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -147,29 +125,18 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.verified,
-                                  color: AdminAppColors.activeBlue,
-                                  size: 24,
-                                ),
+                                const Icon(Icons.verified, color: AdminAppColors.activeBlue, size: 24),
                                 const SizedBox(width: AdminSpacing.sm),
-                                Text(
-                                  'موثّقون',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
+                                Text('موثّقون', style: Theme.of(context).textTheme.titleMedium),
                               ],
                             ),
                             const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$verifiedDrivers',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge
-                                  ?.copyWith(
-                                    color: AdminAppColors.activeBlue,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                color: AdminAppColors.activeBlue,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -186,29 +153,18 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.block,
-                                  color: AdminAppColors.errorLight,
-                                  size: 24,
-                                ),
+                                const Icon(Icons.block, color: AdminAppColors.errorLight, size: 24),
                                 const SizedBox(width: AdminSpacing.sm),
-                                Text(
-                                  'محظورون',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
+                                Text('محظورون', style: Theme.of(context).textTheme.titleMedium),
                               ],
                             ),
                             const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$blockedDrivers',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge
-                                  ?.copyWith(
-                                    color: AdminAppColors.errorLight,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                color: AdminAppColors.errorLight,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -225,10 +181,7 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
           // Filters
           Row(
             children: [
-              Text(
-                'تصفية:',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text('تصفية:', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(width: AdminSpacing.md),
               FilterChip(
                 label: const Text('الكل'),
@@ -273,8 +226,7 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline,
-                        size: 64, color: Colors.red),
+                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
                     const SizedBox(height: 16),
                     Text('خطأ في تحميل السائقين: $error'),
                     const SizedBox(height: 16),
@@ -293,16 +245,9 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.people_outline,
-                          size: 64,
-                          color: AdminAppColors.textSecondaryLight,
-                        ),
+                        const Icon(Icons.people_outline, size: 64, color: AdminAppColors.textSecondaryLight),
                         const SizedBox(height: 16),
-                        Text(
-                          'لا يوجد سائقون',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
+                        Text('لا يوجد سائقون', style: Theme.of(context).textTheme.titleLarge),
                       ],
                     ),
                   );
@@ -322,78 +267,23 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                             child: ConstrainedBox(
                               constraints: const BoxConstraints(minWidth: 1200),
                               child: DataTable(
-                                headingRowColor: WidgetStateProperty.all(
-                                  AdminAppColors.backgroundLight,
-                                ),
+                                headingRowColor: WidgetStateProperty.all(AdminAppColors.backgroundLight),
                                 columns: [
+                                  DataColumn(label: Text('الاسم', style: Theme.of(context).textTheme.titleSmall)),
+                                  DataColumn(label: Text('الهاتف', style: Theme.of(context).textTheme.titleSmall)),
+                                  DataColumn(label: Text('الحالة', style: Theme.of(context).textTheme.titleSmall)),
+                                  DataColumn(label: Text('التقييم', style: Theme.of(context).textTheme.titleSmall)),
                                   DataColumn(
-                                    label: Text(
-                                      'الاسم',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
+                                    label: Text('إجمالي الرحلات', style: Theme.of(context).textTheme.titleSmall),
                                   ),
+                                  DataColumn(label: Text('موثّق', style: Theme.of(context).textTheme.titleSmall)),
                                   DataColumn(
-                                    label: Text(
-                                      'الهاتف',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
+                                    label: Text('تاريخ التسجيل', style: Theme.of(context).textTheme.titleSmall),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      'الحالة',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'التقييم',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'إجمالي الرحلات',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'موثّق',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'تاريخ التسجيل',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'الإجراءات',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
+                                  DataColumn(label: Text('الإجراءات', style: Theme.of(context).textTheme.titleSmall)),
                                 ],
                                 rows: drivers.map((driver) {
-                                  final isBlocked =
-                                      driver.toJson()['isBlocked'] == true;
+                                  final isBlocked = driver.toJson()['isBlocked'] == true;
 
                                   return DataRow(
                                     cells: [
@@ -402,10 +292,7 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                                           driver.name,
                                           style: TextStyle(
                                             fontWeight: FontWeight.w600,
-                                            color: isBlocked
-                                                ? AdminAppColors
-                                                    .textSecondaryLight
-                                                : null,
+                                            color: isBlocked ? AdminAppColors.textSecondaryLight : null,
                                           ),
                                         ),
                                       ),
@@ -415,25 +302,15 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             if (driver.isOnline)
-                                              const StatusBadge(
-                                                label: 'متصل',
-                                                color:
-                                                    AdminAppColors.onlineGreen,
-                                              )
+                                              const StatusBadge(label: 'متصل', color: AdminAppColors.onlineGreen)
                                             else
                                               const StatusBadge(
                                                 label: 'غير متصل',
-                                                color: AdminAppColors
-                                                    .textSecondaryLight,
+                                                color: AdminAppColors.textSecondaryLight,
                                               ),
                                             if (isBlocked) ...[
-                                              const SizedBox(
-                                                  width: AdminSpacing.xs),
-                                              const StatusBadge(
-                                                label: 'محظور',
-                                                color:
-                                                    AdminAppColors.errorLight,
-                                              ),
+                                              const SizedBox(width: AdminSpacing.xs),
+                                              const StatusBadge(label: 'محظور', color: AdminAppColors.errorLight),
                                             ],
                                           ],
                                         ),
@@ -442,19 +319,11 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                                         Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            const Icon(
-                                              Icons.star,
-                                              size: 16,
-                                              color:
-                                                  AdminAppColors.goldenYellow,
-                                            ),
-                                            const SizedBox(
-                                                width: AdminSpacing.xxs),
+                                            const Icon(Icons.star, size: 16, color: AdminAppColors.goldenYellow),
+                                            const SizedBox(width: AdminSpacing.xxs),
                                             Text(
                                               driver.rating.toStringAsFixed(1),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                              style: const TextStyle(fontWeight: FontWeight.w600),
                                             ),
                                           ],
                                         ),
@@ -462,100 +331,70 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                                       DataCell(
                                         Text(
                                           '${driver.totalTrips}',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: const TextStyle(fontWeight: FontWeight.w600),
                                         ),
                                       ),
                                       DataCell(
                                         driver.isVerified
-                                            ? const Icon(
-                                                Icons.verified,
-                                                color:
-                                                    AdminAppColors.successLight,
-                                                size: 20,
-                                              )
+                                            ? const Icon(Icons.verified, color: AdminAppColors.successLight, size: 20)
                                             : const Icon(
                                                 Icons.cancel,
-                                                color: AdminAppColors
-                                                    .textSecondaryLight,
+                                                color: AdminAppColors.textSecondaryLight,
                                                 size: 20,
                                               ),
                                       ),
                                       DataCell(
-                                        Text(
-                                          _formatDate(driver.createdAt),
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
+                                        Text(_formatDate(driver.createdAt), style: const TextStyle(fontSize: 12)),
                                       ),
                                       DataCell(
                                         Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             IconButton(
-                                              icon:
-                                                  const Icon(Icons.visibility),
+                                              icon: const Icon(Icons.visibility),
                                               onPressed: () {
-                                                _showDriverDetails(
-                                                    context, driver);
+                                                _showDriverDetails(context, driver);
                                               },
                                               tooltip: 'عرض التفاصيل',
                                               color: AdminAppColors.infoLight,
                                             ),
                                             if (!driver.isVerified)
                                               IconButton(
-                                                icon:
-                                                    const Icon(Icons.verified),
-                                                onPressed: () =>
-                                                    _showVerifyDialog(
-                                                        context, driver),
+                                                icon: const Icon(Icons.verified),
+                                                onPressed: () => _showVerifyDialog(context, driver),
                                                 tooltip: 'توثيق السائق',
-                                                color:
-                                                    AdminAppColors.successLight,
+                                                color: AdminAppColors.successLight,
                                               )
                                             else
                                               IconButton(
-                                                icon: const Icon(Icons
-                                                    .remove_circle_outline),
-                                                onPressed: () =>
-                                                    _showUnverifyDialog(
-                                                        context, driver),
+                                                icon: const Icon(Icons.remove_circle_outline),
+                                                onPressed: () => _showUnverifyDialog(context, driver),
                                                 tooltip: 'إلغاء التوثيق',
-                                                color:
-                                                    AdminAppColors.warningLight,
+                                                color: AdminAppColors.warningLight,
                                               ),
                                             IconButton(
-                                              icon: const Icon(
-                                                  Icons.account_balance_wallet),
-                                              onPressed: () =>
-                                                  _showAddBalanceDialog(
-                                                      context, driver),
+                                              icon: const Icon(Icons.account_balance_wallet),
+                                              onPressed: () => _showAddBalanceDialog(context, driver),
                                               tooltip: 'إضافة رصيد',
-                                              color:
-                                                  AdminAppColors.primaryGreen,
+                                              color: AdminAppColors.primaryGreen,
                                             ),
                                             if (!isBlocked)
                                               IconButton(
                                                 icon: const Icon(Icons.block),
                                                 onPressed: () {
-                                                  _showBlockDialog(
-                                                      context, driver);
+                                                  _showBlockDialog(context, driver);
                                                 },
                                                 tooltip: 'حظر السائق',
-                                                color:
-                                                    AdminAppColors.errorLight,
+                                                color: AdminAppColors.errorLight,
                                               )
                                             else
                                               IconButton(
-                                                icon: const Icon(
-                                                    Icons.check_circle),
+                                                icon: const Icon(Icons.check_circle),
                                                 onPressed: () {
-                                                  _showUnblockDialog(
-                                                      context, driver);
+                                                  _showUnblockDialog(context, driver);
                                                 },
                                                 tooltip: 'إلغاء الحظر',
-                                                color:
-                                                    AdminAppColors.successLight,
+                                                color: AdminAppColors.successLight,
                                               ),
                                           ],
                                         ),
@@ -572,9 +411,7 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                     const SizedBox(height: AdminSpacing.md),
                     Text(
                       'عرض ${drivers.length} سائق',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AdminAppColors.textSecondaryLight,
-                          ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AdminAppColors.textSecondaryLight),
                     ),
                   ],
                 );
@@ -610,28 +447,18 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
                 _buildDetailRow('الاسم:', driver.name),
                 _buildDetailRow('الهاتف:', driver.phone),
                 _buildDetailRow('نوع المركبة:', driver.vehicleType ?? '-'),
-                _buildDetailRow(
-                    'الحالة:', driver.isOnline ? 'متصل' : 'غير متصل'),
+                _buildDetailRow('الحالة:', driver.isOnline ? 'متصل' : 'غير متصل'),
                 _buildDetailRow('موثّق:', driver.isVerified ? 'نعم' : 'لا'),
-                _buildDetailRow(
-                  'محظور:',
-                  driverData['isBlocked'] == true ? 'نعم' : 'لا',
-                ),
+                _buildDetailRow('محظور:', driverData['isBlocked'] == true ? 'نعم' : 'لا'),
                 _buildDetailRow('التقييم:', driver.rating.toStringAsFixed(1)),
                 _buildDetailRow('إجمالي الرحلات:', '${driver.totalTrips}'),
-                _buildDetailRow(
-                    'تاريخ التسجيل:', _formatDate(driver.createdAt)),
+                _buildDetailRow('تاريخ التسجيل:', _formatDate(driver.createdAt)),
                 _buildDetailRow('آخر تحديث:', _formatDate(driver.updatedAt)),
               ],
             ),
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إغلاق'),
-          ),
-        ],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('إغلاق'))],
       ),
     );
   }
@@ -646,15 +473,10 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
             width: 120,
             child: Text(
               label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AdminAppColors.textSecondaryLight,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600, color: AdminAppColors.textSecondaryLight),
             ),
           ),
-          Expanded(
-            child: SelectableText(value),
-          ),
+          Expanded(child: SelectableText(value)),
         ],
       ),
     );
@@ -675,54 +497,36 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
             const SizedBox(height: AdminSpacing.md),
             TextField(
               controller: reasonController,
-              decoration: const InputDecoration(
-                labelText: 'سبب الحظر (اختياري)',
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: 'سبب الحظر (اختياري)', border: OutlineInputBorder()),
               maxLines: 3,
             ),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('لا'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('لا')),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
               final messenger = ScaffoldMessenger.of(context);
-              messenger.showSnackBar(
-                const SnackBar(content: Text('جارٍ حظر السائق...')),
-              );
+              messenger.showSnackBar(const SnackBar(content: Text('جارٍ حظر السائق...')));
 
               final service = ref.read(adminDriversServiceProvider);
               final success = await service.blockDriver(
                 driver.id,
-                reason: reasonController.text.isNotEmpty
-                    ? reasonController.text
-                    : null,
+                reason: reasonController.text.isNotEmpty ? reasonController.text : null,
               );
 
               if (mounted) {
                 messenger.hideCurrentSnackBar();
                 messenger.showSnackBar(
                   SnackBar(
-                    content: Text(
-                      success
-                          ? 'تم حظر السائق \${driver.name}'
-                          : 'فشل حظر السائق',
-                    ),
-                    backgroundColor: success
-                        ? AdminAppColors.successLight
-                        : AdminAppColors.errorLight,
+                    content: Text(success ? 'تم حظر السائق \${driver.name}' : 'فشل حظر السائق'),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
                 );
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AdminAppColors.errorLight,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.errorLight),
             child: const Text('نعم، حظر'),
           ),
         ],
@@ -737,10 +541,7 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
         title: const Text('تأكيد إلغاء الحظر'),
         content: Text('هل أنت متأكد من إلغاء حظر السائق ${driver.name}؟'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('لا'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('لا')),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
@@ -748,18 +549,15 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
               final service = ref.read(adminDriversServiceProvider);
               final success = await service.unblockDriver(driver.id);
               if (mounted) {
-                messenger.showSnackBar(SnackBar(
-                  content: Text(success
-                      ? 'تم إلغاء حظر ${driver.name}'
-                      : 'فشل إلغاء الحظر'),
-                  backgroundColor: success
-                      ? AdminAppColors.successLight
-                      : AdminAppColors.errorLight,
-                ));
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(success ? 'تم إلغاء حظر ${driver.name}' : 'فشل إلغاء الحظر'),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                  ),
+                );
               }
             },
-            style: ElevatedButton.styleFrom(
-                backgroundColor: AdminAppColors.successLight),
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.successLight),
             child: const Text('نعم، إلغاء الحظر'),
           ),
         ],
@@ -772,13 +570,9 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('توثيق السائق'),
-        content: Text(
-            'هل تريد توثيق السائق ${driver.name}؟\nسيتمكن من رؤية الطلبات وقبولها.'),
+        content: Text('هل تريد توثيق السائق ${driver.name}؟\nسيتمكن من رؤية الطلبات وقبولها.'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
@@ -786,17 +580,15 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
               final service = ref.read(adminDriversServiceProvider);
               final success = await service.verifyDriver(driver.id);
               if (mounted) {
-                messenger.showSnackBar(SnackBar(
-                  content:
-                      Text(success ? 'تم توثيق ${driver.name}' : 'فشل التوثيق'),
-                  backgroundColor: success
-                      ? AdminAppColors.successLight
-                      : AdminAppColors.errorLight,
-                ));
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(success ? 'تم توثيق ${driver.name}' : 'فشل التوثيق'),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                  ),
+                );
               }
             },
-            style: ElevatedButton.styleFrom(
-                backgroundColor: AdminAppColors.successLight),
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.successLight),
             child: const Text('توثيق'),
           ),
         ],
@@ -809,13 +601,9 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('إلغاء التوثيق'),
-        content: Text(
-            'هل تريد إلغاء توثيق السائق ${driver.name}؟\nلن يتمكن من رؤية الطلبات أو قبولها.'),
+        content: Text('هل تريد إلغاء توثيق السائق ${driver.name}؟\nلن يتمكن من رؤية الطلبات أو قبولها.'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
@@ -823,18 +611,15 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
               final service = ref.read(adminDriversServiceProvider);
               final success = await service.unverifyDriver(driver.id);
               if (mounted) {
-                messenger.showSnackBar(SnackBar(
-                  content: Text(success
-                      ? 'تم إلغاء توثيق ${driver.name}'
-                      : 'فشل إلغاء التوثيق'),
-                  backgroundColor: success
-                      ? AdminAppColors.warningLight
-                      : AdminAppColors.errorLight,
-                ));
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(success ? 'تم إلغاء توثيق ${driver.name}' : 'فشل إلغاء التوثيق'),
+                    backgroundColor: success ? AdminAppColors.warningLight : AdminAppColors.errorLight,
+                  ),
+                );
               }
             },
-            style: ElevatedButton.styleFrom(
-                backgroundColor: AdminAppColors.warningLight),
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.warningLight),
             child: const Text('إلغاء التوثيق'),
           ),
         ],
@@ -865,25 +650,17 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
             const SizedBox(height: AdminSpacing.md),
             TextField(
               controller: noteController,
-              decoration: const InputDecoration(
-                labelText: 'ملاحظة (اختياري)',
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: 'ملاحظة (اختياري)', border: OutlineInputBorder()),
             ),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
           ElevatedButton(
             onPressed: () async {
               final amount = int.tryParse(amountController.text);
               if (amount == null || amount <= 0) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('أدخل مبلغاً صحيحاً')),
-                );
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('أدخل مبلغاً صحيحاً')));
                 return;
               }
               Navigator.pop(context);
@@ -892,26 +669,140 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
               final success = await service.addBalance(
                 driver.id,
                 amount,
-                note:
-                    noteController.text.isNotEmpty ? noteController.text : null,
+                note: noteController.text.isNotEmpty ? noteController.text : null,
               );
               if (mounted) {
-                messenger.showSnackBar(SnackBar(
-                  content: Text(success
-                      ? 'تم إضافة $amount MRU لـ ${driver.name}'
-                      : 'فشل إضافة الرصيد'),
-                  backgroundColor: success
-                      ? AdminAppColors.successLight
-                      : AdminAppColors.errorLight,
-                ));
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(success ? 'تم إضافة $amount MRU لـ ${driver.name}' : 'فشل إضافة الرصيد'),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+                  ),
+                );
               }
             },
-            style: ElevatedButton.styleFrom(
-                backgroundColor: AdminAppColors.primaryGreen),
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.primaryGreen),
             child: const Text('إضافة'),
           ),
         ],
       ),
+    );
+  }
+
+  void _showAddDriverDialog(BuildContext context) {
+    final nameCtrl = TextEditingController();
+    final phoneCtrl = TextEditingController();
+    final vehicleCtrl = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        bool isSaving = false;
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) => AlertDialog(
+            title: const Text('إضافة سائق جديد'),
+            content: SizedBox(
+              width: 420,
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: nameCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'الاسم الكامل',
+                        hintText: 'مثال: محمد ولد أحمد',
+                        prefixIcon: Icon(Icons.person),
+                      ),
+                      validator: (v) => v == null || v.isEmpty ? 'الاسم مطلوب' : null,
+                    ),
+                    const SizedBox(height: AdminSpacing.md),
+                    TextFormField(
+                      controller: phoneCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'رقم الهاتف',
+                        hintText: '+222XXXXXXXX',
+                        prefixIcon: Icon(Icons.phone),
+                      ),
+                      keyboardType: TextInputType.phone,
+                      validator: (v) => v == null || v.isEmpty ? 'رقم الهاتف مطلوب' : null,
+                    ),
+                    const SizedBox(height: AdminSpacing.md),
+                    TextFormField(
+                      controller: vehicleCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'نوع المركبة (اختياري)',
+                        hintText: 'مثال: دراجة نارية',
+                        prefixIcon: Icon(Icons.two_wheeler),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AdminAppColors.primaryGreen,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: isSaving
+                    ? null
+                    : () async {
+                        if (!formKey.currentState!.validate()) return;
+                        setDialogState(() => isSaving = true);
+                        try {
+                          final docRef = await FirebaseFirestore.instance.collection('drivers').add({
+                            'name': nameCtrl.text.trim(),
+                            'phone': phoneCtrl.text.trim(),
+                            'vehicleType': vehicleCtrl.text.trim(),
+                            'isOnline': false,
+                            'isVerified': false,
+                            'isBlocked': false,
+                            'rating': 5.0,
+                            'totalTrips': 0,
+                            'createdAt': FieldValue.serverTimestamp(),
+                            'updatedAt': FieldValue.serverTimestamp(),
+                          });
+                          // Audit log
+                          await AuditLogService().log(
+                            action: 'driver_added',
+                            category: 'driver',
+                            targetId: docRef.id,
+                            targetType: 'driver',
+                            details: {'name': nameCtrl.text.trim(), 'phone': phoneCtrl.text.trim()},
+                          );
+                          if (ctx.mounted) Navigator.pop(ctx);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('تمت إضافة السائق بنجاح'),
+                                backgroundColor: AdminAppColors.successLight,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          setDialogState(() => isSaving = false);
+                          if (ctx.mounted) {
+                            ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('خطأ: $e')));
+                          }
+                        }
+                      },
+                child: isSaving
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Text('إضافة'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

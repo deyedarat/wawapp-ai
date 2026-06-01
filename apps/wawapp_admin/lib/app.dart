@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/router/admin_app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'providers/theme_provider.dart';
 
 class AdminApp extends ConsumerWidget {
   const AdminApp({super.key});
@@ -10,6 +11,7 @@ class AdminApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(adminRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'WawApp Admin - لوحة إدارة واو أب',
@@ -18,7 +20,7 @@ class AdminApp extends ConsumerWidget {
       // Theme
       theme: AdminAppTheme.lightTheme,
       darkTheme: AdminAppTheme.darkTheme,
-      themeMode: ThemeMode.light, // TODO: Implement theme switching
+      themeMode: themeMode,
 
       // Localization
       locale: const Locale('ar'),

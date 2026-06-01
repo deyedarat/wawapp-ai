@@ -6,16 +6,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:core_shared/core_shared.dart' as core_shared;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'audit_log_service.dart';
 
 class AdminOrdersService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final AuditLogService _auditLog = AuditLogService();
 
-  /// Get orders stream with optional filters
-  Stream<List<core_shared.Order>> getOrdersStream({
-    String? statusFilter,
-    int limit = 50,
-  }) {
+  /// Get orders stream with optional filters and pagination
+  Stream<List<core_shared.Order>> getOrdersStream({String? statusFilter, int limit = 50}) {
     Query<Map<String, dynamic>> query = _firestore
         .collection('orders')
         .orderBy('createdAt', descending: true)
@@ -26,11 +25,24 @@ class AdminOrdersService {
     }
 
     return query.snapshots().map((snapshot) {
-      return snapshot.docs
-          .map((doc) =>
-              core_shared.Order.fromFirestoreWithId(doc.id, doc.data()))
-          .toList();
+      return snapshot.docs.map((doc) => core_shared.Order.fromFirestoreWithId(doc.id, doc.data())).toList();
     });
+  }
+
+  /// Get total order count for pagination info
+  Future<int> getOrderCount({String? statusFilter}) async {
+    try {
+      AggregateQuery countQuery;
+      if (statusFilter != null && statusFilter.isNotEmpty) {
+        countQuery = _firestore.collection('orders').where('status', isEqualTo: statusFilter).count();
+      } else {
+        countQuery = _firestore.collection('orders').count();
+      }
+      final snapshot = await countQuery.get();
+      return snapshot.count ?? 0;
+    } catch (e) {
+      return 0;
+    }
   }
 
   /// Get a single order by ID
@@ -64,6 +76,15 @@ class AdminOrdersService {
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
+      // Audit log
+      await _auditLog.log(
+        action: 'order_cancelled',
+        category: 'order',
+        targetId: orderId,
+        targetType: 'order',
+        details: {'reason': reason ?? 'Cancelled by admin'},
+      );
+
       return true;
     } catch (e) {
       if (kDebugMode) {
@@ -86,6 +107,15 @@ class AdminOrdersService {
         'reassignedBy': user.uid,
         'updatedAt': FieldValue.serverTimestamp(),
       });
+
+      // Audit log
+      await _auditLog.log(
+        action: 'order_reassigned',
+        category: 'order',
+        targetId: orderId,
+        targetType: 'order',
+        details: {'newDriverId': newDriverId},
+      );
 
       return true;
     } catch (e) {
@@ -155,16 +185,8 @@ class AdminOrdersService {
         'weightTons': weightTons,
         'shipmentType': shipmentType,
         if (notes != null && notes.isNotEmpty) 'notes': notes,
-        'pickup': {
-          'lat': pickupLat,
-          'lng': pickupLng,
-          'label': pickupAddress,
-        },
-        'dropoff': {
-          'lat': dropoffLat,
-          'lng': dropoffLng,
-          'label': dropoffAddress,
-        },
+        'pickup': {'lat': pickupLat, 'lng': pickupLng, 'label': pickupAddress},
+        'dropoff': {'lat': dropoffLat, 'lng': dropoffLng, 'label': dropoffAddress},
         'status': 'assigning',
         'assignedDriverId': null,
         'createdAt': FieldValue.serverTimestamp(),
@@ -172,6 +194,20 @@ class AdminOrdersService {
         'createdByAdmin': user.uid,
         'isManual': true,
       });
+
+      // Audit log
+      await _auditLog.log(
+        action: 'order_created_manual',
+        category: 'order',
+        targetId: docRef.id,
+        targetType: 'order',
+        details: {
+          'clientPhone': clientPhone,
+          'pickupAddress': pickupAddress,
+          'dropoffAddress': dropoffAddress,
+          'price': price,
+        },
+      );
 
       return docRef.id;
     } catch (e) {

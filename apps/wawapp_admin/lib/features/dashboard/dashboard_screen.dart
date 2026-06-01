@@ -2,237 +2,37 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../core/theme/colors.dart';
 import '../../core/widgets/admin_scaffold.dart';
 import '../../core/widgets/stat_card.dart';
 import '../../providers/admin_data_providers.dart';
+import '../../services/audit_log_service.dart';
+
+/// Provider for recent activity from audit log
+final recentActivityProvider = StreamProvider<List<AuditLogEntry>>((ref) {
+  final service = AuditLogService();
+  return service.getRecentActivity(limit: 10);
+});
+
+/// Provider for recent orders activity (real-time)
+final recentOrdersActivityProvider = StreamProvider<List<Map<String, dynamic>>>((ref) {
+  return FirebaseFirestore.instance
+      .collection('orders')
+      .orderBy('updatedAt', descending: true)
+      .limit(8)
+      .snapshots()
+      .map(
+        (snapshot) => snapshot.docs.map((doc) {
+          final data = doc.data();
+          data['id'] = doc.id;
+          return data;
+        }).toList(),
+      );
+});
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
-
-  // ── Quick-action: Add Driver ─────────────────────────────────────
-  void _showAddDriverDialog(BuildContext context) {
-    final nameCtrl = TextEditingController();
-    final phoneCtrl = TextEditingController();
-    final vehicleCtrl = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) {
-        bool isSaving = false;
-        return StatefulBuilder(
-          builder: (ctx, setDialogState) => AlertDialog(
-            title: const Text('إضافة سائق جديد'),
-            content: SizedBox(
-              width: 420,
-              child: Form(
-                key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      controller: nameCtrl,
-                      decoration: const InputDecoration(
-                          labelText: 'الاسم الكامل',
-                          hintText: 'مثال: محمد ولد أحمد',
-                          prefixIcon: Icon(Icons.person)),
-                      validator: (v) =>
-                          v == null || v.isEmpty ? 'الاسم مطلوب' : null,
-                    ),
-                    const SizedBox(height: AdminSpacing.md),
-                    TextFormField(
-                      controller: phoneCtrl,
-                      decoration: const InputDecoration(
-                          labelText: 'رقم الهاتف',
-                          hintText: '+222XXXXXXXX',
-                          prefixIcon: Icon(Icons.phone)),
-                      keyboardType: TextInputType.phone,
-                      validator: (v) =>
-                          v == null || v.isEmpty ? 'رقم الهاتف مطلوب' : null,
-                    ),
-                    const SizedBox(height: AdminSpacing.md),
-                    TextFormField(
-                      controller: vehicleCtrl,
-                      decoration: const InputDecoration(
-                          labelText: 'نوع المركبة (اختياري)',
-                          hintText: 'مثال: دراجة نارية',
-                          prefixIcon: Icon(Icons.two_wheeler)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: const Text('إلغاء')),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: AdminAppColors.primaryGreen,
-                    foregroundColor: Colors.white),
-                onPressed: isSaving
-                    ? null
-                    : () async {
-                        if (!formKey.currentState!.validate()) return;
-                        setDialogState(() => isSaving = true);
-                        try {
-                          await FirebaseFirestore.instance
-                              .collection('drivers')
-                              .add({
-                            'name': nameCtrl.text.trim(),
-                            'phone': phoneCtrl.text.trim(),
-                            'vehicleType': vehicleCtrl.text.trim(),
-                            'isOnline': false,
-                            'isVerified': false,
-                            'isBlocked': false,
-                            'rating': 5.0,
-                            'totalTrips': 0,
-                            'createdAt': FieldValue.serverTimestamp(),
-                            'updatedAt': FieldValue.serverTimestamp(),
-                          });
-                          if (ctx.mounted) Navigator.pop(ctx);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content: Text('تمت إضافة السائق بنجاح'),
-                              backgroundColor: AdminAppColors.successLight,
-                            ));
-                          }
-                        } catch (e) {
-                          setDialogState(() => isSaving = false);
-                          if (ctx.mounted) {
-                            ScaffoldMessenger.of(ctx).showSnackBar(
-                                SnackBar(content: Text('خطأ: $e')));
-                          }
-                        }
-                      },
-                child: isSaving
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white))
-                    : const Text('إضافة'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // ── Quick-action: Add Client ─────────────────────────────────────
-  void _showAddClientDialog(BuildContext context) {
-    final nameCtrl = TextEditingController();
-    final phoneCtrl = TextEditingController();
-    final emailCtrl = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) {
-        bool isSaving = false;
-        return StatefulBuilder(
-          builder: (ctx, setDialogState) => AlertDialog(
-            title: const Text('إضافة عميل جديد'),
-            content: SizedBox(
-              width: 420,
-              child: Form(
-                key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      controller: nameCtrl,
-                      decoration: const InputDecoration(
-                          labelText: 'الاسم الكامل',
-                          hintText: 'مثال: فاطمة بنت محمد',
-                          prefixIcon: Icon(Icons.person)),
-                      validator: (v) =>
-                          v == null || v.isEmpty ? 'الاسم مطلوب' : null,
-                    ),
-                    const SizedBox(height: AdminSpacing.md),
-                    TextFormField(
-                      controller: phoneCtrl,
-                      decoration: const InputDecoration(
-                          labelText: 'رقم الهاتف',
-                          hintText: '+222XXXXXXXX',
-                          prefixIcon: Icon(Icons.phone)),
-                      keyboardType: TextInputType.phone,
-                      validator: (v) =>
-                          v == null || v.isEmpty ? 'رقم الهاتف مطلوب' : null,
-                    ),
-                    const SizedBox(height: AdminSpacing.md),
-                    TextFormField(
-                      controller: emailCtrl,
-                      decoration: const InputDecoration(
-                          labelText: 'البريد الإلكتروني (اختياري)',
-                          hintText: 'example@email.com',
-                          prefixIcon: Icon(Icons.email)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: const Text('إلغاء')),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: AdminAppColors.activeBlue,
-                    foregroundColor: Colors.white),
-                onPressed: isSaving
-                    ? null
-                    : () async {
-                        if (!formKey.currentState!.validate()) return;
-                        setDialogState(() => isSaving = true);
-                        try {
-                          await FirebaseFirestore.instance
-                              .collection('clients')
-                              .add({
-                            'name': nameCtrl.text.trim(),
-                            'phone': phoneCtrl.text.trim(),
-                            'email': emailCtrl.text.trim(),
-                            'isVerified': false,
-                            'isBlocked': false,
-                            'totalOrders': 0,
-                            'createdAt': FieldValue.serverTimestamp(),
-                            'updatedAt': FieldValue.serverTimestamp(),
-                          });
-                          if (ctx.mounted) Navigator.pop(ctx);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content: Text('تمت إضافة العميل بنجاح'),
-                              backgroundColor: AdminAppColors.successLight,
-                            ));
-                          }
-                        } catch (e) {
-                          setDialogState(() => isSaving = false);
-                          if (ctx.mounted) {
-                            ScaffoldMessenger.of(ctx).showSnackBar(
-                                SnackBar(content: Text('خطأ: $e')));
-                          }
-                        }
-                      },
-                child: isSaving
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white))
-                    : const Text('إضافة'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -250,10 +50,7 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               Text('خطأ في تحميل البيانات: $error'),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.refresh(dashboardStatsProvider),
-                child: const Text('إعادة المحاولة'),
-              ),
+              ElevatedButton(onPressed: () => ref.refresh(dashboardStatsProvider), child: const Text('إعادة المحاولة')),
             ],
           ),
         ),
@@ -263,15 +60,12 @@ class DashboardScreen extends ConsumerWidget {
 
           final totalDrivers = driverStats['total'] ?? 0;
           final onlineDrivers = driverStats['online'] ?? 0;
-          final activeOrders = (orderStats['assigning'] ?? 0) +
-              (orderStats['accepted'] ?? 0) +
-              (orderStats['on_route'] ?? 0);
+          final activeOrders =
+              (orderStats['assigning'] ?? 0) + (orderStats['accepted'] ?? 0) + (orderStats['on_route'] ?? 0);
           final completedToday = orderStats['completed'] ?? 0;
           final cancelledToday = orderStats['cancelled'] ?? 0;
 
-          final onlinePercent = totalDrivers > 0
-              ? (onlineDrivers / totalDrivers * 100).toInt()
-              : 0;
+          final onlinePercent = totalDrivers > 0 ? (onlineDrivers / totalDrivers * 100).toInt() : 0;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -327,66 +121,18 @@ class DashboardScreen extends ConsumerWidget {
 
               SizedBox(height: AdminSpacing.xl),
 
-              // Recent activity section
-              Text('النشاط الأخير',
-                  style: Theme.of(context).textTheme.titleLarge),
+              // Real-time recent activity section
+              Text('النشاط الأخير', style: Theme.of(context).textTheme.titleLarge),
               SizedBox(height: AdminSpacing.md),
 
-              Card(
-                child: Padding(
-                  padding: EdgeInsets.all(AdminSpacing.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildActivityItem(
-                        context,
-                        icon: Icons.add_circle,
-                        color: AdminAppColors.successLight,
-                        title: 'طلب جديد تم إنشاؤه',
-                        subtitle: 'الطلب #12345 من نواكشوط إلى نواذيبو',
-                        time: 'منذ 5 دقائق',
-                      ),
-                      Divider(height: AdminSpacing.lg),
-                      _buildActivityItem(
-                        context,
-                        icon: Icons.drive_eta,
-                        color: AdminAppColors.onlineGreen,
-                        title: 'سائق جديد متصل',
-                        subtitle: 'محمد ولد أحمد بدأ نوبته',
-                        time: 'منذ 15 دقيقة',
-                      ),
-                      Divider(height: AdminSpacing.lg),
-                      _buildActivityItem(
-                        context,
-                        icon: Icons.check_circle,
-                        color: AdminAppColors.primaryGreen,
-                        title: 'طلب مكتمل',
-                        subtitle: 'الطلب #12344 تم تسليمه بنجاح',
-                        time: 'منذ 30 دقيقة',
-                      ),
-                      Divider(height: AdminSpacing.lg),
-                      _buildActivityItem(
-                        context,
-                        icon: Icons.cancel,
-                        color: AdminAppColors.errorLight,
-                        title: 'طلب ملغى',
-                        subtitle: 'الطلب #12343 ألغاه العميل',
-                        time: 'منذ ساعة',
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              _buildRecentActivityCard(context, ref),
 
               SizedBox(height: AdminSpacing.xl),
 
               // Quick actions
-              Row(children: [
-                Expanded(
-                  child: Text('إجراءات سريعة',
-                      style: Theme.of(context).textTheme.titleLarge),
-                ),
-              ]),
+              Row(
+                children: [Expanded(child: Text('إجراءات سريعة', style: Theme.of(context).textTheme.titleLarge))],
+              ),
               SizedBox(height: AdminSpacing.md),
 
               Row(
@@ -394,20 +140,30 @@ class DashboardScreen extends ConsumerWidget {
                   Expanded(
                     child: _buildQuickActionCard(
                       context,
-                      icon: Icons.add,
-                      title: 'إضافة سائق',
+                      icon: Icons.local_shipping,
+                      title: 'إنشاء طلب',
                       color: AdminAppColors.primaryGreen,
-                      onTap: () => _showAddDriverDialog(context),
+                      onTap: () => context.go('/orders'),
                     ),
                   ),
                   SizedBox(width: AdminSpacing.md),
                   Expanded(
                     child: _buildQuickActionCard(
                       context,
-                      icon: Icons.person_add,
-                      title: 'إضافة عميل',
+                      icon: Icons.map,
+                      title: 'المراقبة الحية',
                       color: AdminAppColors.activeBlue,
-                      onTap: () => _showAddClientDialog(context),
+                      onTap: () => context.go('/live-ops'),
+                    ),
+                  ),
+                  SizedBox(width: AdminSpacing.md),
+                  Expanded(
+                    child: _buildQuickActionCard(
+                      context,
+                      icon: Icons.bar_chart,
+                      title: 'التقارير',
+                      color: AdminAppColors.goldenYellow,
+                      onTap: () => context.go('/reports'),
                     ),
                   ),
                   SizedBox(width: AdminSpacing.md),
@@ -427,6 +183,141 @@ class DashboardScreen extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  /// Builds real-time activity card from recent orders
+  Widget _buildRecentActivityCard(BuildContext context, WidgetRef ref) {
+    final recentOrdersAsync = ref.watch(recentOrdersActivityProvider);
+
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(AdminSpacing.lg),
+        child: recentOrdersAsync.when(
+          loading: () => const Center(
+            child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
+          ),
+          error: (_, __) => const Center(
+            child: Padding(padding: EdgeInsets.all(24), child: Text('تعذّر تحميل النشاط الأخير')),
+          ),
+          data: (orders) {
+            if (orders.isEmpty) {
+              return const Center(
+                child: Padding(padding: EdgeInsets.all(24), child: Text('لا يوجد نشاط حديث')),
+              );
+            }
+
+            return Column(
+              children: orders.take(5).map((order) {
+                final status = order['status'] as String? ?? 'unknown';
+                final id = (order['id'] as String? ?? '').length > 8
+                    ? (order['id'] as String).substring(0, 8).toUpperCase()
+                    : order['id'] ?? '';
+                final pickup = order['pickupAddress'] as String? ?? '';
+                final dropoff = order['dropoffAddress'] as String? ?? '';
+                final updatedAt = order['updatedAt'];
+
+                return Column(
+                  children: [
+                    _buildActivityItem(
+                      context,
+                      icon: _getStatusIcon(status),
+                      color: _getStatusColor(status),
+                      title: '${_getStatusLabel(status)} — #$id',
+                      subtitle: pickup.isNotEmpty && dropoff.isNotEmpty ? '$pickup → $dropoff' : 'طلب بدون عنوان',
+                      time: _formatTimestamp(updatedAt),
+                    ),
+                    if (orders.indexOf(order) < 4) Divider(height: AdminSpacing.lg),
+                  ],
+                );
+              }).toList(),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  IconData _getStatusIcon(String status) {
+    switch (status) {
+      case 'assigning':
+      case 'matching':
+        return Icons.search;
+      case 'accepted':
+        return Icons.check_circle;
+      case 'on_route':
+        return Icons.local_shipping;
+      case 'completed':
+        return Icons.done_all;
+      case 'cancelled':
+      case 'cancelled_by_admin':
+      case 'cancelled_by_driver':
+      case 'cancelled_by_client':
+        return Icons.cancel;
+      default:
+        return Icons.info;
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'assigning':
+      case 'matching':
+        return AdminAppColors.goldenYellow;
+      case 'accepted':
+        return AdminAppColors.activeBlue;
+      case 'on_route':
+        return AdminAppColors.onlineGreen;
+      case 'completed':
+        return AdminAppColors.successLight;
+      case 'cancelled':
+      case 'cancelled_by_admin':
+      case 'cancelled_by_driver':
+      case 'cancelled_by_client':
+        return AdminAppColors.errorLight;
+      default:
+        return AdminAppColors.textSecondaryLight;
+    }
+  }
+
+  String _getStatusLabel(String status) {
+    switch (status) {
+      case 'assigning':
+      case 'matching':
+        return 'قيد التعيين';
+      case 'accepted':
+        return 'تم القبول';
+      case 'on_route':
+        return 'في الطريق';
+      case 'completed':
+        return 'مكتمل';
+      case 'cancelled':
+      case 'cancelled_by_admin':
+      case 'cancelled_by_driver':
+      case 'cancelled_by_client':
+        return 'ملغى';
+      default:
+        return status;
+    }
+  }
+
+  String _formatTimestamp(dynamic timestamp) {
+    if (timestamp == null) return '';
+    DateTime date;
+    if (timestamp is Timestamp) {
+      date = timestamp.toDate();
+    } else {
+      return '';
+    }
+
+    final now = DateTime.now();
+    final diff = now.difference(date);
+
+    if (diff.inMinutes < 1) return 'الآن';
+    if (diff.inMinutes < 60) return 'منذ ${diff.inMinutes} دقيقة';
+    if (diff.inHours < 24) return 'منذ ${diff.inHours} ساعة';
+    if (diff.inDays < 7) return 'منذ ${diff.inDays} يوم';
+
+    return DateFormat('MM/dd HH:mm', 'en').format(date);
   }
 
   Widget _buildActivityItem(
@@ -454,17 +345,16 @@ class DashboardScreen extends ConsumerWidget {
             children: [
               Text(title, style: Theme.of(context).textTheme.titleSmall),
               SizedBox(height: AdminSpacing.xxs),
-              Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodySmall,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           ),
         ),
-        Text(
-          time,
-          style: Theme.of(context)
-              .textTheme
-              .bodySmall
-              ?.copyWith(color: AdminAppColors.textSecondaryLight),
-        ),
+        Text(time, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AdminAppColors.textSecondaryLight)),
       ],
     );
   }
@@ -486,11 +376,7 @@ class DashboardScreen extends ConsumerWidget {
             children: [
               Icon(icon, color: color, size: 36),
               SizedBox(height: AdminSpacing.sm),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
+              Text(title, style: Theme.of(context).textTheme.titleMedium, textAlign: TextAlign.center),
             ],
           ),
         ),

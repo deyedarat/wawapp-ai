@@ -2,6 +2,9 @@ import 'package:core_shared/core_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
+import 'dart:convert';
 
 import '../../core/theme/colors.dart';
 import '../../core/utils/responsive_helper.dart';
@@ -41,9 +44,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ordersAsync = ref.watch(
-      ordersStreamProvider(_selectedStatusFilter).stream,
-    );
+    final ordersAsync = ref.watch(ordersStreamProvider(_selectedStatusFilter));
 
     return AdminScaffold(
       title: 'إدارة الطلبات',
@@ -61,18 +62,12 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           },
           icon: const Icon(Icons.add),
           label: const Text('إضافة طلب'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AdminAppColors.primaryGreen,
-            foregroundColor: Colors.white,
-          ),
+          style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.primaryGreen, foregroundColor: Colors.white),
         ),
         const SizedBox(width: AdminSpacing.md),
         ElevatedButton.icon(
           onPressed: () {
-            // TODO: Export orders to CSV
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('تصدير CSV قريباً')),
-            );
+            _exportOrdersCsv(context, ref);
           },
           icon: const Icon(Icons.download),
           label: const Text('تصدير'),
@@ -84,10 +79,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           // Filters
           Row(
             children: [
-              Text(
-                'تصفية حسب الحالة:',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text('تصفية حسب الحالة:', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(width: AdminSpacing.md),
               Expanded(
                 child: Wrap(
@@ -106,14 +98,10 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                         });
                       },
                       backgroundColor: AdminAppColors.surfaceLight,
-                      selectedColor:
-                          AdminAppColors.primaryGreen.withOpacity(0.2),
+                      selectedColor: AdminAppColors.primaryGreen.withOpacity(0.2),
                       labelStyle: TextStyle(
-                        color: isSelected
-                            ? AdminAppColors.primaryGreen
-                            : AdminAppColors.textPrimaryLight,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color: isSelected ? AdminAppColors.primaryGreen : AdminAppColors.textPrimaryLight,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                       ),
                     );
                   }).toList(),
@@ -127,34 +115,24 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           // Orders table with real-time data
           SizedBox(
             height: ResponsiveHelper.getTableHeight(context),
-            child: StreamBuilder<List<Order>>(
-              stream: ordersAsync,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error_outline,
-                            size: 64, color: Colors.red),
-                        const SizedBox(height: 16),
-                        Text('خطأ في تحميل الطلبات: ${snapshot.error}'),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () => setState(() {}),
-                          child: const Text('إعادة المحاولة'),
-                        ),
-                      ],
+            child: ordersAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const SizedBox(height: 16),
+                    Text('خطأ في تحميل الطلبات: $error'),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => ref.invalidate(ordersStreamProvider(_selectedStatusFilter)),
+                      child: const Text('إعادة المحاولة'),
                     ),
-                  );
-                }
-
-                final orders = snapshot.data ?? [];
-
+                  ],
+                ),
+              ),
+              data: (orders) {
                 // Filter orders by search query
                 final filteredOrders = _searchQuery.isEmpty
                     ? orders
@@ -174,16 +152,9 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.inbox_outlined,
-                          size: 64,
-                          color: AdminAppColors.textSecondaryLight,
-                        ),
+                        const Icon(Icons.inbox_outlined, size: 64, color: AdminAppColors.textSecondaryLight),
                         const SizedBox(height: 16),
-                        Text(
-                          'لا توجد طلبات',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
+                        Text('لا توجد طلبات', style: Theme.of(context).textTheme.titleLarge),
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
                           onPressed: () => _showAddOrderDialog(context),
@@ -192,13 +163,10 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          _selectedStatusFilter != null
-                              ? 'لا توجد طلبات بهذه الحالة'
-                              : 'لا توجد طلبات في النظام',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: AdminAppColors.textSecondaryLight,
-                                  ),
+                          _selectedStatusFilter != null ? 'لا توجد طلبات بهذه الحالة' : 'لا توجد طلبات في النظام',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(color: AdminAppColors.textSecondaryLight),
                         ),
                       ],
                     ),
@@ -220,109 +188,40 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                             child: ConstrainedBox(
                               constraints: const BoxConstraints(minWidth: 1400),
                               child: DataTable(
-                                headingRowColor: WidgetStateProperty.all(
-                                  AdminAppColors.backgroundLight,
-                                ),
+                                headingRowColor: WidgetStateProperty.all(AdminAppColors.backgroundLight),
                                 columns: [
+                                  DataColumn(label: Text('رقم الطلب', style: Theme.of(context).textTheme.titleSmall)),
+                                  DataColumn(label: Text('العميل', style: Theme.of(context).textTheme.titleSmall)),
+                                  DataColumn(label: Text('السائق', style: Theme.of(context).textTheme.titleSmall)),
+                                  DataColumn(label: Text('الحالة', style: Theme.of(context).textTheme.titleSmall)),
                                   DataColumn(
-                                    label: Text(
-                                      'رقم الطلب',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
+                                    label: Text('نقطة الاستلام', style: Theme.of(context).textTheme.titleSmall),
                                   ),
                                   DataColumn(
-                                    label: Text(
-                                      'العميل',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
+                                    label: Text('نقطة التسليم', style: Theme.of(context).textTheme.titleSmall),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      'السائق',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'الحالة',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'نقطة الاستلام',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'نقطة التسليم',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'السعر',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'التاريخ',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'الإجراءات',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
+                                  DataColumn(label: Text('السعر', style: Theme.of(context).textTheme.titleSmall)),
+                                  DataColumn(label: Text('التاريخ', style: Theme.of(context).textTheme.titleSmall)),
+                                  DataColumn(label: Text('الإجراءات', style: Theme.of(context).textTheme.titleSmall)),
                                 ],
                                 rows: filteredOrders.map((order) {
                                   return DataRow(
                                     cells: [
                                       DataCell(
                                         Text(
-                                          (order.id ?? 'N/A')
-                                              .substring(0, 8)
-                                              .toUpperCase(),
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontFamily: 'monospace',
-                                          ),
+                                          (order.id ?? 'N/A').substring(0, 8).toUpperCase(),
+                                          style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'monospace'),
                                         ),
                                       ),
                                       DataCell(
                                         InkWell(
                                           onTap: order.ownerId != null
-                                              ? () => _showClientQuickInfo(
-                                                  context, order.ownerId!)
+                                              ? () => _showClientQuickInfo(context, order.ownerId!)
                                               : null,
                                           child: Text(
-                                            (order.ownerId ?? 'N/A')
-                                                .substring(0, 8),
+                                            (order.ownerId ?? 'N/A').substring(0, 8),
                                             style: const TextStyle(
-                                              decoration:
-                                                  TextDecoration.underline,
+                                              decoration: TextDecoration.underline,
                                               color: AdminAppColors.activeBlue,
                                               fontFamily: 'monospace',
                                             ),
@@ -332,32 +231,22 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                       DataCell(
                                         order.assignedDriverId != null
                                             ? InkWell(
-                                                onTap: () =>
-                                                    _showDriverQuickInfo(
-                                                        context,
-                                                        order
-                                                            .assignedDriverId!),
+                                                onTap: () => _showDriverQuickInfo(context, order.assignedDriverId!),
                                                 child: Text(
-                                                  order.assignedDriverId!
-                                                      .substring(0, 8),
+                                                  order.assignedDriverId!.substring(0, 8),
                                                   style: const TextStyle(
-                                                    decoration: TextDecoration
-                                                        .underline,
-                                                    color: AdminAppColors
-                                                        .activeBlue,
+                                                    decoration: TextDecoration.underline,
+                                                    color: AdminAppColors.activeBlue,
                                                     fontFamily: 'monospace',
                                                   ),
                                                 ),
                                               )
                                             : const Text(
                                                 'غير معيّن',
-                                                style: TextStyle(
-                                                    color: AdminAppColors
-                                                        .textSecondaryLight),
+                                                style: TextStyle(color: AdminAppColors.textSecondaryLight),
                                               ),
                                       ),
-                                      DataCell(_buildStatusBadge(
-                                          order.status ?? 'unknown')),
+                                      DataCell(_buildStatusBadge(order.status ?? 'unknown')),
                                       DataCell(
                                         SizedBox(
                                           width: 150,
@@ -388,36 +277,28 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                                         ),
                                       ),
                                       DataCell(
-                                        Text(
-                                          _formatDate(order.createdAt),
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
+                                        Text(_formatDate(order.createdAt), style: const TextStyle(fontSize: 12)),
                                       ),
                                       DataCell(
                                         Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             IconButton(
-                                              icon:
-                                                  const Icon(Icons.visibility),
+                                              icon: const Icon(Icons.visibility),
                                               onPressed: () {
-                                                _showOrderDetails(
-                                                    context, order);
+                                                _showOrderDetails(context, order);
                                               },
                                               tooltip: 'عرض التفاصيل',
                                               color: AdminAppColors.infoLight,
                                             ),
-                                            if (order.status != 'completed' &&
-                                                order.status != 'cancelled')
+                                            if (order.status != 'completed' && order.status != 'cancelled')
                                               IconButton(
                                                 icon: const Icon(Icons.cancel),
                                                 onPressed: () {
-                                                  _showCancelDialog(
-                                                      context, order);
+                                                  _showCancelDialog(context, order);
                                                 },
                                                 tooltip: 'إلغاء الطلب',
-                                                color:
-                                                    AdminAppColors.errorLight,
+                                                color: AdminAppColors.errorLight,
                                               ),
                                           ],
                                         ),
@@ -434,12 +315,29 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
                     const SizedBox(height: AdminSpacing.md),
 
-                    // Summary
-                    Text(
-                      'عرض ${filteredOrders.length} من ${orders.length} طلب',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AdminAppColors.textSecondaryLight,
+                    // Summary with pagination info
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'عرض ${filteredOrders.length} من ${orders.length} طلب (الحد الأقصى: 50)',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(color: AdminAppColors.textSecondaryLight),
+                        ),
+                        if (orders.length >= 50)
+                          TextButton.icon(
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('استخدم الفلاتر لتضييق النتائج أو التقارير للبيانات الكاملة'),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.info_outline, size: 16),
+                            label: const Text('هناك المزيد من الطلبات'),
                           ),
+                      ],
                     ),
                   ],
                 );
@@ -458,8 +356,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
       case 'accepted':
         return StatusBadge.active('مقبول');
       case 'on_route':
-        return const StatusBadge(
-            label: 'في الطريق', color: AdminAppColors.activeBlue);
+        return const StatusBadge(label: 'في الطريق', color: AdminAppColors.activeBlue);
       case 'completed':
         return StatusBadge.success('مكتمل');
       case 'cancelled':
@@ -492,37 +389,20 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
               children: [
                 _buildDetailRow('رقم الطلب:', order.id ?? 'N/A'),
                 _buildDetailRow('معرف العميل:', order.ownerId ?? 'N/A'),
-                _buildDetailRow(
-                  'معرف السائق:',
-                  order.assignedDriverId ?? 'غير معيّن',
-                ),
+                _buildDetailRow('معرف السائق:', order.assignedDriverId ?? 'غير معيّن'),
                 _buildDetailRow('الحالة:', order.status ?? 'غير معروف'),
                 _buildDetailRow('نقطة الاستلام:', order.pickupAddress),
                 _buildDetailRow('نقطة التسليم:', order.dropoffAddress),
-                _buildDetailRow(
-                  'المسافة:',
-                  '${order.distanceKm.toStringAsFixed(1)} كم',
-                ),
-                _buildDetailRow(
-                  'السعر:',
-                  '${order.price.toStringAsFixed(0)} MRU',
-                ),
+                _buildDetailRow('المسافة:', '${order.distanceKm.toStringAsFixed(1)} كم'),
+                _buildDetailRow('السعر:', '${order.price.toStringAsFixed(0)} MRU'),
                 _buildDetailRow('وقت الإنشاء:', _formatDate(order.createdAt)),
-                if (order.updatedAt != null)
-                  _buildDetailRow('آخر تحديث:', _formatDate(order.updatedAt)),
-                if (order.completedAt != null)
-                  _buildDetailRow(
-                      'وقت الاكتمال:', _formatDate(order.completedAt)),
+                if (order.updatedAt != null) _buildDetailRow('آخر تحديث:', _formatDate(order.updatedAt)),
+                if (order.completedAt != null) _buildDetailRow('وقت الاكتمال:', _formatDate(order.completedAt)),
               ],
             ),
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إغلاق'),
-          ),
-        ],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('إغلاق'))],
       ),
     );
   }
@@ -537,15 +417,10 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
             width: 120,
             child: Text(
               label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AdminAppColors.textSecondaryLight,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600, color: AdminAppColors.textSecondaryLight),
             ),
           ),
-          Expanded(
-            child: SelectableText(value),
-          ),
+          Expanded(child: SelectableText(value)),
         ],
       ),
     );
@@ -562,49 +437,33 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-                'هل أنت متأكد من إلغاء هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.'),
+            const Text('هل أنت متأكد من إلغاء هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.'),
             const SizedBox(height: AdminSpacing.md),
             TextField(
               controller: reasonController,
-              decoration: const InputDecoration(
-                labelText: 'سبب الإلغاء',
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: 'سبب الإلغاء', border: OutlineInputBorder()),
               maxLines: 2,
             ),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('رجوع'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('رجوع')),
           ElevatedButton(
             onPressed: () async {
               final service = ref.read(adminOrdersServiceProvider);
-              final success = await service.cancelOrder(
-                order.id!,
-                reason: reasonController.text,
-              );
+              final success = await service.cancelOrder(order.id!, reason: reasonController.text);
 
               if (context.mounted) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                        success ? 'تم إلغاء الطلب بنجاح' : 'فشل إلغاء الطلب'),
-                    backgroundColor: success
-                        ? AdminAppColors.successLight
-                        : AdminAppColors.errorLight,
+                    content: Text(success ? 'تم إلغاء الطلب بنجاح' : 'فشل إلغاء الطلب'),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
                 );
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AdminAppColors.errorLight,
-              foregroundColor: Colors.white,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.errorLight, foregroundColor: Colors.white),
             child: const Text('إلغاء الطلب'),
           ),
         ],
@@ -615,9 +474,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   void _showAddOrderDialog(BuildContext context) async {
     final result = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
-        builder: (context) => const CreateOrderScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const CreateOrderScreen()),
     );
 
     // Refresh the list if order was created
@@ -635,10 +492,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           future: AdminDriversService().getDriverById(driverId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(
-                height: 80,
-                child: Center(child: CircularProgressIndicator()),
-              );
+              return const SizedBox(height: 80, child: Center(child: CircularProgressIndicator()));
             }
             final driver = snapshot.data;
             if (driver == null) {
@@ -656,12 +510,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
             );
           },
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إغلاق'),
-          ),
-        ],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('إغلاق'))],
       ),
     );
   }
@@ -675,10 +524,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           future: AdminClientsService().getClientById(clientId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(
-                height: 80,
-                child: Center(child: CircularProgressIndicator()),
-              );
+              return const SizedBox(height: 80, child: Center(child: CircularProgressIndicator()));
             }
             final client = snapshot.data;
             if (client == null) {
@@ -687,20 +533,64 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
             return Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDetailRow('الاسم:', client.name),
-                _buildDetailRow('الهاتف:', client.phone),
-              ],
+              children: [_buildDetailRow('الاسم:', client.name), _buildDetailRow('الهاتف:', client.phone)],
             );
           },
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إغلاق'),
-          ),
-        ],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('إغلاق'))],
       ),
     );
+  }
+}
+
+// Extension: CSV Export for Orders
+extension _OrdersCsvExport on _OrdersScreenState {
+  void _exportOrdersCsv(BuildContext context, WidgetRef ref) {
+    final ordersValue = ref.read(ordersStreamProvider(_selectedStatusFilter));
+
+    final orders = ordersValue.valueOrNull ?? [];
+    if (orders.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('لا توجد طلبات للتصدير')));
+      return;
+    }
+
+    final csv = StringBuffer();
+    csv.writeln('رقم الطلب,العميل,السائق,الحالة,نقطة الاستلام,نقطة التسليم,السعر (MRU),المسافة (كم),التاريخ');
+
+    for (final order in orders) {
+      final id = order.id ?? '';
+      final owner = order.ownerId ?? '';
+      final driver = order.assignedDriverId ?? 'غير معيّن';
+      final status = order.status ?? '';
+      final pickup = _escapeCsvValue(order.pickupAddress);
+      final dropoff = _escapeCsvValue(order.dropoffAddress);
+      final price = order.price.toStringAsFixed(0);
+      final distance = order.distanceKm.toStringAsFixed(1);
+      final date = order.createdAt != null ? DateFormat('yyyy-MM-dd HH:mm', 'en').format(order.createdAt!) : '';
+
+      csv.writeln('$id,$owner,$driver,$status,$pickup,$dropoff,$price,$distance,$date');
+    }
+
+    final bytes = utf8.encode(csv.toString());
+    final blob = html.Blob([bytes], 'text/csv;charset=utf-8;');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final now = DateFormat('yyyy-MM-dd', 'en').format(DateTime.now());
+
+    html.AnchorElement(href: url)
+      ..setAttribute('download', 'wawapp_orders_$now.csv')
+      ..click();
+
+    html.Url.revokeObjectUrl(url);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('تم تصدير الطلبات بنجاح'), backgroundColor: AdminAppColors.successLight),
+    );
+  }
+
+  String _escapeCsvValue(String value) {
+    if (value.contains(',') || value.contains('"') || value.contains('\n')) {
+      return '"${value.replaceAll('"', '""')}"';
+    }
+    return value;
   }
 }

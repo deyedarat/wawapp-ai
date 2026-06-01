@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/typography.dart';
 import '../../providers/admin_auth_providers.dart';
+import '../../config/app_config.dart';
 
 class AdminLoginScreen extends ConsumerStatefulWidget {
   const AdminLoginScreen({super.key});
@@ -42,10 +43,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
 
     try {
       final authService = ref.read(adminAuthServiceProvider);
-      await authService.signInWithEmailPassword(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
+      await authService.signInWithEmailPassword(_emailController.text.trim(), _passwordController.text);
 
       // Navigation is handled by router redirect
     } catch (e) {
@@ -67,9 +65,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
             padding: const EdgeInsets.all(32),
             child: Card(
               elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
                 padding: const EdgeInsets.all(40),
                 child: Form(
@@ -79,25 +75,17 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       // Logo/Title
-                      const Icon(
-                        Icons.admin_panel_settings,
-                        size: 72,
-                        color: AdminAppColors.primaryLight,
-                      ),
+                      const Icon(Icons.admin_panel_settings, size: 72, color: AdminAppColors.primaryLight),
                       const SizedBox(height: 24),
                       Text(
                         'WawApp Admin',
-                        style: AdminAppTextStyles.h1.copyWith(
-                          color: AdminAppColors.primaryLight,
-                        ),
+                        style: AdminAppTextStyles.h1.copyWith(color: AdminAppColors.primaryLight),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'لوحة التحكم الإدارية',
-                        style: AdminAppTextStyles.bodyMedium.copyWith(
-                          color: AdminAppColors.textSecondaryLight,
-                        ),
+                        style: AdminAppTextStyles.bodyMedium.copyWith(color: AdminAppColors.textSecondaryLight),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 40),
@@ -109,25 +97,16 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                           decoration: BoxDecoration(
                             color: AdminAppColors.errorLight.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: AdminAppColors.errorLight,
-                              width: 1,
-                            ),
+                            border: Border.all(color: AdminAppColors.errorLight, width: 1),
                           ),
                           child: Row(
                             children: [
-                              const Icon(
-                                Icons.error_outline,
-                                color: AdminAppColors.errorLight,
-                                size: 20,
-                              ),
+                              const Icon(Icons.error_outline, color: AdminAppColors.errorLight, size: 20),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   _errorMessage!,
-                                  style: AdminAppTextStyles.bodySmall.copyWith(
-                                    color: AdminAppColors.errorLight,
-                                  ),
+                                  style: AdminAppTextStyles.bodySmall.copyWith(color: AdminAppColors.errorLight),
                                 ),
                               ),
                             ],
@@ -141,18 +120,16 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          labelText: 'Email',
+                          labelText: 'البريد الإلكتروني',
                           prefixIcon: const Icon(Icons.email_outlined),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
+                            return 'الرجاء إدخال البريد الإلكتروني';
                           }
                           if (!value.contains('@')) {
-                            return 'Please enter a valid email';
+                            return 'البريد الإلكتروني غير صحيح';
                           }
                           return null;
                         },
@@ -164,30 +141,24 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                         controller: _passwordController,
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          labelText: 'كلمة المرور',
                           prefixIcon: const Icon(Icons.lock_outlined),
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                            ),
+                            icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
                             onPressed: () {
                               setState(() {
                                 _obscurePassword = !_obscurePassword;
                               });
                             },
                           ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
+                            return 'الرجاء إدخال كلمة المرور';
                           }
                           if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
+                            return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
                           }
                           return null;
                         },
@@ -201,9 +172,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                           backgroundColor: AdminAppColors.primaryLight,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           elevation: 2,
                         ),
                         child: _isLoading
@@ -212,39 +181,31 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
-                                  ),
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                 ),
                               )
-                            : Text(
-                                'Sign In',
-                                style: AdminAppTextStyles.button,
-                              ),
+                            : Text('تسجيل الدخول', style: AdminAppTextStyles.button),
                       ),
                       const SizedBox(height: 24),
 
-                      // Register link (DEV MODE)
-                      TextButton(
-                        onPressed: () {
-                          GoRouter.of(context).push('/register');
-                        },
-                        child: Text(
-                          'ليس لديك حساب؟ إنشاء حساب جديد (وضع التطوير)',
-                          style: AdminAppTextStyles.caption.copyWith(
-                            color: AdminAppColors.primaryGreen,
+                      // Register link (DEV MODE ONLY — hidden in production)
+                      if (!ref.read(appConfigProvider).useStrictAuth)
+                        TextButton(
+                          onPressed: () {
+                            GoRouter.of(context).push('/register');
+                          },
+                          child: Text(
+                            'ليس لديك حساب؟ إنشاء حساب جديد (وضع التطوير)',
+                            style: AdminAppTextStyles.caption.copyWith(color: AdminAppColors.primaryGreen),
                           ),
                         ),
-                      ),
 
                       const SizedBox(height: 16),
 
                       // Footer
                       Text(
-                        'Admin access only • تسجيل دخول الإدارة فقط',
-                        style: AdminAppTextStyles.caption.copyWith(
-                          color: AdminAppColors.textSecondaryLight,
-                        ),
+                        'تسجيل دخول الإدارة فقط',
+                        style: AdminAppTextStyles.caption.copyWith(color: AdminAppColors.textSecondaryLight),
                         textAlign: TextAlign.center,
                       ),
                     ],

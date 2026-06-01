@@ -4,17 +4,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/notifications/providers/admin_notifications_provider.dart';
 import '../../providers/admin_auth_providers.dart';
+import '../../providers/admin_data_providers.dart';
 import '../theme/colors.dart';
 
 class AdminSidebar extends ConsumerWidget {
   final bool isCollapsed;
   final VoidCallback onToggle;
 
-  const AdminSidebar({
-    super.key,
-    required this.isCollapsed,
-    required this.onToggle,
-  });
+  const AdminSidebar({super.key, required this.isCollapsed, required this.onToggle});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,19 +20,17 @@ class AdminSidebar extends ConsumerWidget {
     final authService = ref.read(adminAuthServiceProvider);
     final unreadCount = ref.watch(adminUnreadCountProvider).valueOrNull ?? 0;
 
+    // Watch stats for sidebar badges
+    final driverStats = ref.watch(driverStatsProvider).valueOrNull ?? {};
+    final onlineDrivers = driverStats['online'] ?? 0;
+
     return Container(
-      width: isCollapsed
-          ? AdminSpacing.sidebarWidthCollapsed
-          : AdminSpacing.sidebarWidth,
+      width: isCollapsed ? AdminSpacing.sidebarWidthCollapsed : AdminSpacing.sidebarWidth,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
-          left: isRTL
-              ? const BorderSide(color: AdminAppColors.borderLight)
-              : BorderSide.none,
-          right: !isRTL
-              ? const BorderSide(color: AdminAppColors.borderLight)
-              : BorderSide.none,
+          left: isRTL ? const BorderSide(color: AdminAppColors.borderLight) : BorderSide.none,
+          right: !isRTL ? const BorderSide(color: AdminAppColors.borderLight) : BorderSide.none,
         ),
       ),
       child: Column(
@@ -45,26 +40,19 @@ class AdminSidebar extends ConsumerWidget {
             height: AdminSpacing.appBarHeight,
             padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.md),
             decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: AdminAppColors.borderLight),
-              ),
+              border: Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.admin_panel_settings,
-                  color: AdminAppColors.primaryGreen,
-                  size: 32,
-                ),
+                const Icon(Icons.admin_panel_settings, color: AdminAppColors.primaryGreen, size: 32),
                 if (!isCollapsed) ...[
                   const SizedBox(width: AdminSpacing.sm),
                   Expanded(
                     child: Text(
                       'لوحة الإدارة',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: AdminAppColors.primaryGreen,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.copyWith(color: AdminAppColors.primaryGreen, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -105,6 +93,7 @@ class AdminSidebar extends ConsumerWidget {
                   path: '/drivers',
                   isActive: currentPath.startsWith('/drivers'),
                   isCollapsed: isCollapsed,
+                  badgeCount: onlineDrivers,
                 ),
                 _buildNavItem(
                   context: context,
@@ -114,11 +103,7 @@ class AdminSidebar extends ConsumerWidget {
                   isActive: currentPath.startsWith('/clients'),
                   isCollapsed: isCollapsed,
                 ),
-                const Divider(
-                  height: AdminSpacing.lg,
-                  indent: AdminSpacing.md,
-                  endIndent: AdminSpacing.md,
-                ),
+                const Divider(height: AdminSpacing.lg, indent: AdminSpacing.md, endIndent: AdminSpacing.md),
                 _buildNavItem(
                   context: context,
                   icon: Icons.map,
@@ -160,17 +145,21 @@ class AdminSidebar extends ConsumerWidget {
                   isCollapsed: isCollapsed,
                   badgeCount: unreadCount,
                 ),
-                const Divider(
-                  height: AdminSpacing.lg,
-                  indent: AdminSpacing.md,
-                  endIndent: AdminSpacing.md,
-                ),
+                const Divider(height: AdminSpacing.lg, indent: AdminSpacing.md, endIndent: AdminSpacing.md),
                 _buildNavItem(
                   context: context,
                   icon: Icons.settings,
                   label: 'الإعدادات',
                   path: '/settings',
                   isActive: currentPath.startsWith('/settings'),
+                  isCollapsed: isCollapsed,
+                ),
+                _buildNavItem(
+                  context: context,
+                  icon: Icons.history,
+                  label: 'سجل العمليات',
+                  path: '/audit-log',
+                  isActive: currentPath.startsWith('/audit-log'),
                   isCollapsed: isCollapsed,
                 ),
               ],
@@ -182,9 +171,7 @@ class AdminSidebar extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(AdminSpacing.md),
               decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: AdminAppColors.borderLight),
-                ),
+                border: Border(top: BorderSide(color: AdminAppColors.borderLight)),
               ),
               child: Row(
                 children: [
@@ -198,14 +185,8 @@ class AdminSidebar extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          'المسؤول',
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                        Text(
-                          'admin@wawapp.mr',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
+                        Text('المسؤول', style: Theme.of(context).textTheme.titleSmall),
+                        Text('admin@wawapp.mr', style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                   ),
@@ -219,10 +200,7 @@ class AdminSidebar extends ConsumerWidget {
                           title: const Text('تسجيل الخروج'),
                           content: const Text('هل أنت متأكد من تسجيل الخروج؟'),
                           actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text('إلغاء'),
-                            ),
+                            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('إلغاء')),
                             TextButton(
                               onPressed: () => Navigator.pop(context, true),
                               child: const Text('تسجيل الخروج'),
@@ -259,14 +237,9 @@ class AdminSidebar extends ConsumerWidget {
     int badgeCount = 0,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AdminSpacing.sm,
-        vertical: AdminSpacing.xxs,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.sm, vertical: AdminSpacing.xxs),
       child: Material(
-        color: isActive
-            ? AdminAppColors.primaryGreen.withValues(alpha: 0.1)
-            : Colors.transparent,
+        color: isActive ? AdminAppColors.primaryGreen.withValues(alpha: 0.1) : Colors.transparent,
         borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
         child: InkWell(
           onTap: () {
@@ -274,10 +247,7 @@ class AdminSidebar extends ConsumerWidget {
           },
           borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AdminSpacing.md,
-              vertical: AdminSpacing.sm,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.md, vertical: AdminSpacing.sm),
             child: Row(
               children: [
                 Badge(
@@ -285,9 +255,7 @@ class AdminSidebar extends ConsumerWidget {
                   isLabelVisible: badgeCount > 0,
                   child: Icon(
                     icon,
-                    color: isActive
-                        ? AdminAppColors.primaryGreen
-                        : AdminAppColors.textSecondaryLight,
+                    color: isActive ? AdminAppColors.primaryGreen : AdminAppColors.textSecondaryLight,
                     size: 24,
                   ),
                 ),
@@ -297,12 +265,9 @@ class AdminSidebar extends ConsumerWidget {
                     child: Text(
                       label,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: isActive
-                                ? AdminAppColors.primaryGreen
-                                : AdminAppColors.textPrimaryLight,
-                            fontWeight:
-                                isActive ? FontWeight.w600 : FontWeight.normal,
-                          ),
+                        color: isActive ? AdminAppColors.primaryGreen : AdminAppColors.textPrimaryLight,
+                        fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                      ),
                     ),
                   ),
                 ],

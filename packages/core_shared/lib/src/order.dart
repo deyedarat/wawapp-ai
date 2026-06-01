@@ -38,6 +38,12 @@ class Order {
   // Customer phone (populated on acceptance)
   final String? customerPhone;
 
+  // Driver info (populated on acceptance — for client app)
+  final String? driverName;
+  final String? driverPhone;
+  final String? driverVehicleType;
+  final String? driverVehiclePlate;
+
   const Order({
     this.id,
     this.ownerId,
@@ -57,10 +63,13 @@ class Order {
     this.ratedAt,
     this.weightTons = 0.5,
     this.customerPhone,
+    this.driverName,
+    this.driverPhone,
+    this.driverVehicleType,
+    this.driverVehiclePlate,
   });
 
-  OrderStatus get orderStatus =>
-      OrderStatus.fromFirestore(status ?? 'requested');
+  OrderStatus get orderStatus => OrderStatus.fromFirestore(status ?? 'requested');
 
   /// Factory constructor for Client app compatibility
   /// Accepts data map without separate id parameter
@@ -73,12 +82,8 @@ class Order {
       ownerId: data['ownerId'] as String?,
       distanceKm: (data['distanceKm'] as num).toDouble(),
       price: (data['price'] as num).toDouble(),
-      pickupAddress: data['pickupAddress'] as String? ??
-          pickupData['label'] as String? ??
-          '',
-      dropoffAddress: data['dropoffAddress'] as String? ??
-          dropoffData['label'] as String? ??
-          '',
+      pickupAddress: data['pickupAddress'] as String? ?? pickupData['label'] as String? ?? '',
+      dropoffAddress: data['dropoffAddress'] as String? ?? dropoffData['label'] as String? ?? '',
       pickup: LocationPoint.fromMap(pickupData),
       dropoff: LocationPoint.fromMap(dropoffData),
       status: data['status'] as String?,
@@ -91,26 +96,26 @@ class Order {
       ratedAt: (data['ratedAt'] as Timestamp?)?.toDate(),
       weightTons: (data['weightTons'] as num?)?.toDouble() ?? 0.5,
       customerPhone: data['customerPhone'] as String?,
+      driverName: data['driverName'] as String?,
+      driverPhone: data['driverPhone'] as String?,
+      driverVehicleType: data['vehicleType'] as String?,
+      driverVehiclePlate: data['vehiclePlate'] as String?,
     );
   }
 
   /// Factory constructor for Driver app compatibility
   /// Accepts id as separate parameter
   factory Order.fromFirestoreWithId(String id, Map<String, dynamic> data) {
-    final pickupData = data['pickup'] as Map<String, dynamic>;
-    final dropoffData = data['dropoff'] as Map<String, dynamic>;
+    final pickupData = data['pickup'] as Map<String, dynamic>? ?? {};
+    final dropoffData = data['dropoff'] as Map<String, dynamic>? ?? {};
 
     return Order(
       id: id,
       ownerId: data['ownerId'] as String?,
-      distanceKm: (data['distanceKm'] as num).toDouble(),
-      price: (data['price'] as num).toDouble(),
-      pickupAddress: data['pickupAddress'] as String? ??
-          pickupData['label'] as String? ??
-          '',
-      dropoffAddress: data['dropoffAddress'] as String? ??
-          dropoffData['label'] as String? ??
-          '',
+      distanceKm: (data['distanceKm'] as num?)?.toDouble() ?? 0.0,
+      price: (data['price'] as num?)?.toDouble() ?? 0.0,
+      pickupAddress: data['pickupAddress'] as String? ?? pickupData['label'] as String? ?? '',
+      dropoffAddress: data['dropoffAddress'] as String? ?? dropoffData['label'] as String? ?? '',
       pickup: LocationPoint.fromMap(pickupData),
       dropoff: LocationPoint.fromMap(dropoffData),
       status: data['status'] as String?,
@@ -123,30 +128,37 @@ class Order {
       ratedAt: (data['ratedAt'] as Timestamp?)?.toDate(),
       weightTons: (data['weightTons'] as num?)?.toDouble() ?? 0.5,
       customerPhone: data['customerPhone'] as String?,
+      driverName: data['driverName'] as String?,
+      driverPhone: data['driverPhone'] as String?,
+      driverVehicleType: data['vehicleType'] as String?,
+      driverVehiclePlate: data['vehiclePlate'] as String?,
     );
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'ownerId': ownerId,
-        'distanceKm': distanceKm,
-        'price': price,
-        'pickupAddress': pickupAddress,
-        'dropoffAddress': dropoffAddress,
-        'pickup': pickup.toMap(),
-        'dropoff': dropoff.toMap(),
-        'status': status,
-        'driverId': driverId,
-        'assignedDriverId': assignedDriverId,
-        'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
-        'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
-        'completedAt':
-            completedAt != null ? Timestamp.fromDate(completedAt!) : null,
-        'driverRating': driverRating,
-        'ratedAt': ratedAt != null ? Timestamp.fromDate(ratedAt!) : null,
-        'weightTons': weightTons,
-        'customerPhone': customerPhone,
-      };
+    'id': id,
+    'ownerId': ownerId,
+    'distanceKm': distanceKm,
+    'price': price,
+    'pickupAddress': pickupAddress,
+    'dropoffAddress': dropoffAddress,
+    'pickup': pickup.toMap(),
+    'dropoff': dropoff.toMap(),
+    'status': status,
+    'driverId': driverId,
+    'assignedDriverId': assignedDriverId,
+    'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
+    'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
+    'completedAt': completedAt != null ? Timestamp.fromDate(completedAt!) : null,
+    'driverRating': driverRating,
+    'ratedAt': ratedAt != null ? Timestamp.fromDate(ratedAt!) : null,
+    'weightTons': weightTons,
+    'customerPhone': customerPhone,
+    'driverName': driverName,
+    'driverPhone': driverPhone,
+    'vehicleType': driverVehicleType,
+    'vehiclePlate': driverVehiclePlate,
+  };
 
   Order copyWith({
     String? id,
@@ -167,6 +179,10 @@ class Order {
     DateTime? ratedAt,
     double? weightTons,
     String? customerPhone,
+    String? driverName,
+    String? driverPhone,
+    String? driverVehicleType,
+    String? driverVehiclePlate,
   }) {
     return Order(
       id: id ?? this.id,
@@ -187,6 +203,10 @@ class Order {
       ratedAt: ratedAt ?? this.ratedAt,
       weightTons: weightTons ?? this.weightTons,
       customerPhone: customerPhone ?? this.customerPhone,
+      driverName: driverName ?? this.driverName,
+      driverPhone: driverPhone ?? this.driverPhone,
+      driverVehicleType: driverVehicleType ?? this.driverVehicleType,
+      driverVehiclePlate: driverVehiclePlate ?? this.driverVehiclePlate,
     );
   }
 }
@@ -198,11 +218,7 @@ class LocationPoint {
   final double lng;
   final String label;
 
-  const LocationPoint({
-    required this.lat,
-    required this.lng,
-    required this.label,
-  });
+  const LocationPoint({required this.lat, required this.lng, required this.label});
 
   // Add these getters for Client app compatibility
   double get latitude => lat;
@@ -216,9 +232,5 @@ class LocationPoint {
     );
   }
 
-  Map<String, dynamic> toMap() => {
-        'lat': lat,
-        'lng': lng,
-        'label': label,
-      };
+  Map<String, dynamic> toMap() => {'lat': lat, 'lng': lng, 'label': label};
 }
