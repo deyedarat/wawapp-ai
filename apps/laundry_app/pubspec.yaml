@@ -1,0 +1,38 @@
+name: laundry_app
+description: Laundry Owner Management App - تطبيق المغسلة
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  shared:
+    path: ../../packages/shared
+  firebase_core: ^2.24.0
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  firebase_messaging: ^14.7.0
+  provider: ^6.1.1
+  intl: ^0.19.0
+  fl_chart: ^0.66.0
+  flutter_local_notifications: ^17.0.0
+  url_launcher: ^6.2.2
+  shimmer: ^3.0.0
+  flutter_slidable: ^3.0.1
+  pinput: ^4.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
