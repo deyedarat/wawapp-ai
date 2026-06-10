@@ -2,80 +2,85 @@ import 'package:flutter/material.dart';
 import 'colors.dart';
 
 /// Admin App Typography
-/// Based on Manus Visual Identity (Inter & DM Sans fonts)
+/// Uses Tajawal for Arabic (headings & body) — a modern, clean Arabic webfont.
+/// Fallback to Inter for Latin characters.
 class AdminTypography {
   AdminTypography._();
 
-  // Font families (Manus spec: Inter for headings/UI, DM Sans for body)
-  static const String primaryFont = 'Inter';
-  static const String secondaryFont = 'DM Sans';
+  // Font families
+  // Tajawal: clean Arabic font with proper weight range (300-900)
+  // Inter: fallback for Latin/numbers
+  static const String primaryFont = 'Tajawal';
+  static const String fallbackFont = 'Inter';
 
   /// Light theme text styles
   static TextTheme lightTextTheme = TextTheme(
     // Display styles (large headings)
     displayLarge: TextStyle(
       fontFamily: primaryFont,
-      fontSize: 57,
-      fontWeight: FontWeight.bold,
+      fontSize: 52,
+      fontWeight: FontWeight.w700,
       color: AdminAppColors.textPrimaryLight,
       height: 1.2,
+      letterSpacing: -0.5,
     ),
     displayMedium: TextStyle(
       fontFamily: primaryFont,
-      fontSize: 45,
-      fontWeight: FontWeight.bold,
+      fontSize: 42,
+      fontWeight: FontWeight.w700,
       color: AdminAppColors.textPrimaryLight,
       height: 1.2,
+      letterSpacing: -0.3,
     ),
     displaySmall: TextStyle(
       fontFamily: primaryFont,
-      fontSize: 36,
-      fontWeight: FontWeight.bold,
+      fontSize: 34,
+      fontWeight: FontWeight.w700,
       color: AdminAppColors.textPrimaryLight,
-      height: 1.2,
+      height: 1.25,
     ),
 
     // Headline styles
     headlineLarge: TextStyle(
       fontFamily: primaryFont,
-      fontSize: 32,
-      fontWeight: FontWeight.bold,
+      fontSize: 28,
+      fontWeight: FontWeight.w700,
       color: AdminAppColors.textPrimaryLight,
       height: 1.3,
     ),
     headlineMedium: TextStyle(
       fontFamily: primaryFont,
-      fontSize: 28,
-      fontWeight: FontWeight.w600,
-      color: AdminAppColors.textPrimaryLight,
-      height: 1.3,
-    ),
-    headlineSmall: TextStyle(
-      fontFamily: primaryFont,
       fontSize: 24,
       fontWeight: FontWeight.w600,
       color: AdminAppColors.textPrimaryLight,
-      height: 1.3,
+      height: 1.35,
+    ),
+    headlineSmall: TextStyle(
+      fontFamily: primaryFont,
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      color: AdminAppColors.textPrimaryLight,
+      height: 1.35,
     ),
 
     // Title styles
     titleLarge: TextStyle(
-      fontFamily: primaryFont,
-      fontSize: 22,
-      fontWeight: FontWeight.w600,
-      color: AdminAppColors.textPrimaryLight,
-      height: 1.4,
-    ),
-    titleMedium: TextStyle(
       fontFamily: primaryFont,
       fontSize: 18,
       fontWeight: FontWeight.w600,
       color: AdminAppColors.textPrimaryLight,
       height: 1.4,
     ),
-    titleSmall: TextStyle(
+    titleMedium: TextStyle(
       fontFamily: primaryFont,
       fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: AdminAppColors.textPrimaryLight,
+      height: 1.4,
+    ),
+    titleSmall: TextStyle(
+      fontFamily: primaryFont,
+      fontSize: 14,
       fontWeight: FontWeight.w600,
       color: AdminAppColors.textPrimaryLight,
       height: 1.4,
@@ -83,23 +88,23 @@ class AdminTypography {
 
     // Body styles
     bodyLarge: TextStyle(
-      fontFamily: secondaryFont,
+      fontFamily: primaryFont,
       fontSize: 16,
-      fontWeight: FontWeight.normal,
+      fontWeight: FontWeight.w400,
       color: AdminAppColors.textPrimaryLight,
-      height: 1.5,
+      height: 1.6,
     ),
     bodyMedium: TextStyle(
-      fontFamily: secondaryFont,
+      fontFamily: primaryFont,
       fontSize: 14,
-      fontWeight: FontWeight.normal,
+      fontWeight: FontWeight.w400,
       color: AdminAppColors.textPrimaryLight,
       height: 1.5,
     ),
     bodySmall: TextStyle(
-      fontFamily: secondaryFont,
+      fontFamily: primaryFont,
       fontSize: 12,
-      fontWeight: FontWeight.normal,
+      fontWeight: FontWeight.w400,
       color: AdminAppColors.textSecondaryLight,
       height: 1.5,
     ),

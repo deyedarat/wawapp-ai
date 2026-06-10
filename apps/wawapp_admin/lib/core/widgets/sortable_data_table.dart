@@ -130,20 +130,18 @@ class _SortableDataTableState<T> extends State<SortableDataTable<T>> {
     if (!widget.enablePagination) return _filteredData;
 
     final startIndex = _currentPage * widget.rowsPerPage;
-    final endIndex =
-        (startIndex + widget.rowsPerPage).clamp(0, _filteredData.length);
+    final endIndex = (startIndex + widget.rowsPerPage).clamp(0, _filteredData.length);
 
     if (startIndex >= _filteredData.length) return [];
     return _filteredData.sublist(startIndex, endIndex);
   }
 
-  int get _totalPages => widget.enablePagination
-      ? (_filteredData.length / widget.rowsPerPage).ceil()
-      : 1;
+  int get _totalPages => widget.enablePagination ? (_filteredData.length / widget.rowsPerPage).ceil() : 1;
 
   @override
   Widget build(BuildContext context) {
     final isMobile = ResponsiveHelper.isMobile(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final paginatedData = _getPaginatedData();
 
     return Column(
@@ -157,13 +155,8 @@ class _SortableDataTableState<T> extends State<SortableDataTable<T>> {
               decoration: InputDecoration(
                 hintText: 'بحث في الجدول...',
                 prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: AdminSpacing.md,
-                  vertical: AdminSpacing.sm,
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(AdminSpacing.radiusSm)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: AdminSpacing.md, vertical: AdminSpacing.sm),
               ),
               onChanged: _onFilterChanged,
             ),
@@ -171,97 +164,126 @@ class _SortableDataTableState<T> extends State<SortableDataTable<T>> {
 
         // Table container with horizontal scroll on mobile
         Card(
-          elevation: AdminElevation.low,
+          elevation: 0,
           child: widget.isLoading
               ? _buildLoadingState()
               : _filteredData.isEmpty
-                  ? _buildEmptyState()
-                  : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: isMobile
-                              ? MediaQuery.of(context).size.width - 48
-                              : MediaQuery.of(context).size.width - 350,
-                        ),
-                        child: DataTable(
-                          sortColumnIndex: _sortColumnIndex,
-                          sortAscending: _sortAscending,
-                          headingRowColor: WidgetStateProperty.all(
-                            AdminAppColors.backgroundLight,
-                          ),
-                          columns: widget.columns.asMap().entries.map((entry) {
-                            final index = entry.key;
-                            final column = entry.value;
-                            return DataColumn(
-                              label: Text(
-                                column.label,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              onSort: column.sortable
-                                  ? (_, __) => _onSort(index)
-                                  : null,
-                            );
-                          }).toList(),
-                          rows: paginatedData.map((item) {
-                            return DataRow(
-                              onSelectChanged: widget.onRowTap != null
-                                  ? (_) => widget.onRowTap!(item)
-                                  : null,
-                              cells: widget.columns.map((column) {
-                                return DataCell(
-                                  column.buildCell != null
-                                      ? column.buildCell!(item)
-                                      : Text(
-                                          column.getValue(item),
-                                          textAlign: column.textAlign,
-                                        ),
-                                );
-                              }).toList(),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+              ? _buildEmptyState()
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: isMobile
+                          ? MediaQuery.of(context).size.width - 48
+                          : MediaQuery.of(context).size.width - 350,
                     ),
+                    child: DataTable(
+                      sortColumnIndex: _sortColumnIndex,
+                      sortAscending: _sortAscending,
+                      headingRowColor: WidgetStateProperty.all(
+                        isDark ? AdminAppColors.surfaceDark : AdminAppColors.backgroundLight,
+                      ),
+                      dataRowColor: WidgetStateProperty.resolveWith((states) {
+                        if (states.contains(WidgetState.hovered)) {
+                          return isDark
+                              ? AdminAppColors.primaryGreen.withOpacity(0.05)
+                              : AdminAppColors.primaryGreen.withOpacity(0.03);
+                        }
+                        return null;
+                      }),
+                      columns: widget.columns.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final column = entry.value;
+                        return DataColumn(
+                          label: Text(
+                            column.label,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: isDark ? AdminAppColors.textPrimaryDark : AdminAppColors.textPrimaryLight,
+                            ),
+                          ),
+                          onSort: column.sortable ? (_, __) => _onSort(index) : null,
+                        );
+                      }).toList(),
+                      rows: paginatedData.map((item) {
+                        return DataRow(
+                          onSelectChanged: widget.onRowTap != null ? (_) => widget.onRowTap!(item) : null,
+                          cells: widget.columns.map((column) {
+                            return DataCell(
+                              column.buildCell != null
+                                  ? column.buildCell!(item)
+                                  : Text(column.getValue(item), textAlign: column.textAlign),
+                            );
+                          }).toList(),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
         ),
 
         // Pagination controls
         if (widget.enablePagination && _totalPages > 1)
           Padding(
             padding: const EdgeInsets.only(top: AdminSpacing.md),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'عرض ${_currentPage * widget.rowsPerPage + 1} - ${((_currentPage + 1) * widget.rowsPerPage).clamp(0, _filteredData.length)} من ${_filteredData.length}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.chevron_right),
-                      onPressed: _currentPage > 0
-                          ? () => setState(() => _currentPage--)
-                          : null,
-                      tooltip: 'الصفحة السابقة',
-                    ),
-                    Text(
-                      'صفحة ${_currentPage + 1} من $_totalPages',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.chevron_left),
-                      onPressed: _currentPage < _totalPages - 1
-                          ? () => setState(() => _currentPage++)
-                          : null,
-                      tooltip: 'الصفحة التالية',
-                    ),
-                  ],
-                ),
-              ],
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.md, vertical: AdminSpacing.sm),
+              decoration: BoxDecoration(
+                color: isDark ? AdminAppColors.surfaceDark : AdminAppColors.surfaceLight,
+                borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
+                border: Border.all(color: isDark ? AdminAppColors.borderDark : AdminAppColors.borderLight, width: 0.5),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'عرض ${_currentPage * widget.rowsPerPage + 1} - ${((_currentPage + 1) * widget.rowsPerPage).clamp(0, _filteredData.length)} من ${_filteredData.length}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Row(
+                    children: [
+                      _PaginationButton(
+                        icon: Icons.first_page,
+                        onPressed: _currentPage > 0 ? () => setState(() => _currentPage = 0) : null,
+                        tooltip: 'الصفحة الأولى',
+                      ),
+                      _PaginationButton(
+                        icon: Icons.chevron_right,
+                        onPressed: _currentPage > 0 ? () => setState(() => _currentPage--) : null,
+                        tooltip: 'الصفحة السابقة',
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AdminAppColors.primaryGreen.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
+                        ),
+                        child: Text(
+                          '${_currentPage + 1} / $_totalPages',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                            color: AdminAppColors.primaryGreen,
+                          ),
+                        ),
+                      ),
+                      _PaginationButton(
+                        icon: Icons.chevron_left,
+                        onPressed: _currentPage < _totalPages - 1 ? () => setState(() => _currentPage++) : null,
+                        tooltip: 'الصفحة التالية',
+                      ),
+                      _PaginationButton(
+                        icon: Icons.last_page,
+                        onPressed: _currentPage < _totalPages - 1
+                            ? () => setState(() => _currentPage = _totalPages - 1)
+                            : null,
+                        tooltip: 'الصفحة الأخيرة',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
       ],
@@ -275,14 +297,9 @@ class _SortableDataTableState<T> extends State<SortableDataTable<T>> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(
-            color: AdminAppColors.primaryGreen,
-          ),
+          const CircularProgressIndicator(color: AdminAppColors.primaryGreen),
           const SizedBox(height: AdminSpacing.md),
-          Text(
-            'جاري التحميل...',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          Text('جاري التحميل...', style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );
@@ -295,27 +312,66 @@ class _SortableDataTableState<T> extends State<SortableDataTable<T>> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.inbox_outlined,
-            size: 64,
-            color: AdminAppColors.textSecondaryLight.withOpacity(0.5),
-          ),
+          Icon(Icons.inbox_outlined, size: 64, color: AdminAppColors.textSecondaryLight.withOpacity(0.5)),
           const SizedBox(height: AdminSpacing.md),
           Text(
             _filterText.isEmpty ? 'لا توجد بيانات' : 'لا توجد نتائج',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AdminAppColors.textSecondaryLight,
-                ),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AdminAppColors.textSecondaryLight),
           ),
           if (_filterText.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: AdminSpacing.sm),
-              child: Text(
-                'جرب تغيير معايير البحث',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              child: Text('جرب تغيير معايير البحث', style: Theme.of(context).textTheme.bodySmall),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// Small pagination button with hover effect
+class _PaginationButton extends StatefulWidget {
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final String tooltip;
+
+  const _PaginationButton({required this.icon, this.onPressed, required this.tooltip});
+
+  @override
+  State<_PaginationButton> createState() => _PaginationButtonState();
+}
+
+class _PaginationButtonState extends State<_PaginationButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isEnabled = widget.onPressed != null;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: Tooltip(
+        message: widget.tooltip,
+        child: GestureDetector(
+          onTap: widget.onPressed,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            margin: const EdgeInsets.symmetric(horizontal: 2),
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: _isHovered && isEnabled ? AdminAppColors.primaryGreen.withOpacity(0.1) : Colors.transparent,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(
+              widget.icon,
+              size: 20,
+              color: isEnabled
+                  ? (_isHovered ? AdminAppColors.primaryGreen : AdminAppColors.textSecondaryLight)
+                  : AdminAppColors.textDisabledLight,
+            ),
+          ),
+        ),
       ),
     );
   }

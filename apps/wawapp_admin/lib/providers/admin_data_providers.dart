@@ -8,6 +8,7 @@ import 'package:core_shared/core_shared.dart';
 import '../services/admin_orders_service.dart';
 import '../services/admin_drivers_service.dart';
 import '../services/admin_clients_service.dart';
+import '../services/admin_shared_places_service.dart';
 
 // ============================================================================
 // Service Providers
@@ -25,13 +26,16 @@ final adminClientsServiceProvider = Provider<AdminClientsService>((ref) {
   return AdminClientsService();
 });
 
+final adminSharedPlacesServiceProvider = Provider<AdminSharedPlacesService>((ref) {
+  return AdminSharedPlacesService();
+});
+
 // ============================================================================
 // Orders Providers
 // ============================================================================
 
 /// Orders stream with optional status filter
-final ordersStreamProvider =
-    StreamProvider.family<List<Order>, String?>((ref, statusFilter) {
+final ordersStreamProvider = StreamProvider.family<List<Order>, String?>((ref, statusFilter) {
   final service = ref.watch(adminOrdersServiceProvider);
   return service.getOrdersStream(statusFilter: statusFilter);
 });
@@ -53,8 +57,7 @@ final orderStatsProvider = FutureProvider<Map<String, int>>((ref) async {
 // ============================================================================
 
 /// Drivers stream with optional online filter
-final driversStreamProvider =
-    StreamProvider.family<List<DriverProfile>, bool?>((ref, onlineOnly) {
+final driversStreamProvider = StreamProvider.family<List<DriverProfile>, bool?>((ref, onlineOnly) {
   final service = ref.watch(adminDriversServiceProvider);
   return service.getDriversStream(onlineOnly: onlineOnly);
 });
@@ -76,8 +79,7 @@ final driverStatsProvider = FutureProvider<Map<String, int>>((ref) async {
 // ============================================================================
 
 /// Clients stream with optional verified filter
-final clientsStreamProvider =
-    StreamProvider.family<List<ClientProfile>, bool?>((ref, verifiedOnly) {
+final clientsStreamProvider = StreamProvider.family<List<ClientProfile>, bool?>((ref, verifiedOnly) {
   final service = ref.watch(adminClientsServiceProvider);
   return service.getClientsStream(verifiedOnly: verifiedOnly);
 });
@@ -98,15 +100,32 @@ final clientStatsProvider = FutureProvider<Map<String, int>>((ref) async {
 // Dashboard Stats Provider (combines all stats)
 // ============================================================================
 
-final dashboardStatsProvider =
-    FutureProvider<Map<String, dynamic>>((ref) async {
+final dashboardStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   final orderStats = await ref.watch(orderStatsProvider.future);
   final driverStats = await ref.watch(driverStatsProvider.future);
   final clientStats = await ref.watch(clientStatsProvider.future);
 
-  return {
-    'orders': orderStats,
-    'drivers': driverStats,
-    'clients': clientStats,
-  };
+  return {'orders': orderStats, 'drivers': driverStats, 'clients': clientStats};
+});
+
+// ============================================================================
+// Shared Places Providers
+// ============================================================================
+
+/// Shared places stream with optional active filter
+final sharedPlacesStreamProvider = StreamProvider.family<List<SharedPlace>, bool?>((ref, activeOnly) {
+  final service = ref.watch(adminSharedPlacesServiceProvider);
+  return service.getSharedPlacesStream(activeOnly: activeOnly);
+});
+
+/// All shared places (no filter)
+final allSharedPlacesProvider = StreamProvider<List<SharedPlace>>((ref) {
+  final service = ref.watch(adminSharedPlacesServiceProvider);
+  return service.getSharedPlacesStream();
+});
+
+/// Shared places statistics
+final sharedPlacesStatsProvider = FutureProvider<Map<String, int>>((ref) async {
+  final service = ref.watch(adminSharedPlacesServiceProvider);
+  return await service.getSharedPlacesStats();
 });

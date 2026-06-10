@@ -63,14 +63,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (hasPermission) {
       await _getCurrentLocation();
     } else {
-      dev.log('Location permission denied, showing manual mode',
-          name: 'WAWAPP_HOME');
+      dev.log('Location permission denied, showing manual mode', name: 'WAWAPP_HOME');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('يمكنك استخدام الخريطة يدوياً لتحديد المواقع'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('يمكنك استخدام الخريطة يدوياً لتحديد المواقع')));
       }
     }
   }
@@ -82,8 +79,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content:
-              Text('لم يتمكن من تحديد موقعك الحالي. يرجى التأكد من تفعيل GPS'),
+          content: Text('لم يتمكن من تحديد موقعك الحالي. يرجى التأكد من تفعيل GPS'),
           duration: Duration(seconds: 3),
         ),
       );
@@ -93,8 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _handleLocationSelection(bool isPickup) async {
     final routeState = ref.read(routePickerProvider);
     final initialLoc = isPickup ? routeState.pickup : routeState.dropoff;
-    final initialLabel =
-        isPickup ? routeState.pickupAddress : routeState.dropoffAddress;
+    final initialLabel = isPickup ? routeState.pickupAddress : routeState.dropoffAddress;
 
     final result = await Navigator.push<SelectedLocation>(
       context,
@@ -102,19 +97,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         builder: (context) => MapPickerScreen(
           title: isPickup ? 'تحديد موقع الاستلام' : 'تحديد موقع التسليم',
           initialLocation: initialLoc != null
-              ? SelectedLocation(
-                  label: initialLabel,
-                  latitude: initialLoc.latitude,
-                  longitude: initialLoc.longitude,
-                )
+              ? SelectedLocation(label: initialLabel, latitude: initialLoc.latitude, longitude: initialLoc.longitude)
               : null,
         ),
       ),
     );
 
     if (result != null) {
-      ref.read(routePickerProvider.notifier).setLocationExplicitly(
-          LatLng(result.latitude, result.longitude), result.label, isPickup);
+      ref
+          .read(routePickerProvider.notifier)
+          .setLocationExplicitly(LatLng(result.latitude, result.longitude), result.label, isPickup);
     }
   }
 
@@ -171,12 +163,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     dev.log('Distance: ${km}km, Price: ${price}MRU', name: 'WAWAPP_LOC');
 
-    ref
-        .read(quoteProvider.notifier)
-        .setPickup(quote_latlng.LatLng(pickup.latitude, pickup.longitude));
-    ref
-        .read(quoteProvider.notifier)
-        .setDropoff(quote_latlng.LatLng(dropoff.latitude, dropoff.longitude));
+    ref.read(quoteProvider.notifier).setPickup(quote_latlng.LatLng(pickup.latitude, pickup.longitude));
+    ref.read(quoteProvider.notifier).setDropoff(quote_latlng.LatLng(dropoff.latitude, dropoff.longitude));
     ref.read(quoteProvider.notifier).setDistance(km);
     ref.read(quoteProvider.notifier).setPrice(price.round());
 
@@ -218,22 +206,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SizedBox(height: WawAppSpacing.lg),
 
                 // 2. Primary Action Card
-                _buildPrimaryActionCard(
-                  context,
-                  l10n,
-                  selectedShipmentType,
-                  routeState,
-                ),
+                _buildPrimaryActionCard(context, l10n, selectedShipmentType, routeState),
 
                 const SizedBox(height: WawAppSpacing.lg),
 
                 // 3. ShipmentType Quick Access
-                _buildQuickCategorySelector(
-                  context,
-                  l10n,
-                  selectedShipmentType,
-                  shipmentColors,
-                ),
+                _buildQuickCategorySelector(context, l10n, selectedShipmentType, shipmentColors),
 
                 const SizedBox(height: WawAppSpacing.lg),
 
@@ -259,8 +237,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  PreferredSizeWidget _buildAppBar(
-      BuildContext context, AppLocalizations l10n) {
+  PreferredSizeWidget _buildAppBar(BuildContext context, AppLocalizations l10n) {
     final unreadCount = ref.watch(unreadCountProvider);
 
     return AppBar(
@@ -275,28 +252,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onPressed: () => context.push('/notifications'),
               tooltip: 'الإشعارات',
             ),
-            if (unreadCount.asData?.value != null &&
-                unreadCount.asData!.value > 0)
+            if (unreadCount.asData?.value != null && unreadCount.asData!.value > 0)
               Positioned(
                 right: 8,
                 top: 8,
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 16,
-                    minHeight: 16,
-                  ),
+                  decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                   child: Text(
                     '${unreadCount.asData!.value > 9 ? '9+' : unreadCount.asData!.value}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -307,12 +273,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           icon: const Icon(Icons.language),
           onPressed: () {
             // Placeholder for future language switcher
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.language),
-                duration: const Duration(seconds: 1),
-              ),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(l10n.language), duration: const Duration(seconds: 1)));
           },
           tooltip: l10n.language,
         ),
@@ -366,18 +329,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         Row(
           children: [
-            const Icon(
-              Icons.waving_hand,
-              color: WawAppColors.secondary,
-              size: 24,
-            ),
+            const Icon(Icons.waving_hand, color: WawAppColors.secondary, size: 24),
             const SizedBox(width: WawAppSpacing.xs),
             Flexible(
               child: Text(
                 greetingText,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),
@@ -394,8 +351,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // 1. Try FirebaseAuth displayName first (fastest)
     final firebaseUser = FirebaseAuth.instance.currentUser;
-    if (firebaseUser?.displayName != null &&
-        firebaseUser!.displayName!.trim().isNotEmpty) {
+    if (firebaseUser?.displayName != null && firebaseUser!.displayName!.trim().isNotEmpty) {
       userName = firebaseUser.displayName!.trim();
     }
 
@@ -403,9 +359,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (userName == null) {
       final profileAsync = ref.read(clientProfileStreamProvider);
       final profile = profileAsync.asData?.value;
-      if (profile?.name != null &&
-          profile!.name.trim().isNotEmpty &&
-          profile.name != 'غير محدد') {
+      if (profile?.name != null && profile!.name.trim().isNotEmpty && profile.name != 'غير محدد') {
         userName = profile.name.trim();
       }
     }
@@ -471,16 +425,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     Text(
                       l10n.start_new_shipment,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: WawAppSpacing.xxs),
                     Text(
                       l10n.select_pickup_dropoff,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: WawAppColors.textSecondaryLight,
-                      ),
+                      style: theme.textTheme.bodySmall?.copyWith(color: WawAppColors.textSecondaryLight),
                     ),
                   ],
                 ),
@@ -495,26 +445,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 decoration: BoxDecoration(
                   color: categoryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(WawAppSpacing.radiusSm),
-                  border: Border.all(
-                    color: categoryColor.withOpacity(0.3),
-                    width: 1,
-                  ),
+                  border: Border.all(color: categoryColor.withOpacity(0.3), width: 1),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      selectedType.icon,
-                      size: 16,
-                      color: categoryColor,
-                    ),
+                    Icon(selectedType.icon, size: 16, color: categoryColor),
                     const SizedBox(width: WawAppSpacing.xxs),
                     Text(
                       selectedType.arabicLabel,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: categoryColor,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: theme.textTheme.labelSmall?.copyWith(color: categoryColor, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -533,9 +473,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               prefixIcon: IconButton(
                 icon: const Icon(Icons.my_location),
                 onPressed: () async {
-                  await ref
-                      .read(routePickerProvider.notifier)
-                      .setCurrentLocation();
+                  await ref.read(routePickerProvider.notifier).setCurrentLocation();
                 },
                 tooltip: 'الموقع الحالي',
               ),
@@ -552,32 +490,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 itemBuilder: (context) => [
                   const PopupMenuItem(
                     value: 'saved',
-                    child: Row(
-                      children: [
-                        Icon(Icons.bookmark),
-                        SizedBox(width: 8),
-                        Text('المواقع المحفوظة'),
-                      ],
-                    ),
+                    child: Row(children: [Icon(Icons.bookmark), SizedBox(width: 8), Text('المواقع المحفوظة')]),
                   ),
                   if (routeState.mapsEnabled)
                     const PopupMenuItem(
                       value: 'search',
-                      child: Row(
-                        children: [
-                          Icon(Icons.search),
-                          SizedBox(width: 8),
-                          Text('البحث'),
-                        ],
-                      ),
+                      child: Row(children: [Icon(Icons.search), SizedBox(width: 8), Text('البحث')]),
                     ),
                 ],
               ),
             ),
             readOnly: true,
-            onTap: routeState.mapsEnabled
-                ? () => _handleLocationSelection(true)
-                : null,
+            onTap: routeState.mapsEnabled ? () => _handleLocationSelection(true) : null,
           ),
 
           const SizedBox(height: WawAppSpacing.sm),
@@ -594,8 +518,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 tooltip: 'خيارات الموقع',
                 onSelected: (value) {
                   if (value == 'saved') {
-                    _showSavedLocationsSheet(
-                        SavedLocationSelectionMode.dropoff);
+                    _showSavedLocationsSheet(SavedLocationSelectionMode.dropoff);
                   } else if (value == 'search') {
                     _showPlacesSheet(false);
                   }
@@ -603,32 +526,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 itemBuilder: (context) => [
                   const PopupMenuItem(
                     value: 'saved',
-                    child: Row(
-                      children: [
-                        Icon(Icons.bookmark),
-                        SizedBox(width: 8),
-                        Text('المواقع المحفوظة'),
-                      ],
-                    ),
+                    child: Row(children: [Icon(Icons.bookmark), SizedBox(width: 8), Text('المواقع المحفوظة')]),
                   ),
                   if (routeState.mapsEnabled)
                     const PopupMenuItem(
                       value: 'search',
-                      child: Row(
-                        children: [
-                          Icon(Icons.search),
-                          SizedBox(width: 8),
-                          Text('البحث'),
-                        ],
-                      ),
+                      child: Row(children: [Icon(Icons.search), SizedBox(width: 8), Text('البحث')]),
                     ),
                 ],
               ),
             ),
             readOnly: true,
-            onTap: routeState.mapsEnabled
-                ? () => _handleLocationSelection(false)
-                : null,
+            onTap: routeState.mapsEnabled ? () => _handleLocationSelection(false) : null,
           ),
 
           const SizedBox(height: WawAppSpacing.md),
@@ -637,9 +546,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           WawActionButton(
             label: l10n.begin_shipment,
             icon: Icons.arrow_forward,
-            onPressed: (routeState.pickup != null && routeState.dropoff != null)
-                ? _handleCalculatePrice
-                : null,
+            onPressed: (routeState.pickup != null && routeState.dropoff != null) ? _handleCalculatePrice : null,
             isFullWidth: true,
           ),
         ],
@@ -658,12 +565,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.quick_select_category,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Text(l10n.quick_select_category, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: WawAppSpacing.sm),
         SizedBox(
           height: 80,
@@ -695,9 +597,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               final isSelected = type == selectedType;
 
               return Padding(
-                padding: const EdgeInsetsDirectional.only(
-                  end: WawAppSpacing.sm,
-                ),
+                padding: const EdgeInsetsDirectional.only(end: WawAppSpacing.sm),
                 child: InkWell(
                   onTap: () {
                     context.push('/shipment-type');
@@ -706,37 +606,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: Container(
                     width: 70,
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? categoryColor.withOpacity(0.1)
-                          : theme.colorScheme.surface,
-                      borderRadius:
-                          BorderRadius.circular(WawAppSpacing.radiusMd),
+                      color: isSelected ? categoryColor.withOpacity(0.1) : theme.colorScheme.surface,
+                      borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
                       border: Border.all(
-                        color: isSelected
-                            ? categoryColor
-                            : WawAppColors.borderLight,
+                        color: isSelected ? categoryColor : WawAppColors.borderLight,
                         width: isSelected ? 2 : 1,
                       ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          type.icon,
-                          size: 28,
-                          color: isSelected
-                              ? categoryColor
-                              : WawAppColors.textSecondaryLight,
-                        ),
+                        Icon(type.icon, size: 28, color: isSelected ? categoryColor : WawAppColors.textSecondaryLight),
                         const SizedBox(height: WawAppSpacing.xxs),
                         if (isSelected)
                           Container(
                             width: 6,
                             height: 6,
-                            decoration: BoxDecoration(
-                              color: categoryColor,
-                              shape: BoxShape.circle,
-                            ),
+                            decoration: BoxDecoration(color: categoryColor, shape: BoxShape.circle),
                           ),
                       ],
                     ),
@@ -750,8 +636,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildCurrentShipmentCard(
-      BuildContext context, AppLocalizations l10n) {
+  Widget _buildCurrentShipmentCard(BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
     final user = FirebaseAuth.instance.currentUser;
 
@@ -778,7 +663,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     Icon(Icons.local_shipping_outlined, color: theme.colorScheme.primary),
                     const SizedBox(width: WawAppSpacing.xs),
-                    Text(l10n.current_shipment, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                    Text(
+                      l10n.current_shipment,
+                      style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                    ),
                   ],
                 ),
                 const SizedBox(height: WawAppSpacing.sm),
@@ -789,7 +677,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       children: [
                         const Icon(Icons.inbox_outlined, size: 40, color: WawAppColors.textSecondaryLight),
                         const SizedBox(height: WawAppSpacing.xs),
-                        Text(l10n.no_active_shipments, style: theme.textTheme.bodyMedium?.copyWith(color: WawAppColors.textSecondaryLight), textAlign: TextAlign.center),
+                        Text(
+                          l10n.no_active_shipments,
+                          style: theme.textTheme.bodyMedium?.copyWith(color: WawAppColors.textSecondaryLight),
+                          textAlign: TextAlign.center,
+                        ),
                       ],
                     ),
                   ),
@@ -845,12 +737,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     Icon(statusIcon, color: statusColor),
                     const SizedBox(width: WawAppSpacing.xs),
-                    Expanded(child: Text(l10n.current_shipment, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600))),
+                    Expanded(
+                      child: Text(
+                        l10n.current_shipment,
+                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                    ),
                     Icon(Icons.arrow_forward_ios, size: 16, color: WawAppColors.textSecondaryLight),
                   ],
                 ),
                 const SizedBox(height: WawAppSpacing.sm),
-                Text(statusText, style: theme.textTheme.bodyMedium?.copyWith(color: statusColor, fontWeight: FontWeight.w500)),
+                Text(
+                  statusText,
+                  style: theme.textTheme.bodyMedium?.copyWith(color: statusColor, fontWeight: FontWeight.w500),
+                ),
               ],
             ),
           ),
@@ -865,13 +765,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return WawCard(
       child: InkWell(
         onTap: () {
-          // Navigate to order history (placeholder)
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.view_history),
-              duration: const Duration(seconds: 1),
-            ),
-          );
+          context.push('/order-history');
         },
         borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
         child: Padding(
@@ -884,36 +778,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   color: theme.colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(WawAppSpacing.radiusSm),
                 ),
-                child: Icon(
-                  Icons.history,
-                  color: theme.colorScheme.primary,
-                ),
+                child: Icon(Icons.history, color: theme.colorScheme.primary),
               ),
               const SizedBox(width: WawAppSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      l10n.past_shipments,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    Text(l10n.past_shipments, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                     Text(
                       l10n.view_history,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: WawAppColors.textSecondaryLight,
-                      ),
+                      style: theme.textTheme.bodySmall?.copyWith(color: WawAppColors.textSecondaryLight),
                     ),
                   ],
                 ),
               ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: WawAppColors.textSecondaryLight,
-              ),
+              const Icon(Icons.arrow_forward_ios, size: 16, color: WawAppColors.textSecondaryLight),
             ],
           ),
         ),
@@ -928,33 +808,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       padding: const EdgeInsetsDirectional.all(WawAppSpacing.md),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.primary.withOpacity(0.1),
-            theme.colorScheme.secondary.withOpacity(0.1),
-          ],
+          colors: [theme.colorScheme.primary.withOpacity(0.1), theme.colorScheme.secondary.withOpacity(0.1)],
           begin: AlignmentDirectional.topStart,
           end: AlignmentDirectional.bottomEnd,
         ),
         borderRadius: BorderRadius.circular(WawAppSpacing.radiusMd),
-        border: Border.all(
-          color: theme.colorScheme.primary.withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: theme.colorScheme.primary.withOpacity(0.2), width: 1),
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.info_outline,
-            color: theme.colorScheme.primary,
-            size: 24,
-          ),
+          Icon(Icons.info_outline, color: theme.colorScheme.primary, size: 24),
           const SizedBox(width: WawAppSpacing.sm),
           Expanded(
             child: Text(
               l10n.safe_reliable_delivery,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: WawAppColors.textPrimaryLight,
-              ),
+              style: theme.textTheme.bodySmall?.copyWith(color: WawAppColors.textPrimaryLight),
             ),
           ),
         ],

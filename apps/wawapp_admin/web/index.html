@@ -9,6 +9,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WawApp Admin</title>
 
+  <!-- Google Fonts: Tajawal (Arabic) + Inter (Latin fallback) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
   <style>
     body {
       background-color: #0A1612;
@@ -30,6 +37,30 @@
       font-size: 1.2em;
       z-index: 9999;
       background-color: #0A1612;
+    }
+
+    /* Global thin scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
     }
   </style>
 </head>

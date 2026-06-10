@@ -367,14 +367,27 @@
           "order": "DESCENDING"
         }
       ]
-    }
-    ,
+    },
     {
       "collectionGroup": "driver_rejected_orders",
       "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "driverId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "driver_rejected_orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "orderId",
           "order": "ASCENDING"
         },
         {

@@ -24,9 +24,7 @@ class OrdersService {
   static Map<String, dynamic> _deepCastMap(Map map) {
     return map.map((key, value) {
       if (value is Map) return MapEntry(key.toString(), _deepCastMap(value));
-      if (value is List)
-        return MapEntry(key.toString(),
-            value.map((e) => e is Map ? _deepCastMap(e) : e).toList());
+      if (value is List) return MapEntry(key.toString(), value.map((e) => e is Map ? _deepCastMap(e) : e).toList());
       return MapEntry(key.toString(), value);
     });
   }
@@ -45,11 +43,7 @@ class OrdersService {
           .get();
       final hasActive = snap.docs.isNotEmpty;
       final orderId = hasActive ? snap.docs.first.id : '';
-      await NotificationMethodChannel.setActiveTripFlag(
-        hasActive,
-        orderId: orderId,
-        source: 'syncOnStartup',
-      );
+      await NotificationMethodChannel.setActiveTripFlag(hasActive, orderId: orderId, source: 'syncOnStartup');
       if (kDebugMode) {
         dev.log('[OrdersService] syncActiveTripFlag: hasActive=$hasActive');
       }
@@ -96,11 +90,7 @@ class OrdersService {
         }
 
         // Restore native state
-        await NotificationMethodChannel.setActiveTripFlag(
-          true,
-          orderId: orderId,
-          source: 'reconciliation',
-        );
+        await NotificationMethodChannel.setActiveTripFlag(true, orderId: orderId, source: 'reconciliation');
 
         // Clear any stale acceptance lock
         await AcceptanceLockManager.clearLock();
@@ -139,23 +129,19 @@ class OrdersService {
       dev.log('[Matching] 🔍 getNearbyOrders (Cloud Function) called');
       dev.log('[Matching] 📍 Driver ID: ${user.uid}');
       dev.log(
-          '[Matching] 📍 Driver position: lat=${driverPosition.latitude.toStringAsFixed(6)}, lng=${driverPosition.longitude.toStringAsFixed(6)}');
+        '[Matching] 📍 Driver position: lat=${driverPosition.latitude.toStringAsFixed(6)}, lng=${driverPosition.longitude.toStringAsFixed(6)}',
+      );
     }
 
     try {
-      final callable =
-          FirebaseFunctions.instance.httpsCallable('getNearbyOrders');
-      final result = await callable.call({
-        'lat': driverPosition.latitude,
-        'lng': driverPosition.longitude,
-      });
+      final callable = FirebaseFunctions.instance.httpsCallable('getNearbyOrders');
+      final result = await callable.call({'lat': driverPosition.latitude, 'lng': driverPosition.longitude});
 
       final data = Map<String, dynamic>.from(result.data as Map);
       final rawOrders = (data['orders'] as List<dynamic>?) ?? [];
 
       if (kDebugMode) {
-        dev.log(
-            '[Matching] ✅ Cloud Function returned ${rawOrders.length} orders');
+        dev.log('[Matching] ✅ Cloud Function returned ${rawOrders.length} orders');
       }
 
       final orders = rawOrders.map((o) {
@@ -164,14 +150,12 @@ class OrdersService {
         // Handle Timestamp conversion if necessary
         // Cloud Functions might return ISO strings or Maps for Timestamps
         if (orderMap['createdAt'] is String) {
-          orderMap['createdAt'] =
-              Timestamp.fromDate(DateTime.parse(orderMap['createdAt']));
+          orderMap['createdAt'] = Timestamp.fromDate(DateTime.parse(orderMap['createdAt']));
         } else if (orderMap['createdAt'] is Map) {
           // Handle {_seconds: ..., _nanoseconds: ...} structure if present
           final t = orderMap['createdAt'];
           if (t['_seconds'] != null) {
-            orderMap['createdAt'] =
-                Timestamp(t['_seconds'], t['_nanoseconds'] ?? 0);
+            orderMap['createdAt'] = Timestamp(t['_seconds'], t['_nanoseconds'] ?? 0);
           }
         }
 
@@ -202,17 +186,13 @@ class OrdersService {
         final orderDoc = await transaction.get(orderRef);
 
         if (!orderDoc.exists) {
-          throw const AppError(
-              type: AppErrorType.notFound, message: 'Order not found');
+          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
         }
 
-        final currentStatus =
-            OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
+        final currentStatus = OrderStatus.fromFirestore(orderDoc.data()!['status'] as String);
 
         if (!currentStatus.canTransitionTo(to)) {
-          throw const AppError(
-              type: AppErrorType.permissionDenied,
-              message: 'Invalid status transition');
+          throw const AppError(type: AppErrorType.permissionDenied, message: 'Invalid status transition');
         }
 
         final update = to.createTransitionUpdate();
@@ -234,13 +214,10 @@ class OrdersService {
     }
   }
 
-  Future<void> cancelOrder(String orderId,
-      {required CancelReason reason}) async {
+  Future<void> cancelOrder(String orderId, {required CancelReason reason}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw const AppError(
-          type: AppErrorType.permissionDenied,
-          message: 'Driver not authenticated');
+      throw const AppError(type: AppErrorType.permissionDenied, message: 'Driver not authenticated');
     }
 
     try {
@@ -249,35 +226,26 @@ class OrdersService {
         final orderDoc = await transaction.get(orderRef);
 
         if (!orderDoc.exists) {
-          throw const AppError(
-              type: AppErrorType.notFound, message: 'Order not found');
+          throw const AppError(type: AppErrorType.notFound, message: 'Order not found');
         }
 
         final data = orderDoc.data()!;
         final driverId = data['driverId'] as String?;
 
         if (driverId != user.uid) {
-          throw const AppError(
-              type: AppErrorType.permissionDenied,
-              message: 'Not authorized to cancel this order');
+          throw const AppError(type: AppErrorType.permissionDenied, message: 'Not authorized to cancel this order');
         }
 
-        final currentStatus =
-            OrderStatus.fromFirestore(data['status'] as String);
+        final currentStatus = OrderStatus.fromFirestore(data['status'] as String);
 
         if (!currentStatus.canDriverCancel) {
-          throw const AppError(
-              type: AppErrorType.permissionDenied,
-              message: 'Cannot cancel order in current status');
+          throw const AppError(type: AppErrorType.permissionDenied, message: 'Cannot cancel order in current status');
         }
 
-        transaction.update(
-          orderRef,
-          {
-            ...OrderStatus.cancelledByDriver.createTransitionUpdate(),
-            'cancelReason': reason.firestoreValue,
-          },
-        );
+        transaction.update(orderRef, {
+          ...OrderStatus.cancelledByDriver.createTransitionUpdate(),
+          'cancelReason': reason.firestoreValue,
+        });
       });
 
       // Log analytics event after successful cancellation
@@ -294,8 +262,7 @@ class OrdersService {
   Stream<List<Order>> getDriverActiveOrders(String driverId) {
     if (kDebugMode) {
       dev.log('[Matching] getDriverActiveOrders called for driver: $driverId');
-      dev.log(
-          '[Matching] Query intent: driverId=$driverId, status IN [accepted, onRoute]');
+      dev.log('[Matching] Query intent: driverId=$driverId, status IN [accepted, onRoute]');
     }
 
     // REQUIRED COMPOSITE INDEX: orders [driverId ASC, status ASC]
@@ -304,15 +271,11 @@ class OrdersService {
     return _firestore
         .collection('orders')
         .where('driverId', isEqualTo: driverId)
-        .where('status', whereIn: [
-          OrderStatus.accepted.toFirestore(),
-          OrderStatus.onRoute.toFirestore(),
-        ])
+        .where('status', whereIn: [OrderStatus.accepted.toFirestore(), OrderStatus.onRoute.toFirestore()])
         .snapshots()
         .map((snapshot) {
           if (kDebugMode) {
-            dev.log(
-                '[Matching] Active orders snapshot: ${snapshot.docs.length} documents');
+            dev.log('[Matching] Active orders snapshot: ${snapshot.docs.length} documents');
           }
 
           final orders = <Order>[];
@@ -325,7 +288,8 @@ class OrdersService {
               if (kDebugMode) {
                 final createdAt = data['createdAt'];
                 dev.log(
-                    '[Matching] Active order ${order.id}: status=${order.status}, createdAt=$createdAt, price=${order.price}');
+                  '[Matching] Active order ${order.id}: status=${order.status}, createdAt=$createdAt, price=${order.price}',
+                );
               }
             } on Object catch (e) {
               if (kDebugMode) {
@@ -337,11 +301,12 @@ class OrdersService {
           if (kDebugMode) {
             if (orders.isNotEmpty) {
               final orderStatuses = orders
-                  .map((o) =>
-                      '${o.id != null && o.id!.length > 6 ? o.id!.substring(o.id!.length - 6) : o.id ?? 'N/A'}:${o.status}')
+                  .map(
+                    (o) =>
+                        '${o.id != null && o.id!.length > 6 ? o.id!.substring(o.id!.length - 6) : o.id ?? 'N/A'}:${o.status}',
+                  )
                   .join(', ');
-              dev.log(
-                  '[Matching] Final active orders for driver $driverId: [$orderStatuses]');
+              dev.log('[Matching] Final active orders for driver $driverId: [$orderStatuses]');
             } else {
               dev.log('[Matching] No active orders for driver $driverId');
             }
@@ -356,33 +321,21 @@ class OrdersService {
   // ============================================================================
 
   /// Accept an offer (v2.0 - offer-based dispatch)
-  Future<void> acceptOfferV2({
-    required String offerId,
-    required String orderId,
-  }) async {
+  Future<void> acceptOfferV2({required String offerId, required String orderId}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw const AppError(
-          type: AppErrorType.permissionDenied,
-          message: 'Driver not authenticated');
+      throw const AppError(type: AppErrorType.permissionDenied, message: 'Driver not authenticated');
     }
 
     // Set acceptance lock immediately to prevent race condition
     await AcceptanceLockManager.setAcceptanceLock(orderId);
 
     try {
-      final callable =
-          FirebaseFunctions.instance.httpsCallable('acceptOrderV2');
-      final result = await callable.call({
-        'orderId': orderId,
-        'offerId': offerId,
-      });
+      final callable = FirebaseFunctions.instance.httpsCallable('acceptOrderV2');
+      final result = await callable.call({'orderId': orderId, 'offerId': offerId});
 
       if (result.data['success'] != true) {
-        throw AppError(
-          type: AppErrorType.unknown,
-          message: result.data['message'] ?? 'فشل قبول العرض',
-        );
+        throw AppError(type: AppErrorType.unknown, message: result.data['message'] ?? 'فشل قبول العرض');
       }
 
       // Log analytics event after successful acceptance
@@ -400,27 +353,14 @@ class OrdersService {
       await AcceptanceLockManager.clearLock();
 
       // Map error codes to user-friendly messages
-      if (e.code == 'invalid-argument' &&
-          e.message?.contains('offerId') == true) {
-        throw const AppError(
-          type: AppErrorType.permissionDenied,
-          message: 'يرجى تحديث التطبيق للإصدار الأحدث',
-        );
+      if (e.code == 'invalid-argument' && e.message?.contains('offerId') == true) {
+        throw const AppError(type: AppErrorType.permissionDenied, message: 'يرجى تحديث التطبيق للإصدار الأحدث');
       } else if (e.message?.contains('offer_expired') == true) {
-        throw const AppError(
-          type: AppErrorType.permissionDenied,
-          message: 'انتهت صلاحية العرض',
-        );
+        throw const AppError(type: AppErrorType.permissionDenied, message: 'انتهت صلاحية العرض');
       } else if (e.message?.contains('already_accepted') == true) {
-        throw const AppError(
-          type: AppErrorType.permissionDenied,
-          message: 'تم قبول الطلب من قبل سائق آخر',
-        );
+        throw const AppError(type: AppErrorType.permissionDenied, message: 'تم قبول الطلب من قبل سائق آخر');
       } else if (e.message?.contains('driver_busy') == true) {
-        throw const AppError(
-          type: AppErrorType.permissionDenied,
-          message: 'لديك طلب نشط بالفعل',
-        );
+        throw const AppError(type: AppErrorType.permissionDenied, message: 'لديك طلب نشط بالفعل');
       }
       throw AppError.from(e);
     } on Object catch (e) {
@@ -436,9 +376,7 @@ class OrdersService {
   Future<void> rejectOffer({required String offerId}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw const AppError(
-          type: AppErrorType.permissionDenied,
-          message: 'Driver not authenticated');
+      throw const AppError(type: AppErrorType.permissionDenied, message: 'Driver not authenticated');
     }
 
     try {
@@ -446,10 +384,7 @@ class OrdersService {
       final result = await callable.call({'offerId': offerId});
 
       if (result.data['success'] != true) {
-        throw AppError(
-          type: AppErrorType.unknown,
-          message: result.data['message'] ?? 'فشل رفض العرض',
-        );
+        throw AppError(type: AppErrorType.unknown, message: result.data['message'] ?? 'فشل رفض العرض');
       }
     } on FirebaseFunctionsException catch (e) {
       throw AppError.from(e);
@@ -477,76 +412,99 @@ class OrdersService {
         .orderBy('sentAt', descending: true)
         .snapshots(includeMetadataChanges: true)
         .asyncMap((snapshot) async {
-      final isFromCache = snapshot.metadata.isFromCache;
+          final isFromCache = snapshot.metadata.isFromCache;
 
-      if (kDebugMode) {
-        final docIds = snapshot.docs.map((d) => d.id).toList();
-        debugPrint('[FORENSIC_TRACE] Dispatch Snapshot Triggered. docs=${snapshot.docs.length} source=${isFromCache ? "CACHE" : "SERVER"} ids=$docIds');
-      }
-
-      // ── Cache-gating: prevent stale offer resurrection on startup ──
-      // First emission from offline cache is provisional — do not render as actionable.
-      // Only promote to UI after server confirmation or post-server cache updates.
-      if (isFromCache && !serverConfirmed) {
-        if (kDebugMode) {
-          dev.log('[DispatchV2] dispatch_offer_source=cache_blocked_startup resurrect_prevented=true docs=${snapshot.docs.length}');
-        }
-        return <DispatchOffer>[];
-      }
-
-      if (!isFromCache) {
-        serverConfirmed = true;
-        if (kDebugMode) {
-          dev.log('[DispatchV2] dispatch_offer_source=server_authorized docs=${snapshot.docs.length}');
-        }
-      } else {
-        if (kDebugMode) {
-          dev.log('[DispatchV2] dispatch_offer_source=cache_allowed_fresh docs=${snapshot.docs.length}');
-        }
-      }
-
-      // Load locally rejected order IDs from native SharedPreferences
-      final rejectedIds = await NotificationMethodChannel.getRejectedOrderIds();
-
-      final offers = <DispatchOffer>[];
-      for (final doc in snapshot.docs) {
-        try {
-          final offer = DispatchOffer.fromFirestore(doc);
-
-          // Filter out expired offers
-          if (!offer.isValid) {
-            if (kDebugMode) {
-              dev.log('[DispatchV2] Filtered out expired offer: ${offer.offerId}');
-            }
-            continue;
+          if (kDebugMode) {
+            final docIds = snapshot.docs.map((d) => d.id).toList();
+            debugPrint(
+              '[FORENSIC_TRACE] Dispatch Snapshot Triggered. docs=${snapshot.docs.length} source=${isFromCache ? "CACHE" : "SERVER"} ids=$docIds',
+            );
           }
 
-          // Filter out locally rejected orders
-          if (rejectedIds.contains(offer.orderId)) {
+          // ── Cache-gating: prevent stale offer resurrection on startup ──
+          // First emission from offline cache is provisional — do not render as actionable.
+          // Only promote to UI after server confirmation or post-server cache updates.
+          if (isFromCache && !serverConfirmed) {
             if (kDebugMode) {
-              dev.log('[DispatchV2] Filtered out locally rejected offer: ${offer.offerId} (orderId=${offer.orderId})');
+              dev.log(
+                '[DispatchV2] dispatch_offer_source=cache_blocked_startup resurrect_prevented=true docs=${snapshot.docs.length}',
+              );
             }
-            continue;
+            return <DispatchOffer>[];
           }
 
-          offers.add(offer);
+          if (!isFromCache) {
+            serverConfirmed = true;
+            if (kDebugMode) {
+              dev.log('[DispatchV2] dispatch_offer_source=server_authorized docs=${snapshot.docs.length}');
+            }
+          } else {
+            if (kDebugMode) {
+              dev.log('[DispatchV2] dispatch_offer_source=cache_allowed_fresh docs=${snapshot.docs.length}');
+            }
+          }
+
+          // Load locally rejected order IDs from native SharedPreferences
+          final rejectedIds = await NotificationMethodChannel.getRejectedOrderIds();
+
+          final offers = <DispatchOffer>[];
+          for (final doc in snapshot.docs) {
+            try {
+              final offer = DispatchOffer.fromFirestore(doc);
+
+              // Filter out expired offers
+              if (!offer.isValid) {
+                if (kDebugMode) {
+                  dev.log('[DispatchV2] Filtered out expired offer: ${offer.offerId}');
+                }
+                continue;
+              }
+
+              // Filter out locally rejected orders
+              if (rejectedIds.contains(offer.orderId)) {
+                if (kDebugMode) {
+                  dev.log(
+                    '[DispatchV2] Filtered out locally rejected offer: ${offer.offerId} (orderId=${offer.orderId})',
+                  );
+                }
+                continue;
+              }
+
+              offers.add(offer);
+
+              if (kDebugMode) {
+                dev.log(
+                  '[DispatchV2] Offer ${offer.offerId}: orderId=${offer.orderId}, round=${offer.round}, remaining=${offer.remainingSeconds}s',
+                );
+              }
+            } on Object catch (e) {
+              if (kDebugMode) {
+                dev.log('[DispatchV2] Error parsing offer ${doc.id}: $e');
+              }
+            }
+          }
 
           if (kDebugMode) {
             dev.log(
-                '[DispatchV2] Offer ${offer.offerId}: orderId=${offer.orderId}, round=${offer.round}, remaining=${offer.remainingSeconds}s');
+              '[DispatchV2] Final valid offers: ${offers.length} (rejected ${rejectedIds.length} order IDs locally)',
+            );
           }
-        } on Object catch (e) {
-          if (kDebugMode) {
-            dev.log('[DispatchV2] Error parsing offer ${doc.id}: $e');
-          }
-        }
-      }
 
+          return offers;
+        });
+  }
+
+  /// Fetch a single order document by ID. Returns null if not found or on error.
+  Future<Order?> getOrder(String orderId) async {
+    try {
+      final doc = await _firestore.collection('orders').doc(orderId).get(const GetOptions(source: Source.server));
+      if (!doc.exists || doc.data() == null) return null;
+      return Order.fromFirestoreWithId(doc.id, doc.data()!);
+    } catch (e) {
       if (kDebugMode) {
-        dev.log('[DispatchV2] Final valid offers: ${offers.length} (rejected ${rejectedIds.length} order IDs locally)');
+        dev.log('[OrdersService] getOrder error: $e');
       }
-
-      return offers;
-    });
+      return null;
+    }
   }
 }

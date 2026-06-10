@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "wawapp-mcp-debug-server": {
+      "command": "node",
+      "args": [
+        "C:/Users/hp/Music/wawapp-mcp-debug-server/dist/index.js"
+      ],
+      "env": {},
+      "disabled": false,
+      "autoApprove": [
+        "wawapp_order_search",
+        "wawapp_notification_analytics",
+        "wawapp_incident_report",
+        "wawapp_fcm_token_status",
+        "wawapp_order_trace",
+        "wawapp_driver_eligibility",
+        "wawapp_driver_view_orders",
+        "wawapp_order_visibility_v2",
+        "wawapp_nearby_drivers",
+        "wawapp_function_execution_trace",
+        "wawapp_notification_delivery_check",
+        "wawapp_driver_location_status",
+        "wawapp_device_logcat",
+        "wawapp_auth_session_check",
+        "wawapp_backend_simulator"
+      ]
+    }
+  }
+}

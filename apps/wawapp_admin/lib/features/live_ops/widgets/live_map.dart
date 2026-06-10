@@ -26,13 +26,7 @@ class LiveMap extends StatefulWidget {
   final Function(LiveDriverMarker)? onDriverTap;
   final Function(LiveOrderMarker)? onOrderTap;
 
-  const LiveMap({
-    super.key,
-    required this.drivers,
-    required this.orders,
-    this.onDriverTap,
-    this.onOrderTap,
-  });
+  const LiveMap({super.key, required this.drivers, required this.orders, this.onDriverTap, this.onOrderTap});
 
   @override
   State<LiveMap> createState() => _LiveMapState();
@@ -54,13 +48,11 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat();
-    _pulseAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeOut),
-    );
+    _pulseController = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
+    _pulseAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _pulseController, curve: Curves.easeOut));
     _mapController.mapEventStream.listen((event) {
       if (event is MapEventMove || event is MapEventRotate) {
         setState(() => _currentZoom = _mapController.camera.zoom);
@@ -72,8 +64,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(LiveMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.drivers != oldWidget.drivers ||
-        widget.orders != oldWidget.orders) {
+    if (widget.drivers != oldWidget.drivers || widget.orders != oldWidget.orders) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _fitMarkers());
     }
   }
@@ -106,9 +97,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
       if (loc.longitude > maxLng) maxLng = loc.longitude;
     }
     final center = LatLng((minLat + maxLat) / 2, (minLng + maxLng) / 2);
-    final spread = (maxLat - minLat) > (maxLng - minLng)
-        ? (maxLat - minLat)
-        : (maxLng - minLng);
+    final spread = (maxLat - minLat) > (maxLng - minLng) ? (maxLat - minLat) : (maxLng - minLng);
     double zoom = _defaultZoom;
     if (spread > 5)
       zoom = 8;
@@ -123,11 +112,9 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
     _mapController.move(center, zoom);
   }
 
-  void _zoomIn() => _mapController.move(
-      _mapController.camera.center, _mapController.camera.zoom + 1);
+  void _zoomIn() => _mapController.move(_mapController.camera.center, _mapController.camera.zoom + 1);
 
-  void _zoomOut() => _mapController.move(
-      _mapController.camera.center, _mapController.camera.zoom - 1);
+  void _zoomOut() => _mapController.move(_mapController.camera.center, _mapController.camera.zoom - 1);
 
   void _resetToDefault() => _mapController.move(_defaultCenter, _defaultZoom);
 
@@ -135,9 +122,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
     if (_currentZoom < 10) {
       return widget.drivers.where((d) => d.isOnline && !d.isBlocked).toList();
     } else if (_currentZoom < 12) {
-      return widget.drivers
-          .where((d) => (d.isOnline && !d.isBlocked) || d.activeOrderId != null)
-          .toList();
+      return widget.drivers.where((d) => (d.isOnline && !d.isBlocked) || d.activeOrderId != null).toList();
     }
     return widget.drivers;
   }
@@ -160,15 +145,14 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
             initialZoom: _defaultZoom,
             minZoom: 4.0,
             maxZoom: 19.0,
-            interactionOptions: const InteractionOptions(
-              flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-            ),
+            interactionOptions: const InteractionOptions(flags: InteractiveFlag.all & ~InteractiveFlag.rotate),
           ),
           children: [
             TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.wawapp.admin',
-              maxZoom: 19,
+              urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+              subdomains: const ['a', 'b', 'c', 'd'],
+              userAgentPackageName: 'mr.wawapp.admin',
+              maxZoom: 20,
               minZoom: 2,
               keepBuffer: 4,
               panBuffer: 2,
@@ -188,12 +172,10 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
             ),
             MarkerLayer(
               markers: _getVisibleOrders()
-                  .map((order) => Marker(
-                        point: order.dropoffLocation,
-                        width: 28,
-                        height: 28,
-                        child: _buildDropoffMarker(order),
-                      ))
+                  .map(
+                    (order) =>
+                        Marker(point: order.dropoffLocation, width: 28, height: 28, child: _buildDropoffMarker(order)),
+                  )
                   .toList(),
             ),
             MarkerClusterLayerWidget(
@@ -201,23 +183,23 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                 maxClusterRadius: 60,
                 size: const Size(45, 45),
                 markers: _getVisibleOrders()
-                    .map((order) => Marker(
-                          point: order.pickupLocation,
-                          width: 34,
-                          height: 34,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedOrderId = order.orderId;
-                                _selectedDriverId = null;
-                              });
-                              widget.onOrderTap?.call(order);
-                            },
-                            child: _HoverScaleMarker(
-                              child: _buildPickupMarker(order),
-                            ),
-                          ),
-                        ))
+                    .map(
+                      (order) => Marker(
+                        point: order.pickupLocation,
+                        width: 34,
+                        height: 34,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedOrderId = order.orderId;
+                              _selectedDriverId = null;
+                            });
+                            widget.onOrderTap?.call(order);
+                          },
+                          child: _HoverScaleMarker(child: _buildPickupMarker(order)),
+                        ),
+                      ),
+                    )
                     .toList(),
                 builder: (context, markers) {
                   return Container(
@@ -229,11 +211,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                     child: Center(
                       child: Text(
                         '${markers.length}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                       ),
                     ),
                   );
@@ -245,25 +223,27 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                 maxClusterRadius: 80,
                 size: const Size(50, 50),
                 markers: _getVisibleDrivers()
-                    .map((driver) => Marker(
-                          point: driver.location,
-                          width: 48,
-                          height: 48,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedDriverId = driver.driverId;
-                                _selectedOrderId = null;
-                              });
-                              widget.onDriverTap?.call(driver);
-                            },
-                            child: _HoverScaleMarker(
-                              child: driver.isOnline && !driver.isBlocked
-                                  ? _buildOnlineDriverMarker(driver)
-                                  : _buildDriverMarkerCore(driver),
-                            ),
+                    .map(
+                      (driver) => Marker(
+                        point: driver.location,
+                        width: 48,
+                        height: 48,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedDriverId = driver.driverId;
+                              _selectedOrderId = null;
+                            });
+                            widget.onDriverTap?.call(driver);
+                          },
+                          child: _HoverScaleMarker(
+                            child: driver.isOnline && !driver.isBlocked
+                                ? _buildOnlineDriverMarker(driver)
+                                : _buildDriverMarkerCore(driver),
                           ),
-                        ))
+                        ),
+                      ),
+                    )
                     .toList(),
                 builder: (context, markers) {
                   return Container(
@@ -275,11 +255,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                     child: Center(
                       child: Text(
                         '${markers.length}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                     ),
                   );
@@ -290,8 +266,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
               animationConfig: const ScaleRAWA(),
               attributions: [
                 TextSourceAttribution('© Carto', onTap: () {}),
-                TextSourceAttribution('© OpenStreetMap contributors',
-                    onTap: () {}),
+                TextSourceAttribution('© OpenStreetMap contributors', onTap: () {}),
               ],
             ),
           ],
@@ -303,9 +278,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                 _selectedDriverId = null;
                 _selectedOrderId = null;
               }),
-              child: Container(
-                color: Colors.black.withOpacity(0.3),
-              ),
+              child: Container(color: Colors.black.withOpacity(0.3)),
             ),
           ),
         Positioned(
@@ -317,19 +290,13 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
               const SizedBox(height: 4),
               _mapButton(Icons.remove, _zoomOut, tooltip: 'تصغير'),
               const SizedBox(height: 8),
-              _mapButton(Icons.my_location, _resetToDefault,
-                  tooltip: 'الموقع الافتراضي'),
+              _mapButton(Icons.my_location, _resetToDefault, tooltip: 'الموقع الافتراضي'),
               const SizedBox(height: 4),
-              _mapButton(Icons.fit_screen, _fitMarkers,
-                  tooltip: 'إظهار كل العناصر'),
+              _mapButton(Icons.fit_screen, _fitMarkers, tooltip: 'إظهار كل العناصر'),
             ],
           ),
         ),
-        Positioned(
-          bottom: 12,
-          right: 12,
-          child: _buildCollapsibleLegend(context),
-        ),
+        Positioned(bottom: 12, right: 12, child: _buildCollapsibleLegend(context)),
         if (widget.drivers.isEmpty && widget.orders.isEmpty)
           Positioned(
             top: 12,
@@ -337,8 +304,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
             right: 0,
             child: Center(
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.6),
                   borderRadius: BorderRadius.circular(24),
@@ -348,10 +314,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                   children: [
                     Icon(Icons.info_outline, color: Colors.white, size: 18),
                     SizedBox(width: 8),
-                    Text(
-                      'لا يوجد سائقون أو طلبات نشطة حالياً',
-                      style: TextStyle(color: Colors.white, fontSize: 13),
-                    ),
+                    Text('لا يوجد سائقون أو طلبات نشطة حالياً', style: TextStyle(color: Colors.white, fontSize: 13)),
                   ],
                 ),
               ),
@@ -374,10 +337,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
               child: Container(
                 width: 48 * ring,
                 height: 48 * ring,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AdminAppColors.successLight.withOpacity(0.35),
-                ),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: AdminAppColors.successLight.withOpacity(0.35)),
               ),
             ),
             child!,
@@ -400,10 +360,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: color,
-            border: Border.all(
-              color: isSelected ? Colors.yellow : Colors.white,
-              width: isSelected ? 3.5 : 2.5,
-            ),
+            border: Border.all(color: isSelected ? Colors.yellow : Colors.white, width: isSelected ? 3.5 : 2.5),
             boxShadow: [
               BoxShadow(
                 color: color.withOpacity(isSelected ? 0.8 : 0.5),
@@ -413,8 +370,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
               ),
             ],
           ),
-          child: Icon(Icons.directions_car,
-              size: isSelected ? 20 : 16, color: Colors.white),
+          child: Icon(Icons.directions_car, size: isSelected ? 20 : 16, color: Colors.white),
         ),
         if (driver.activeOrderId != null)
           Positioned(
@@ -446,13 +402,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
             shape: BoxShape.circle,
             color: color,
             border: Border.all(color: Colors.white, width: 2),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.25),
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 5, offset: const Offset(0, 2))],
           ),
           child: const Icon(Icons.place, size: 20, color: Colors.white),
         ),
@@ -483,20 +433,13 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
         shape: BoxShape.circle,
         color: color.withOpacity(0.6),
         border: Border.all(color: Colors.white, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 1))],
       ),
       child: const Icon(Icons.flag, size: 14, color: Colors.white),
     );
   }
 
-  Widget _mapButton(IconData icon, VoidCallback onPressed,
-      {String tooltip = ''}) {
+  Widget _mapButton(IconData icon, VoidCallback onPressed, {String tooltip = ''}) {
     return Tooltip(
       message: tooltip,
       child: Material(
@@ -506,11 +449,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(6),
-          child: SizedBox(
-            width: 36,
-            height: 36,
-            child: Icon(icon, size: 20, color: Colors.grey[700]),
-          ),
+          child: SizedBox(width: 36, height: 36, child: Icon(icon, size: 20, color: Colors.grey[700])),
         ),
       ),
     );
@@ -549,42 +488,25 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
                     children: [
                       Text(
                         'دليل الرموز',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey[700],
-                            ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.grey[700]),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close, size: 18),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
-                        onPressed: () =>
-                            setState(() => _legendExpanded = false),
+                        onPressed: () => setState(() => _legendExpanded = false),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
-                  _legendRow(
-                      color: const Color(0xFF00704A),
-                      icon: Icons.directions_car,
-                      label: 'سائق متصل'),
-                  _legendRow(
-                      color: const Color(0xFF6C757D),
-                      icon: Icons.directions_car,
-                      label: 'سائق غير متصل'),
-                  _legendRow(
-                      color: const Color(0xFFC1272D),
-                      icon: Icons.directions_car,
-                      label: 'سائق محظور'),
+                  _legendRow(color: const Color(0xFF00704A), icon: Icons.directions_car, label: 'سائق متصل'),
+                  _legendRow(color: const Color(0xFF6C757D), icon: Icons.directions_car, label: 'سائق غير متصل'),
+                  _legendRow(color: const Color(0xFFC1272D), icon: Icons.directions_car, label: 'سائق محظور'),
                   const Divider(height: 10),
-                  _legendRow(
-                      color: Colors.blue,
-                      icon: Icons.place,
-                      label: 'نقطة الاستلام'),
-                  _legendRow(
-                      color: Colors.orange,
-                      icon: Icons.flag,
-                      label: 'نقطة التسليم'),
+                  _legendRow(color: Colors.blue, icon: Icons.place, label: 'نقطة الاستلام'),
+                  _legendRow(color: Colors.orange, icon: Icons.flag, label: 'نقطة التسليم'),
                 ],
               ),
             ),
@@ -593,8 +515,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
     );
   }
 
-  Widget _legendRow(
-      {required Color color, required IconData icon, required String label}) {
+  Widget _legendRow({required Color color, required IconData icon, required String label}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -602,8 +523,7 @@ class _LiveMapState extends State<LiveMap> with TickerProviderStateMixin {
         children: [
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 6),
-          Text(label,
-              style: const TextStyle(fontSize: 11, color: Colors.black87)),
+          Text(label, style: const TextStyle(fontSize: 11, color: Colors.black87)),
         ],
       ),
     );

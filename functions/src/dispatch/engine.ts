@@ -19,21 +19,21 @@
  * @version 2.0.0
  */
 
-import * as admin from 'firebase-admin';
 import { CloudTasksClient } from '@google-cloud/tasks';
+import * as admin from 'firebase-admin';
+import { DispatchMetricName, emitMetric } from './counters';
+import { NormalizedDispatchPayload, removeUndefinedDeep } from './intake';
+import { sendOfferNotification } from './notifications';
+import { findEligibleDrivers } from './selectors';
 import {
-  DriverDispatchState,
+  DEFAULT_WAVES,
+  DispatchMetrics,
   DispatchOffer,
   DispatchQueueEntry,
+  DriverDispatchState,
   EligibleDriver,
-  DEFAULT_WAVES,
   REPEAT_WAVE,
-  DispatchMetrics,
 } from './types';
-import { NormalizedDispatchPayload, removeUndefinedDeep } from './intake';
-import { findEligibleDrivers } from './selectors';
-import { sendOfferNotification } from './notifications';
-import { emitMetric, DispatchMetricName } from './counters';
 
 const db = admin.firestore();
 
@@ -337,7 +337,7 @@ export async function processNextWave(orderId: string): Promise<void> {
 
     await db.collection('dispatch_queue').doc(orderId)
       .update({ waveStatus: 'sent' })
-      .catch(() => {}); // non-fatal
+      .catch(() => { }); // non-fatal
 
     // Schedule precise Cloud Task for wave expiration
     const freshQueue = await db.collection('dispatch_queue').doc(orderId).get();
@@ -367,7 +367,7 @@ export async function processNextWave(orderId: string): Promise<void> {
     }));
     await db.collection('dispatch_queue').doc(orderId)
       .update({ waveStatus: 'idle' })
-      .catch(() => {});
+      .catch(() => { });
   }
 }
 
@@ -394,7 +394,30 @@ async function sendWaveOffers(orderId: string): Promise<void> {
     wave.maxDrivers
   );
 
-  if (eligibleDrivers.length === 0) {
+  // Exclude drivers who have rejected this order (or were wallet-blocked)
+  const rejectedSnapshot = await db
+    .collection('driver_rejected_orders')
+    .where('orderId', '==', orderId)
+    .where('expiresAt', '>', admin.firestore.Timestamp.now())
+    .get();
+
+  const rejectedDriverIds = new Set(
+    rejectedSnapshot.docs.map(doc => doc.data().driverId as string)
+  );
+
+  const filteredDrivers = rejectedDriverIds.size > 0
+    ? eligibleDrivers.filter(d => !rejectedDriverIds.has(d.driverId))
+    : eligibleDrivers;
+
+  if (rejectedDriverIds.size > 0) {
+    console.log('[DispatchEngine] Excluded rejected/blocked drivers', {
+      order_id: orderId,
+      excluded_count: eligibleDrivers.length - filteredDrivers.length,
+      excluded_drivers: Array.from(rejectedDriverIds),
+    });
+  }
+
+  if (filteredDrivers.length === 0) {
     emitMetric('wave_no_eligible_drivers', { orderId, wave: queueData.currentWave });
     console.warn('[DispatchEngine] No eligible drivers for wave', {
       order_id: orderId,
@@ -403,7 +426,7 @@ async function sendWaveOffers(orderId: string): Promise<void> {
     // EC2: Increment consecutive empty wave counter for fast termination
     await db.collection('dispatch_queue').doc(orderId).update({
       consecutiveEmptyWaves: admin.firestore.FieldValue.increment(1),
-    }).catch(() => {}); // non-fatal
+    }).catch(() => { }); // non-fatal
     // Wait for wave expiration, then try next wave
     return;
   }
@@ -412,14 +435,14 @@ async function sendWaveOffers(orderId: string): Promise<void> {
   if ((queueData as any).consecutiveEmptyWaves > 0) {
     await db.collection('dispatch_queue').doc(orderId).update({
       consecutiveEmptyWaves: 0,
-    }).catch(() => {});
+    }).catch(() => { });
   }
 
   console.log('[DispatchEngine] Found eligible drivers', {
     order_id: orderId,
     wave: queueData.currentWave,
-    driver_count: eligibleDrivers.length,
-    closest_distance: eligibleDrivers[0].distance.toFixed(2),
+    driver_count: filteredDrivers.length,
+    closest_distance: filteredDrivers[0].distance.toFixed(2),
   });
 
   // Create offers atomically (batch write)
@@ -431,8 +454,8 @@ async function sendWaveOffers(orderId: string): Promise<void> {
 
   const offers: DispatchOffer[] = [];
 
-  for (let i = 0; i < eligibleDrivers.length; i++) {
-    const driver = eligibleDrivers[i];
+  for (let i = 0; i < filteredDrivers.length; i++) {
+    const driver = filteredDrivers[i];
     // FIX-R2: Include round in offerId to prevent cross-wave dedup collisions.
     // Old format: orderId_driverId (collided when same driver re-offered in wave 4+)
     // New format: orderId_driverId_w{round}
@@ -469,13 +492,13 @@ async function sendWaveOffers(orderId: string): Promise<void> {
     batch.update(db.collection('dispatch_metrics').doc(orderId), {
       [`waveMetrics`]: admin.firestore.FieldValue.arrayUnion(removeUndefinedDeep({
         round: queueData.currentWave,
-        driversSent: eligibleDrivers.length,
+        driversSent: filteredDrivers.length,
         rejections: 0,
         expirations: 0,
         startedAt: now,
         completedAt: null,
       })),
-      totalDriversNotified: admin.firestore.FieldValue.increment(eligibleDrivers.length),
+      totalDriversNotified: admin.firestore.FieldValue.increment(filteredDrivers.length),
     });
   } catch (metricsErr: any) {
     console.warn('[DispatchEngine] Metrics update skipped', {
@@ -486,7 +509,7 @@ async function sendWaveOffers(orderId: string): Promise<void> {
 
   // Update queue total offers sent
   batch.update(db.collection('dispatch_queue').doc(orderId), {
-    totalOffersSent: admin.firestore.FieldValue.increment(eligibleDrivers.length),
+    totalOffersSent: admin.firestore.FieldValue.increment(filteredDrivers.length),
   });
 
   await withRetry(() => batch.commit(), { label: 'sendWaveOffers_batch', orderId });
@@ -499,7 +522,7 @@ async function sendWaveOffers(orderId: string): Promise<void> {
 
   // Send FCM notifications using queue data as single source of truth
   // NEVER passes raw order data — only normalized queueData
-  sendWaveNotifications(orderId, offers, eligibleDrivers, queueData);
+  sendWaveNotifications(orderId, offers, filteredDrivers, queueData);
 }
 
 /**
@@ -694,7 +717,7 @@ export async function processExpiredWavesForOrder(orderId: string): Promise<void
     }));
     await db.collection('dispatch_queue').doc(orderId)
       .update({ waveStatus: 'idle' })
-      .catch(() => {}); // non-fatal; proceed anyway
+      .catch(() => { }); // non-fatal; proceed anyway
   }
 
   // Guard: only process if the wave has actually expired
@@ -759,7 +782,7 @@ export async function processExpiredWavesForOrder(orderId: string): Promise<void
         lifetimeMs,
         consecutiveEmptyWaves: emptyWaves,
         reason: waveCount >= MAX_WAVE_COUNT ? 'max_wave_count' :
-                lifetimeMs >= MAX_DISPATCH_LIFETIME_MS ? 'max_lifetime' : 'consecutive_empty_waves',
+          lifetimeMs >= MAX_DISPATCH_LIFETIME_MS ? 'max_lifetime' : 'consecutive_empty_waves',
         result: 'terminalizing_order',
       }));
 
@@ -1112,6 +1135,7 @@ export async function handleOfferRejection(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const now = admin.firestore.Timestamp.now();
+    let rejectedOrderId: string | null = null;
 
     await db.runTransaction(async (transaction) => {
       const offerRef = db.collection('dispatch_offers').doc(offerId);
@@ -1131,16 +1155,31 @@ export async function handleOfferRejection(
         throw new Error(`offer_${offer.status}`);
       }
 
+      rejectedOrderId = offer.orderId;
+
       // Update offer status
       transaction.update(offerRef, {
         status: 'rejected',
         respondedAt: now,
       });
 
-      // Update driver state (clear active offer)
+      // Update driver state (clear active offer, set available)
       transaction.update(db.collection('driver_dispatch_state').doc(driverId), {
+        status: 'available',
         activeOfferId: null,
         updatedAt: now,
+      });
+
+      // Record rejection so this order never appears to this driver again
+      // (in getNearbyOrders and subsequent dispatch waves)
+      const rejectionRef = db.collection('driver_rejected_orders').doc();
+      transaction.set(rejectionRef, {
+        driverId,
+        orderId: offer.orderId,
+        rejectedAt: now,
+        expiresAt: admin.firestore.Timestamp.fromDate(
+          new Date(now.toMillis() + 24 * 60 * 60 * 1000) // 24 hours
+        ),
       });
 
       // Update metrics — set+merge to tolerate missing doc
@@ -1153,6 +1192,7 @@ export async function handleOfferRejection(
     console.log('[DispatchEngine] Offer rejected', {
       offer_id: offerId,
       driver_id: driverId,
+      order_id: rejectedOrderId,
     });
 
     return { success: true };

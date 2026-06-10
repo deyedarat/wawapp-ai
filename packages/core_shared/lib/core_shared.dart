@@ -17,3 +17,4 @@ export 'src/observability/waw_log.dart';
 export 'src/order.dart';
 export 'src/order_status.dart';
 export 'src/saved_location.dart';
+export 'src/shared_place.dart';

@@ -187,7 +187,7 @@ class AdminOrdersService {
         if (notes != null && notes.isNotEmpty) 'notes': notes,
         'pickup': {'lat': pickupLat, 'lng': pickupLng, 'label': pickupAddress},
         'dropoff': {'lat': dropoffLat, 'lng': dropoffLng, 'label': dropoffAddress},
-        'status': 'assigning',
+        'status': 'matching',
         'assignedDriverId': null,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),

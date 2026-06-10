@@ -17,6 +17,7 @@
  * @version 2.0.0
  */
 
+import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions/v1';
 import { safeEnqueueOrder } from './dispatch';
 
@@ -32,13 +33,22 @@ export const notifyNewOrderV2 = functions.firestore
       created_at: orderData.createdAt,
     });
 
-    // Only process orders in 'matching' status
-    if (orderData.status !== 'matching') {
-      console.log('[NotifyNewOrderV2] Order not in matching status, skipping', {
+    // Only process orders in 'matching' or 'assigning' status
+    if (orderData.status !== 'matching' && orderData.status !== 'assigning') {
+      console.log('[NotifyNewOrderV2] Order not in matching/assigning status, skipping', {
         order_id: orderId,
         status: orderData.status,
       });
       return null;
+    }
+
+    // Normalize: convert 'assigning' to 'matching' so dispatch engine works correctly
+    if (orderData.status === 'assigning') {
+      console.log('[NotifyNewOrderV2] Normalizing status from assigning to matching', {
+        order_id: orderId,
+      });
+      await snapshot.ref.update({ status: 'matching', updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+      orderData.status = 'matching';
     }
 
     // Validate pickup location (fast pre-check before full intake)

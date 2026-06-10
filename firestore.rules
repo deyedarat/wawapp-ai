@@ -299,6 +299,15 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Shared places (admin-managed, visible to all authenticated users)
+    match /shared_places/{placeId} {
+      // All authenticated users can read active shared places
+      allow read: if isSignedIn();
+
+      // Only admins can create/update/delete
+      allow create, update, delete: if isAdmin();
+    }
+
     // Admin saved locations (map picker)
     match /admin_saved_locations/{userId} {
       allow read, write: if isSignedIn() && request.auth.uid == userId;

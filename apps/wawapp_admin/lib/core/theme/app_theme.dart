@@ -35,10 +35,11 @@ class AdminAppTheme {
 
       // Card
       cardTheme: CardThemeData(
-        elevation: AdminElevation.low,
+        elevation: 0,
         color: AdminAppColors.cardLight,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
+          side: const BorderSide(color: AdminAppColors.borderLight, width: 0.5),
         ),
       ),
 
@@ -51,13 +52,8 @@ class AdminAppTheme {
           backgroundColor: AdminAppColors.primaryGreen,
           foregroundColor: Colors.white,
           elevation: AdminElevation.low,
-          padding: EdgeInsets.symmetric(
-            horizontal: AdminSpacing.lg,
-            vertical: AdminSpacing.md,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-          ),
+          padding: EdgeInsets.symmetric(horizontal: AdminSpacing.lg, vertical: AdminSpacing.md),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AdminSpacing.radiusSm)),
           textStyle: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -70,13 +66,8 @@ class AdminAppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AdminAppColors.primaryGreen,
           side: const BorderSide(color: AdminAppColors.primaryGreen),
-          padding: EdgeInsets.symmetric(
-            horizontal: AdminSpacing.lg,
-            vertical: AdminSpacing.md,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-          ),
+          padding: EdgeInsets.symmetric(horizontal: AdminSpacing.lg, vertical: AdminSpacing.md),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AdminSpacing.radiusSm)),
           textStyle: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -88,10 +79,7 @@ class AdminAppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AdminAppColors.primaryGreen,
-          padding: EdgeInsets.symmetric(
-            horizontal: AdminSpacing.md,
-            vertical: AdminSpacing.sm,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: AdminSpacing.md, vertical: AdminSpacing.sm),
           textStyle: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -114,8 +102,7 @@ class AdminAppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-          borderSide:
-              const BorderSide(color: AdminAppColors.primaryGreen, width: 2),
+          borderSide: const BorderSide(color: AdminAppColors.primaryGreen, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
@@ -125,17 +112,10 @@ class AdminAppTheme {
       ),
 
       // Divider
-      dividerTheme: const DividerThemeData(
-        color: AdminAppColors.dividerLight,
-        thickness: 1,
-        space: 1,
-      ),
+      dividerTheme: const DividerThemeData(color: AdminAppColors.dividerLight, thickness: 1, space: 1),
 
       // Drawer
-      drawerTheme: DrawerThemeData(
-        backgroundColor: AdminAppColors.surfaceLight,
-        elevation: AdminElevation.medium,
-      ),
+      drawerTheme: DrawerThemeData(backgroundColor: AdminAppColors.surfaceLight, elevation: AdminElevation.medium),
     );
   }
 
@@ -168,11 +148,13 @@ class AdminAppTheme {
 
       // Card
       cardTheme: CardThemeData(
-        elevation: AdminElevation.low,
+        elevation: 0,
         color: AdminAppColors.cardDark,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AdminSpacing.radiusMd),
+          side: const BorderSide(color: AdminAppColors.borderDark, width: 0.5),
         ),
+        margin: const EdgeInsets.all(0),
       ),
 
       // Text theme
@@ -184,13 +166,8 @@ class AdminAppTheme {
           backgroundColor: AdminAppColors.primaryGreen,
           foregroundColor: Colors.white,
           elevation: AdminElevation.low,
-          padding: EdgeInsets.symmetric(
-            horizontal: AdminSpacing.lg,
-            vertical: AdminSpacing.md,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-          ),
+          padding: EdgeInsets.symmetric(horizontal: AdminSpacing.lg, vertical: AdminSpacing.md),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AdminSpacing.radiusSm)),
         ),
       ),
 
@@ -208,24 +185,16 @@ class AdminAppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AdminSpacing.radiusSm),
-          borderSide:
-              const BorderSide(color: AdminAppColors.primaryGreen, width: 2),
+          borderSide: const BorderSide(color: AdminAppColors.primaryGreen, width: 2),
         ),
         contentPadding: EdgeInsets.all(AdminSpacing.md),
       ),
 
       // Divider
-      dividerTheme: const DividerThemeData(
-        color: AdminAppColors.dividerDark,
-        thickness: 1,
-        space: 1,
-      ),
+      dividerTheme: const DividerThemeData(color: AdminAppColors.dividerDark, thickness: 1, space: 1),
 
       // Drawer
-      drawerTheme: DrawerThemeData(
-        backgroundColor: AdminAppColors.surfaceDark,
-        elevation: AdminElevation.medium,
-      ),
+      drawerTheme: DrawerThemeData(backgroundColor: AdminAppColors.surfaceDark, elevation: AdminElevation.medium),
     );
   }
 }

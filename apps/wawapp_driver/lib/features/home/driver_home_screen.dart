@@ -16,6 +16,10 @@ import '../../l10n/app_localizations.dart';
 import '../../services/analytics_service.dart';
 import '../../services/connectivity_service.dart';
 import '../../services/driver_status_service.dart';
+import '../../services/notification_service.dart';
+import '../../services/orders_service.dart';
+import '../nearby/providers/dispatch_offers_provider.dart';
+import '../orders/models/dispatch_offer.dart';
 import '../permissions/permission_helper.dart';
 import '../permissions/permission_setup_screen.dart';
 import '../../services/location_service.dart';
@@ -56,6 +60,92 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   StreamSubscription<ServiceStatus>? _locationServiceSubscription;
   StreamSubscription<Position>? _accuracyNudgeSubscription;
 
+  /// Dedup set for offers handled via Firestore backup listener
+  final Set<String> _firestoreHandledOffers = {};
+
+  /// Polling timer as last-resort fallback when FCM + Firestore listener both fail
+  Timer? _offerPollingTimer;
+
+  /// Handle a dispatch offer detected via Firestore realtime listener
+  /// (backup path when FCM is delayed).
+  Future<void> _handleFirestoreOffer(DispatchOffer offer) async {
+    if (!mounted) return;
+    final order = await ref.read(ordersServiceProvider).getOrder(offer.orderId);
+    if (!mounted || order == null) return;
+
+    if (kDebugMode) {
+      dev.log('[DriverHome] 🔔 Firestore backup: routing offer ${offer.offerId} to handleIncomingOffer');
+    }
+
+    await NotificationService().handleIncomingOffer({
+      'type': 'wave_offer',
+      'offerId': offer.offerId,
+      'orderId': offer.orderId,
+      'pickupLabel': order.pickupAddress,
+      'dropoffLabel': order.dropoffAddress,
+      'price': order.price.toString(),
+      'distance': offer.distance.toString(),
+      'createdAt': offer.sentAt.millisecondsSinceEpoch.toString(),
+      'round': offer.round.toString(),
+    }, source: 'firestore');
+  }
+
+  /// Start polling for dispatch offers every 30 seconds (HTTPS fallback).
+  /// This catches offers when both FCM and Firestore WebSocket fail
+  /// (common on some mobile networks that throttle persistent connections).
+  void _startOfferPolling() {
+    _offerPollingTimer?.cancel();
+    _offerPollingTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
+      if (!mounted) return;
+
+      final authState = ref.read(authProvider);
+      final uid = authState.user?.uid;
+      if (uid == null) return;
+
+      // Only poll if driver is online
+      final isOnline = await DriverStatusService.instance.getOnlineStatus(uid);
+      if (!isOnline) return;
+
+      try {
+        final snapshot = await FirebaseFirestore.instance
+            .collection('dispatch_offers')
+            .where('driverId', isEqualTo: uid)
+            .where('status', isEqualTo: 'sent')
+            .orderBy('sentAt', descending: true)
+            .limit(1)
+            .get(const GetOptions(source: Source.server));
+
+        if (snapshot.docs.isEmpty || !mounted) return;
+
+        final doc = snapshot.docs.first;
+        final offer = DispatchOffer.fromFirestore(doc);
+
+        // Skip expired or already handled
+        if (!offer.isValid) return;
+        if (_firestoreHandledOffers.contains(offer.offerId)) return;
+
+        _firestoreHandledOffers.add(offer.offerId);
+
+        if (kDebugMode) {
+          dev.log('[DriverHome] 📡 Polling fallback: found offer ${offer.offerId}');
+        }
+
+        await _handleFirestoreOffer(offer);
+      } catch (e) {
+        // Non-fatal: polling is best-effort
+        if (kDebugMode) {
+          dev.log('[DriverHome] Polling error (non-fatal): $e');
+        }
+      }
+    });
+  }
+
+  /// Stop polling.
+  void _stopOfferPolling() {
+    _offerPollingTimer?.cancel();
+    _offerPollingTimer = null;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -70,12 +160,15 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     ConnectivityService().onForcedOffline = _onInternetLost;
     // Check eligibility nudges after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkEligibilityNudges());
+    // Start polling fallback for offer detection (HTTPS, works on all networks)
+    _startOfferPolling();
   }
 
   @override
   void dispose() {
     _accuracyNudgeSubscription?.cancel();
     _stopLocationMonitoring();
+    _stopOfferPolling();
     ConnectivityService().onForcedOffline = null;
     super.dispose();
   }
@@ -615,6 +708,22 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
     // Watch daily summary
     final dailySummaryAsync = driverId != null ? ref.watch(dailySummaryProvider(driverId)) : null;
+
+    // ── Firestore backup listener: catch new dispatch offers when FCM is delayed ──
+    ref.listen<AsyncValue<List<DispatchOffer>>>(dispatchOffersProvider, (previous, next) {
+      final offers = next.asData?.value;
+      if (offers == null || offers.isEmpty) return;
+      if (!isOnline) return;
+      final activeOrders = activeOrdersAsync.asData?.value ?? [];
+      if (activeOrders.isNotEmpty) return;
+
+      for (final offer in offers) {
+        if (_firestoreHandledOffers.contains(offer.offerId)) continue;
+        _firestoreHandledOffers.add(offer.offerId);
+        _handleFirestoreOffer(offer);
+        break; // handle one at a time; next offer processed on next emission
+      }
+    });
 
     final l10n = AppLocalizations.of(context)!;
     final isRTL = Directionality.of(context) == TextDirection.rtl;

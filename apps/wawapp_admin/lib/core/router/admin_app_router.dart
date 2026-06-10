@@ -20,7 +20,9 @@ import '../../features/settings/delivery_pricing_screen.dart';
 import '../../features/settings/service_zones_screen.dart';
 import '../../features/settings/working_hours_screen.dart';
 import '../../features/settings/security_settings_screen.dart';
+import '../../features/settings/admin_users_screen.dart';
 import '../../features/settings/audit_log_screen.dart';
+import '../../features/shared_places/shared_places_screen.dart';
 import '../../providers/admin_auth_providers.dart';
 
 final adminRouterProvider = Provider<GoRouter>((ref) {
@@ -95,6 +97,10 @@ final adminRouterProvider = Provider<GoRouter>((ref) {
       ),
       // ── Audit Log ──
       GoRoute(path: '/audit-log', name: 'audit-log', builder: (context, state) => const AuditLogScreen()),
+      // ── Shared Places ──
+      GoRoute(path: '/shared-places', name: 'shared-places', builder: (context, state) => const SharedPlacesScreen()),
+      // ── Admin Users Management ──
+      GoRoute(path: '/admin-users', name: 'admin-users', builder: (context, state) => const AdminUsersScreen()),
     ],
     errorBuilder: (context, state) => Scaffold(
       body: Center(

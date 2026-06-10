@@ -6,6 +6,7 @@ import '../theme/animations.dart';
 import '../theme/colors.dart';
 import '../utils/responsive_helper.dart';
 import 'admin_sidebar.dart';
+import 'breadcrumb.dart';
 import 'notifications_dropdown.dart';
 import '../../features/notifications/providers/admin_notifications_provider.dart';
 import '../../providers/theme_provider.dart';
@@ -70,6 +71,7 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold> with SingleTicker
   Widget build(BuildContext context) {
     final isMobile = ResponsiveHelper.shouldShowMobileLayout(context);
     final appBarHeight = ResponsiveHelper.getAppBarHeight(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Watch notifications from Firestore
     final notificationsAsync = ref.watch(adminNotificationsStreamProvider);
@@ -105,9 +107,15 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold> with SingleTicker
                       height: appBarHeight,
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
-                        border: const Border(bottom: BorderSide(color: AdminAppColors.borderLight)),
-                        boxShadow: const [
-                          BoxShadow(color: AdminAppColors.shadowLight, blurRadius: 4, offset: Offset(0, 2)),
+                        border: Border(
+                          bottom: BorderSide(color: isDark ? AdminAppColors.borderDark : AdminAppColors.borderLight),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: isDark ? AdminAppColors.shadowDark : AdminAppColors.shadowLight,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
                         ],
                       ),
                       child: Padding(
@@ -160,7 +168,7 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold> with SingleTicker
                                     borderSide: BorderSide.none,
                                   ),
                                   filled: true,
-                                  fillColor: AdminAppColors.backgroundLight,
+                                  fillColor: isDark ? AdminAppColors.backgroundDark : AdminAppColors.backgroundLight,
                                   contentPadding: EdgeInsets.symmetric(
                                     horizontal: isMobile ? AdminSpacing.sm : AdminSpacing.md,
                                     vertical: AdminSpacing.sm,
@@ -194,10 +202,18 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold> with SingleTicker
                             if (!isMobile || MediaQuery.of(context).size.width > 400)
                               HoverAnimatedContainer(
                                 child: IconButton(
-                                  icon: Icon(
-                                    ref.watch(themeModeProvider) == ThemeMode.dark
-                                        ? Icons.light_mode_outlined
-                                        : Icons.dark_mode_outlined,
+                                  icon: AnimatedSwitcher(
+                                    duration: AdminAnimations.fast,
+                                    transitionBuilder: (child, animation) {
+                                      return RotationTransition(
+                                        turns: Tween(begin: 0.75, end: 1.0).animate(animation),
+                                        child: FadeTransition(opacity: animation, child: child),
+                                      );
+                                    },
+                                    child: Icon(
+                                      isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                                      key: ValueKey(isDark),
+                                    ),
                                   ),
                                   onPressed: () {
                                     ref.read(themeModeProvider.notifier).toggle();
@@ -212,6 +228,23 @@ class _AdminScaffoldState extends ConsumerState<AdminScaffold> with SingleTicker
                         ),
                       ),
                     ),
+
+                    // Breadcrumb navigation (hidden on mobile and dashboard)
+                    if (!isMobile && GoRouterState.of(context).uri.path != '/')
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: AdminSpacing.lg, vertical: AdminSpacing.xs),
+                        decoration: BoxDecoration(
+                          color: isDark ? AdminAppColors.surfaceDark : AdminAppColors.surfaceLight,
+                          border: Border(
+                            bottom: BorderSide(
+                              color: isDark ? AdminAppColors.borderDark : AdminAppColors.borderLight,
+                              width: 0.5,
+                            ),
+                          ),
+                        ),
+                        child: AdminBreadcrumb.fromRoute(context),
+                      ),
 
                     // Content area with scroll
                     Expanded(
