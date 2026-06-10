@@ -381,6 +381,10 @@ class MainActivity : FlutterActivity() {
     /**
      * Request SYSTEM_ALERT_WINDOW permission for launching FullScreenNotificationActivity
      * over other apps on Android 12+. Only prompts once per install.
+     *
+     * NOTE: Some low-end devices (Samsung A03 Core, Go Edition) completely block
+     * this permission with "Feature unavailable" dialog. The app gracefully falls
+     * back to fullScreenIntent-based notifications on those devices.
      */
     private fun requestOverlayPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
@@ -397,10 +401,13 @@ class MainActivity : FlutterActivity() {
                 startActivity(intent)
                 android.widget.Toast.makeText(
                     this,
-                    "يحتاج التطبيق صلاحية الظهور فوق التطبيقات الأخرى لعرض طلبات الشحن الجديدة",
+                    "يحتاج التطبيق صلاحية الظهور فوق التطبيقات الأخرى لعرض طلبات الشحن الجديدة.\nإذا لم تتوفر هذه الخاصية، ستظهر الطلبات كإشعارات عادية.",
                     android.widget.Toast.LENGTH_LONG
                 ).show()
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+                // Device doesn't support overlay permission settings — fallback is automatic.
+                android.util.Log.d("MainActivity", "Overlay permission settings not available — using fullScreenIntent fallback")
+            }
         }
     }
 

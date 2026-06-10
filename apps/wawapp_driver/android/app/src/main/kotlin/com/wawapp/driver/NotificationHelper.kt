@@ -190,10 +190,21 @@ object NotificationHelper {
     ) {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val channelId = when (notificationType) {
-            "trip_start_reminder" -> CHANNEL_ID_SILENT_FULLSCREEN  // Silent — TripReminderActivity handles UX
-            "unassigned_order_reminder" -> CHANNEL_ID_UNASSIGNED_ORDERS
-            else -> CHANNEL_ID_SILENT_FULLSCREEN  // Silent fallback — no heads-up
+        // FIX: When overlay permission is unavailable (e.g. Samsung A03 Core blocks
+        // SYSTEM_ALERT_WINDOW entirely), we CANNOT launch the Activity directly.
+        // In that case, use a HIGH-priority channel so the system's fullScreenIntent
+        // mechanism fires the FullScreenNotificationActivity automatically (lock screen)
+        // or shows heads-up (unlocked). This is the standard Android behavior.
+        val canOverlay = android.provider.Settings.canDrawOverlays(context)
+        val channelId = when {
+            notificationType == "trip_start_reminder" -> {
+                if (canOverlay) CHANNEL_ID_SILENT_FULLSCREEN else CHANNEL_ID_TRIP_REMINDERS
+            }
+            notificationType == "unassigned_order_reminder" -> CHANNEL_ID_UNASSIGNED_ORDERS
+            // new_order: use silent channel if overlay works (Activity handles UX),
+            // otherwise use high-priority channel so fullScreenIntent fires.
+            canOverlay -> CHANNEL_ID_SILENT_FULLSCREEN
+            else -> CHANNEL_ID_NEW_ORDERS
         }
 
         // Fixed notification ID per type — forces Android to REPLACE the previous
@@ -242,7 +253,10 @@ object NotificationHelper {
 
         // FIX: Play sound immediately at t=0 on Android 12+ where notification is silent.
         // Android < 12 gets t=0 sound from the channel via buildLegacyFullScreenNotification.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        // When canOverlay=false, the HIGH-priority channel already plays its own sound,
+        // so we skip manual playback at t=0 to avoid double-sound. The scheduled repeats
+        // (starting at t=8s) still fire via playSoundOnce for both paths.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && canOverlay) {
             playSoundOnce(context)
         }
 
@@ -277,11 +291,16 @@ object NotificationHelper {
 
         val foreground = isForeground(context)
         val isOrderOffer = notificationType == "new_order" || notificationType == "unassigned_order_reminder"
+        val canOverlay = android.provider.Settings.canDrawOverlays(context)
 
         val fullScreenPendingIntent = createFullScreenPendingIntent(
             context, orderId, pickupLabel, dropoffLabel, price, distance, createdAt, notificationType
         )
-        val contentPendingIntent = if (foreground && isOrderOffer) {
+        // FIX: When overlay is unavailable, ALWAYS set fullScreenIntent regardless of
+        // foreground state. The system will launch the Activity (lock screen) or show
+        // heads-up (unlocked). Without this, Samsung A03 Core and similar devices get
+        // a silent notification that the driver never notices.
+        val contentPendingIntent = if (foreground && isOrderOffer && canOverlay) {
             createForegroundContentIntent(context, orderId, notificationType)
         } else null
         val deleteIntent = createDeletePendingIntent(context, orderId)
@@ -317,18 +336,24 @@ object NotificationHelper {
                 null, "لاحقاً", snoozePendingIntent
             ).build())
 
-        if (foreground && isOrderOffer) {
+        if (foreground && isOrderOffer && canOverlay) {
+            // Overlay available + foreground: Activity is launched directly by
+            // MyFirebaseMessagingService, so just set contentIntent.
             builder.setContentIntent(contentPendingIntent)
         } else {
+            // No overlay OR background/locked: rely on system fullScreenIntent mechanism.
             builder.setFullScreenIntent(fullScreenPendingIntent, true)
         }
 
         val notification = builder.build()
 
-        // Remove sound and vibration flags to prevent heads-up
-        notification.sound = null
-        notification.vibrate = null
-        notification.defaults = 0
+        // Remove sound and vibration flags ONLY when using silent channel.
+        // When using high-priority channel (no overlay), let the channel handle sound.
+        if (canOverlay) {
+            notification.sound = null
+            notification.vibrate = null
+            notification.defaults = 0
+        }
 
         return notification
     }
@@ -597,6 +622,12 @@ object NotificationHelper {
             activeMediaPlayer?.release()
             activeMediaPlayer = null
 
+            // Boost volume to maximum (ringtone level)
+            val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
+            val maxVolume = audioManager.getStreamMaxVolume(android.media.AudioManager.STREAM_ALARM)
+            val previousVolume = audioManager.getStreamVolume(android.media.AudioManager.STREAM_ALARM)
+            audioManager.setStreamVolume(android.media.AudioManager.STREAM_ALARM, maxVolume, 0)
+
             val afd = context.resources.openRawResourceFd(R.raw.trip_reminder)
                 ?: run {
                     Log.e(TAG, "Cannot open raw resource trip_reminder")
@@ -611,6 +642,7 @@ object NotificationHelper {
                         .setUsage(AudioAttributes.USAGE_ALARM)
                         .build()
                 )
+                setVolume(1.0f, 1.0f)
                 setOnCompletionListener { mp ->
                     mp.release()
                     activeMediaPlayer = null
