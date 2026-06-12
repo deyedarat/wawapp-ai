@@ -1,5 +1,5 @@
-import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions/v1';
 import { resetRateLimit } from './rateLimiting';
 
 const MAURITANIA_PHONE_REGEX = /^\+222[2-4]\d{7}$/;
@@ -75,14 +75,30 @@ export const verifyOtp = functions
           }
         }
 
-        isNewUser = true;
-        await admin.firestore().collection(collection).doc(uid).set({
-          phone,
-          createdAt: admin.firestore.Timestamp.now(),
-          authMethod: 'otp',
-        });
+        // FIX: Check if document already exists in Firestore before overwriting.
+        // This handles the case where the phone query didn't match (e.g. format mismatch)
+        // but the document actually exists with a pinHash. Using merge prevents data loss.
+        const existingDoc = await admin.firestore().collection(collection).doc(uid).get();
+        if (existingDoc.exists) {
+          // Document exists — merge to preserve existing fields (pinHash, etc.)
+          console.log(`[verifyOtp] Document exists for ${uid} in ${collection} — merging (preserving pinHash)`);
+          isNewUser = false;
+          await admin.firestore().collection(collection).doc(uid).set({
+            phone,
+            authMethod: 'otp',
+            updatedAt: admin.firestore.Timestamp.now(),
+          }, { merge: true });
+        } else {
+          // Truly new user — create fresh document
+          isNewUser = true;
+          await admin.firestore().collection(collection).doc(uid).set({
+            phone,
+            createdAt: admin.firestore.Timestamp.now(),
+            authMethod: 'otp',
+          });
+        }
 
-        console.log(`[verifyOtp] ${collection} doc created for: ${uid}`);
+        console.log(`[verifyOtp] ${collection} doc ${isNewUser ? 'created' : 'updated'} for: ${uid}`);
       }
 
       const customToken = await admin.auth().createCustomToken(uid, {
