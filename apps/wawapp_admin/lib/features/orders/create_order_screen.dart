@@ -1,22 +1,224 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:core_shared/core_shared.dart';
 
 import '../../../core/theme/colors.dart';
 import '../../../providers/admin_data_providers.dart';
 import 'widgets/map_location_picker.dart';
 
 // ============================================================================
-// Pricing – uses core_shared canonical implementation
+// Pricing – mirrors client app exactly
 // ============================================================================
 
-/// Helper class for admin-specific distance calculation
-class AdminPricingHelper {
+/// Shipment types – same as client app
+enum AdminShipmentType {
+  foodAndPerishables,
+  furnitureAndHomeSetup,
+  constructionMaterialsAndHeavyLoad,
+  electricalAndHomeAppliances,
+  generalGoodsAndBoxes,
+  fragileOrSensitiveCargo,
+}
+
+extension AdminShipmentTypeExt on AdminShipmentType {
+  String get arabicLabel {
+    switch (this) {
+      case AdminShipmentType.foodAndPerishables:
+        return 'مواد غذائية وسريعة التلف';
+      case AdminShipmentType.furnitureAndHomeSetup:
+        return 'أثاث وتجهيزات منزلية';
+      case AdminShipmentType.constructionMaterialsAndHeavyLoad:
+        return 'مواد بناء وحمولات ثقيلة';
+      case AdminShipmentType.electricalAndHomeAppliances:
+        return 'أجهزة كهربائية وكهرومنزلية';
+      case AdminShipmentType.generalGoodsAndBoxes:
+        return 'بضائع عامة وكرتون';
+      case AdminShipmentType.fragileOrSensitiveCargo:
+        return 'حمولة حساسة / قابلة للكسر';
+    }
+  }
+
+  double get multiplier {
+    switch (this) {
+      case AdminShipmentType.foodAndPerishables:
+        return 1.10;
+      case AdminShipmentType.furnitureAndHomeSetup:
+        return 1.30;
+      case AdminShipmentType.constructionMaterialsAndHeavyLoad:
+        return 1.60;
+      case AdminShipmentType.electricalAndHomeAppliances:
+        return 1.25;
+      case AdminShipmentType.generalGoodsAndBoxes:
+        return 1.00;
+      case AdminShipmentType.fragileOrSensitiveCargo:
+        return 1.40;
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case AdminShipmentType.foodAndPerishables:
+        return Icons.restaurant;
+      case AdminShipmentType.furnitureAndHomeSetup:
+        return Icons.chair;
+      case AdminShipmentType.constructionMaterialsAndHeavyLoad:
+        return Icons.construction;
+      case AdminShipmentType.electricalAndHomeAppliances:
+        return Icons.electrical_services;
+      case AdminShipmentType.generalGoodsAndBoxes:
+        return Icons.inventory_2;
+      case AdminShipmentType.fragileOrSensitiveCargo:
+        return Icons.warning_amber;
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case AdminShipmentType.foodAndPerishables:
+        return Colors.green;
+      case AdminShipmentType.furnitureAndHomeSetup:
+        return Colors.brown;
+      case AdminShipmentType.constructionMaterialsAndHeavyLoad:
+        return Colors.orange;
+      case AdminShipmentType.electricalAndHomeAppliances:
+        return Colors.blue;
+      case AdminShipmentType.generalGoodsAndBoxes:
+        return Colors.grey;
+      case AdminShipmentType.fragileOrSensitiveCargo:
+        return Colors.red;
+    }
+  }
+
+  static AdminShipmentType get defaultType =>
+      AdminShipmentType.generalGoodsAndBoxes;
+}
+
+/// Cargo weight – same as client app
+enum AdminCargoWeight {
+  halfTon,
+  oneTon,
+  oneAndHalfTon,
+  twoTons,
+}
+
+extension AdminCargoWeightExt on AdminCargoWeight {
+  double get tons {
+    switch (this) {
+      case AdminCargoWeight.halfTon:
+        return 0.5;
+      case AdminCargoWeight.oneTon:
+        return 1.0;
+      case AdminCargoWeight.oneAndHalfTon:
+        return 1.5;
+      case AdminCargoWeight.twoTons:
+        return 2.0;
+    }
+  }
+
+  int get costMRU {
+    switch (this) {
+      case AdminCargoWeight.halfTon:
+        return 70;
+      case AdminCargoWeight.oneTon:
+        return 140;
+      case AdminCargoWeight.oneAndHalfTon:
+        return 210;
+      case AdminCargoWeight.twoTons:
+        return 280;
+    }
+  }
+
+  String get arabicLabel {
+    switch (this) {
+      case AdminCargoWeight.halfTon:
+        return 'نصف طن';
+      case AdminCargoWeight.oneTon:
+        return 'طن';
+      case AdminCargoWeight.oneAndHalfTon:
+        return 'طن ونصف';
+      case AdminCargoWeight.twoTons:
+        return 'طنان';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case AdminCargoWeight.halfTon:
+        return Icons.fitness_center;
+      case AdminCargoWeight.oneTon:
+        return Icons.scale;
+      case AdminCargoWeight.oneAndHalfTon:
+        return Icons.scale;
+      case AdminCargoWeight.twoTons:
+        return Icons.local_shipping;
+    }
+  }
+
+  static AdminCargoWeight get defaultWeight => AdminCargoWeight.halfTon;
+}
+
+/// Full pricing config – mirrors client exactly
+class AdminPricingConfig {
+  static const int base = 60;
+  static const int perKm = 20;
+  static const int minFare = 100;
+  static const double antigravityMultiplier = 2.2;
+  static const int perTonMRU = 140;
+
+  static int roundTo5(num v) => (v / 5).round() * 5;
+
+  static ({
+    int base,
+    int distancePart,
+    int rawTotal,
+    double multiplier,
+    int rounded,
+    int weightCost,
+    int total,
+  }) computeBreakdown(
+    double km,
+    AdminShipmentType shipmentType,
+    AdminCargoWeight cargoWeight,
+  ) {
+    const b = base;
+    final distancePart = (perKm * km).round();
+    final rawTotal = b + distancePart;
+
+    final multiplier = shipmentType.multiplier;
+    final afterShipment = rawTotal * multiplier;
+    final afterAntigravity = afterShipment * antigravityMultiplier;
+
+    final withMin =
+        afterAntigravity < minFare ? minFare.toDouble() : afterAntigravity;
+    final rounded = roundTo5(withMin);
+
+    final weightCost = cargoWeight.costMRU;
+    final total = rounded + weightCost;
+
+    return (
+      base: b,
+      distancePart: distancePart,
+      rawTotal: rawTotal,
+      multiplier: multiplier,
+      rounded: rounded,
+      weightCost: weightCost,
+      total: total,
+    );
+  }
+
   /// Calculate distance using Haversine
-  static double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
+  static double calculateDistance(
+    double lat1,
+    double lng1,
+    double lat2,
+    double lng2,
+  ) {
     const Distance distance = Distance();
-    return distance.as(LengthUnit.Kilometer, LatLng(lat1, lng1), LatLng(lat2, lng2));
+    return distance.as(
+      LengthUnit.Kilometer,
+      LatLng(lat1, lng1),
+      LatLng(lat2, lng2),
+    );
   }
 }
 
@@ -41,8 +243,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
   double? _distanceKm;
   bool _isCreating = false;
 
-  ShipmentType _shipmentType = ShipmentTypeExtension.defaultType;
-  CargoWeight _cargoWeight = CargoWeightExtension.defaultWeight;
+  AdminShipmentType _shipmentType = AdminShipmentTypeExt.defaultType;
+  AdminCargoWeight _cargoWeight = AdminCargoWeightExt.defaultWeight;
 
   @override
   void dispose() {
@@ -51,18 +253,20 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
     super.dispose();
   }
 
-  ({int base, int distancePart, int rawTotal, double multiplier, int rounded, int weightCost, int total})?
-  get _breakdown {
+  ({
+    int base,
+    int distancePart,
+    int rawTotal,
+    double multiplier,
+    int rounded,
+    int weightCost,
+    int total,
+  })? get _breakdown {
     if (_distanceKm == null) return null;
-    final b = Pricing.computeWithShipmentType(_distanceKm!, _shipmentType, cargoWeight: _cargoWeight);
-    return (
-      base: b.base,
-      distancePart: b.distancePart,
-      rawTotal: b.rawTotal,
-      multiplier: b.multiplier,
-      rounded: b.rounded,
-      weightCost: b.weightCost,
-      total: b.rounded + b.weightCost,
+    return AdminPricingConfig.computeBreakdown(
+      _distanceKm!,
+      _shipmentType,
+      _cargoWeight,
     );
   }
 
@@ -70,7 +274,10 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
     final result = await Navigator.push<LocationData>(
       context,
       MaterialPageRoute(
-        builder: (context) => MapLocationPicker(title: 'اختر موقع الاستلام', initialLocation: _pickupLocation),
+        builder: (context) => MapLocationPicker(
+          title: 'اختر موقع الاستلام',
+          initialLocation: _pickupLocation,
+        ),
       ),
     );
     if (result != null) {
@@ -85,7 +292,10 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
     final result = await Navigator.push<LocationData>(
       context,
       MaterialPageRoute(
-        builder: (context) => MapLocationPicker(title: 'اختر موقع التسليم', initialLocation: _dropoffLocation),
+        builder: (context) => MapLocationPicker(
+          title: 'اختر موقع التسليم',
+          initialLocation: _dropoffLocation,
+        ),
       ),
     );
     if (result != null) {
@@ -98,7 +308,7 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
 
   void _recalculateDistance() {
     if (_pickupLocation != null && _dropoffLocation != null) {
-      final distance = AdminPricingHelper.calculateDistance(
+      final distance = AdminPricingConfig.calculateDistance(
         _pickupLocation!.latitude,
         _pickupLocation!.longitude,
         _dropoffLocation!.latitude,
@@ -135,7 +345,9 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
         dropoffLng: _dropoffLocation!.longitude,
         weightTons: _cargoWeight.tons,
         shipmentType: _shipmentType.name,
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
       );
 
       if (mounted) {
@@ -154,9 +366,12 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
   }
 
   void _showSnack(String msg, {bool isError = false}) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: isError ? Colors.red : AdminAppColors.successLight));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: isError ? Colors.red : AdminAppColors.successLight,
+      ),
+    );
   }
 
   @override
@@ -183,7 +398,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
                 labelText: 'رقم هاتف العميل',
                 prefixText: '+222 ',
                 prefixIcon: const Icon(Icons.phone),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Colors.grey[50],
               ),
@@ -233,7 +449,10 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
             const SizedBox(height: 32),
 
             // ── Price Summary ─────────────────────────────────────────────
-            if (bd != null) ...[_buildPriceSummary(bd), const SizedBox(height: 32)],
+            if (bd != null) ...[
+              _buildPriceSummary(bd),
+              const SizedBox(height: 32),
+            ],
 
             // ── Notes ─────────────────────────────────────────────────────
             TextFormField(
@@ -241,7 +460,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
               decoration: InputDecoration(
                 labelText: 'ملاحظات (اختياري)',
                 prefixIcon: const Icon(Icons.note_outlined),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: Colors.grey[50],
               ),
@@ -257,16 +477,22 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
                 backgroundColor: AdminAppColors.primaryGreen,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 18),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 elevation: 2,
               ),
               child: _isCreating
                   ? const SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
                     )
-                  : const Text('إنشاء الطلب', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  : const Text(
+                      'إنشاء الطلب',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
             ),
             const SizedBox(height: 24),
           ],
@@ -281,7 +507,10 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
       children: [
         Icon(icon, color: AdminAppColors.primaryGreen, size: 22),
         const SizedBox(width: 8),
-        Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+        ),
       ],
     );
   }
@@ -300,7 +529,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: location != null ? color : Colors.grey[300]!, width: 2),
+          border: Border.all(
+              color: location != null ? color : Colors.grey[300]!, width: 2),
           borderRadius: BorderRadius.circular(12),
           color: location != null ? color.withOpacity(0.05) : Colors.white,
         ),
@@ -308,7 +538,10 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
           children: [
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: Icon(icon, color: color, size: 28),
             ),
             const SizedBox(width: 16),
@@ -318,12 +551,19 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey[700]),
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[700]),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     location?.address ?? 'اضغط لتحديد الموقع على الخريطة',
-                    style: TextStyle(fontSize: 13, color: location != null ? Colors.black87 : Colors.grey[500]),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color:
+                          location != null ? Colors.black87 : Colors.grey[500],
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -349,7 +589,7 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: ShipmentType.values.map((type) {
+      children: AdminShipmentType.values.map((type) {
         final isSelected = _shipmentType == type;
         return GestureDetector(
           onTap: () => setState(() => _shipmentType = type),
@@ -357,34 +597,46 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected ? type.color.withOpacity(0.15) : Colors.grey[50],
-              border: Border.all(color: isSelected ? type.color : Colors.grey[300]!, width: isSelected ? 2 : 1),
+              color:
+                  isSelected ? type.color.withOpacity(0.15) : Colors.grey[50],
+              border: Border.all(
+                color: isSelected ? type.color : Colors.grey[300]!,
+                width: isSelected ? 2 : 1,
+              ),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(type.icon, size: 18, color: isSelected ? type.color : Colors.grey[600]),
+                Icon(type.icon,
+                    size: 18,
+                    color: isSelected ? type.color : Colors.grey[600]),
                 const SizedBox(width: 6),
                 Text(
                   type.arabicLabel,
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                     color: isSelected ? type.color : Colors.grey[700],
                   ),
                 ),
                 if (type.multiplier != 1.0) ...[
                   const SizedBox(width: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                     decoration: BoxDecoration(
                       color: type.color.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       '+${((type.multiplier - 1) * 100).round()}%',
-                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: type.color),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: type.color,
+                      ),
                     ),
                   ),
                 ],
@@ -399,7 +651,7 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
   // ── Weight selector ──────────────────────────────────────────────────────
   Widget _buildWeightSelector() {
     return Row(
-      children: CargoWeight.values.map((w) {
+      children: AdminCargoWeight.values.map((w) {
         final isSelected = _cargoWeight == w;
         return Expanded(
           child: GestureDetector(
@@ -409,9 +661,13 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 4),
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
               decoration: BoxDecoration(
-                color: isSelected ? AdminAppColors.primaryGreen.withOpacity(0.12) : Colors.grey[50],
+                color: isSelected
+                    ? AdminAppColors.primaryGreen.withOpacity(0.12)
+                    : Colors.grey[50],
                 border: Border.all(
-                  color: isSelected ? AdminAppColors.primaryGreen : Colors.grey[300]!,
+                  color: isSelected
+                      ? AdminAppColors.primaryGreen
+                      : Colors.grey[300]!,
                   width: isSelected ? 2 : 1,
                 ),
                 borderRadius: BorderRadius.circular(10),
@@ -419,15 +675,24 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(w.icon, size: 22, color: isSelected ? AdminAppColors.primaryGreen : Colors.grey[500]),
+                  Icon(
+                    w.icon,
+                    size: 22,
+                    color: isSelected
+                        ? AdminAppColors.primaryGreen
+                        : Colors.grey[500],
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     w.arabicLabel,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      color: isSelected ? AdminAppColors.primaryGreen : Colors.grey[700],
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected
+                          ? AdminAppColors.primaryGreen
+                          : Colors.grey[700],
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -435,8 +700,11 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
                     '+${w.costMRU} MRU',
                     style: TextStyle(
                       fontSize: 10,
-                      color: isSelected ? AdminAppColors.primaryGreen : Colors.grey[500],
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected
+                          ? AdminAppColors.primaryGreen
+                          : Colors.grey[500],
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                 ],
@@ -450,18 +718,30 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
 
   // ── Price summary ────────────────────────────────────────────────────────
   Widget _buildPriceSummary(
-    ({int base, int distancePart, int rawTotal, double multiplier, int rounded, int weightCost, int total}) bd,
+    ({
+      int base,
+      int distancePart,
+      int rawTotal,
+      double multiplier,
+      int rounded,
+      int weightCost,
+      int total,
+    }) bd,
   ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AdminAppColors.primaryGreen.withOpacity(0.08), AdminAppColors.primaryGreen.withOpacity(0.03)],
+          colors: [
+            AdminAppColors.primaryGreen.withOpacity(0.08),
+            AdminAppColors.primaryGreen.withOpacity(0.03),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AdminAppColors.primaryGreen.withOpacity(0.3), width: 1.5),
+        border: Border.all(
+            color: AdminAppColors.primaryGreen.withOpacity(0.3), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -470,29 +750,44 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('السعر الإجمالي', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                'السعر الإجمالي',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               Text(
                 '${bd.total} MRU',
-                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: AdminAppColors.primaryGreen),
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: AdminAppColors.primaryGreen,
+                ),
               ),
             ],
           ),
           const Divider(height: 24),
 
           // Distance
-          _breakdownRow('المسافة', '${_distanceKm!.toStringAsFixed(2)} كم'),
+          _breakdownRow(
+            'المسافة',
+            '${_distanceKm!.toStringAsFixed(2)} كم',
+          ),
           const SizedBox(height: 6),
           _breakdownRow('السعر الأساسي', '${bd.base} MRU'),
           const SizedBox(height: 6),
-          _breakdownRow('تكلفة المسافة (${_distanceKm!.toStringAsFixed(2)} كم)', '${bd.distancePart} MRU'),
+          _breakdownRow('تكلفة المسافة (${_distanceKm!.toStringAsFixed(2)} كم)',
+              '${bd.distancePart} MRU'),
           if (bd.multiplier != 1.0) ...[
             const SizedBox(height: 6),
-            _breakdownRow('معامل نوع الشحنة', '× ${bd.multiplier.toStringAsFixed(2)}', valueColor: _shipmentType.color),
+            _breakdownRow(
+              'معامل نوع الشحنة',
+              '× ${bd.multiplier.toStringAsFixed(2)}',
+              valueColor: _shipmentType.color,
+            ),
           ],
           const SizedBox(height: 6),
           _breakdownRow(
             'معامل التسعير الأساسي',
-            '× ${PricingConfig.antigravityMultiplier.toStringAsFixed(1)}',
+            '× ${AdminPricingConfig.antigravityMultiplier.toStringAsFixed(1)}',
             valueColor: Colors.deepPurple,
           ),
           const SizedBox(height: 6),
@@ -502,13 +797,18 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
             valueColor: Colors.orange[700],
           ),
           const Divider(height: 20),
-          _breakdownRow('الإجمالي', '${bd.total} MRU', isBold: true),
+          _breakdownRow(
+            'الإجمالي',
+            '${bd.total} MRU',
+            isBold: true,
+          ),
         ],
       ),
     );
   }
 
-  Widget _breakdownRow(String label, String value, {bool isBold = false, Color? valueColor}) {
+  Widget _breakdownRow(String label, String value,
+      {bool isBold = false, Color? valueColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -525,7 +825,8 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-            color: valueColor ?? (isBold ? AdminAppColors.primaryGreen : Colors.black87),
+            color: valueColor ??
+                (isBold ? AdminAppColors.primaryGreen : Colors.black87),
           ),
         ),
       ],

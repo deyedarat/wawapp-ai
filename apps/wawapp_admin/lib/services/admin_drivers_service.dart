@@ -137,8 +137,6 @@ class AdminDriversService {
       await _firestore.runTransaction((transaction) async {
         final walletDoc = await transaction.get(walletRef);
 
-        int currentBalance = 0;
-
         if (!walletDoc.exists) {
           // Create wallet if it doesn't exist
           transaction.set(walletRef, {
@@ -154,7 +152,7 @@ class AdminDriversService {
           });
         } else {
           final data = walletDoc.data()!;
-          currentBalance = data['balance'] as int? ?? 0;
+          final currentBalance = data['balance'] as int? ?? 0;
           final totalCredited = data['totalCredited'] as int? ?? 0;
           transaction.update(walletRef, {
             'balance': currentBalance + amount,
@@ -163,15 +161,13 @@ class AdminDriversService {
           });
         }
 
-        // Record transaction in top-level collection (matching driver app schema)
+        // Record transaction in top-level collection
         final txnRef = _firestore.collection('transactions').doc();
         transaction.set(txnRef, {
           'walletId': walletId,
           'type': 'credit',
           'source': 'manual_adjustment',
           'amount': amount,
-          'balanceBefore': currentBalance,
-          'balanceAfter': currentBalance + amount,
           'currency': 'MRU',
           'adminId': user.uid,
           'note': note ?? 'إضافة رصيد بواسطة المسؤول',
