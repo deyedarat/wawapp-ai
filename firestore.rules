@@ -86,6 +86,9 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
+      // Admin has full read access to all users
+      allow read: if isAdmin();
+
       // Read: only owner (get by document ID)
       allow read: if isSignedIn() && request.auth.uid == uid;
 
