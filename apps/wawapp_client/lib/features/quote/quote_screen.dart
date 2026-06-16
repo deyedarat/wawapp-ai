@@ -385,6 +385,19 @@ class _QuoteScreenState extends ConsumerState<QuoteScreen> {
     final l10n = AppLocalizations.of(context)!;
     final quoteState = ref.read(quoteProvider);
 
+    // Prevent orders where pickup and dropoff are too close (< 200m)
+    if (quoteState.distanceKm != null && quoteState.distanceKm! < 0.2) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('نقطة الاستلام والتسليم متقاربتان جداً. يرجى اختيار وجهة مختلفة.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
     try {
       final repo = ref.read(ordersRepositoryProvider);
       final routeState = ref.read(routePickerProvider);

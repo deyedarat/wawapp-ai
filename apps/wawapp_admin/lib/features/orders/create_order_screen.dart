@@ -328,6 +328,11 @@ class _CreateOrderScreenState extends ConsumerState<CreateOrderScreen> {
       return;
     }
 
+    if (_distanceKm != null && _distanceKm! < 0.2) {
+      _showSnack('نقطة الاستلام والتسليم متقاربتان جداً (أقل من 200 متر). يرجى اختيار وجهة مختلفة.', isError: true);
+      return;
+    }
+
     setState(() => _isCreating = true);
 
     try {
