@@ -1031,6 +1031,30 @@ export async function handleOfferAcceptance(
 
       // ✅ ALL CHECKS PASSED — ACCEPT OFFER
 
+      // Fetch customer phone number for the driver
+      let customerPhone: string | null = null;
+      if (orderData.customerPhone) {
+        // Manual/admin orders already have phone stored
+        customerPhone = orderData.customerPhone as string;
+      } else {
+        const ownerId = orderData.ownerId as string | undefined;
+        if (ownerId && !ownerId.startsWith('manual_')) {
+          try {
+            const userDoc = await transaction.get(db.collection('users').doc(ownerId));
+            if (userDoc.exists) {
+              const userData = userDoc.data();
+              customerPhone = (userData?.phone as string) || (userData?.phoneNumber as string) || null;
+            }
+          } catch (phoneErr) {
+            console.warn('[DispatchEngine] Failed to fetch customer phone', {
+              order_id: offer.orderId,
+              owner_id: ownerId,
+              error: phoneErr,
+            });
+          }
+        }
+      }
+
       // 1. Update order
       transaction.update(orderRef, {
         status: 'accepted',
@@ -1038,6 +1062,7 @@ export async function handleOfferAcceptance(
         driverId: driverId,
         acceptedAt: now,
         updatedAt: now,
+        customerPhone: customerPhone,
       });
 
       // 2. Update offer

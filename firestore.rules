@@ -313,6 +313,15 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
+    // Pricing configs: admin can manage, authenticated users can read active configs
+    match /pricing_configs/{configId} {
+      // Admins have full access
+      allow read, write: if isAdmin();
+
+      // All authenticated users can read (client app needs this for dynamic pricing)
+      allow read: if isSignedIn();
+    }
+
     // Driver rejected orders (order blocking after rejection)
     match /driver_rejected_orders/{rejectionId} {
       allow create: if isSignedIn()

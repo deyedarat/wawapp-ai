@@ -13,6 +13,7 @@ import 'core/build_info/build_info.dart';
 import 'core/build_info/build_info_banner.dart';
 import 'core/firebase_boot.dart';
 import 'core/location/location_bootstrap.dart';
+import 'core/pricing/pricing_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'features/config/config_gate.dart';
@@ -21,76 +22,88 @@ import 'services/analytics_service.dart';
 import 'services/notification_service.dart';
 
 void main() async {
-  runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded<Future<void>>(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
 
-    if (kDebugMode) {
-      debugPrint('🚀 WawApp Client initializing...');
-    }
-
-    await BuildInfoProvider.initialize();
-
-    // Step 1: Safe Firebase initialization (handles duplicate-app gracefully)
-    try {
-      await FirebaseBoot.ensure();
       if (kDebugMode) {
-        debugPrint('✅ Firebase initialized');
+        debugPrint('🚀 WawApp Client initializing...');
       }
-    } catch (e) {
-      debugPrint('❌ Firebase initialization error: $e');
-    }
 
-    // Step 2: App Check (must run AFTER Firebase, in its own try-catch)
-    // CRITICAL: PlayIntegrity ONLY works for apps from Google Play Store
-    // Solution: Always use PlayIntegrity (works on Play Store, gracefully fails locally)
-    try {
-      await FirebaseAppCheck.instance.activate(
-        androidProvider:
-            kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-        appleProvider:
-            kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
-      );
+      await BuildInfoProvider.initialize();
+
+      // Step 1: Safe Firebase initialization (handles duplicate-app gracefully)
+      try {
+        await FirebaseBoot.ensure();
+        if (kDebugMode) {
+          debugPrint('✅ Firebase initialized');
+        }
+      } catch (e) {
+        debugPrint('❌ Firebase initialization error: $e');
+      }
+
+      // Step 2: App Check (must run AFTER Firebase, in its own try-catch)
+      // CRITICAL: PlayIntegrity ONLY works for apps from Google Play Store
+      // Solution: Always use PlayIntegrity (works on Play Store, gracefully fails locally)
+      try {
+        await FirebaseAppCheck.instance.activate(
+          androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+          appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.appAttest,
+        );
+        if (kDebugMode) {
+          debugPrint('✅ Firebase App Check activated with Play Integrity');
+        }
+      } catch (e) {
+        // Expected to fail on local ADB installs - this is NORMAL
+        // On Play Store, this will succeed
+        if (kDebugMode) {
+          debugPrint('⚠️ App Check activation failed (expected for ADB installs): $e');
+        }
+      }
+
+      // Step 3: Crashlytics (in its own try-catch)
+      try {
+        await _initializeCrashlytics();
+        await CrashlyticsObserver.initialize();
+        if (kDebugMode) {
+          debugPrint('✅ Crashlytics initialized');
+        }
+      } catch (e) {
+        debugPrint('⚠️ Crashlytics initialization failed: $e');
+      }
+
       if (kDebugMode) {
-        debugPrint('✅ Firebase App Check activated with Play Integrity');
+        debugPrint('📍 Ensuring location ready...');
       }
-    } catch (e) {
-      // Expected to fail on local ADB installs - this is NORMAL
-      // On Play Store, this will succeed
+      await ensureLocationReady();
+
+      // Step 4: Load pricing config from Firestore (non-blocking on failure)
+      try {
+        await initPricingConfig();
+        if (kDebugMode) {
+          debugPrint('✅ Pricing config loaded');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint('⚠️ Pricing config load failed, using defaults: $e');
+        }
+      }
+
       if (kDebugMode) {
-        debugPrint(
-            '⚠️ App Check activation failed (expected for ADB installs): $e');
+        debugPrint('✅ WawApp Client initialization complete');
       }
-    }
 
-    // Step 3: Crashlytics (in its own try-catch)
-    try {
-      await _initializeCrashlytics();
-      await CrashlyticsObserver.initialize();
+      runApp(const ProviderScope(child: MyApp()));
+    },
+    (error, stack) {
+      // Catch errors that occur outside of Flutter framework
       if (kDebugMode) {
-        debugPrint('✅ Crashlytics initialized');
+        debugPrint('❌ Uncaught error: $error');
+        debugPrint('Stack trace: $stack');
       }
-    } catch (e) {
-      debugPrint('⚠️ Crashlytics initialization failed: $e');
-    }
-
-    if (kDebugMode) {
-      debugPrint('📍 Ensuring location ready...');
-    }
-    await ensureLocationReady();
-
-    if (kDebugMode) {
-      debugPrint('✅ WawApp Client initialization complete');
-    }
-
-    runApp(const ProviderScope(child: MyApp()));
-  }, (error, stack) {
-    // Catch errors that occur outside of Flutter framework
-    if (kDebugMode) {
-      debugPrint('❌ Uncaught error: $error');
-      debugPrint('Stack trace: $stack');
-    }
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-  });
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    },
+  );
 }
 
 /// Initialize Firebase Crashlytics with proper error handlers
@@ -151,6 +164,8 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
+    // Keep pricing config synced with Firestore in real-time
+    ref.watch(pricingConfigProvider);
     NotificationService().updateContext(context);
 
     return MaterialApp.router(
@@ -169,9 +184,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       themeMode: ThemeMode.system,
       routerConfig: router,
       builder: (context, child) {
-        return ConfigGate(
-          child: BuildInfoBanner(child: child ?? const SizedBox()),
-        );
+        return ConfigGate(child: BuildInfoBanner(child: child ?? const SizedBox()));
       },
     );
   }
