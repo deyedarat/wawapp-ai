@@ -1,5 +1,5 @@
-import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions/v1';
 // PATCH-03: Import the engine's exclusive acceptance transaction.
 import { handleOfferAcceptance } from './dispatch/engine';
 
@@ -67,7 +67,10 @@ export const acceptOrder = functions.https.onCall(async (data, context) => {
       // Fetch customer phone number
       const ownerId = orderData.ownerId as string;
 
-      if (ownerId) {
+      // For manual/admin orders, use the customerPhone already stored in the order
+      if (orderData.customerPhone) {
+        customerPhone = orderData.customerPhone as string;
+      } else if (ownerId && !ownerId.startsWith('manual_')) {
         try {
           const userDoc = await transaction.get(db.collection('users').doc(ownerId));
           if (userDoc.exists) {

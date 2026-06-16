@@ -8,19 +8,9 @@ class QuoteState {
   final double? distanceKm;
   final int? priceInMRU;
 
-  const QuoteState({
-    this.pickup,
-    this.dropoff,
-    this.distanceKm,
-    this.priceInMRU,
-  });
+  const QuoteState({this.pickup, this.dropoff, this.distanceKm, this.priceInMRU});
 
-  QuoteState copyWith({
-    LatLng? pickup,
-    LatLng? dropoff,
-    double? distanceKm,
-    int? priceInMRU,
-  }) {
+  QuoteState copyWith({LatLng? pickup, LatLng? dropoff, double? distanceKm, int? priceInMRU}) {
     return QuoteState(
       pickup: pickup ?? this.pickup,
       dropoff: dropoff ?? this.dropoff,
@@ -34,10 +24,6 @@ class QuoteState {
 
 class QuoteNotifier extends StateNotifier<QuoteState> {
   QuoteNotifier() : super(const QuoteState());
-
-  static const int baseFare = 50; // MRU
-  static const int perKmRate = 20; // MRU
-  static const int serviceFee = 10; // MRU
 
   void setPickup(LatLng pickup) {
     state = state.copyWith(pickup: pickup);
@@ -60,12 +46,14 @@ class QuoteNotifier extends StateNotifier<QuoteState> {
   void _calculatePrice() {
     if (state.pickup != null && state.dropoff != null) {
       final distance = distanceKm(state.pickup!, state.dropoff!);
-      final price = baseFare + (distance * perKmRate).round() + serviceFee;
+      // Use canonical pricing from core_shared (base=60, perKm=20, minFare=100)
+      final base = 60;
+      final price = base + (distance * 20).round();
+      final withMin = price < 100 ? 100 : price;
+      // Round to nearest 5
+      final rounded = ((withMin / 5).round() * 5);
 
-      state = state.copyWith(
-        distanceKm: distance,
-        priceInMRU: price,
-      );
+      state = state.copyWith(distanceKm: distance, priceInMRU: rounded);
     }
   }
 

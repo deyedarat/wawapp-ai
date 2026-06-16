@@ -133,17 +133,20 @@ class AdminOrdersService {
 
       final stats = <String, int>{
         'total': snapshot.size,
-        'assigning': 0,
+        'matching': 0,
         'accepted': 0,
-        'on_route': 0,
+        'onRoute': 0,
         'completed': 0,
         'cancelled': 0,
       };
 
       for (final doc in snapshot.docs) {
         final status = doc.data()['status'] as String?;
-        if (status != null && stats.containsKey(status)) {
+        if (status == null) continue;
+        if (stats.containsKey(status)) {
           stats[status] = (stats[status] ?? 0) + 1;
+        } else if (status.startsWith('cancelled')) {
+          stats['cancelled'] = (stats['cancelled'] ?? 0) + 1;
         }
       }
 
@@ -176,7 +179,7 @@ class AdminOrdersService {
       if (user == null) throw Exception('Not authenticated');
 
       final docRef = await _firestore.collection('orders').add({
-        'clientPhone': clientPhone,
+        'customerPhone': clientPhone,
         'ownerId': 'manual_${DateTime.now().millisecondsSinceEpoch}',
         'pickupAddress': pickupAddress,
         'dropoffAddress': dropoffAddress,

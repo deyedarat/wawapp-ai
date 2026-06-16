@@ -35,9 +35,9 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
   final Map<String, String> _statusFilterMap = {
     'الكل': '',
-    'قيد التعيين': 'assigning',
+    'قيد التعيين': 'matching',
     'مقبول': 'accepted',
-    'في الطريق': 'on_route',
+    'في الطريق': 'onRoute',
     'مكتمل': 'completed',
     'ملغى': 'cancelled',
   };
@@ -351,17 +351,18 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
 
   Widget _buildStatusBadge(String status) {
     switch (status) {
-      case 'assigning':
+      case 'matching':
         return StatusBadge.pending('قيد التعيين');
       case 'accepted':
         return StatusBadge.active('مقبول');
-      case 'on_route':
+      case 'onRoute':
         return const StatusBadge(label: 'في الطريق', color: AdminAppColors.activeBlue);
       case 'completed':
         return StatusBadge.success('مكتمل');
       case 'cancelled':
-      case 'cancelled_by_driver':
-      case 'cancelled_by_client':
+      case 'cancelledByDriver':
+      case 'cancelledByClient':
+      case 'cancelledByAdmin':
       case 'cancelled_by_admin':
         return StatusBadge.error('ملغى');
       default:

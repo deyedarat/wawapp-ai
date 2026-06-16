@@ -64,7 +64,7 @@ class DashboardScreen extends ConsumerWidget {
           final totalDrivers = driverStats['total'] ?? 0;
           final onlineDrivers = driverStats['online'] ?? 0;
           final activeOrders =
-              (orderStats['assigning'] ?? 0) + (orderStats['accepted'] ?? 0) + (orderStats['on_route'] ?? 0);
+              (orderStats['matching'] ?? 0) + (orderStats['accepted'] ?? 0) + (orderStats['onRoute'] ?? 0);
           final completedToday = orderStats['completed'] ?? 0;
           final cancelledToday = orderStats['cancelled'] ?? 0;
 
@@ -405,19 +405,19 @@ class DashboardScreen extends ConsumerWidget {
 
   IconData _getStatusIcon(String status) {
     switch (status) {
-      case 'assigning':
       case 'matching':
         return Icons.search;
       case 'accepted':
         return Icons.check_circle;
-      case 'on_route':
+      case 'onRoute':
         return Icons.local_shipping;
       case 'completed':
         return Icons.done_all;
       case 'cancelled':
+      case 'cancelledByAdmin':
       case 'cancelled_by_admin':
-      case 'cancelled_by_driver':
-      case 'cancelled_by_client':
+      case 'cancelledByDriver':
+      case 'cancelledByClient':
         return Icons.cancel;
       default:
         return Icons.info;
@@ -426,19 +426,19 @@ class DashboardScreen extends ConsumerWidget {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'assigning':
       case 'matching':
         return AdminAppColors.goldenYellow;
       case 'accepted':
         return AdminAppColors.activeBlue;
-      case 'on_route':
+      case 'onRoute':
         return AdminAppColors.onlineGreen;
       case 'completed':
         return AdminAppColors.successLight;
       case 'cancelled':
+      case 'cancelledByAdmin':
       case 'cancelled_by_admin':
-      case 'cancelled_by_driver':
-      case 'cancelled_by_client':
+      case 'cancelledByDriver':
+      case 'cancelledByClient':
         return AdminAppColors.errorLight;
       default:
         return AdminAppColors.textSecondaryLight;
@@ -447,19 +447,19 @@ class DashboardScreen extends ConsumerWidget {
 
   String _getStatusLabel(String status) {
     switch (status) {
-      case 'assigning':
       case 'matching':
         return 'قيد التعيين';
       case 'accepted':
         return 'تم القبول';
-      case 'on_route':
+      case 'onRoute':
         return 'في الطريق';
       case 'completed':
         return 'مكتمل';
       case 'cancelled':
+      case 'cancelledByAdmin':
       case 'cancelled_by_admin':
-      case 'cancelled_by_driver':
-      case 'cancelled_by_client':
+      case 'cancelledByDriver':
+      case 'cancelledByClient':
         return 'ملغى';
       default:
         return status;
