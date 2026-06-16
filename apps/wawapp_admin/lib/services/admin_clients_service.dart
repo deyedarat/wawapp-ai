@@ -18,7 +18,7 @@ class AdminClientsService {
     int limit = 100,
   }) {
     Query<Map<String, dynamic>> query = _firestore
-        .collection('clients')
+        .collection('users')
         .orderBy('createdAt', descending: true)
         .limit(limit);
 
@@ -36,7 +36,7 @@ class AdminClientsService {
   /// Get a single client by ID
   Future<ClientProfile?> getClientById(String clientId) async {
     try {
-      final doc = await _firestore.collection('clients').doc(clientId).get();
+      final doc = await _firestore.collection('users').doc(clientId).get();
       if (!doc.exists) return null;
       return ClientProfile.fromFirestore(doc);
     } catch (e) {
@@ -66,7 +66,7 @@ class AdminClientsService {
         updateData['verifiedBy'] = FieldValue.delete();
       }
 
-      await _firestore.collection('clients').doc(clientId).update(updateData);
+      await _firestore.collection('users').doc(clientId).update(updateData);
       return true;
     } catch (e) {
       if (kDebugMode) {
@@ -82,7 +82,7 @@ class AdminClientsService {
       final user = _auth.currentUser;
       if (user == null) throw Exception('Not authenticated');
 
-      await _firestore.collection('clients').doc(clientId).update({
+      await _firestore.collection('users').doc(clientId).update({
         'isBlocked': true,
         'blockedAt': FieldValue.serverTimestamp(),
         'blockedBy': user.uid,
@@ -105,7 +105,7 @@ class AdminClientsService {
       final user = _auth.currentUser;
       if (user == null) throw Exception('Not authenticated');
 
-      await _firestore.collection('clients').doc(clientId).update({
+      await _firestore.collection('users').doc(clientId).update({
         'isBlocked': false,
         'unblockedAt': FieldValue.serverTimestamp(),
         'unblockedBy': user.uid,
@@ -125,7 +125,7 @@ class AdminClientsService {
   /// Get client statistics
   Future<Map<String, int>> getClientStats() async {
     try {
-      final snapshot = await _firestore.collection('clients').get();
+      final snapshot = await _firestore.collection('users').get();
 
       int totalClients = snapshot.size;
       int verifiedClients = 0;
