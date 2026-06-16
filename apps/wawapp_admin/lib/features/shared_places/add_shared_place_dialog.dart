@@ -1,7 +1,7 @@
 import 'package:core_shared/core_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../providers/admin_data_providers.dart';
 import 'fullscreen_map_picker.dart';

@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:latlong2/latlong.dart';
 
-/// Fullscreen map picker page with search.
+/// Fullscreen Google Maps picker page with Places search.
 /// Returns the selected [LatLng] when confirmed, or null if cancelled.
 class FullscreenMapPicker extends StatefulWidget {
-  final LatLng? initialLocation;
+  /// Pass initial location as latlong2.LatLng — we convert internally.
+  final dynamic initialLocation;
 
   const FullscreenMapPicker({super.key, this.initialLocation});
 
@@ -19,20 +19,30 @@ class FullscreenMapPicker extends StatefulWidget {
 
 class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
   LatLng? _selectedLocation;
-  final MapController _mapController = MapController();
+  GoogleMapController? _mapController;
   final TextEditingController _searchController = TextEditingController();
 
   List<_SearchResult> _searchResults = [];
   bool _isSearching = false;
   Timer? _debounce;
+  String? _selectedAddress;
 
   // Default: Nouakchott, Mauritania
-  static final _defaultCenter = LatLng(18.0735, -15.9582);
+  static const _defaultCenter = LatLng(18.0735, -15.9582);
 
   @override
   void initState() {
     super.initState();
-    _selectedLocation = widget.initialLocation;
+    if (widget.initialLocation != null) {
+      // Support both google_maps LatLng and latlong2 LatLng
+      final loc = widget.initialLocation;
+      if (loc is LatLng) {
+        _selectedLocation = loc;
+      } else {
+        // latlong2.LatLng has .latitude and .longitude
+        _selectedLocation = LatLng(loc.latitude as double, loc.longitude as double);
+      }
+    }
   }
 
   @override
@@ -62,38 +72,34 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
       ),
       body: Stack(
         children: [
-          // Fullscreen map
-          FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: _selectedLocation ?? _defaultCenter,
-              initialZoom: _selectedLocation != null ? 16 : 12,
-              onTap: (tapPosition, point) {
-                setState(() {
-                  _selectedLocation = point;
-                  _searchResults = [];
-                });
-              },
+          // Google Map
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: _selectedLocation ?? _defaultCenter,
+              zoom: _selectedLocation != null ? 16 : 12,
             ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-                subdomains: const ['a', 'b', 'c', 'd'],
-                userAgentPackageName: 'mr.wawapp.admin',
-                maxZoom: 20,
-              ),
-              if (_selectedLocation != null)
-                MarkerLayer(
-                  markers: [
+            onMapCreated: (controller) => _mapController = controller,
+            onTap: (position) {
+              setState(() {
+                _selectedLocation = position;
+                _searchResults = [];
+                _selectedAddress = null;
+              });
+              _reverseGeocode(position);
+            },
+            markers: _selectedLocation != null
+                ? {
                     Marker(
-                      point: _selectedLocation!,
-                      width: 50,
-                      height: 50,
-                      child: const Icon(Icons.location_pin, color: Colors.red, size: 50),
+                      markerId: const MarkerId('selected'),
+                      position: _selectedLocation!,
+                      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
                     ),
-                  ],
-                ),
-            ],
+                  }
+                : {},
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+            zoomControlsEnabled: false,
+            mapToolbarEnabled: false,
           ),
 
           // Search bar at top
@@ -120,7 +126,10 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
                               },
                             )
                           : null,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(28), borderSide: BorderSide.none),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(28),
+                        borderSide: BorderSide.none,
+                      ),
                       filled: true,
                       fillColor: Colors.white,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -147,7 +156,7 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
                 if (!_isSearching && _searchResults.isNotEmpty)
                   Container(
                     margin: const EdgeInsets.only(top: 4),
-                    constraints: const BoxConstraints(maxHeight: 250),
+                    constraints: const BoxConstraints(maxHeight: 300),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
@@ -178,7 +187,7 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
             ),
           ),
 
-          // Instructions banner (no location selected, no search active)
+          // Instructions banner
           if (_selectedLocation == null && _searchResults.isEmpty && !_isSearching)
             Positioned(
               bottom: 24,
@@ -188,7 +197,7 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.95),
+                    color: Colors.white.withOpacity(0.95),
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 2))],
                   ),
@@ -227,7 +236,12 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text('الموقع المحدد', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                            Text(
+                              _selectedAddress ?? 'الموقع المحدد',
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             const SizedBox(height: 4),
                             Text(
                               '${_selectedLocation!.latitude.toStringAsFixed(6)}, '
@@ -246,6 +260,22 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
                 ),
               ),
             ),
+
+          // My location button
+          Positioned(
+            bottom: _selectedLocation != null ? 120 : 80,
+            right: 16,
+            child: FloatingActionButton.small(
+              heroTag: 'my_location',
+              onPressed: () {
+                // Move to default Nouakchott center
+                _mapController?.animateCamera(
+                  CameraUpdate.newLatLngZoom(_defaultCenter, 13),
+                );
+              },
+              child: const Icon(Icons.center_focus_strong),
+            ),
+          ),
         ],
       ),
     );
@@ -268,8 +298,11 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
     });
   }
 
+  /// Search using Nominatim (free, no API key needed for search).
+  /// For better results with Google Places, use the Places API directly.
   Future<void> _performSearch(String query) async {
     try {
+      // Use Nominatim for search (free) — focused on Mauritania
       final url = Uri.parse(
         'https://nominatim.openstreetmap.org/search?'
         'q=${Uri.encodeComponent(query)}&'
@@ -286,7 +319,10 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
               .map(
                 (item) => _SearchResult(
                   name: item['display_name'] as String,
-                  location: LatLng(double.parse(item['lat'] as String), double.parse(item['lon'] as String)),
+                  location: LatLng(
+                    double.parse(item['lat'] as String),
+                    double.parse(item['lon'] as String),
+                  ),
                 ),
               )
               .toList();
@@ -303,13 +339,35 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
     }
   }
 
+  Future<void> _reverseGeocode(LatLng position) async {
+    try {
+      final url = Uri.parse(
+        'https://nominatim.openstreetmap.org/reverse?'
+        'format=json&lat=${position.latitude}&lon=${position.longitude}&accept-language=ar',
+      );
+      final response = await http.get(url, headers: {'User-Agent': 'WawApp-Admin/1.0'});
+      if (!mounted) return;
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          _selectedAddress = data['display_name'] as String?;
+        });
+      }
+    } catch (e) {
+      debugPrint('Reverse geocode error: $e');
+    }
+  }
+
   void _selectSearchResult(_SearchResult result) {
     setState(() {
       _selectedLocation = result.location;
       _searchResults = [];
       _searchController.text = result.name;
+      _selectedAddress = result.name;
     });
-    _mapController.move(result.location, 16);
+    _mapController?.animateCamera(
+      CameraUpdate.newLatLngZoom(result.location, 16),
+    );
   }
 }
 
