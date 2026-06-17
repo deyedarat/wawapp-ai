@@ -216,6 +216,152 @@ class AdminDriversService {
     }
   }
 
+  /// Get driver dispatch state (eligibility status)
+  Future<Map<String, dynamic>?> getDriverDispatchState(String driverId) async {
+    try {
+      final doc = await _firestore.collection('driver_dispatch_state').doc(driverId).get();
+      if (!doc.exists) return null;
+      return doc.data();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching dispatch state: $e');
+      }
+      return null;
+    }
+  }
+
+  /// Get driver location status
+  Future<Map<String, dynamic>?> getDriverLocationStatus(String driverId) async {
+    try {
+      final doc = await _firestore.collection('driver_locations').doc(driverId).get();
+      if (!doc.exists) return null;
+      return doc.data();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching driver location: $e');
+      }
+      return null;
+    }
+  }
+
+  /// Get full driver eligibility diagnosis
+  Future<Map<String, dynamic>> getDriverEligibilityDiagnosis(String driverId) async {
+    final results = <String, dynamic>{'eligible': true, 'reasons': <String>[]};
+
+    // 1. Check driver profile
+    final driverDoc = await _firestore.collection('drivers').doc(driverId).get();
+    if (!driverDoc.exists) {
+      results['eligible'] = false;
+      results['reasons'] = ['ملف السائق غير موجود'];
+      return results;
+    }
+    final driverData = driverDoc.data()!;
+
+    if (driverData['isOnline'] != true) {
+      results['eligible'] = false;
+      (results['reasons'] as List).add('غير متصل');
+    }
+
+    if (driverData['isVerified'] != true) {
+      results['eligible'] = false;
+      (results['reasons'] as List).add('غير موثّق');
+    }
+
+    if (driverData['isBlocked'] == true) {
+      results['eligible'] = false;
+      (results['reasons'] as List).add('محظور: ${driverData['blockReason'] ?? ''}');
+    }
+
+    // Profile completeness
+    final missing = <String>[];
+    if (driverData['name'] == null || (driverData['name'] as String).isEmpty) missing.add('الاسم');
+    if (driverData['vehicleType'] == null || (driverData['vehicleType'] as String).isEmpty) missing.add('نوع المركبة');
+    if (driverData['vehiclePlate'] == null || (driverData['vehiclePlate'] as String).isEmpty)
+      missing.add('لوحة المركبة');
+    if (driverData['city'] == null || (driverData['city'] as String).isEmpty) missing.add('المدينة');
+    if (driverData['fcmToken'] == null || (driverData['fcmToken'] as String).isEmpty) missing.add('رمز الإشعارات');
+    if (missing.isNotEmpty) {
+      results['eligible'] = false;
+      (results['reasons'] as List).add('ملف ناقص: ${missing.join("، ")}');
+    }
+
+    // 2. Check location
+    final locationDoc = await _firestore.collection('driver_locations').doc(driverId).get();
+    if (!locationDoc.exists) {
+      results['eligible'] = false;
+      (results['reasons'] as List).add('لا يوجد موقع مسجّل');
+    } else {
+      final locationData = locationDoc.data()!;
+      final updatedAt = locationData['updatedAt'] as Timestamp?;
+      if (updatedAt != null) {
+        final age = DateTime.now().difference(updatedAt.toDate());
+        results['locationAge'] = age.inMinutes;
+        if (age.inMinutes > 30) {
+          results['eligible'] = false;
+          (results['reasons'] as List).add('الموقع قديم (${age.inMinutes} دقيقة)');
+        }
+      }
+    }
+
+    // 3. Check dispatch state
+    final stateDoc = await _firestore.collection('driver_dispatch_state').doc(driverId).get();
+    if (stateDoc.exists) {
+      final stateData = stateDoc.data()!;
+      results['dispatchState'] = stateData;
+
+      if (stateData['activeOrderId'] != null) {
+        results['eligible'] = false;
+        (results['reasons'] as List).add('محجوب: طلب نشط (${stateData['activeOrderId']})');
+      }
+      if (stateData['status'] == 'busy') {
+        results['eligible'] = false;
+        (results['reasons'] as List).add('محجوب: حالة مشغول');
+      }
+      if (stateData['activeOfferId'] != null) {
+        (results['reasons'] as List).add('لديه عرض نشط (${stateData['activeOfferId']})');
+      }
+    }
+
+    return results;
+  }
+
+  /// Reset driver dispatch state (unblock from stuck state)
+  Future<bool> resetDriverDispatchState(String driverId) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) throw Exception('Not authenticated');
+
+      final ref = _firestore.collection('driver_dispatch_state').doc(driverId);
+      final doc = await ref.get();
+
+      if (doc.exists) {
+        await ref.update({
+          'status': 'available',
+          'activeOrderId': null,
+          'activeOfferId': null,
+          'acceptanceLock': false,
+          'lockExpiresAt': null,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
+
+      await _auditLog.log(
+        action: 'driver_dispatch_state_reset',
+        category: 'driver',
+        targetId: driverId,
+        targetType: 'driver',
+        details: {'resetBy': user.uid},
+      );
+
+      return true;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error resetting dispatch state: $e');
+      }
+      return false;
+    }
+  }
+
   /// Get driver statistics
   Future<Map<String, int>> getDriverStats() async {
     try {

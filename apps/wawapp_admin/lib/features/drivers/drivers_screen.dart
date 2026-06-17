@@ -9,6 +9,7 @@ import '../../core/utils/responsive_helper.dart';
 import '../../core/widgets/admin_scaffold.dart';
 import '../../core/widgets/status_badge.dart';
 import '../../providers/admin_data_providers.dart';
+import '../../services/admin_drivers_service.dart';
 import '../../services/audit_log_service.dart';
 
 class DriversScreen extends ConsumerStatefulWidget {
@@ -434,31 +435,22 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('تفاصيل السائق: ${driver.name}'),
-        content: SizedBox(
-          width: 500,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDetailRow('المعرف:', driver.id),
-                _buildDetailRow('الاسم:', driver.name),
-                _buildDetailRow('الهاتف:', driver.phone),
-                _buildDetailRow('نوع المركبة:', driver.vehicleType ?? '-'),
-                _buildDetailRow('الحالة:', driver.isOnline ? 'متصل' : 'غير متصل'),
-                _buildDetailRow('موثّق:', driver.isVerified ? 'نعم' : 'لا'),
-                _buildDetailRow('محظور:', driverData['isBlocked'] == true ? 'نعم' : 'لا'),
-                _buildDetailRow('التقييم:', driver.rating.toStringAsFixed(1)),
-                _buildDetailRow('إجمالي الرحلات:', '${driver.totalTrips}'),
-                _buildDetailRow('تاريخ التسجيل:', _formatDate(driver.createdAt)),
-                _buildDetailRow('آخر تحديث:', _formatDate(driver.updatedAt)),
-              ],
-            ),
-          ),
-        ),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('إغلاق'))],
+      builder: (context) => _DriverDetailsDialog(
+        driver: driver,
+        driverData: driverData,
+        onResetDispatchState: () async {
+          final service = ref.read(adminDriversServiceProvider);
+          final success = await service.resetDriverDispatchState(driver.id);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(success ? 'تم تحرير السائق بنجاح' : 'فشل تحرير السائق'),
+                backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
+              ),
+            );
+          }
+        },
+        adminDriversService: ref.read(adminDriversServiceProvider),
       ),
     );
   }
@@ -803,6 +795,198 @@ class _DriversScreenState extends ConsumerState<DriversScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+/// Dialog widget that shows driver details including dispatch eligibility
+class _DriverDetailsDialog extends StatefulWidget {
+  final DriverProfile driver;
+  final Map<String, dynamic> driverData;
+  final Future<void> Function() onResetDispatchState;
+  final AdminDriversService adminDriversService;
+
+  const _DriverDetailsDialog({
+    required this.driver,
+    required this.driverData,
+    required this.onResetDispatchState,
+    required this.adminDriversService,
+  });
+
+  @override
+  State<_DriverDetailsDialog> createState() => _DriverDetailsDialogState();
+}
+
+class _DriverDetailsDialogState extends State<_DriverDetailsDialog> {
+  Map<String, dynamic>? _eligibility;
+  bool _loading = true;
+  bool _resetting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEligibility();
+  }
+
+  Future<void> _loadEligibility() async {
+    final result = await widget.adminDriversService.getDriverEligibilityDiagnosis(widget.driver.id);
+    if (mounted) {
+      setState(() {
+        _eligibility = result;
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('تفاصيل السائق: ${widget.driver.name}'),
+      content: SizedBox(
+        width: 550,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Basic info
+              _buildDetailRow('المعرف:', widget.driver.id),
+              _buildDetailRow('الاسم:', widget.driver.name),
+              _buildDetailRow('الهاتف:', widget.driver.phone),
+              _buildDetailRow('نوع المركبة:', widget.driver.vehicleType ?? '-'),
+              _buildDetailRow('الحالة:', widget.driver.isOnline ? 'متصل' : 'غير متصل'),
+              _buildDetailRow('موثّق:', widget.driver.isVerified ? 'نعم' : 'لا'),
+              _buildDetailRow('محظور:', widget.driverData['isBlocked'] == true ? 'نعم' : 'لا'),
+              _buildDetailRow('التقييم:', widget.driver.rating.toStringAsFixed(1)),
+              _buildDetailRow('إجمالي الرحلات:', '${widget.driver.totalTrips}'),
+
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 8),
+
+              // Eligibility section
+              Text(
+                'حالة الأهلية للطلبات',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+
+              if (_loading)
+                const Center(child: CircularProgressIndicator())
+              else if (_eligibility != null) ...[
+                // Status indicator
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: _eligibility!['eligible'] == true
+                        ? Colors.green.withOpacity(0.1)
+                        : Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: _eligibility!['eligible'] == true ? Colors.green : Colors.red, width: 1),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _eligibility!['eligible'] == true ? Icons.check_circle : Icons.error,
+                        color: _eligibility!['eligible'] == true ? Colors.green : Colors.red,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _eligibility!['eligible'] == true ? 'مؤهل لاستقبال الطلبات' : 'محجوب عن الطلبات',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: _eligibility!['eligible'] == true ? Colors.green : Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Reasons list
+                if (_eligibility!['reasons'] != null && (_eligibility!['reasons'] as List).isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Text('أسباب الحجب:', style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 4),
+                  ...(_eligibility!['reasons'] as List).map(
+                    (reason) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.warning_amber, size: 16, color: Colors.orange),
+                          const SizedBox(width: 6),
+                          Expanded(child: Text(reason.toString(), style: const TextStyle(fontSize: 13))),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+
+                // Location age
+                if (_eligibility!['locationAge'] != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: _buildDetailRow('عمر الموقع:', '${_eligibility!['locationAge']} دقيقة'),
+                  ),
+
+                // Dispatch state details
+                if (_eligibility!['dispatchState'] != null) ...[
+                  const SizedBox(height: 8),
+                  _buildDetailRow('حالة الـ Dispatch:', '${_eligibility!['dispatchState']['status'] ?? 'غير محدد'}'),
+                  if (_eligibility!['dispatchState']['activeOrderId'] != null)
+                    _buildDetailRow('طلب نشط:', '${_eligibility!['dispatchState']['activeOrderId']}'),
+                ],
+
+                // Reset button
+                if (_eligibility!['eligible'] != true &&
+                    _eligibility!['dispatchState'] != null &&
+                    (_eligibility!['dispatchState']['activeOrderId'] != null ||
+                        _eligibility!['dispatchState']['status'] == 'busy')) ...[
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _resetting
+                          ? null
+                          : () async {
+                              setState(() => _resetting = true);
+                              await widget.onResetDispatchState();
+                              await _loadEligibility();
+                              setState(() => _resetting = false);
+                            },
+                      icon: _resetting
+                          ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                          : const Icon(Icons.lock_open),
+                      label: Text(_resetting ? 'جارٍ التحرير...' : 'تحرير السائق (إزالة الحجب)'),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white),
+                    ),
+                  ),
+                ],
+              ],
+            ],
+          ),
+        ),
+      ),
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('إغلاق'))],
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 130,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w600, color: AdminAppColors.textSecondaryLight),
+            ),
+          ),
+          Expanded(child: SelectableText(value)),
+        ],
+      ),
     );
   }
 }

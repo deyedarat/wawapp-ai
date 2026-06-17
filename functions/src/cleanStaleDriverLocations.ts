@@ -1,30 +1,37 @@
 /**
  * Cloud Function: Clean Stale Driver Locations
  * 
- * Deletes driver_locations documents older than 1 hour to prevent
- * accumulation of stale location data.
+ * Deletes driver_locations documents older than 7 days to prevent
+ * accumulation of abandoned location data.
  * 
- * Scheduled: Every 1 hour
+ * IMPORTANT: Do NOT use aggressive thresholds (e.g. 1 hour).
+ * The dispatch engine already filters stale locations via selectors.ts
+ * (LOCATION_FRESHNESS_MINUTES = 30). Deleting the document causes drivers
+ * to become permanently invisible until they get a fresh GPS fix, even if
+ * they reopen the app and are marked isOnline=true.
+ * 
+ * Scheduled: Every 24 hours
  * 
  * Author: WawApp Development Team
  * Created: 2025-11-30
+ * Updated: 2026-06-16 — Changed threshold from 1h to 7 days (bug fix)
  */
 
-import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions/v1';
 
 /**
  * Cleanup configuration
  */
-const STALE_THRESHOLD_MS = 3600000; // 1 hour in milliseconds
+const STALE_THRESHOLD_MS = 7 * 24 * 3600000; // 7 days in milliseconds
 const BATCH_SIZE = 500; // Firestore batch write limit
 
 /**
  * Scheduled function: Clean stale driver locations
- * Runs every 1 hour
+ * Runs every 24 hours (only removes truly abandoned accounts)
  */
 export const cleanStaleDriverLocations = functions.pubsub
-  .schedule('every 1 hours')
+  .schedule('every 24 hours')
   .timeZone('Africa/Nouakchott') // Mauritania timezone
   .onRun(async (context) => {
     console.log('[CleanStaleDriverLocations] Starting cleanup job');
@@ -36,7 +43,7 @@ export const cleanStaleDriverLocations = functions.pubsub
 
       console.log('[CleanStaleDriverLocations] Cutoff time:', {
         cutoff_time: cutoffTime.toISOString(),
-        threshold_hours: STALE_THRESHOLD_MS / 3600000,
+        threshold_days: STALE_THRESHOLD_MS / (24 * 3600000),
       });
 
       // Query stale driver locations
