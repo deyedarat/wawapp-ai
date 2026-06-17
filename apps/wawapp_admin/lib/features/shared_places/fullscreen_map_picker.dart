@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 /// Fullscreen Google Maps picker page with Places search.
 /// Returns the selected [LatLng] when confirmed, or null if cancelled.
+///
+/// Displays existing shared places as fixed blue markers for reference,
+/// and lets the user tap to place a red marker for the new/edited location.
 class FullscreenMapPicker extends StatefulWidget {
   /// Pass initial location as latlong2.LatLng — we convert internally.
   final dynamic initialLocation;
@@ -27,6 +31,9 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
   Timer? _debounce;
   String? _selectedAddress;
 
+  /// Existing shared places loaded from Firestore (displayed as fixed markers)
+  List<Map<String, dynamic>> _existingPlaces = [];
+
   // Default: Nouakchott, Mauritania
   static const _defaultCenter = LatLng(18.0735, -15.9582);
 
@@ -43,6 +50,7 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
         _selectedLocation = LatLng(loc.latitude as double, loc.longitude as double);
       }
     }
+    _loadExistingPlaces();
   }
 
   @override
@@ -50,6 +58,66 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
     _searchController.dispose();
     _debounce?.cancel();
     super.dispose();
+  }
+
+  /// Load existing shared places from Firestore to display as reference markers
+  Future<void> _loadExistingPlaces() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('shared_places')
+          .where('isActive', isEqualTo: true)
+          .get();
+      if (mounted) {
+        setState(() {
+          _existingPlaces = snapshot.docs.map((doc) {
+            final data = doc.data();
+            return {
+              'id': doc.id,
+              'name': data['name'] as String? ?? '',
+              'latitude': (data['latitude'] as num?)?.toDouble() ?? 0.0,
+              'longitude': (data['longitude'] as num?)?.toDouble() ?? 0.0,
+              'category': data['category'] as String? ?? '',
+            };
+          }).toList();
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading existing places: $e');
+    }
+  }
+
+  /// Build all markers: existing places (blue, fixed) + selected location (red)
+  Set<Marker> _buildMarkers() {
+    final markers = <Marker>{};
+
+    // 1. Existing shared places as FIXED blue markers (reference only)
+    for (final place in _existingPlaces) {
+      final lat = place['latitude'] as double;
+      final lng = place['longitude'] as double;
+      if (lat == 0.0 && lng == 0.0) continue;
+      markers.add(
+        Marker(
+          markerId: MarkerId('place_${place['id']}'),
+          position: LatLng(lat, lng),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          infoWindow: InfoWindow(title: place['name'] as String, snippet: place['category'] as String),
+        ),
+      );
+    }
+
+    // 2. Selected location as a RED marker (user's choice)
+    if (_selectedLocation != null) {
+      markers.add(
+        Marker(
+          markerId: const MarkerId('selected'),
+          position: _selectedLocation!,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(title: _selectedAddress ?? 'الموقع المحدد'),
+        ),
+      );
+    }
+
+    return markers;
   }
 
   @override
@@ -87,19 +155,18 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
               });
               _reverseGeocode(position);
             },
-            markers: _selectedLocation != null
-                ? {
-                    Marker(
-                      markerId: const MarkerId('selected'),
-                      position: _selectedLocation!,
-                      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-                    ),
-                  }
-                : {},
+            markers: _buildMarkers(),
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
+            // Enable zoom controls for better UX on web
+            zoomControlsEnabled: true,
+            zoomGesturesEnabled: true,
+            scrollGesturesEnabled: true,
+            tiltGesturesEnabled: false,
+            rotateGesturesEnabled: false,
             mapToolbarEnabled: false,
+            // Fix: Allow scroll-wheel zoom without Ctrl key on web
+            webGestureHandling: WebGestureHandling.greedy,
           ),
 
           // Search bar at top
@@ -126,10 +193,7 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
                               },
                             )
                           : null,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(28),
-                        borderSide: BorderSide.none,
-                      ),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(28), borderSide: BorderSide.none),
                       filled: true,
                       fillColor: Colors.white,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -261,23 +325,59 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
               ),
             ),
 
-          // My location button
+          // My location / reset button
           Positioned(
             bottom: _selectedLocation != null ? 120 : 80,
             right: 16,
             child: FloatingActionButton.small(
               heroTag: 'my_location',
               onPressed: () {
-                // Move to default Nouakchott center
-                _mapController?.animateCamera(
-                  CameraUpdate.newLatLngZoom(_defaultCenter, 13),
-                );
+                _mapController?.animateCamera(CameraUpdate.newLatLngZoom(_defaultCenter, 13));
               },
               child: const Icon(Icons.center_focus_strong),
             ),
           ),
+
+          // Legend
+          Positioned(
+            top: 80,
+            left: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _legendItem(BitmapDescriptor.hueRed, 'الموقع المحدد'),
+                  const SizedBox(height: 4),
+                  _legendItem(BitmapDescriptor.hueAzure, 'أماكن محفوظة'),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _legendItem(double hue, String label) {
+    final color = hue == BitmapDescriptor.hueRed
+        ? Colors.red
+        : hue == BitmapDescriptor.hueAzure
+        ? Colors.lightBlue
+        : Colors.grey;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.location_on, color: color, size: 16),
+        const SizedBox(width: 4),
+        Text(label, style: const TextStyle(fontSize: 11)),
+      ],
     );
   }
 
@@ -299,10 +399,22 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
   }
 
   /// Search using Nominatim (free, no API key needed for search).
-  /// For better results with Google Places, use the Places API directly.
   Future<void> _performSearch(String query) async {
     try {
-      // Use Nominatim for search (free) — focused on Mauritania
+      final results = <_SearchResult>[];
+
+      // 1. Search existing places first
+      for (final place in _existingPlaces) {
+        final name = place['name'] as String;
+        final category = place['category'] as String;
+        if (name.contains(query) || category.contains(query)) {
+          results.add(
+            _SearchResult(name: '⭐ $name', location: LatLng(place['latitude'] as double, place['longitude'] as double)),
+          );
+        }
+      }
+
+      // 2. Search Nominatim
       final url = Uri.parse(
         'https://nominatim.openstreetmap.org/search?'
         'q=${Uri.encodeComponent(query)}&'
@@ -314,22 +426,21 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
+        results.addAll(
+          data.map(
+            (item) => _SearchResult(
+              name: item['display_name'] as String,
+              location: LatLng(double.parse(item['lat'] as String), double.parse(item['lon'] as String)),
+            ),
+          ),
+        );
+      }
+
+      if (mounted) {
         setState(() {
-          _searchResults = data
-              .map(
-                (item) => _SearchResult(
-                  name: item['display_name'] as String,
-                  location: LatLng(
-                    double.parse(item['lat'] as String),
-                    double.parse(item['lon'] as String),
-                  ),
-                ),
-              )
-              .toList();
+          _searchResults = results;
           _isSearching = false;
         });
-      } else {
-        setState(() => _isSearching = false);
       }
     } catch (e) {
       if (mounted) {
@@ -365,9 +476,7 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
       _searchController.text = result.name;
       _selectedAddress = result.name;
     });
-    _mapController?.animateCamera(
-      CameraUpdate.newLatLngZoom(result.location, 16),
-    );
+    _mapController?.animateCamera(CameraUpdate.newLatLngZoom(result.location, 16));
   }
 }
 

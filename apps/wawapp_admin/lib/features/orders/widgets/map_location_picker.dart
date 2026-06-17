@@ -128,10 +128,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
         title: const Text('حفظ الموقع'),
         content: TextField(
           controller: nameController,
-          decoration: const InputDecoration(
-            labelText: 'اسم الموقع',
-            hintText: 'مثال: مكتب المبيعات',
-          ),
+          decoration: const InputDecoration(labelText: 'اسم الموقع', hintText: 'مثال: مكتب المبيعات'),
           textDirection: TextDirection.rtl,
         ),
         actions: [
@@ -162,15 +159,15 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       }, SetOptions(merge: true));
       setState(() => _savedLocations = updated);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم حفظ الموقع بنجاح'), backgroundColor: _kGreen),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('تم حفظ الموقع بنجاح'), backgroundColor: _kGreen));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ في حفظ الموقع: $e'), backgroundColor: Colors.red),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('خطأ في حفظ الموقع: $e'), backgroundColor: Colors.red));
       }
     }
   }
@@ -289,9 +286,9 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
 
   void _confirmSelection() {
     if (_selectedPosition == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('الرجاء تحديد موقع على الخريطة'), backgroundColor: Colors.red),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('الرجاء تحديد موقع على الخريطة'), backgroundColor: Colors.red));
       return;
     }
     Navigator.of(context).pop(
@@ -395,10 +392,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
           markerId: MarkerId('shared_${place['id']}'),
           position: LatLng(lat, lng),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-          infoWindow: InfoWindow(
-            title: place['name'] as String,
-            snippet: place['category'] as String,
-          ),
+          infoWindow: InfoWindow(title: place['name'] as String, snippet: place['category'] as String),
           onTap: () {
             final pos = LatLng(lat, lng);
             setState(() {
@@ -426,28 +420,25 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
           child: const Icon(Icons.bookmarks, color: Colors.white),
         ),
       ),
-      appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor: _kGreen,
-        foregroundColor: Colors.white,
-      ),
+      appBar: AppBar(title: Text(widget.title), backgroundColor: _kGreen, foregroundColor: Colors.white),
       body: Stack(
         children: [
           // ── Google Map ──
           GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: _selectedPosition ?? _defaultCenter,
-              zoom: 13.0,
-            ),
+            initialCameraPosition: CameraPosition(target: _selectedPosition ?? _defaultCenter, zoom: 13.0),
             onMapCreated: (controller) => _mapController = controller,
             onTap: _onMapTap,
             onLongPress: _onMapTap,
             markers: _buildMarkers(),
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
+            zoomControlsEnabled: true,
+            zoomGesturesEnabled: true,
+            scrollGesturesEnabled: true,
             mapToolbarEnabled: false,
             mapType: MapType.normal,
+            // Fix: Allow scroll-wheel zoom without Ctrl key on web
+            webGestureHandling: WebGestureHandling.greedy,
           ),
 
           // ── Search bar ──
@@ -480,14 +471,14 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                               child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
                             )
                           : _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.clear, size: 18),
-                                  onPressed: () {
-                                    _searchController.clear();
-                                    setState(() => _searchResults = []);
-                                  },
-                                )
-                              : null,
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, size: 18),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _searchResults = []);
+                              },
+                            )
+                          : null,
                     ),
                     textDirection: TextDirection.rtl,
                     style: const TextStyle(fontSize: 12),
@@ -521,13 +512,13 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                             r.type == 'shared'
                                 ? Icons.star
                                 : r.type == 'saved'
-                                    ? Icons.bookmark
-                                    : Icons.location_on,
+                                ? Icons.bookmark
+                                : Icons.location_on,
                             color: r.type == 'shared'
                                 ? Colors.orange
                                 : r.type == 'saved'
-                                    ? _kGreen
-                                    : Colors.blue,
+                                ? _kGreen
+                                : Colors.blue,
                             size: 20,
                           ),
                           title: Text(
@@ -537,9 +528,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           onTap: () {
-                            _mapController?.animateCamera(
-                              CameraUpdate.newLatLngZoom(r.position, 16),
-                            );
+                            _mapController?.animateCamera(CameraUpdate.newLatLngZoom(r.position, 16));
                             setState(() {
                               _selectedPosition = r.position;
                               _selectedAddress = r.displayName;
@@ -574,9 +563,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                   Icons.my_location,
                   'نواكشوط',
                   () {
-                    _mapController?.animateCamera(
-                      CameraUpdate.newLatLngZoom(_defaultCenter, 13),
-                    );
+                    _mapController?.animateCamera(CameraUpdate.newLatLngZoom(_defaultCenter, 13));
                   },
                   color: _kGreen,
                   iconColor: Colors.white,

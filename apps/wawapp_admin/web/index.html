@@ -7,6 +7,8 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Force HTML renderer for google_maps_flutter_web compatibility -->
+  <meta name="flutter-renderer" content="html">
   <title>WawApp Admin</title>
 
   <!-- Google Fonts: Tajawal (Arabic) + Inter (Latin fallback) -->
@@ -68,21 +70,35 @@
 <body>
   <div id="loading">جارٍ التحميل...</div>
 
-  <!-- Google Maps JavaScript API (required for google_maps_flutter web) -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF_TYfDGqpoZtYLSYBFvjAPva6Qp3S6Bs&libraries=places&language=ar&loading=async" async></script>
-
-  <script src="flutter_bootstrap.js" async></script>
+  <!-- Fix: scroll-wheel zoom without Ctrl key on web -->
+  <style>
+    .gm-style iframe+div {
+      pointer-events: none !important;
+    }
+  </style>
 
   <script>
     function removeLoading() {
       var el = document.getElementById('loading');
       if (el) el.remove();
     }
-    // Method 1: flutter-first-frame event
     window.addEventListener('flutter-first-frame', removeLoading);
-    // Method 2: fallback after 10 seconds
     setTimeout(removeLoading, 10000);
+
+    // Boot Flutter only after Google Maps API is fully initialized.
+    // This eliminates the race condition where google_maps_flutter_web calls
+    // importLibrary() before the Maps bootstrap has registered it.
+    window._onMapsApiReady = function () {
+      var s = document.createElement('script');
+      s.src = 'flutter_bootstrap.js';
+      document.body.appendChild(s);
+    };
   </script>
+
+  <!-- Google Maps JS API: callback=_onMapsApiReady ensures Flutter starts only after Maps is ready -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF_TYfDGqpoZtYLSYBFvjAPva6Qp3S6Bs&libraries=places,maps&language=ar&callback=_onMapsApiReady"
+    async defer></script>
 </body>
 
 </html>
