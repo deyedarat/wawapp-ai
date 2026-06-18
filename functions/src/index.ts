@@ -51,6 +51,7 @@ export { removeAdminRole, setAdminRole } from './admin/setAdminRole';
 export { adminBlockClient, adminSetClientVerification, adminUnblockClient } from './admin/adminClientActions';
 export { adminBlockDriver, adminUnblockDriver, adminVerifyDriver } from './admin/adminDriverActions';
 export { adminCancelOrder, adminReassignOrder } from './admin/adminOrderActions';
+export { adminResetDriverDispatch } from './admin/adminResetDriverDispatch';
 export { getAdminStats } from './admin/getAdminStats';
 export { checkPhoneExists } from './auth/checkPhoneExists';
 export { createCustomToken } from './auth/createCustomToken';

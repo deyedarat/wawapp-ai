@@ -4,6 +4,7 @@
  */
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:core_shared/core_shared.dart';
@@ -326,34 +327,13 @@ class AdminDriversService {
   }
 
   /// Reset driver dispatch state (unblock from stuck state)
+  /// Calls Cloud Function to bypass Firestore Rules
   Future<bool> resetDriverDispatchState(String driverId) async {
     try {
-      final user = _auth.currentUser;
-      if (user == null) throw Exception('Not authenticated');
-
-      final ref = _firestore.collection('driver_dispatch_state').doc(driverId);
-      final doc = await ref.get();
-
-      if (doc.exists) {
-        await ref.update({
-          'status': 'available',
-          'activeOrderId': null,
-          'activeOfferId': null,
-          'acceptanceLock': false,
-          'lockExpiresAt': null,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-      }
-
-      await _auditLog.log(
-        action: 'driver_dispatch_state_reset',
-        category: 'driver',
-        targetId: driverId,
-        targetType: 'driver',
-        details: {'resetBy': user.uid},
-      );
-
-      return true;
+      final callable = FirebaseFunctions.instance.httpsCallable('adminResetDriverDispatch');
+      final result = await callable.call<Map<String, dynamic>>({'driverId': driverId});
+      final data = result.data;
+      return data['success'] == true;
     } catch (e) {
       if (kDebugMode) {
         print('Error resetting dispatch state: $e');
