@@ -93,9 +93,10 @@
     };
   </script>
 
-  <!-- Google Maps JS API: callback=_onMapsApiReady ensures Flutter starts only after Maps is ready -->
+  <!-- Google Maps JS API: loading=async required for importLibrary() used by google_maps_flutter_web.
+       callback=_onMapsApiReady ensures Flutter starts only after Maps is ready. -->
   <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF_TYfDGqpoZtYLSYBFvjAPva6Qp3S6Bs&libraries=places,maps&language=ar&callback=_onMapsApiReady"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF_TYfDGqpoZtYLSYBFvjAPva6Qp3S6Bs&libraries=places&language=ar&loading=async&callback=_onMapsApiReady"
     async defer></script>
 </body>
 
