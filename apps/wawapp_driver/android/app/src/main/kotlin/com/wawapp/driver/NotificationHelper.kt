@@ -251,12 +251,12 @@ object NotificationHelper {
         Log.d("WAWAPP_TEST", "NOTIFICATION_POSTED id=$notificationId, order=$orderId, channel=$channelId, type=$notificationType")
         Log.i("WAWAPP_EVENT", "{\"event\":\"NOTIFICATION_POSTED\",\"ts\":${System.currentTimeMillis()},\"phase\":\"runtime\",\"data\":{\"notificationId\":$notificationId,\"orderId\":\"$orderId\",\"channel\":\"$channelId\",\"type\":\"$notificationType\"}}")
 
-        // FIX: Play sound immediately at t=0 on Android 12+ where notification is silent.
-        // Android < 12 gets t=0 sound from the channel via buildLegacyFullScreenNotification.
-        // When canOverlay=false, the HIGH-priority channel already plays its own sound,
-        // so we skip manual playback at t=0 to avoid double-sound. The scheduled repeats
-        // (starting at t=8s) still fire via playSoundOnce for both paths.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && canOverlay) {
+        // FIX: Play sound immediately at t=0 when using the silent channel.
+        // When canOverlay=true, we use CHANNEL_ID_SILENT_FULLSCREEN (IMPORTANCE_LOW)
+        // which produces NO channel sound on any API level. Must play manually.
+        // When canOverlay=false, the HIGH-priority channel plays its own sound,
+        // so we skip manual playback at t=0 to avoid double-sound.
+        if (canOverlay) {
             playSoundOnce(context)
         }
 
