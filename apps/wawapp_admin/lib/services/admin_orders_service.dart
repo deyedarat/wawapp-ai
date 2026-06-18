@@ -3,6 +3,7 @@
 library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:core_shared/core_shared.dart' as core_shared;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -60,32 +61,20 @@ class AdminOrdersService {
   }
 
   /// Cancel an order (admin action)
-  /// Uses Cloud Function for security
+  /// Uses Cloud Function to properly release driver dispatch state
   Future<bool> cancelOrder(String orderId, {String? reason}) async {
     try {
-      // In a real implementation, call Cloud Function
-      // For now, update directly with proper security
       final user = _auth.currentUser;
       if (user == null) throw Exception('Not authenticated');
 
-      await _firestore.collection('orders').doc(orderId).update({
-        'status': 'cancelled_by_admin',
-        'cancelledAt': FieldValue.serverTimestamp(),
-        'cancelledBy': user.uid,
-        'cancellationReason': reason ?? 'Cancelled by admin',
-        'updatedAt': FieldValue.serverTimestamp(),
+      // Use Cloud Function to ensure driver dispatch state is released
+      final callable = FirebaseFunctions.instance.httpsCallable('adminCancelOrder');
+      final result = await callable.call<Map<String, dynamic>>({
+        'orderId': orderId,
+        'reason': reason ?? 'Cancelled by admin',
       });
-
-      // Audit log
-      await _auditLog.log(
-        action: 'order_cancelled',
-        category: 'order',
-        targetId: orderId,
-        targetType: 'order',
-        details: {'reason': reason ?? 'Cancelled by admin'},
-      );
-
-      return true;
+      final data = result.data;
+      return data['success'] == true;
     } catch (e) {
       if (kDebugMode) {
         print('Error cancelling order: $e');

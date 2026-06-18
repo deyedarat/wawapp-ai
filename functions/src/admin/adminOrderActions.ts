@@ -55,7 +55,7 @@ export const adminCancelOrder = functions.https.onCall(async (data, context) => 
     const currentStatus = orderData.status;
 
     // Check if order can be cancelled
-    const cancellableStatuses = ['assigning', 'accepted', 'on_route'];
+    const cancellableStatuses = ['matching', 'assigning', 'accepted', 'onRoute', 'on_route'];
     if (!cancellableStatuses.includes(currentStatus)) {
       throw new functions.https.HttpsError(
         'failed-precondition',
