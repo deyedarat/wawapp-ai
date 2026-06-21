@@ -64,33 +64,16 @@ class LocationService {
   /// Tries Google first if apiKey is provided, falls back to Nominatim.
   /// Returns coordinates string as fallback if all requests fail.
   static Future<String> resolveAddressFromLatLng(double lat, double lng, {String? apiKey}) async {
-    // Try Google Geocoding API first (returns better results for Arabic)
+    // 1) Try Places API Nearby Search for POI name (best results)
     if (apiKey != null && apiKey.isNotEmpty) {
-      try {
-        final url = Uri.parse(
-          'https://maps.googleapis.com/maps/api/geocode/json'
-          '?latlng=$lat,$lng&key=$apiKey&language=ar',
-        );
-        final response = await http.get(url).timeout(const Duration(seconds: 8));
-
-        if (response.statusCode == 200) {
-          final data = json.decode(response.body) as Map<String, dynamic>;
-          final results = data['results'] as List<dynamic>?;
-          if (results != null && results.isNotEmpty) {
-            // Prefer a result with a short name (POI, neighborhood, etc.)
-            final address = _extractBestAddress(results);
-            if (address != null) {
-              dev.log('Google Geocoding resolved: $address', name: _tag);
-              return address;
-            }
-          }
-        }
-      } catch (e) {
-        dev.log('Google Geocoding error, falling back to Nominatim: $e', name: _tag);
+      final poiName = await _findNearbyPlaceName(lat, lng, apiKey);
+      if (poiName != null) {
+        dev.log('Places API resolved: $poiName', name: _tag);
+        return poiName;
       }
     }
 
-    // Fallback: Nominatim (free, no API key needed)
+    // 2) Fallback: Nominatim (free)
     try {
       final url = Uri.parse(
         'https://nominatim.openstreetmap.org/reverse'
@@ -100,10 +83,19 @@ class LocationService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
+        final name = data['name'] as String?;
+        // If Nominatim has a POI name, use it
+        if (name != null && name.isNotEmpty) {
+          dev.log('Nominatim POI name: $name', name: _tag);
+          return name;
+        }
         final displayName = data['display_name'] as String?;
         if (displayName != null && displayName.isNotEmpty) {
-          dev.log('Nominatim resolved: $displayName', name: _tag);
-          return displayName;
+          // Shorten to first meaningful part
+          final parts = displayName.split(',');
+          final short = parts.length > 2 ? '${parts[0].trim()}, ${parts[1].trim()}' : displayName;
+          dev.log('Nominatim resolved: $short', name: _tag);
+          return short;
         }
       }
 
@@ -115,35 +107,53 @@ class LocationService {
     }
   }
 
-  /// Extract the best short address from Google Geocoding results.
-  /// Prefers: POI name > neighborhood > route > formatted_address.
-  static String? _extractBestAddress(List<dynamic> results) {
-    // Look for point_of_interest, establishment, or premise type first
-    for (final result in results) {
-      final types = (result['types'] as List<dynamic>?)?.cast<String>() ?? [];
-      if (types.any((t) => ['point_of_interest', 'establishment', 'premise'].contains(t))) {
-        final name = result['formatted_address'] as String?;
-        if (name != null && name.isNotEmpty) {
-          // Return just the first part (before the first comma) for a shorter name
-          return name.split(',').first.trim();
-        }
-      }
-    }
+  /// Plus Code pattern
+  static final _plusCodeRegex = RegExp(r'^[A-Z0-9]{4,}\+[A-Z0-9]+', caseSensitive: false);
 
-    // Fallback: use the first result's short form
-    if (results.isNotEmpty) {
-      final firstResult = results[0];
-      final address = firstResult['formatted_address'] as String?;
-      if (address != null && address.isNotEmpty) {
-        // Take the first two parts for a reasonable length
-        final parts = address.split(',');
-        if (parts.length > 2) {
-          return '${parts[0].trim()}, ${parts[1].trim()}';
-        }
-        return address;
-      }
-    }
+  /// Use Places API (New) Nearby Search to find the nearest POI name.
+  /// This returns the actual place name (e.g., "كرفور BMD") not just the address.
+  static Future<String?> _findNearbyPlaceName(double lat, double lng, String apiKey) async {
+    try {
+      final url = Uri.parse('https://places.googleapis.com/v1/places:searchNearby');
+      final body = json.encode({
+        'maxResultCount': 1,
+        'locationRestriction': {
+          'circle': {
+            'center': {'latitude': lat, 'longitude': lng},
+            'radius': 50.0,
+          },
+        },
+      });
 
+      final response = await http
+          .post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Goog-Api-Key': apiKey,
+              'X-Goog-FieldMask': 'places.displayName',
+              'Accept-Language': 'ar',
+            },
+            body: body,
+          )
+          .timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        final places = data['places'] as List<dynamic>?;
+        if (places != null && places.isNotEmpty) {
+          final displayName = places[0]['displayName'] as Map<String, dynamic>?;
+          final name = displayName?['text'] as String?;
+          if (name != null && name.isNotEmpty && !_plusCodeRegex.hasMatch(name)) {
+            return name;
+          }
+        }
+      } else {
+        dev.log('Places API error ${response.statusCode}: ${response.body}', name: _tag);
+      }
+    } catch (e) {
+      dev.log('Places API error: $e', name: _tag);
+    }
     return null;
   }
 
