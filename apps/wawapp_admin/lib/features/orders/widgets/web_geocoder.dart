@@ -81,12 +81,8 @@ class WebGeocoder {
           final firstResult = resultsList[0] as JSObject;
           final formattedAddress = (firstResult.getProperty('formatted_address'.toJS) as JSString?)?.toDart;
           if (formattedAddress != null && formattedAddress.isNotEmpty) {
-            final parts = formattedAddress.split(',');
-            if (parts.length > 2) {
-              completer.complete('${parts[0].trim()}, ${parts[1].trim()}');
-            } else {
-              completer.complete(formattedAddress);
-            }
+            // Take only the first part (the most specific name)
+            completer.complete(formattedAddress.split(',').first.trim());
           } else {
             completer.complete(null);
           }
