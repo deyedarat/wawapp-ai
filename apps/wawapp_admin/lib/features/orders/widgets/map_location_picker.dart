@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import 'google_maps_checker.dart';
+
 // ============================================================================
 // Data Models
 // ============================================================================
@@ -237,7 +239,16 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       final response = await http.get(url, headers: {'User-Agent': 'WawApp-Admin/1.0'});
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        return data['display_name'] ?? 'عنوان غير معروف';
+        final displayName = data['display_name'] as String?;
+        if (displayName != null && displayName.isNotEmpty) {
+          // Return shorter address: first two parts instead of full string
+          final parts = displayName.split(',');
+          if (parts.length > 2) {
+            return '${parts[0].trim()}, ${parts[1].trim()}';
+          }
+          return displayName;
+        }
+        return 'عنوان غير معروف';
       }
     } catch (e) {
       debugPrint('Error getting address: $e');
@@ -410,6 +421,13 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
 
   @override
   Widget build(BuildContext context) {
+    if (!isGoogleMapsAvailable) {
+      return Scaffold(
+        appBar: AppBar(title: Text(widget.title), backgroundColor: _kGreen, foregroundColor: Colors.white),
+        body: GoogleMapsBlockedWidget(title: widget.title),
+      );
+    }
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: _showSavedLocations,
@@ -424,21 +442,25 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       body: Stack(
         children: [
           // ── Google Map ──
-          GoogleMap(
-            initialCameraPosition: CameraPosition(target: _selectedPosition ?? _defaultCenter, zoom: 13.0),
-            onMapCreated: (controller) => _mapController = controller,
-            onTap: _onMapTap,
-            onLongPress: _onMapTap,
-            markers: _buildMarkers(),
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: true,
-            zoomGesturesEnabled: true,
-            scrollGesturesEnabled: true,
-            mapToolbarEnabled: false,
-            mapType: MapType.normal,
-            // Fix: Allow scroll-wheel zoom without Ctrl key on web
-            webGestureHandling: WebGestureHandling.greedy,
+          Positioned.fill(
+            child: SafeGoogleMap(
+              googleMap: GoogleMap(
+                initialCameraPosition: CameraPosition(target: _selectedPosition ?? _defaultCenter, zoom: 13.0),
+                onMapCreated: (controller) => _mapController = controller,
+                onTap: _onMapTap,
+                onLongPress: _onMapTap,
+                markers: _buildMarkers(),
+                myLocationEnabled: true,
+                myLocationButtonEnabled: false,
+                zoomControlsEnabled: true,
+                zoomGesturesEnabled: true,
+                scrollGesturesEnabled: true,
+                mapToolbarEnabled: false,
+                mapType: MapType.normal,
+                // Fix: Allow scroll-wheel zoom without Ctrl key on web
+                webGestureHandling: WebGestureHandling.greedy,
+              ),
+            ),
           ),
 
           // ── Search bar ──

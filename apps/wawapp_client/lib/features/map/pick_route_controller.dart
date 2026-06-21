@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../core/geo/distance.dart';
 import '../../core/location/location_service.dart';
+import 'providers/shared_places_provider.dart';
 
 // Use Google Maps LatLng directly to avoid conflicts
 typedef MapLatLng = LatLng;
@@ -80,15 +81,38 @@ class RoutePickerState {
 }
 
 class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
-  RoutePickerNotifier(this.apiKey)
-      : super(const RoutePickerState(mapsEnabled: true));
+  RoutePickerNotifier(this.apiKey, this._sharedPlaces) : super(const RoutePickerState(mapsEnabled: true));
 
   final String apiKey;
+  final List<SharedPlace> _sharedPlaces;
   static const String _tag = 'RoutePickerNotifier';
 
-  late final GooglePlace? _googlePlace =
-      apiKey.isNotEmpty ? GooglePlace(apiKey) : null;
+  /// Max distance (in km) to match a tap to a shared place
+  static const double _sharedPlaceMatchRadiusKm = 0.1; // 100 meters
+
+  late final GooglePlace? _googlePlace = apiKey.isNotEmpty ? GooglePlace(apiKey) : null;
   final Uuid _uuid = const Uuid();
+
+  /// Find the nearest shared place within match radius.
+  /// Returns null if no shared place is close enough.
+  SharedPlace? _findNearbySharedPlace(double lat, double lng) {
+    SharedPlace? closest;
+    double closestDistance = double.infinity;
+
+    for (final place in _sharedPlaces) {
+      final distance = computeDistanceKm(lat1: lat, lng1: lng, lat2: place.latitude, lng2: place.longitude);
+      if (distance < _sharedPlaceMatchRadiusKm && distance < closestDistance) {
+        closest = place;
+        closestDistance = distance;
+      }
+    }
+
+    if (closest != null) {
+      dev.log('Matched shared place: ${closest.name} (${closestDistance * 1000}m away)', name: _tag);
+    }
+
+    return closest;
+  }
 
   void toggleSelection() {
     state = state.copyWith(selectingPickup: !state.selectingPickup);
@@ -97,15 +121,21 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
   Future<void> setLocationFromTap(MapLatLng location) async {
     // Set loading state
     if (state.selectingPickup) {
-      state = state.copyWith(
-          pickup: location, pickupAddress: 'جار تحديد العنوان...');
+      state = state.copyWith(pickup: location, pickupAddress: 'جار تحديد العنوان...');
     } else {
-      state = state.copyWith(
-          dropoff: location, dropoffAddress: 'جار تحديد العنوان...');
+      state = state.copyWith(dropoff: location, dropoffAddress: 'جار تحديد العنوان...');
     }
 
-    final address = await LocationService.resolveAddressFromLatLng(
-        location.latitude, location.longitude);
+    // 1) Check if tap is near a known shared place (free, no API call)
+    final nearbyPlace = _findNearbySharedPlace(location.latitude, location.longitude);
+    final String address;
+
+    if (nearbyPlace != null) {
+      address = nearbyPlace.name;
+    } else {
+      // 2) Fallback to reverse geocoding (Google first, then Nominatim)
+      address = await LocationService.resolveAddressFromLatLng(location.latitude, location.longitude, apiKey: apiKey);
+    }
 
     if (state.selectingPickup) {
       state = state.copyWith(pickupAddress: address);
@@ -158,17 +188,12 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
 
   Future<DetailsResult?> getPlaceDetails(String placeId) async {
     if (!state.mapsEnabled || _googlePlace == null) {
-      dev.log('Cannot get place details: Maps disabled (no API key)',
-          name: _tag);
+      dev.log('Cannot get place details: Maps disabled (no API key)', name: _tag);
       return null;
     }
 
     try {
-      final result = await _googlePlace!.details.get(
-        placeId,
-        sessionToken: _uuid.v4(),
-        language: 'ar',
-      );
+      final result = await _googlePlace!.details.get(placeId, sessionToken: _uuid.v4(), language: 'ar');
       return result?.result;
     } catch (e) {
       dev.log('Error getting place details: $e', name: _tag);
@@ -209,8 +234,7 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
     }
   }
 
-  Future<void> setLocationFromSavedLocation(
-      SavedLocation savedLocation, bool isPickup) async {
+  Future<void> setLocationFromSavedLocation(SavedLocation savedLocation, bool isPickup) async {
     final location = MapLatLng(savedLocation.latitude, savedLocation.longitude);
     final address = savedLocation.address;
 
@@ -223,8 +247,7 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
     _calculateDistance();
   }
 
-  void setLocationExplicitly(
-      MapLatLng location, String address, bool isPickup) {
+  void setLocationExplicitly(MapLatLng location, String address, bool isPickup) {
     if (isPickup) {
       state = state.copyWith(pickup: location, pickupAddress: address);
     } else {
@@ -238,7 +261,8 @@ class RoutePickerNotifier extends StateNotifier<RoutePickerState> {
   }
 }
 
-final routePickerProvider =
-    StateNotifierProvider<RoutePickerNotifier, RoutePickerState>((ref) {
-  return RoutePickerNotifier(ref.watch(mapsApiKeyProvider));
+final routePickerProvider = StateNotifierProvider<RoutePickerNotifier, RoutePickerState>((ref) {
+  final apiKey = ref.watch(mapsApiKeyProvider);
+  final sharedPlaces = ref.watch(sharedPlacesProvider).valueOrNull ?? [];
+  return RoutePickerNotifier(apiKey, sharedPlaces);
 });

@@ -20,8 +20,7 @@ class LocationService {
       dev.log('Permission after request: $permission', name: _tag);
     }
 
-    final hasPermission = permission == LocationPermission.whileInUse ||
-        permission == LocationPermission.always;
+    final hasPermission = permission == LocationPermission.whileInUse || permission == LocationPermission.always;
     dev.log('Has location permission: $hasPermission', name: _tag);
     return hasPermission;
   }
@@ -47,8 +46,7 @@ class LocationService {
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 10),
       );
-      dev.log('Got position: ${position.latitude}, ${position.longitude}',
-          name: _tag);
+      dev.log('Got position: ${position.latitude}, ${position.longitude}', name: _tag);
       return position;
     } catch (e) {
       dev.log('Error getting current position: $e', name: _tag);
@@ -58,25 +56,47 @@ class LocationService {
 
   static Stream<Position> getPositionStream() {
     return Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
-      ),
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 10),
     );
   }
 
-  /// Reverse geocoding via Nominatim (OpenStreetMap) — no API key required.
-  /// Returns coordinates string as fallback if the request fails.
-  static Future<String> resolveAddressFromLatLng(double lat, double lng) async {
+  /// Reverse geocoding via Google Geocoding API (with Nominatim fallback).
+  /// Tries Google first if apiKey is provided, falls back to Nominatim.
+  /// Returns coordinates string as fallback if all requests fail.
+  static Future<String> resolveAddressFromLatLng(double lat, double lng, {String? apiKey}) async {
+    // Try Google Geocoding API first (returns better results for Arabic)
+    if (apiKey != null && apiKey.isNotEmpty) {
+      try {
+        final url = Uri.parse(
+          'https://maps.googleapis.com/maps/api/geocode/json'
+          '?latlng=$lat,$lng&key=$apiKey&language=ar',
+        );
+        final response = await http.get(url).timeout(const Duration(seconds: 8));
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body) as Map<String, dynamic>;
+          final results = data['results'] as List<dynamic>?;
+          if (results != null && results.isNotEmpty) {
+            // Prefer a result with a short name (POI, neighborhood, etc.)
+            final address = _extractBestAddress(results);
+            if (address != null) {
+              dev.log('Google Geocoding resolved: $address', name: _tag);
+              return address;
+            }
+          }
+        }
+      } catch (e) {
+        dev.log('Google Geocoding error, falling back to Nominatim: $e', name: _tag);
+      }
+    }
+
+    // Fallback: Nominatim (free, no API key needed)
     try {
       final url = Uri.parse(
         'https://nominatim.openstreetmap.org/reverse'
         '?format=json&lat=$lat&lon=$lng&accept-language=ar',
       );
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': 'WawApp/1.0'},
-      ).timeout(const Duration(seconds: 8));
+      final response = await http.get(url, headers: {'User-Agent': 'WawApp/1.0'}).timeout(const Duration(seconds: 8));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
@@ -95,10 +115,41 @@ class LocationService {
     }
   }
 
+  /// Extract the best short address from Google Geocoding results.
+  /// Prefers: POI name > neighborhood > route > formatted_address.
+  static String? _extractBestAddress(List<dynamic> results) {
+    // Look for point_of_interest, establishment, or premise type first
+    for (final result in results) {
+      final types = (result['types'] as List<dynamic>?)?.cast<String>() ?? [];
+      if (types.any((t) => ['point_of_interest', 'establishment', 'premise'].contains(t))) {
+        final name = result['formatted_address'] as String?;
+        if (name != null && name.isNotEmpty) {
+          // Return just the first part (before the first comma) for a shorter name
+          return name.split(',').first.trim();
+        }
+      }
+    }
+
+    // Fallback: use the first result's short form
+    if (results.isNotEmpty) {
+      final firstResult = results[0];
+      final address = firstResult['formatted_address'] as String?;
+      if (address != null && address.isNotEmpty) {
+        // Take the first two parts for a reasonable length
+        final parts = address.split(',');
+        if (parts.length > 2) {
+          return '${parts[0].trim()}, ${parts[1].trim()}';
+        }
+        return address;
+      }
+    }
+
+    return null;
+  }
+
   static Future<LatLng?> resolveLatLngFromAddress(String address) async {
     try {
-      final locations = await locationFromAddress(address)
-          .timeout(const Duration(seconds: 5));
+      final locations = await locationFromAddress(address).timeout(const Duration(seconds: 5));
 
       if (locations.isNotEmpty) {
         final location = locations.first;

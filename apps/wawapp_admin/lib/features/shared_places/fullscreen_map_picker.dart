@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import '../orders/widgets/google_maps_checker.dart';
+
 /// Fullscreen Google Maps picker page with Places search.
 /// Returns the selected [LatLng] when confirmed, or null if cancelled.
 ///
@@ -122,6 +124,16 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
 
   @override
   Widget build(BuildContext context) {
+    if (!isGoogleMapsAvailable) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('اختر الموقع على الخريطة'),
+          leading: IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+        ),
+        body: const GoogleMapsBlockedWidget(title: 'اختر الموقع على الخريطة'),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('اختر الموقع على الخريطة'),
@@ -141,32 +153,34 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
       body: Stack(
         children: [
           // Google Map
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: _selectedLocation ?? _defaultCenter,
-              zoom: _selectedLocation != null ? 16 : 12,
+          SafeGoogleMap(
+            googleMap: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _selectedLocation ?? _defaultCenter,
+                zoom: _selectedLocation != null ? 16 : 12,
+              ),
+              onMapCreated: (controller) => _mapController = controller,
+              onTap: (position) {
+                setState(() {
+                  _selectedLocation = position;
+                  _searchResults = [];
+                  _selectedAddress = null;
+                });
+                _reverseGeocode(position);
+              },
+              markers: _buildMarkers(),
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              // Enable zoom controls for better UX on web
+              zoomControlsEnabled: true,
+              zoomGesturesEnabled: true,
+              scrollGesturesEnabled: true,
+              tiltGesturesEnabled: false,
+              rotateGesturesEnabled: false,
+              mapToolbarEnabled: false,
+              // Fix: Allow scroll-wheel zoom without Ctrl key on web
+              webGestureHandling: WebGestureHandling.greedy,
             ),
-            onMapCreated: (controller) => _mapController = controller,
-            onTap: (position) {
-              setState(() {
-                _selectedLocation = position;
-                _searchResults = [];
-                _selectedAddress = null;
-              });
-              _reverseGeocode(position);
-            },
-            markers: _buildMarkers(),
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-            // Enable zoom controls for better UX on web
-            zoomControlsEnabled: true,
-            zoomGesturesEnabled: true,
-            scrollGesturesEnabled: true,
-            tiltGesturesEnabled: false,
-            rotateGesturesEnabled: false,
-            mapToolbarEnabled: false,
-            // Fix: Allow scroll-wheel zoom without Ctrl key on web
-            webGestureHandling: WebGestureHandling.greedy,
           ),
 
           // Search bar at top
@@ -451,6 +465,18 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
   }
 
   Future<void> _reverseGeocode(LatLng position) async {
+    // 1) Check if tapped near an existing shared place (free, no API call)
+    final nearbyPlace = _findNearbyExistingPlace(position);
+    if (nearbyPlace != null) {
+      if (mounted) {
+        setState(() {
+          _selectedAddress = nearbyPlace['name'] as String;
+        });
+      }
+      return;
+    }
+
+    // 2) Fallback to Nominatim reverse geocoding
     try {
       final url = Uri.parse(
         'https://nominatim.openstreetmap.org/reverse?'
@@ -460,13 +486,35 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
       if (!mounted) return;
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        final displayName = data['display_name'] as String?;
         setState(() {
-          _selectedAddress = data['display_name'] as String?;
+          // Take first two parts for a shorter address
+          if (displayName != null && displayName.contains(',')) {
+            final parts = displayName.split(',');
+            _selectedAddress = parts.length > 2 ? '${parts[0].trim()}, ${parts[1].trim()}' : displayName;
+          } else {
+            _selectedAddress = displayName;
+          }
         });
       }
     } catch (e) {
       debugPrint('Reverse geocode error: $e');
     }
+  }
+
+  /// Find the nearest existing shared place within ~100m of the tapped position.
+  Map<String, dynamic>? _findNearbyExistingPlace(LatLng position) {
+    const thresholdDeg = 0.001; // ~111m at equator
+    for (final place in _existingPlaces) {
+      final lat = place['latitude'] as double;
+      final lng = place['longitude'] as double;
+      final dLat = (position.latitude - lat).abs();
+      final dLng = (position.longitude - lng).abs();
+      if (dLat < thresholdDeg && dLng < thresholdDeg) {
+        return place;
+      }
+    }
+    return null;
   }
 
   void _selectSearchResult(_SearchResult result) {
