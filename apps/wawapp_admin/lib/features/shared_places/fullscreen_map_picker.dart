@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import '../orders/widgets/google_maps_checker.dart';
+import '../orders/widgets/web_geocoder.dart';
 
 /// Fullscreen Google Maps picker page with Places search.
 /// Returns the selected [LatLng] when confirmed, or null if cancelled.
@@ -464,9 +465,6 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
     }
   }
 
-  /// Google Maps API key (same as in index.html)
-  static const _mapsApiKey = 'AIzaSyDF_TYfDGqpoZtYLSYBFvjAPva6Qp3S6Bs';
-
   Future<void> _reverseGeocode(LatLng position) async {
     // 1) Check if tapped near an existing shared place (free, no API call)
     final nearbyPlace = _findNearbyExistingPlace(position);
@@ -479,44 +477,12 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
       return;
     }
 
-    // 2) Try Google Geocoding API (better POI names)
-    try {
-      final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json'
-        '?latlng=${position.latitude},${position.longitude}&key=$_mapsApiKey&language=ar',
-      );
-      final response = await http.get(url).timeout(const Duration(seconds: 8));
-      if (!mounted) return;
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final results = data['results'] as List<dynamic>?;
-        if (results != null && results.isNotEmpty) {
-          // Look for POI name first
-          for (final result in results) {
-            final types = (result['types'] as List<dynamic>?)?.cast<String>() ?? [];
-            if (types.any(
-              (t) => ['point_of_interest', 'establishment', 'premise', 'store', 'shopping_mall'].contains(t),
-            )) {
-              final name = result['formatted_address'] as String?;
-              if (name != null && name.isNotEmpty) {
-                setState(() => _selectedAddress = name.split(',').first.trim());
-                return;
-              }
-            }
-          }
-          // Fallback: first result shortened
-          final firstAddress = results[0]['formatted_address'] as String?;
-          if (firstAddress != null) {
-            final parts = firstAddress.split(',');
-            setState(() {
-              _selectedAddress = parts.length > 2 ? '${parts[0].trim()}, ${parts[1].trim()}' : firstAddress;
-            });
-            return;
-          }
-        }
-      }
-    } catch (e) {
-      debugPrint('Google Geocoding error: $e');
+    // 2) Use Google Maps JS Geocoder (browser-side, works with referer-restricted keys)
+    final googleResult = await WebGeocoder.reverseGeocode(position.latitude, position.longitude);
+    if (!mounted) return;
+    if (googleResult != null && googleResult.isNotEmpty) {
+      setState(() => _selectedAddress = googleResult);
+      return;
     }
 
     // 3) Fallback to Nominatim
