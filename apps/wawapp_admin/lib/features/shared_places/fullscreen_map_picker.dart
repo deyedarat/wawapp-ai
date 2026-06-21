@@ -464,6 +464,9 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
     }
   }
 
+  /// Google Maps API key (same as in index.html)
+  static const _mapsApiKey = 'AIzaSyDF_TYfDGqpoZtYLSYBFvjAPva6Qp3S6Bs';
+
   Future<void> _reverseGeocode(LatLng position) async {
     // 1) Check if tapped near an existing shared place (free, no API call)
     final nearbyPlace = _findNearbyExistingPlace(position);
@@ -476,7 +479,47 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
       return;
     }
 
-    // 2) Fallback to Nominatim reverse geocoding
+    // 2) Try Google Geocoding API (better POI names)
+    try {
+      final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json'
+        '?latlng=${position.latitude},${position.longitude}&key=$_mapsApiKey&language=ar',
+      );
+      final response = await http.get(url).timeout(const Duration(seconds: 8));
+      if (!mounted) return;
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final results = data['results'] as List<dynamic>?;
+        if (results != null && results.isNotEmpty) {
+          // Look for POI name first
+          for (final result in results) {
+            final types = (result['types'] as List<dynamic>?)?.cast<String>() ?? [];
+            if (types.any(
+              (t) => ['point_of_interest', 'establishment', 'premise', 'store', 'shopping_mall'].contains(t),
+            )) {
+              final name = result['formatted_address'] as String?;
+              if (name != null && name.isNotEmpty) {
+                setState(() => _selectedAddress = name.split(',').first.trim());
+                return;
+              }
+            }
+          }
+          // Fallback: first result shortened
+          final firstAddress = results[0]['formatted_address'] as String?;
+          if (firstAddress != null) {
+            final parts = firstAddress.split(',');
+            setState(() {
+              _selectedAddress = parts.length > 2 ? '${parts[0].trim()}, ${parts[1].trim()}' : firstAddress;
+            });
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Google Geocoding error: $e');
+    }
+
+    // 3) Fallback to Nominatim
     try {
       final url = Uri.parse(
         'https://nominatim.openstreetmap.org/reverse?'
@@ -488,7 +531,6 @@ class _FullscreenMapPickerState extends State<FullscreenMapPicker> {
         final data = json.decode(response.body);
         final displayName = data['display_name'] as String?;
         setState(() {
-          // Take first two parts for a shorter address
           if (displayName != null && displayName.contains(',')) {
             final parts = displayName.split(',');
             _selectedAddress = parts.length > 2 ? '${parts[0].trim()}, ${parts[1].trim()}' : displayName;

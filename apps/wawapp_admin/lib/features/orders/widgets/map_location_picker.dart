@@ -231,7 +231,50 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     );
   }
 
+  /// Google Maps API key (same as in index.html for web Google Maps)
+  static const _mapsApiKey = 'AIzaSyDF_TYfDGqpoZtYLSYBFvjAPva6Qp3S6Bs';
+
   Future<String> _getAddressFromLatLng(double lat, double lng) async {
+    // Try Google Geocoding API first (better POI names in Arabic)
+    try {
+      final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json'
+        '?latlng=$lat,$lng&key=$_mapsApiKey&language=ar',
+      );
+      final response = await http.get(url).timeout(const Duration(seconds: 8));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final results = data['results'] as List<dynamic>?;
+        if (results != null && results.isNotEmpty) {
+          // Look for POI / establishment name first
+          for (final result in results) {
+            final types = (result['types'] as List<dynamic>?)?.cast<String>() ?? [];
+            if (types.any(
+              (t) => ['point_of_interest', 'establishment', 'premise', 'store', 'shopping_mall'].contains(t),
+            )) {
+              final name = result['formatted_address'] as String?;
+              if (name != null && name.isNotEmpty) {
+                // Return first part (the POI name) before comma
+                return name.split(',').first.trim();
+              }
+            }
+          }
+          // Fallback: use first result, shortened to 2 parts
+          final firstAddress = results[0]['formatted_address'] as String?;
+          if (firstAddress != null && firstAddress.isNotEmpty) {
+            final parts = firstAddress.split(',');
+            if (parts.length > 2) {
+              return '${parts[0].trim()}, ${parts[1].trim()}';
+            }
+            return firstAddress;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Google Geocoding error, falling back to Nominatim: $e');
+    }
+
+    // Fallback: Nominatim (free, no quota)
     try {
       final url = Uri.parse(
         'https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lng&accept-language=ar',
@@ -241,7 +284,6 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
         final data = json.decode(response.body);
         final displayName = data['display_name'] as String?;
         if (displayName != null && displayName.isNotEmpty) {
-          // Return shorter address: first two parts instead of full string
           final parts = displayName.split(',');
           if (parts.length > 2) {
             return '${parts[0].trim()}, ${parts[1].trim()}';
@@ -251,7 +293,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
         return 'عنوان غير معروف';
       }
     } catch (e) {
-      debugPrint('Error getting address: $e');
+      debugPrint('Nominatim error: $e');
     }
     return 'الموقع: ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}';
   }
