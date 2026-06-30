@@ -10,8 +10,8 @@
  * - No user data exposed
  */
 
-import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions/v1';
 
 /**
  * Check if phone number exists
@@ -43,15 +43,34 @@ export const checkPhoneExists = functions.https.onCall(async (data, context) => 
   console.log(`[checkPhoneExists] Check requested for ${phoneE164} in ${collection} from IP: ${clientIp}`);
 
   try {
-    // Query for phone number
-    // Admin SDK bypasses Firestore rules, so this will work even without authentication
+    // Query for phone number in E.164 format
     const snapshot = await admin.firestore()
       .collection(collection)
       .where('phone', '==', phoneE164)
       .limit(1)
       .get();
 
-    const exists = !snapshot.empty;
+    let exists = !snapshot.empty;
+
+    // Secondary check: look for local number format (without country code)
+    // This handles legacy entries stored without +222 prefix
+    if (!exists && phoneE164.startsWith('+222')) {
+      const localNumber = phoneE164.replace('+222', '');
+      const localSnapshot = await admin.firestore()
+        .collection(collection)
+        .where('phone', '==', localNumber)
+        .limit(1)
+        .get();
+      exists = !localSnapshot.empty;
+
+      if (exists) {
+        console.log(`[checkPhoneExists] Found with local format. Normalizing phone for doc: ${localSnapshot.docs[0].id}`);
+        // Fix the phone format in the background
+        admin.firestore().collection(collection).doc(localSnapshot.docs[0].id).update({
+          phone: phoneE164,
+        }).catch(err => console.error('[checkPhoneExists] Failed to normalize phone:', err));
+      }
+    }
 
     console.log(`[checkPhoneExists] Phone ${phoneE164} in ${collection}: ${exists ? 'found' : 'not found'}`);
 

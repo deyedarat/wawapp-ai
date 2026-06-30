@@ -493,6 +493,54 @@ describe('📦 /orders Collection Security', () => {
         })
       );
     });
+
+    it('❌ should DENY creating order when pickup and dropoff are identical (distanceKm = 0)', async () => {
+      const db = getAuthedDb(ALICE_UID);
+      await assertFails(
+        db.collection('orders').add({
+          ownerId: ALICE_UID,
+          status: 'matching',
+          price: 500,
+          distanceKm: 0, // Same location — real-world incident: order iJ2evtOmXvLl1HakzGZr
+          pickup: { lat: 18.0663, lng: -15.8933 },
+          dropoff: { lat: 18.0663, lng: -15.8933 },
+          pickupAddress: 'Nouakchott',
+          dropoffAddress: 'Nouakchott',
+        })
+      );
+    });
+
+    it('❌ should DENY creating order with distance below 200m (0.0003 km)', async () => {
+      const db = getAuthedDb(ALICE_UID);
+      await assertFails(
+        db.collection('orders').add({
+          ownerId: ALICE_UID,
+          status: 'matching',
+          price: 500,
+          distanceKm: 0.0003, // < 0.2 km minimum
+          pickup: { lat: 18.0663, lng: -15.8933 },
+          dropoff: { lat: 18.0664, lng: -15.8934 },
+          pickupAddress: 'Nouakchott',
+          dropoffAddress: 'Nouakchott',
+        })
+      );
+    });
+
+    it('✅ should ALLOW creating order with minimum valid distance (0.2 km)', async () => {
+      const db = getAuthedDb(ALICE_UID);
+      await assertSucceeds(
+        db.collection('orders').add({
+          ownerId: ALICE_UID,
+          status: 'matching',
+          price: 500,
+          distanceKm: 0.2, // Exactly at minimum threshold
+          pickup: { lat: 18.0663, lng: -15.8933 },
+          dropoff: { lat: 18.0680, lng: -15.8950 },
+          pickupAddress: 'Nouakchott',
+          dropoffAddress: 'Nouakchott',
+        })
+      );
+    });
   });
 
   describe('Reading Orders', () => {

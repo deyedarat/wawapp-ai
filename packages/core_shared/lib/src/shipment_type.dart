@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 /// Represents the type/category of shipment in a half-truck/pickup cargo delivery.
 /// Shared across all WawApp apps (client, driver, admin).
 enum ShipmentType {
+  lightParcel,
   foodAndPerishables,
   furnitureAndHomeSetup,
   constructionMaterialsAndHeavyLoad,
@@ -15,6 +16,8 @@ extension ShipmentTypeExtension on ShipmentType {
   /// Pricing multiplier for this shipment type
   double get multiplier {
     switch (this) {
+      case ShipmentType.lightParcel:
+        return 0.50;
       case ShipmentType.foodAndPerishables:
         return 1.10;
       case ShipmentType.furnitureAndHomeSetup:
@@ -33,6 +36,8 @@ extension ShipmentTypeExtension on ShipmentType {
   /// Arabic label for UI display
   String get arabicLabel {
     switch (this) {
+      case ShipmentType.lightParcel:
+        return 'رسالة خفيفة';
       case ShipmentType.foodAndPerishables:
         return 'مواد غذائية وسريعة التلف';
       case ShipmentType.furnitureAndHomeSetup:
@@ -51,6 +56,8 @@ extension ShipmentTypeExtension on ShipmentType {
   /// French label for UI display
   String get frenchLabel {
     switch (this) {
+      case ShipmentType.lightParcel:
+        return 'Colis léger';
       case ShipmentType.foodAndPerishables:
         return 'Denrées alimentaires et périssables';
       case ShipmentType.furnitureAndHomeSetup:
@@ -69,6 +76,8 @@ extension ShipmentTypeExtension on ShipmentType {
   /// Icon for UI display
   IconData get icon {
     switch (this) {
+      case ShipmentType.lightParcel:
+        return Icons.local_shipping;
       case ShipmentType.foodAndPerishables:
         return Icons.restaurant;
       case ShipmentType.furnitureAndHomeSetup:
@@ -87,6 +96,8 @@ extension ShipmentTypeExtension on ShipmentType {
   /// Color for UI display
   Color get color {
     switch (this) {
+      case ShipmentType.lightParcel:
+        return Colors.teal;
       case ShipmentType.foodAndPerishables:
         return Colors.green;
       case ShipmentType.furnitureAndHomeSetup:

@@ -318,239 +318,262 @@ class _ActiveOrderScreenState extends ConsumerState<ActiveOrderScreen> {
                   ),
                 ),
 
-                // Order Details Card
+                // Scrollable cards + Fixed action buttons
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineSmall,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  leading: const Icon(Icons.location_on,
-                                      color: Colors.green),
-                                  title: const Text('من',
-                                      style: TextStyle(fontSize: 12)),
-                                  subtitle: Text(order.pickup.label),
-                                  trailing: IconButton(
-                                    icon: const Icon(Icons.map, size: 20),
-                                    onPressed: () => _openMaps(
-                                      order.pickup.lat,
-                                      order.pickup.lng,
-                                      order.pickup.label,
-                                    ),
-                                  ),
-                                ),
-                                ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  leading: const Icon(Icons.location_on,
-                                      color: Colors.red),
-                                  title: const Text('إلى',
-                                      style: TextStyle(fontSize: 12)),
-                                  subtitle: Text(order.dropoff.label),
-                                  trailing: IconButton(
-                                    icon: const Icon(Icons.map, size: 20),
-                                    onPressed: () => _openMaps(
-                                      order.dropoff.lat,
-                                      order.dropoff.lng,
-                                      order.dropoff.label,
-                                    ),
-                                  ),
-                                ),
-                                const Divider(),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                        'المسافة: ${order.distanceKm.toStringAsFixed(1)} كم'),
-                                    Text('السعر: ${order.price} MRU',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                    'الحالة: ${order.orderStatus.toArabicLabel()}',
-                                    style: TextStyle(
-                                        color: _getStatusColor(
-                                            order.orderStatus))),
-                              ],
-                            ),
-                          ),
-                        ),
-                        // Customer Phone Card - Prominent
-                        if (order.customerPhone != null &&
-                            order.customerPhone!.isNotEmpty)
-                          Card(
-                            margin: const EdgeInsets.only(top: 16, bottom: 0),
-                            color: const Color(0xFFF1F8E9),
-                            elevation: 2,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 56,
-                                    height: 56,
-                                    decoration: BoxDecoration(
-                                      color: DriverAppColors.primaryLight,
-                                      borderRadius: BorderRadius.circular(28),
-                                    ),
-                                    child: const Icon(Icons.phone,
-                                        color: Colors.white, size: 28),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'رقم العميل',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[700],
-                                              fontWeight: FontWeight.w500),
+                  child: Column(
+                    children: [
+                      // Scrollable section: order details + phone card
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            'طلب #${order.id != null && order.id!.length > 6 ? order.id!.substring(order.id!.length - 6) : order.id ?? 'N/A'}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headlineSmall,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 12),
+                                      ListTile(
+                                        contentPadding: EdgeInsets.zero,
+                                        leading: const Icon(Icons.location_on,
+                                            color: Colors.green),
+                                        title: const Text('من',
+                                            style: TextStyle(fontSize: 12)),
+                                        subtitle: Text(order.pickup.label),
+                                        trailing: IconButton(
+                                          icon: const Icon(Icons.map, size: 20),
+                                          onPressed: () => _openMaps(
+                                            order.pickup.lat,
+                                            order.pickup.lng,
+                                            order.pickup.label,
+                                          ),
                                         ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          order.customerPhone!,
-                                          style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 0.5,
-                                              color: Colors.black87),
-                                          textDirection: TextDirection.ltr,
+                                      ),
+                                      ListTile(
+                                        contentPadding: EdgeInsets.zero,
+                                        leading: const Icon(Icons.location_on,
+                                            color: Colors.red),
+                                        title: const Text('إلى',
+                                            style: TextStyle(fontSize: 12)),
+                                        subtitle: Text(order.dropoff.label),
+                                        trailing: IconButton(
+                                          icon: const Icon(Icons.map, size: 20),
+                                          onPressed: () => _openMaps(
+                                            order.dropoff.lat,
+                                            order.dropoff.lng,
+                                            order.dropoff.label,
+                                          ),
+                                        ),
+                                      ),
+                                      const Divider(),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                              'المسافة: ${order.distanceKm.toStringAsFixed(1)} كم'),
+                                          Text('السعر: ${order.price} MRU',
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                          'الحالة: ${order.orderStatus.toArabicLabel()}',
+                                          style: TextStyle(
+                                              color: _getStatusColor(
+                                                  order.orderStatus))),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              // Customer Phone Card - Prominent
+                              if (order.customerPhone != null &&
+                                  order.customerPhone!.isNotEmpty)
+                                Card(
+                                  margin:
+                                      const EdgeInsets.only(top: 16, bottom: 0),
+                                  color: const Color(0xFFF1F8E9),
+                                  elevation: 2,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 56,
+                                          height: 56,
+                                          decoration: BoxDecoration(
+                                            color: DriverAppColors.primaryLight,
+                                            borderRadius:
+                                                BorderRadius.circular(28),
+                                          ),
+                                          child: const Icon(Icons.phone,
+                                              color: Colors.white, size: 28),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'رقم العميل',
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey[700],
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                order.customerPhone!,
+                                                style: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    letterSpacing: 0.5,
+                                                    color: Colors.black87),
+                                                textDirection: TextDirection.ltr,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        ElevatedButton.icon(
+                                          onPressed: () => _makePhoneCall(
+                                              order.customerPhone!),
+                                          icon:
+                                              const Icon(Icons.call, size: 20),
+                                          label: const Text('اتصل'),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.green,
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16, vertical: 12),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8)),
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  ElevatedButton.icon(
-                                    onPressed: () =>
-                                        _makePhoneCall(order.customerPhone!),
-                                    icon: const Icon(Icons.call, size: 20),
-                                    label: const Text('اتصل'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.green,
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 12),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        const SizedBox(height: 16),
-                        // Fee warning for trip start
-                        if (order.orderStatus.canDriverStartTrip)
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.orange.shade50,
-                              border: Border.all(color: Colors.orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.info_outline,
-                                    color: Colors.orange.shade700),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    'سيتم اقتطاع ${(order.price * 0.1).toStringAsFixed(0)} أوقية عند بدء الرحلة',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.orange.shade900),
-                                  ),
                                 ),
-                              ],
-                            ),
+                            ],
                           ),
-                        ElevatedButton(
-                          onPressed: order.orderStatus.canDriverStartTrip &&
-                                  order.id != null &&
-                                  !_isStartingTrip
-                              ? () =>
-                                  _transition(order.id!, OrderStatus.onRoute)
-                              : null,
-                          child: _isStartingTrip
-                              ? const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                        ),
+                      ),
+
+                      // Fixed action buttons — always visible
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Fee warning for trip start
+                            if (order.orderStatus.canDriverStartTrip)
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.shade50,
+                                  border: Border.all(color: Colors.orange),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
                                   children: [
-                                    SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Colors.white),
+                                    Icon(Icons.info_outline,
+                                        color: Colors.orange.shade700),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        'سيتم اقتطاع ${(order.price * 0.1).toStringAsFixed(0)} أوقية عند بدء الرحلة',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.orange.shade900),
                                       ),
                                     ),
-                                    SizedBox(width: 12),
-                                    Text('جارِ بدء الرحلة...'),
                                   ],
-                                )
-                              : const Text('بدء الرحلة'),
+                                ),
+                              ),
+                            ElevatedButton(
+                              onPressed: order.orderStatus.canDriverStartTrip &&
+                                      order.id != null &&
+                                      !_isStartingTrip
+                                  ? () => _transition(
+                                      order.id!, OrderStatus.onRoute)
+                                  : null,
+                              child: _isStartingTrip
+                                  ? const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.white),
+                                          ),
+                                        ),
+                                        SizedBox(width: 12),
+                                        Text('جارِ بدء الرحلة...'),
+                                      ],
+                                    )
+                                  : const Text('بدء الرحلة'),
+                            ),
+                            const SizedBox(height: 8),
+                            ElevatedButton(
+                              onPressed:
+                                  order.orderStatus.canDriverCompleteTrip &&
+                                          order.id != null
+                                      ? () => _transition(
+                                          order.id!, OrderStatus.completed)
+                                      : null,
+                              child: const Text('إكمال الطلب'),
+                            ),
+                            const SizedBox(height: 8),
+                            OutlinedButton(
+                              onPressed: order.orderStatus.canDriverCancel &&
+                                      !_isCancelling &&
+                                      order.id != null
+                                  ? () => _showCancelDialog(order.id!)
+                                  : null,
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: DriverAppColors.accentRed,
+                                side: const BorderSide(
+                                    color: DriverAppColors.accentRed),
+                              ),
+                              child: _isCancelling
+                                  ? const SizedBox(
+                                      height: 16,
+                                      width: 16,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2),
+                                    )
+                                  : const Text('إلغاء الطلب'),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: order.orderStatus.canDriverCompleteTrip &&
-                                  order.id != null
-                              ? () =>
-                                  _transition(order.id!, OrderStatus.completed)
-                              : null,
-                          child: const Text('إكمال الطلب'),
-                        ),
-                        const SizedBox(height: 8),
-                        OutlinedButton(
-                          onPressed: order.orderStatus.canDriverCancel &&
-                                  !_isCancelling &&
-                                  order.id != null
-                              ? () => _showCancelDialog(order.id!)
-                              : null,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: DriverAppColors.accentRed,
-                            side: const BorderSide(
-                                color: DriverAppColors.accentRed),
-                          ),
-                          child: _isCancelling
-                              ? const SizedBox(
-                                  height: 16,
-                                  width: 16,
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : const Text('إلغاء الطلب'),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ],

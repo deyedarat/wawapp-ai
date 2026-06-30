@@ -82,22 +82,14 @@
     }
     window.addEventListener('flutter-first-frame', removeLoading);
     setTimeout(removeLoading, 10000);
-
-    // Boot Flutter only after Google Maps API is fully initialized.
-    // This eliminates the race condition where google_maps_flutter_web calls
-    // importLibrary() before the Maps bootstrap has registered it.
-    window._onMapsApiReady = function () {
-      var s = document.createElement('script');
-      s.src = 'flutter_bootstrap.js';
-      document.body.appendChild(s);
-    };
   </script>
 
-  <!-- Google Maps JS API: loading=async required for importLibrary() used by google_maps_flutter_web.
-       callback=_onMapsApiReady ensures Flutter starts only after Maps is ready. -->
+  <!-- Google Maps JS API: must load BEFORE Flutter to register the web platform plugin -->
   <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF_TYfDGqpoZtYLSYBFvjAPva6Qp3S6Bs&libraries=places&language=ar&loading=async&callback=_onMapsApiReady"
-    async defer></script>
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF_TYfDGqpoZtYLSYBFvjAPva6Qp3S6Bs&libraries=places&language=ar"></script>
+
+  <!-- Flutter bootstrap: loads after Maps JS API is synchronously available -->
+  <script src="flutter_bootstrap.js" defer></script>
 </body>
 
 </html>

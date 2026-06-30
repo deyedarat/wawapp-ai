@@ -110,9 +110,9 @@ export interface DispatchWave {
  * Wave 3: 5 farther drivers (45s timeout)
  */
 export const DEFAULT_WAVES: DispatchWave[] = [
-  { round: 1, maxDrivers: 1, ttl: 45, maxDistance: 3 },   // Closest only, 45s
-  { round: 2, maxDrivers: 3, ttl: 45, maxDistance: 8 },   // Nearby backup
-  { round: 3, maxDrivers: 5, ttl: 45, maxDistance: 15 },  // Wider net
+  { round: 1, maxDrivers: 1, ttl: 45, maxDistance: 15 },   // Closest only, 45s (was 3km)
+  { round: 2, maxDrivers: 3, ttl: 45, maxDistance: 30 },   // Nearby backup (was 8km)
+  { round: 3, maxDrivers: 5, ttl: 45, maxDistance: 50 },   // Wider net (was 15km)
 ];
 
 /**
@@ -123,7 +123,7 @@ export const REPEAT_WAVE: DispatchWave = {
   round: -1, // placeholder — actual round is set dynamically
   maxDrivers: 5,
   ttl: 60,
-  maxDistance: 15,
+  maxDistance: 50, // was 15km — relaxed for early-stage
 };
 
 // ============================================================================

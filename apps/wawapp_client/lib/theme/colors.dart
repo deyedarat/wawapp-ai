@@ -59,6 +59,7 @@ class WawAppColors {
   static const Color inputBorderDark = Color(0xFF4A4A4A);
 
   // Shipment Type Colors (as per requirements)
+  static const Color shipmentLightParcel = Color(0xFF009688); // Teal
   static const Color shipmentFood = Color(0xFF2ECC71); // Green
   static const Color shipmentFurniture = Color(0xFFA0522D); // Brown
   static const Color shipmentConstruction = Color(0xFFE67E22); // Orange

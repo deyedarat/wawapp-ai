@@ -15,8 +15,7 @@ class CsvExportUtil {
 
     final csv = StringBuffer();
     csv.writeln('WawApp Overview Report');
-    csv.writeln(
-        'Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
+    csv.writeln('Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
     csv.writeln('');
     csv.writeln('Metric,Value');
     csv.writeln('Total Orders,${data.totalOrders}');
@@ -27,7 +26,8 @@ class CsvExportUtil {
     csv.writeln('Total Active Drivers,${data.totalActiveDrivers}');
     csv.writeln('New Clients,${data.newClients}');
 
-    final filename = 'wawapp_overview_report_'
+    final filename =
+        'wawapp_overview_report_'
         '${dateFormat.format(startDate)}_to_${dateFormat.format(endDate)}.csv';
 
     _downloadCsv(csv.toString(), filename);
@@ -41,30 +41,28 @@ class CsvExportUtil {
 
     final csv = StringBuffer();
     csv.writeln('WawApp Financial Report');
-    csv.writeln(
-        'Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
+    csv.writeln('Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
     csv.writeln('');
     csv.writeln('Summary');
     csv.writeln('Metric,Value');
     csv.writeln('Total Orders,${data.summary.totalOrders}');
     csv.writeln('Gross Revenue,${data.summary.grossRevenue} MRU');
-    csv.writeln(
-        'Total Driver Earnings,${data.summary.totalDriverEarnings} MRU');
-    csv.writeln(
-        'Platform Commission,${data.summary.totalPlatformCommission} MRU');
-    csv.writeln(
-        'Average Commission Rate,${data.summary.averageCommissionRate}%');
+    csv.writeln('Total Driver Earnings,${data.summary.totalDriverEarnings} MRU');
+    csv.writeln('Platform Commission,${data.summary.totalPlatformCommission} MRU');
+    csv.writeln('Average Commission Rate,${data.summary.averageCommissionRate}%');
     csv.writeln('');
     csv.writeln('Daily Breakdown');
-    csv.writeln(
-        'Date,Orders Count,Gross Revenue (MRU),Driver Earnings (MRU),Platform Commission (MRU)');
+    csv.writeln('Date,Orders Count,Gross Revenue (MRU),Driver Earnings (MRU),Platform Commission (MRU)');
 
     for (final day in data.dailyBreakdown) {
-      csv.writeln('${day.date},${day.ordersCount},${day.grossRevenue},'
-          '${day.driverEarnings},${day.platformCommission}');
+      csv.writeln(
+        '${day.date},${day.ordersCount},${day.grossRevenue},'
+        '${day.driverEarnings},${day.platformCommission}',
+      );
     }
 
-    final filename = 'wawapp_financial_report_'
+    final filename =
+        'wawapp_financial_report_'
         '${dateFormat.format(startDate)}_to_${dateFormat.format(endDate)}.csv';
 
     _downloadCsv(csv.toString(), filename);
@@ -78,22 +76,26 @@ class CsvExportUtil {
 
     final csv = StringBuffer();
     csv.writeln('WawApp Driver Performance Report');
-    csv.writeln(
-        'Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
+    csv.writeln('Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
     csv.writeln('Total Drivers Analyzed: ${data.totalDrivers}');
     csv.writeln('');
-    csv.writeln('Driver ID,Name,Phone,Operator,Total Trips,Completed Trips,'
-        'Cancelled Trips,Total Earnings (MRU),Average Rating,Cancellation Rate (%)');
+    csv.writeln(
+      'Driver ID,Name,Phone,Operator,Total Trips,Completed Trips,'
+      'Cancelled Trips,Total Earnings (MRU),Average Rating,Cancellation Rate (%)',
+    );
 
     for (final driver in data.drivers) {
-      csv.writeln('${driver.driverId},${_escapeCsv(driver.name)},'
-          '${driver.phone},${driver.operator},${driver.totalTrips},'
-          '${driver.completedTrips},${driver.cancelledTrips},'
-          '${driver.totalEarnings},${driver.averageRating.toStringAsFixed(1)},'
-          '${driver.cancellationRate}');
+      csv.writeln(
+        '${driver.driverId},${_escapeCsv(driver.name)},'
+        '${driver.phone},${driver.operator},${driver.totalTrips},'
+        '${driver.completedTrips},${driver.cancelledTrips},'
+        '${driver.totalEarnings},${driver.averageRating.toStringAsFixed(1)},'
+        '${driver.cancellationRate}',
+      );
     }
 
-    final filename = 'wawapp_driver_performance_report_'
+    final filename =
+        'wawapp_driver_performance_report_'
         '${dateFormat.format(startDate)}_to_${dateFormat.format(endDate)}.csv';
 
     _downloadCsv(csv.toString(), filename);
@@ -113,42 +115,40 @@ class CsvExportUtil {
   }
 
   /// Export payouts to CSV
-  static void exportPayouts(List<dynamic> payouts,
-      {DateTime? startDate, DateTime? endDate}) {
+  static void exportPayouts(List<dynamic> payouts, {DateTime? startDate, DateTime? endDate}) {
     final dateFormat = DateFormat('yyyy-MM-dd');
     final dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
 
     final csv = StringBuffer();
     csv.writeln('WawApp Payouts Report');
     if (startDate != null && endDate != null) {
-      csv.writeln(
-          'Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
+      csv.writeln('Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
     }
     csv.writeln('Total Payouts: ${payouts.length}');
     csv.writeln('');
-    csv.writeln('Payout ID,Driver ID,Driver Name,Driver Phone,Amount (MRU),'
-        'Currency,Method,Status,Requested By Admin ID,Processed By Admin ID,'
-        'Created At,Updated At,Note');
+    csv.writeln(
+      'Payout ID,Driver ID,Driver Name,Driver Phone,Amount (MRU),'
+      'Currency,Method,Status,Requested By Admin ID,Processed By Admin ID,'
+      'Created At,Updated At,Note',
+    );
 
     for (final payout in payouts) {
-      final createdAt = payout.createdAt != null
-          ? dateTimeFormat.format(payout.createdAt)
-          : '';
-      final updatedAt = payout.updatedAt != null
-          ? dateTimeFormat.format(payout.updatedAt)
-          : '';
+      final createdAt = payout.createdAt != null ? dateTimeFormat.format(payout.createdAt) : '';
+      final updatedAt = payout.updatedAt != null ? dateTimeFormat.format(payout.updatedAt) : '';
 
-      csv.writeln('${payout.id},${payout.driverId},'
-          '${_escapeCsv(payout.driverName ?? "")},'
-          '${payout.driverPhone ?? ""},'
-          '${payout.amount},'
-          '${payout.currency},'
-          '${payout.method},'
-          '${payout.status},'
-          '${payout.requestedByAdminId ?? ""},'
-          '${payout.processedByAdminId ?? ""},'
-          '$createdAt,$updatedAt,'
-          '${_escapeCsv(payout.note ?? "")}');
+      csv.writeln(
+        '${payout.id},${payout.driverId},'
+        '${_escapeCsv(payout.driverName ?? "")},'
+        '${payout.driverPhone ?? ""},'
+        '${payout.amount},'
+        '${payout.currency},'
+        '${payout.method},'
+        '${payout.status},'
+        '${payout.requestedByAdminId ?? ""},'
+        '${payout.processedByAdminId ?? ""},'
+        '$createdAt,$updatedAt,'
+        '${_escapeCsv(payout.note ?? "")}',
+      );
     }
 
     final now = DateTime.now();
@@ -175,28 +175,30 @@ class CsvExportUtil {
       csv.writeln('Driver ID: $driverId');
     }
     if (startDate != null && endDate != null) {
-      csv.writeln(
-          'Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
+      csv.writeln('Period: ${dateFormat.format(startDate)} to ${dateFormat.format(endDate)}');
     }
     csv.writeln('Total Transactions: ${transactions.length}');
     csv.writeln('');
-    csv.writeln('Transaction ID,Wallet ID,Type,Source,Amount (MRU),'
-        'Currency,Order ID,Admin ID,Created At,Balance Snapshot (MRU),Note');
+    csv.writeln(
+      'Transaction ID,Wallet ID,Type,Source,Amount (MRU),'
+      'Currency,Order ID,Admin ID,Created At,Balance Snapshot (MRU),Note',
+    );
 
     for (final txn in transactions) {
-      final createdAt =
-          txn.createdAt != null ? dateTimeFormat.format(txn.createdAt) : '';
+      final createdAt = txn.createdAt != null ? dateTimeFormat.format(txn.createdAt) : '';
 
-      csv.writeln('${txn.id},${txn.walletId},'
-          '${txn.type},'
-          '${txn.source},'
-          '${txn.amount},'
-          '${txn.currency},'
-          '${txn.orderId ?? ""},'
-          '${txn.adminId ?? ""},'
-          '$createdAt,'
-          '${txn.balanceSnapshot ?? 0},'
-          '${_escapeCsv(txn.note ?? "")}');
+      csv.writeln(
+        '${txn.id},${txn.walletId},'
+        '${txn.type},'
+        '${txn.source},'
+        '${txn.amount},'
+        '${txn.currency},'
+        '${txn.orderId ?? ""},'
+        '${txn.adminId ?? ""},'
+        '$createdAt,'
+        '${txn.balanceSnapshot ?? 0},'
+        '${_escapeCsv(txn.note ?? "")}',
+      );
     }
 
     final now = DateTime.now();
@@ -210,6 +212,39 @@ class CsvExportUtil {
           ? 'wawapp_all_transactions_${dateFormat.format(startDate)}_to_${dateFormat.format(endDate)}.csv'
           : 'wawapp_all_transactions_${dateFormat.format(now)}.csv';
     }
+
+    _downloadCsv(csv.toString(), filename);
+  }
+
+  /// Export clients list to CSV
+  static void exportClients(List<dynamic> clients) {
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final dateTimeFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+
+    final csv = StringBuffer();
+    // UTF-8 BOM for Excel Arabic support
+    csv.write('\uFEFF');
+    csv.writeln('قائمة عملاء WawApp');
+    csv.writeln('تاريخ التصدير: ${dateTimeFormat.format(DateTime.now())}');
+    csv.writeln('إجمالي العملاء: ${clients.length}');
+    csv.writeln('');
+    csv.writeln('المعرف,الاسم,الهاتف,اللغة المفضلة,إجمالي الطلبات,التقييم,تاريخ التسجيل');
+
+    for (final client in clients) {
+      final createdAt = client.createdAt != null ? dateFormat.format(client.createdAt) : '';
+
+      csv.writeln(
+        '${client.id},'
+        '${_escapeCsv(client.name)},'
+        '${client.phone},'
+        '${client.preferredLanguage},'
+        '${client.totalTrips},'
+        '${client.averageRating.toStringAsFixed(1)},'
+        '$createdAt',
+      );
+    }
+
+    final filename = 'wawapp_clients_${dateFormat.format(DateTime.now())}.csv';
 
     _downloadCsv(csv.toString(), filename);
   }

@@ -13,7 +13,9 @@ import { EligibleDriver } from './types';
 const db = admin.firestore();
 
 const MIN_DRIVER_ACCURACY_METERS = 800;
-const LOCATION_FRESHNESS_MINUTES = 30;
+// RELAXED: Location freshness disabled for early-stage (few drivers)
+// Re-enable when driver count > 10
+// const LOCATION_FRESHNESS_MINUTES = 30;
 
 const PRIORITY_BOOST_TTL_MS = 120_000; // 120 seconds
 
@@ -37,9 +39,9 @@ function calculateDistance(
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLng / 2) *
+    Math.sin(dLng / 2);
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
@@ -72,12 +74,9 @@ export async function findEligibleDrivers(
   maxDrivers: number
 ): Promise<EligibleDriver[]> {
   try {
-    // Step 1: Get all recent driver locations (single query)
-    const cutoffTime = new Date(Date.now() - LOCATION_FRESHNESS_MINUTES * 60 * 1000);
-
+    // Step 1: Get all driver locations (freshness filter disabled for early-stage)
     const locationsSnapshot = await db
       .collection('driver_locations')
-      .where('updatedAt', '>', cutoffTime)
       .get();
 
     if (locationsSnapshot.empty) {
@@ -150,8 +149,13 @@ export async function findEligibleDrivers(
 
       const driverData = driverDoc.data()!;
 
-      // Check online and verified
-      if (driverData.isOnline !== true || driverData.isVerified !== true) {
+      // Check verified AND online status
+      if (driverData.isVerified !== true) {
+        continue;
+      }
+
+      // Skip offline drivers — they should NOT receive notifications
+      if (driverData.isOnline !== true) {
         continue;
       }
 

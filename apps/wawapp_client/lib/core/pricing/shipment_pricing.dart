@@ -7,6 +7,10 @@ import '../models/shipment_type.dart';
 /// - Loading/unloading time
 /// - Driver expertise needed
 class ShipmentPricingMultipliers {
+  /// Light Parcel: 0.50x
+  /// Lowest multiplier - small/light items like car battery, chair, envelope
+  static const double lightParcel = 0.50;
+
   /// Food & Perishables: 1.10x
   /// Slightly higher due to time-sensitive delivery requirements
   static const double foodAndPerishables = 1.10;
@@ -44,6 +48,8 @@ class ShipmentPricingMultipliers {
   /// Get the multiplier for a specific shipment type
   static double getMultiplier(ShipmentType type) {
     switch (type) {
+      case ShipmentType.lightParcel:
+        return lightParcel;
       case ShipmentType.foodAndPerishables:
         return foodAndPerishables;
       case ShipmentType.furnitureAndHomeSetup:
@@ -88,10 +94,7 @@ class ShipmentPricingMultipliers {
 /// );
 /// final finalPrice = Pricing.roundTo5(adjustedPrice);
 /// ```
-double applyShipmentTypeMultiplier(
-  double basePrice,
-  ShipmentType? type,
-) {
+double applyShipmentTypeMultiplier(double basePrice, ShipmentType? type) {
   // Use generalGoodsAndBoxes as fallback if type is null
   final shipmentType = type ?? ShipmentTypeExtension.defaultType;
   final multiplier = ShipmentPricingMultipliers.getMultiplier(shipmentType);

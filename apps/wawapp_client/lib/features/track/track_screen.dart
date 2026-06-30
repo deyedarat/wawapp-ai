@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
@@ -50,17 +49,14 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
     // Verify user owns this order
     if (widget.order!.ownerId != currentUser.uid) {
       debugPrint(
-          '[TRACK] User tried to track an order they do not own: orderId=${widget.order!.id}, ownerId=${widget.order!.ownerId}, uid=${currentUser.uid}');
+        '[TRACK] User tried to track an order they do not own: orderId=${widget.order!.id}, ownerId=${widget.order!.ownerId}, uid=${currentUser.uid}',
+      );
       return;
     }
 
     _orderId = widget.order!.id;
 
-    _orderSubscription = FirebaseFirestore.instance
-        .collection('orders')
-        .doc(_orderId)
-        .snapshots()
-        .listen((snapshot) {
+    _orderSubscription = FirebaseFirestore.instance.collection('orders').doc(_orderId).snapshots().listen((snapshot) {
       if (!mounted || _hasNavigated) return;
 
       final data = snapshot.data();
@@ -85,17 +81,14 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
               context.go('/trip-completed/$_orderId');
             }
           });
-        } else if ((statusStr == 'cancelledByClient' ||
-                    statusStr == 'cancelledByDriver' ||
-                    statusStr == 'expired') && !_hasNavigated) {
+        } else if ((statusStr == 'cancelledByClient' || statusStr == 'cancelledByDriver' || statusStr == 'expired') &&
+            !_hasNavigated) {
           _hasNavigated = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(statusStr == 'expired'
-                      ? 'لم يتم العثور على سائق. حاول مرة أخرى.'
-                      : 'تم إلغاء الطلب'),
+                  content: Text(statusStr == 'expired' ? 'لم يتم العثور على سائق. حاول مرة أخرى.' : 'تم إلغاء الطلب'),
                   backgroundColor: Colors.red,
                   duration: const Duration(seconds: 4),
                 ),
@@ -116,13 +109,11 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
   }
 
   void _startLocationTracking() {
-    _positionSubscription = LocationService.getPositionStream().listen(
-      (position) {
-        setState(() {
-          _currentPosition = LatLng(position.latitude, position.longitude);
-        });
-      },
-    );
+    _positionSubscription = LocationService.getPositionStream().listen((position) {
+      setState(() {
+        _currentPosition = LatLng(position.latitude, position.longitude);
+      });
+    });
   }
 
   @override
@@ -134,19 +125,15 @@ class _TrackScreenState extends ConsumerState<TrackScreen> {
       textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(kReleaseMode ? l10n.track : '${l10n.track} • DEBUG'),
+          title: Text(l10n.track),
           leading: IconButton(
-            icon: const Icon(Icons.home),
+            icon: const Icon(Icons.arrow_forward_ios),
             onPressed: () => context.go('/'),
             tooltip: 'الرئيسية',
           ),
         ),
         body: SafeArea(
-          child: OrderTrackingView(
-            order: widget.order,
-            currentPosition: _currentPosition,
-            readOnly: false,
-          ),
+          child: OrderTrackingView(order: widget.order, currentPosition: _currentPosition, readOnly: false),
         ),
       ),
     );

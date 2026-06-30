@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions/v1';
-import { checkRateLimit, recordFailedAttempt } from './rateLimiting';
+import { checkRateLimit, checkOtpRateLimit, recordFailedAttempt } from './rateLimiting';
 
 const MAURITANIA_PHONE_REGEX = /^\+222[2-4]\d{7}$/;
 
@@ -17,7 +17,17 @@ export const sendOtp = functions
       throw new functions.https.HttpsError('invalid-argument', 'Invalid Mauritanian phone number');
     }
 
-    // Rate limit check BEFORE calling Twilio
+    // OTP-specific rate limit: max 2 SMS per 10 minutes
+    const otpLimit = await checkOtpRateLimit(phone);
+    if (!otpLimit.allowed) {
+      throw new functions.https.HttpsError(
+        'resource-exhausted',
+        otpLimit.message || 'Too many OTP requests. Please wait.',
+        { remainingSeconds: otpLimit.lockedUntilSeconds }
+      );
+    }
+
+    // PIN brute-force rate limit check
     const rateLimitResult = await checkRateLimit(phone);
     if (!rateLimitResult.allowed) {
       throw new functions.https.HttpsError(

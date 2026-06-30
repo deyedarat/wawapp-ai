@@ -186,6 +186,55 @@ export async function recordFailedAttempt(phoneE164: string): Promise<void> {
 }
 
 /**
+ * OTP SMS Rate Limiting
+ *
+ * Prevents excessive SMS sending: max 2 OTP per phone per 10 minutes.
+ * Uses separate otp_rate_limits collection.
+ *
+ * @param phoneE164 - Phone number in E.164 format
+ */
+export async function checkOtpRateLimit(phoneE164: string): Promise<RateLimitResult> {
+  const db = admin.firestore();
+  const docId = phoneE164.replace(/[^0-9]/g, '');
+  const ref = db.collection('otp_rate_limits').doc(docId);
+  const MAX_OTP = 2;
+  const WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+
+  try {
+    const now = Date.now();
+    const doc = await ref.get();
+
+    if (!doc.exists) {
+      await ref.set({ timestamps: [now] });
+      return { allowed: true, remainingAttempts: MAX_OTP - 1 };
+    }
+
+    const data = doc.data()!;
+    const timestamps: number[] = (data.timestamps || []).filter(
+      (t: number) => now - t < WINDOW_MS
+    );
+
+    if (timestamps.length >= MAX_OTP) {
+      const oldestExpiry = timestamps[0] + WINDOW_MS;
+      const remainingSeconds = Math.ceil((oldestExpiry - now) / 1000);
+      console.log('[OtpRateLimit] BLOCKED', { phone: phoneE164, count: timestamps.length, remainingSeconds });
+      return {
+        allowed: false,
+        lockedUntilSeconds: remainingSeconds,
+        message: `تم إرسال الحد الأقصى من الرسائل. حاول بعد ${Math.ceil(remainingSeconds / 60)} دقيقة`,
+      };
+    }
+
+    timestamps.push(now);
+    await ref.set({ timestamps });
+    return { allowed: true, remainingAttempts: MAX_OTP - timestamps.length };
+  } catch (error) {
+    console.error('[OtpRateLimit] Error, DENYING for safety', { phone: phoneE164, error: String(error) });
+    return { allowed: false, message: 'خطأ في النظام. حاول مرة أخرى بعد قليل', lockedUntilSeconds: 60 };
+  }
+}
+
+/**
  * Reset rate limit counter after successful authentication
  *
  * Called when user successfully logs in with correct PIN.

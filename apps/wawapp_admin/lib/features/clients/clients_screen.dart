@@ -8,6 +8,7 @@ import '../../core/utils/responsive_helper.dart';
 import '../../core/widgets/admin_scaffold.dart';
 import '../../core/widgets/status_badge.dart';
 import '../../providers/admin_data_providers.dart';
+import '../reports/utils/csv_export.dart';
 
 class ClientsScreen extends ConsumerStatefulWidget {
   const ClientsScreen({super.key});
@@ -28,9 +29,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final clientsAsync = ref.watch(
-      clientsStreamProvider(_verifiedFilter),
-    );
+    final clientsAsync = ref.watch(clientsStreamProvider(_verifiedFilter));
     final statsAsync = ref.watch(clientStatsProvider);
 
     return AdminScaffold(
@@ -58,29 +57,18 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.people,
-                                  color: AdminAppColors.primaryGreen,
-                                  size: 24,
-                                ),
+                                const Icon(Icons.people, color: AdminAppColors.primaryGreen, size: 24),
                                 const SizedBox(width: AdminSpacing.sm),
-                                Text(
-                                  'إجمالي العملاء',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
+                                Text('إجمالي العملاء', style: Theme.of(context).textTheme.titleMedium),
                               ],
                             ),
                             const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$totalClients',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge
-                                  ?.copyWith(
-                                    color: AdminAppColors.primaryGreen,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                color: AdminAppColors.primaryGreen,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -97,29 +85,18 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.verified_user,
-                                  color: AdminAppColors.activeBlue,
-                                  size: 24,
-                                ),
+                                const Icon(Icons.verified_user, color: AdminAppColors.activeBlue, size: 24),
                                 const SizedBox(width: AdminSpacing.sm),
-                                Text(
-                                  'موثّقون',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
+                                Text('موثّقون', style: Theme.of(context).textTheme.titleMedium),
                               ],
                             ),
                             const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$verifiedClients',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge
-                                  ?.copyWith(
-                                    color: AdminAppColors.activeBlue,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                color: AdminAppColors.activeBlue,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -136,29 +113,18 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(
-                                  Icons.block,
-                                  color: AdminAppColors.errorLight,
-                                  size: 24,
-                                ),
+                                const Icon(Icons.block, color: AdminAppColors.errorLight, size: 24),
                                 const SizedBox(width: AdminSpacing.sm),
-                                Text(
-                                  'محظورون',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
+                                Text('محظورون', style: Theme.of(context).textTheme.titleMedium),
                               ],
                             ),
                             const SizedBox(height: AdminSpacing.sm),
                             Text(
                               '$blockedClients',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineLarge
-                                  ?.copyWith(
-                                    color: AdminAppColors.errorLight,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                color: AdminAppColors.errorLight,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -175,10 +141,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
           // Filters
           Row(
             children: [
-              Text(
-                'تصفية:',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text('تصفية:', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(width: AdminSpacing.md),
               FilterChip(
                 label: const Text('الكل'),
@@ -209,6 +172,20 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                   });
                 },
               ),
+              const Spacer(),
+              // Export button
+              clientsAsync.whenOrNull(
+                    data: (clients) => ElevatedButton.icon(
+                      onPressed: clients.isEmpty ? null : () => CsvExportUtil.exportClients(clients),
+                      icon: const Icon(Icons.file_download),
+                      label: const Text('تصدير CSV'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AdminAppColors.primaryGreen,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ) ??
+                  const SizedBox.shrink(),
             ],
           ),
 
@@ -223,14 +200,12 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline,
-                        size: 64, color: Colors.red),
+                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
                     const SizedBox(height: 16),
                     Text('خطأ في تحميل العملاء: $error'),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () =>
-                          ref.refresh(clientsStreamProvider(_verifiedFilter)),
+                      onPressed: () => ref.refresh(clientsStreamProvider(_verifiedFilter)),
                       child: const Text('إعادة المحاولة'),
                     ),
                   ],
@@ -242,16 +217,9 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.people_outline,
-                          size: 64,
-                          color: AdminAppColors.textSecondaryLight,
-                        ),
+                        const Icon(Icons.people_outline, size: 64, color: AdminAppColors.textSecondaryLight),
                         const SizedBox(height: 16),
-                        Text(
-                          'لا يوجد عملاء',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
+                        Text('لا يوجد عملاء', style: Theme.of(context).textTheme.titleLarge),
                       ],
                     ),
                   );
@@ -270,81 +238,27 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                             child: ConstrainedBox(
                               constraints: const BoxConstraints(minWidth: 1200),
                               child: DataTable(
-                                headingRowColor: WidgetStateProperty.all(
-                                  AdminAppColors.backgroundLight,
-                                ),
+                                headingRowColor: WidgetStateProperty.all(AdminAppColors.backgroundLight),
                                 columns: [
+                                  DataColumn(label: Text('الاسم', style: Theme.of(context).textTheme.titleSmall)),
+                                  DataColumn(label: Text('الهاتف', style: Theme.of(context).textTheme.titleSmall)),
+                                  DataColumn(label: Text('موثّق', style: Theme.of(context).textTheme.titleSmall)),
                                   DataColumn(
-                                    label: Text(
-                                      'الاسم',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
+                                    label: Text('إجمالي الطلبات', style: Theme.of(context).textTheme.titleSmall),
+                                  ),
+                                  DataColumn(label: Text('التقييم', style: Theme.of(context).textTheme.titleSmall)),
+                                  DataColumn(
+                                    label: Text('اللغة المفضلة', style: Theme.of(context).textTheme.titleSmall),
                                   ),
                                   DataColumn(
-                                    label: Text(
-                                      'الهاتف',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
+                                    label: Text('تاريخ التسجيل', style: Theme.of(context).textTheme.titleSmall),
                                   ),
-                                  DataColumn(
-                                    label: Text(
-                                      'موثّق',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'إجمالي الطلبات',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'التقييم',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'اللغة المفضلة',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'تاريخ التسجيل',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'الإجراءات',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
+                                  DataColumn(label: Text('الإجراءات', style: Theme.of(context).textTheme.titleSmall)),
                                 ],
                                 rows: clients.map((client) {
                                   final clientData = client.toJson();
-                                  final isBlocked =
-                                      clientData['isBlocked'] == true;
-                                  final isVerified =
-                                      clientData['isVerified'] == true;
+                                  final isBlocked = clientData['isBlocked'] == true;
+                                  final isVerified = clientData['isVerified'] == true;
 
                                   return DataRow(
                                     cells: [
@@ -353,10 +267,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                                           client.name,
                                           style: TextStyle(
                                             fontWeight: FontWeight.w600,
-                                            color: isBlocked
-                                                ? AdminAppColors
-                                                    .textSecondaryLight
-                                                : null,
+                                            color: isBlocked ? AdminAppColors.textSecondaryLight : null,
                                           ),
                                         ),
                                       ),
@@ -366,25 +277,15 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             if (isVerified)
-                                              const StatusBadge(
-                                                label: 'موثّق',
-                                                color:
-                                                    AdminAppColors.successLight,
-                                              )
+                                              const StatusBadge(label: 'موثّق', color: AdminAppColors.successLight)
                                             else
                                               const StatusBadge(
                                                 label: 'غير موثّق',
-                                                color: AdminAppColors
-                                                    .textSecondaryLight,
+                                                color: AdminAppColors.textSecondaryLight,
                                               ),
                                             if (isBlocked) ...[
-                                              const SizedBox(
-                                                  width: AdminSpacing.xs),
-                                              const StatusBadge(
-                                                label: 'محظور',
-                                                color:
-                                                    AdminAppColors.errorLight,
-                                              ),
+                                              const SizedBox(width: AdminSpacing.xs),
+                                              const StatusBadge(label: 'محظور', color: AdminAppColors.errorLight),
                                             ],
                                           ],
                                         ),
@@ -392,104 +293,73 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                                       DataCell(
                                         Text(
                                           '${client.totalTrips}',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: const TextStyle(fontWeight: FontWeight.w600),
                                         ),
                                       ),
                                       DataCell(
                                         Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            const Icon(
-                                              Icons.star,
-                                              size: 16,
-                                              color:
-                                                  AdminAppColors.goldenYellow,
-                                            ),
-                                            const SizedBox(
-                                                width: AdminSpacing.xxs),
+                                            const Icon(Icons.star, size: 16, color: AdminAppColors.goldenYellow),
+                                            const SizedBox(width: AdminSpacing.xxs),
                                             Text(
-                                              client.averageRating
-                                                  .toStringAsFixed(1),
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                              client.averageRating.toStringAsFixed(1),
+                                              style: const TextStyle(fontWeight: FontWeight.w600),
                                             ),
                                           ],
                                         ),
                                       ),
+                                      DataCell(Text(_getLanguageLabel(client.preferredLanguage))),
                                       DataCell(
-                                        Text(
-                                          _getLanguageLabel(
-                                              client.preferredLanguage),
-                                        ),
-                                      ),
-                                      DataCell(
-                                        Text(
-                                          _formatDate(client.createdAt),
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
+                                        Text(_formatDate(client.createdAt), style: const TextStyle(fontSize: 12)),
                                       ),
                                       DataCell(
                                         Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             IconButton(
-                                              icon:
-                                                  const Icon(Icons.visibility),
+                                              icon: const Icon(Icons.visibility),
                                               onPressed: () {
-                                                _showClientDetails(
-                                                    context, client);
+                                                _showClientDetails(context, client);
                                               },
                                               tooltip: 'عرض التفاصيل',
                                               color: AdminAppColors.infoLight,
                                             ),
                                             if (!isVerified)
                                               IconButton(
-                                                icon:
-                                                    const Icon(Icons.verified),
+                                                icon: const Icon(Icons.verified),
                                                 onPressed: () {
-                                                  _showVerifyDialog(
-                                                      context, client);
+                                                  _showVerifyDialog(context, client);
                                                 },
                                                 tooltip: 'توثيق العميل',
-                                                color:
-                                                    AdminAppColors.successLight,
+                                                color: AdminAppColors.successLight,
                                               )
                                             else
                                               IconButton(
                                                 icon: const Icon(Icons.cancel),
                                                 onPressed: () {
-                                                  _showUnverifyDialog(
-                                                      context, client);
+                                                  _showUnverifyDialog(context, client);
                                                 },
                                                 tooltip: 'إلغاء التوثيق',
-                                                color:
-                                                    AdminAppColors.warningLight,
+                                                color: AdminAppColors.warningLight,
                                               ),
                                             if (!isBlocked)
                                               IconButton(
                                                 icon: const Icon(Icons.block),
                                                 onPressed: () {
-                                                  _showBlockDialog(
-                                                      context, client);
+                                                  _showBlockDialog(context, client);
                                                 },
                                                 tooltip: 'حظر العميل',
-                                                color:
-                                                    AdminAppColors.errorLight,
+                                                color: AdminAppColors.errorLight,
                                               )
                                             else
                                               IconButton(
-                                                icon: const Icon(
-                                                    Icons.check_circle),
+                                                icon: const Icon(Icons.check_circle),
                                                 onPressed: () {
-                                                  _showUnblockDialog(
-                                                      context, client);
+                                                  _showUnblockDialog(context, client);
                                                 },
                                                 tooltip: 'إلغاء الحظر',
-                                                color:
-                                                    AdminAppColors.successLight,
+                                                color: AdminAppColors.successLight,
                                               ),
                                           ],
                                         ),
@@ -506,9 +376,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                     const SizedBox(height: AdminSpacing.md),
                     Text(
                       'عرض ${clients.length} عميل',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AdminAppColors.textSecondaryLight,
-                          ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AdminAppColors.textSecondaryLight),
                     ),
                   ],
                 );
@@ -556,36 +424,18 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                 _buildDetailRow('المعرف:', client.id),
                 _buildDetailRow('الاسم:', client.name),
                 _buildDetailRow('الهاتف:', client.phone),
-                _buildDetailRow(
-                  'موثّق:',
-                  clientData['isVerified'] == true ? 'نعم' : 'لا',
-                ),
-                _buildDetailRow(
-                  'محظور:',
-                  clientData['isBlocked'] == true ? 'نعم' : 'لا',
-                ),
+                _buildDetailRow('موثّق:', clientData['isVerified'] == true ? 'نعم' : 'لا'),
+                _buildDetailRow('محظور:', clientData['isBlocked'] == true ? 'نعم' : 'لا'),
                 _buildDetailRow('إجمالي الطلبات:', '${client.totalTrips}'),
-                _buildDetailRow(
-                  'التقييم:',
-                  client.averageRating.toStringAsFixed(1),
-                ),
-                _buildDetailRow(
-                  'اللغة المفضلة:',
-                  _getLanguageLabel(client.preferredLanguage),
-                ),
-                _buildDetailRow(
-                    'تاريخ التسجيل:', _formatDate(client.createdAt)),
+                _buildDetailRow('التقييم:', client.averageRating.toStringAsFixed(1)),
+                _buildDetailRow('اللغة المفضلة:', _getLanguageLabel(client.preferredLanguage)),
+                _buildDetailRow('تاريخ التسجيل:', _formatDate(client.createdAt)),
                 _buildDetailRow('آخر تحديث:', _formatDate(client.updatedAt)),
               ],
             ),
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إغلاق'),
-          ),
-        ],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('إغلاق'))],
       ),
     );
   }
@@ -600,15 +450,10 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
             width: 120,
             child: Text(
               label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AdminAppColors.textSecondaryLight,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600, color: AdminAppColors.textSecondaryLight),
             ),
           ),
-          Expanded(
-            child: SelectableText(value),
-          ),
+          Expanded(child: SelectableText(value)),
         ],
       ),
     );
@@ -621,41 +466,27 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
         title: const Text('تأكيد التوثيق'),
         content: Text('هل أنت متأكد من توثيق العميل \${client.name}؟'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('لا'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('لا')),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
               final messenger = ScaffoldMessenger.of(context);
-              messenger.showSnackBar(
-                const SnackBar(content: Text('جارٍ توثيق العميل...')),
-              );
+              messenger.showSnackBar(const SnackBar(content: Text('جارٍ توثيق العميل...')));
 
               final service = ref.read(adminClientsServiceProvider);
-              final success =
-                  await service.setClientVerification(client.id, true);
+              final success = await service.setClientVerification(client.id, true);
 
               if (mounted) {
                 messenger.hideCurrentSnackBar();
                 messenger.showSnackBar(
                   SnackBar(
-                    content: Text(
-                      success
-                          ? 'تم توثيق العميل \${client.name}'
-                          : 'فشل توثيق العميل',
-                    ),
-                    backgroundColor: success
-                        ? AdminAppColors.successLight
-                        : AdminAppColors.errorLight,
+                    content: Text(success ? 'تم توثيق العميل \${client.name}' : 'فشل توثيق العميل'),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
                 );
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AdminAppColors.successLight,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.successLight),
             child: const Text('نعم، توثيق'),
           ),
         ],
@@ -670,41 +501,27 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
         title: const Text('تأكيد إلغاء التوثيق'),
         content: Text('هل أنت متأكد من إلغاء توثيق العميل \${client.name}؟'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('لا'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('لا')),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
               final messenger = ScaffoldMessenger.of(context);
-              messenger.showSnackBar(
-                const SnackBar(content: Text('جارٍ إلغاء التوثيق...')),
-              );
+              messenger.showSnackBar(const SnackBar(content: Text('جارٍ إلغاء التوثيق...')));
 
               final service = ref.read(adminClientsServiceProvider);
-              final success =
-                  await service.setClientVerification(client.id, false);
+              final success = await service.setClientVerification(client.id, false);
 
               if (mounted) {
                 messenger.hideCurrentSnackBar();
                 messenger.showSnackBar(
                   SnackBar(
-                    content: Text(
-                      success
-                          ? 'تم إلغاء توثيق العميل \${client.name}'
-                          : 'فشل إلغاء التوثيق',
-                    ),
-                    backgroundColor: success
-                        ? AdminAppColors.successLight
-                        : AdminAppColors.errorLight,
+                    content: Text(success ? 'تم إلغاء توثيق العميل \${client.name}' : 'فشل إلغاء التوثيق'),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
                 );
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AdminAppColors.warningLight,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.warningLight),
             child: const Text('نعم، إلغاء التوثيق'),
           ),
         ],
@@ -727,54 +544,36 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
             const SizedBox(height: AdminSpacing.md),
             TextField(
               controller: reasonController,
-              decoration: const InputDecoration(
-                labelText: 'سبب الحظر (اختياري)',
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: 'سبب الحظر (اختياري)', border: OutlineInputBorder()),
               maxLines: 3,
             ),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('لا'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('لا')),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
               final messenger = ScaffoldMessenger.of(context);
-              messenger.showSnackBar(
-                const SnackBar(content: Text('جارٍ حظر العميل...')),
-              );
+              messenger.showSnackBar(const SnackBar(content: Text('جارٍ حظر العميل...')));
 
               final service = ref.read(adminClientsServiceProvider);
               final success = await service.blockClient(
                 client.id,
-                reason: reasonController.text.isNotEmpty
-                    ? reasonController.text
-                    : null,
+                reason: reasonController.text.isNotEmpty ? reasonController.text : null,
               );
 
               if (mounted) {
                 messenger.hideCurrentSnackBar();
                 messenger.showSnackBar(
                   SnackBar(
-                    content: Text(
-                      success
-                          ? 'تم حظر العميل \${client.name}'
-                          : 'فشل حظر العميل',
-                    ),
-                    backgroundColor: success
-                        ? AdminAppColors.successLight
-                        : AdminAppColors.errorLight,
+                    content: Text(success ? 'تم حظر العميل \${client.name}' : 'فشل حظر العميل'),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
                 );
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AdminAppColors.errorLight,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.errorLight),
             child: const Text('نعم، حظر'),
           ),
         ],
@@ -789,17 +588,12 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
         title: const Text('تأكيد إلغاء الحظر'),
         content: Text('هل أنت متأكد من إلغاء حظر العميل \${client.name}؟'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('لا'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('لا')),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
               final messenger = ScaffoldMessenger.of(context);
-              messenger.showSnackBar(
-                const SnackBar(content: Text('جارٍ إلغاء الحظر...')),
-              );
+              messenger.showSnackBar(const SnackBar(content: Text('جارٍ إلغاء الحظر...')));
 
               final service = ref.read(adminClientsServiceProvider);
               final success = await service.unblockClient(client.id);
@@ -808,21 +602,13 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                 messenger.hideCurrentSnackBar();
                 messenger.showSnackBar(
                   SnackBar(
-                    content: Text(
-                      success
-                          ? 'تم إلغاء حظر العميل \${client.name}'
-                          : 'فشل إلغاء الحظر',
-                    ),
-                    backgroundColor: success
-                        ? AdminAppColors.successLight
-                        : AdminAppColors.errorLight,
+                    content: Text(success ? 'تم إلغاء حظر العميل \${client.name}' : 'فشل إلغاء الحظر'),
+                    backgroundColor: success ? AdminAppColors.successLight : AdminAppColors.errorLight,
                   ),
                 );
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AdminAppColors.successLight,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AdminAppColors.successLight),
             child: const Text('نعم، إلغاء الحظر'),
           ),
         ],

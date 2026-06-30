@@ -42,8 +42,7 @@ class PhonePinAuth {
 
     /// Optional structured log callback. Receives (event, maskedPhone, errorCode, errorMessage).
     /// Avoids a reverse dependency: auth_shared → client services.
-    void Function(String event, String? phone, String? code, String? msg)?
-        onLog,
+    void Function(String event, String? phone, String? code, String? msg)? onLog,
   }) async {
     // Track last phone for bug-report screen
     _lastPhoneE164 = phoneE164;
@@ -53,8 +52,7 @@ class PhonePinAuth {
         : '***';
 
     if (kDebugMode) {
-      print(
-          '[PhonePinAuth] ensurePhoneSession() starting for phone=$maskedPhone');
+      print('[PhonePinAuth] ensurePhoneSession() starting for phone=$maskedPhone');
     }
     // Always-on Crashlytics breadcrumb
     FirebaseCrashlytics.instance.log('OTP_SEND_START: phone=$maskedPhone');
@@ -64,14 +62,11 @@ class PhonePinAuth {
       final callable = FirebaseFunctions.instance.httpsCallable('sendOtp');
       await callable.call({'phone': phoneE164});
 
-      if (kDebugMode)
-        print('[PhonePinAuth] ensurePhoneSession() completed successfully');
+      if (kDebugMode) print('[PhonePinAuth] ensurePhoneSession() completed successfully');
       FirebaseCrashlytics.instance.log('OTP_SEND_SUCCESS');
       onLog?.call('otp_send_success', phoneE164, null, null);
     } on FirebaseFunctionsException catch (e) {
-      if (kDebugMode)
-        print(
-            '[PhonePinAuth] ensurePhoneSession() FAILED: ${e.code} - ${e.message}');
+      if (kDebugMode) print('[PhonePinAuth] ensurePhoneSession() FAILED: ${e.code} - ${e.message}');
       FirebaseCrashlytics.instance.recordError(
         'OTP Send Failed',
         StackTrace.current,
@@ -93,19 +88,14 @@ class PhonePinAuth {
     try {
       final callable = FirebaseFunctions.instance.httpsCallable('verifyOtp');
       final userType = userCollection == 'drivers' ? 'driver' : 'user';
-      final result = await callable.call({
-        'phone': _lastPhoneE164,
-        'code': smsCode,
-        'userType': userType,
-      });
+      final result = await callable.call({'phone': _lastPhoneE164, 'code': smsCode, 'userType': userType});
 
       final customToken = result.data['customToken'] as String?;
       final isNewUser = result.data['isNewUser'] as bool? ?? false;
 
       if (customToken == null) throw Exception('No custom token returned');
 
-      if (kDebugMode)
-        print('[PhonePinAuth] OTP verified, signing in with custom token');
+      if (kDebugMode) print('[PhonePinAuth] OTP verified, signing in with custom token');
       await _auth.signInWithCustomToken(customToken);
       if (kDebugMode) print('[PhonePinAuth] Sign-in successful!');
 
@@ -119,10 +109,25 @@ class PhonePinAuth {
     final doc = await _userDoc();
     final salt = _generateSalt();
     final hash = _hashWithSalt(pin, salt);
+
+    // Use _lastPhoneE164 (always in E.164 format from ensurePhoneSession)
+    // instead of _auth.currentUser!.phoneNumber which may be null or have
+    // a different format when signed in via Custom Token.
+    final phoneToStore = _lastPhoneE164 ?? _auth.currentUser?.phoneNumber;
+
+    if (kDebugMode) {
+      print(
+        '[PhonePinAuth] setPin: storing phone=$phoneToStore '
+        '(lastPhoneE164=$_lastPhoneE164, '
+        'authPhone=${_auth.currentUser?.phoneNumber})',
+      );
+    }
+
     await doc.set({
-      'phone': _auth.currentUser!.phoneNumber,
+      if (phoneToStore != null) 'phone': phoneToStore,
       'pinSalt': salt,
       'pinHash': hash,
+      'hasPin': true,
       'createdAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
@@ -141,39 +146,29 @@ class PhonePinAuth {
 
     final currentUser = _auth.currentUser;
     if (currentUser != null && currentUser.phoneNumber == phoneE164) {
-      if (kDebugMode)
-        print('[PhonePinAuth] User already signed in with matching phone');
+      if (kDebugMode) print('[PhonePinAuth] User already signed in with matching phone');
       return true;
     }
 
     try {
-      final callable =
-          FirebaseFunctions.instance.httpsCallable('createCustomToken');
+      final callable = FirebaseFunctions.instance.httpsCallable('createCustomToken');
       final userType = userCollection == 'drivers' ? 'driver' : 'user';
-      final result = await callable.call({
-        'phoneE164': phoneE164,
-        'pin': pin,
-        'userType': userType,
-      });
+      final result = await callable.call({'phoneE164': phoneE164, 'pin': pin, 'userType': userType});
 
       final token = result.data['token'] as String?;
       final uid = result.data['uid'] as String?;
 
       if (token == null) {
-        if (kDebugMode)
-          print('[PhonePinAuth] No token returned from createCustomToken');
+        if (kDebugMode) print('[PhonePinAuth] No token returned from createCustomToken');
         return false;
       }
 
-      if (kDebugMode)
-        print('[PhonePinAuth] Custom token received, signing in user: $uid');
+      if (kDebugMode) print('[PhonePinAuth] Custom token received, signing in user: $uid');
       await _auth.signInWithCustomToken(token);
-      if (kDebugMode)
-        print('[PhonePinAuth] Successfully signed in with custom token');
+      if (kDebugMode) print('[PhonePinAuth] Successfully signed in with custom token');
       return true;
     } on FirebaseFunctionsException catch (e) {
-      if (kDebugMode)
-        print('[PhonePinAuth] Cloud Function error: ${e.code} - ${e.message}');
+      if (kDebugMode) print('[PhonePinAuth] Cloud Function error: ${e.code} - ${e.message}');
       return false;
     } on Object catch (e) {
       if (kDebugMode) print('[PhonePinAuth] Error verifying PIN: $e');
@@ -199,9 +194,7 @@ class PhonePinAuth {
       if (!snap.exists || snap.data() == null) {
         // Document not in local cache → we genuinely don't know.
         // Throw so callers treat this as UNKNOWN, not as "no PIN".
-        throw StateError(
-          'PIN status unknown: server unreachable and no local cache for ${doc.path}',
-        );
+        throw StateError('PIN status unknown: server unreachable and no local cache for ${doc.path}');
       }
       // Document exists in cache → trust it (was fetched in a previous session).
       return snap.data()!['pinHash'] != null;
@@ -210,22 +203,15 @@ class PhonePinAuth {
 
   Future<bool> phoneExists(String phoneE164) async {
     try {
-      final callable =
-          FirebaseFunctions.instance.httpsCallable('checkPhoneExists');
+      final callable = FirebaseFunctions.instance.httpsCallable('checkPhoneExists');
       final userType = userCollection == 'drivers' ? 'driver' : 'user';
-      final result = await callable.call({
-        'phoneE164': phoneE164,
-        'userType': userType,
-      });
+      final result = await callable.call({'phoneE164': phoneE164, 'userType': userType});
       return result.data['exists'] as bool? ?? false;
     } on FirebaseFunctionsException catch (e) {
-      if (kDebugMode)
-        print(
-            '[PhonePinAuth] Cloud Function error checking phone: ${e.code} - ${e.message}');
+      if (kDebugMode) print('[PhonePinAuth] Cloud Function error checking phone: ${e.code} - ${e.message}');
       return false;
     } on Object catch (e) {
-      if (kDebugMode)
-        print('[PhonePinAuth] Error checking phone existence: $e');
+      if (kDebugMode) print('[PhonePinAuth] Error checking phone existence: $e');
       return false;
     }
   }

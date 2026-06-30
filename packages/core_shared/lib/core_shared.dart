@@ -16,5 +16,8 @@ export 'src/observability/debug_config.dart';
 export 'src/observability/waw_log.dart';
 export 'src/order.dart';
 export 'src/order_status.dart';
+export 'src/pricing.dart';
+export 'src/cargo_weight.dart';
+export 'src/shipment_type.dart';
 export 'src/saved_location.dart';
 export 'src/shared_place.dart';

@@ -8,6 +8,7 @@ import 'colors.dart';
 /// Shipment Type Colors Extension
 /// Provides colors for each shipment type category
 class ShipmentTypeColors extends ThemeExtension<ShipmentTypeColors> {
+  final Color lightParcel;
   final Color foodPerishables;
   final Color furniture;
   final Color construction;
@@ -16,6 +17,7 @@ class ShipmentTypeColors extends ThemeExtension<ShipmentTypeColors> {
   final Color fragile;
 
   const ShipmentTypeColors({
+    required this.lightParcel,
     required this.foodPerishables,
     required this.furniture,
     required this.construction,
@@ -27,6 +29,7 @@ class ShipmentTypeColors extends ThemeExtension<ShipmentTypeColors> {
   /// Light theme shipment colors
   factory ShipmentTypeColors.light() {
     return const ShipmentTypeColors(
+      lightParcel: WawAppColors.shipmentLightParcel,
       foodPerishables: WawAppColors.shipmentFood,
       furniture: WawAppColors.shipmentFurniture,
       construction: WawAppColors.shipmentConstruction,
@@ -39,6 +42,7 @@ class ShipmentTypeColors extends ThemeExtension<ShipmentTypeColors> {
   /// Dark theme shipment colors (slightly adjusted for dark backgrounds)
   factory ShipmentTypeColors.dark() {
     return const ShipmentTypeColors(
+      lightParcel: WawAppColors.shipmentLightParcel,
       foodPerishables: WawAppColors.shipmentFood,
       furniture: WawAppColors.shipmentFurniture,
       construction: WawAppColors.shipmentConstruction,
@@ -50,6 +54,7 @@ class ShipmentTypeColors extends ThemeExtension<ShipmentTypeColors> {
 
   @override
   ThemeExtension<ShipmentTypeColors> copyWith({
+    Color? lightParcel,
     Color? foodPerishables,
     Color? furniture,
     Color? construction,
@@ -58,6 +63,7 @@ class ShipmentTypeColors extends ThemeExtension<ShipmentTypeColors> {
     Color? fragile,
   }) {
     return ShipmentTypeColors(
+      lightParcel: lightParcel ?? this.lightParcel,
       foodPerishables: foodPerishables ?? this.foodPerishables,
       furniture: furniture ?? this.furniture,
       construction: construction ?? this.construction,
@@ -68,13 +74,11 @@ class ShipmentTypeColors extends ThemeExtension<ShipmentTypeColors> {
   }
 
   @override
-  ThemeExtension<ShipmentTypeColors> lerp(
-    covariant ThemeExtension<ShipmentTypeColors>? other,
-    double t,
-  ) {
+  ThemeExtension<ShipmentTypeColors> lerp(covariant ThemeExtension<ShipmentTypeColors>? other, double t) {
     if (other is! ShipmentTypeColors) return this;
 
     return ShipmentTypeColors(
+      lightParcel: Color.lerp(lightParcel, other.lightParcel, t)!,
       foodPerishables: Color.lerp(foodPerishables, other.foodPerishables, t)!,
       furniture: Color.lerp(furniture, other.furniture, t)!,
       construction: Color.lerp(construction, other.construction, t)!,
@@ -155,10 +159,7 @@ class WawAppThemeData extends ThemeExtension<WawAppThemeData> {
   }
 
   @override
-  ThemeExtension<WawAppThemeData> lerp(
-    covariant ThemeExtension<WawAppThemeData>? other,
-    double t,
-  ) {
+  ThemeExtension<WawAppThemeData> lerp(covariant ThemeExtension<WawAppThemeData>? other, double t) {
     if (other is! WawAppThemeData) return this;
 
     return WawAppThemeData(
@@ -166,8 +167,7 @@ class WawAppThemeData extends ThemeExtension<WawAppThemeData> {
       warningColor: Color.lerp(warningColor, other.warningColor, t)!,
       infoColor: Color.lerp(infoColor, other.infoColor, t)!,
       inputFillColor: Color.lerp(inputFillColor, other.inputFillColor, t)!,
-      inputBorderColor:
-          Color.lerp(inputBorderColor, other.inputBorderColor, t)!,
+      inputBorderColor: Color.lerp(inputBorderColor, other.inputBorderColor, t)!,
       dividerColor: Color.lerp(dividerColor, other.dividerColor, t)!,
       overlayColor: Color.lerp(overlayColor, other.overlayColor, t)!,
     );
@@ -178,14 +178,12 @@ class WawAppThemeData extends ThemeExtension<WawAppThemeData> {
 extension ThemeExtensionGetters on BuildContext {
   /// Get shipment type colors
   ShipmentTypeColors get shipmentTypeColors {
-    return Theme.of(this).extension<ShipmentTypeColors>() ??
-        ShipmentTypeColors.light();
+    return Theme.of(this).extension<ShipmentTypeColors>() ?? ShipmentTypeColors.light();
   }
 
   /// Get WawApp custom theme data
   WawAppThemeData get wawAppTheme {
-    return Theme.of(this).extension<WawAppThemeData>() ??
-        WawAppThemeData.light();
+    return Theme.of(this).extension<WawAppThemeData>() ?? WawAppThemeData.light();
   }
 
   /// Quick access to common custom colors

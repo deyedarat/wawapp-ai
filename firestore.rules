@@ -37,7 +37,7 @@ service cloud.firestore {
         && request.resource.data.price > 0  // P0-6 FIX: Prevent free orders
         && request.resource.data.price <= 100000  // P0-6 FIX: Max price sanity check
         && request.resource.data.distanceKm is number
-        && request.resource.data.distanceKm >= 0
+        && request.resource.data.distanceKm >= 0.2
         && request.resource.data.distanceKm < 100
         && request.resource.data.pickup is map
         && request.resource.data.pickup.lat is number

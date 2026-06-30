@@ -47,6 +47,7 @@ export const verifyOtp = functions
     try {
       const collection = userType === 'driver' ? 'drivers' : 'users';
 
+      // PRIMARY lookup: exact E.164 match
       const snapshot = await admin.firestore()
         .collection(collection)
         .where('phone', '==', phone)
@@ -60,45 +61,64 @@ export const verifyOtp = functions
         uid = snapshot.docs[0].id;
         console.log(`[verifyOtp] Existing user found in ${collection}: ${uid}`);
       } else {
-        // Check if user exists in Firebase Auth (may have registered via other app)
-        try {
-          const existingAuthUser = await admin.auth().getUserByPhoneNumber(phone);
-          uid = existingAuthUser.uid;
-          console.log(`[verifyOtp] User exists in Auth but not in ${collection}: ${uid}`);
-        } catch (authError: any) {
-          if (authError.code === 'auth/user-not-found') {
-            const newUser = await admin.auth().createUser({ phoneNumber: phone });
-            uid = newUser.uid;
-            console.log(`[verifyOtp] New Auth user created: ${uid}`);
-          } else {
-            throw authError;
-          }
-        }
+        // SECONDARY lookup: check for local number format (without +222)
+        // This prevents duplicate registrations when phone was stored without country code
+        const localNumber = phone.replace('+222', '');
+        const localSnapshot = await admin.firestore()
+          .collection(collection)
+          .where('phone', '==', localNumber)
+          .limit(1)
+          .get();
 
-        // FIX: Check if document already exists in Firestore before overwriting.
-        // This handles the case where the phone query didn't match (e.g. format mismatch)
-        // but the document actually exists with a pinHash. Using merge prevents data loss.
-        const existingDoc = await admin.firestore().collection(collection).doc(uid).get();
-        if (existingDoc.exists) {
-          // Document exists — merge to preserve existing fields (pinHash, etc.)
-          console.log(`[verifyOtp] Document exists for ${uid} in ${collection} — merging (preserving pinHash)`);
-          isNewUser = false;
-          await admin.firestore().collection(collection).doc(uid).set({
-            phone,
-            authMethod: 'otp',
+        if (!localSnapshot.empty) {
+          // Found with local format — fix the phone format and reuse
+          uid = localSnapshot.docs[0].id;
+          console.log(`[verifyOtp] Found existing user with local phone format in ${collection}: ${uid}. Fixing phone to E.164.`);
+          await admin.firestore().collection(collection).doc(uid).update({
+            phone: phone, // Normalize to E.164
             updatedAt: admin.firestore.Timestamp.now(),
-          }, { merge: true });
-        } else {
-          // Truly new user — create fresh document
-          isNewUser = true;
-          await admin.firestore().collection(collection).doc(uid).set({
-            phone,
-            createdAt: admin.firestore.Timestamp.now(),
-            authMethod: 'otp',
           });
-        }
+        } else {
+          // Check if user exists in Firebase Auth (may have registered via other app)
+          try {
+            const existingAuthUser = await admin.auth().getUserByPhoneNumber(phone);
+            uid = existingAuthUser.uid;
+            console.log(`[verifyOtp] User exists in Auth but not in ${collection}: ${uid}`);
+          } catch (authError: any) {
+            if (authError.code === 'auth/user-not-found') {
+              const newUser = await admin.auth().createUser({ phoneNumber: phone });
+              uid = newUser.uid;
+              console.log(`[verifyOtp] New Auth user created: ${uid}`);
+            } else {
+              throw authError;
+            }
+          }
 
-        console.log(`[verifyOtp] ${collection} doc ${isNewUser ? 'created' : 'updated'} for: ${uid}`);
+          // FIX: Check if document already exists in Firestore before overwriting.
+          // This handles the case where the phone query didn't match (e.g. format mismatch)
+          // but the document actually exists with a pinHash. Using merge prevents data loss.
+          const existingDoc = await admin.firestore().collection(collection).doc(uid).get();
+          if (existingDoc.exists) {
+            // Document exists — merge to preserve existing fields (pinHash, etc.)
+            console.log(`[verifyOtp] Document exists for ${uid} in ${collection} — merging (preserving pinHash)`);
+            isNewUser = false;
+            await admin.firestore().collection(collection).doc(uid).set({
+              phone,
+              authMethod: 'otp',
+              updatedAt: admin.firestore.Timestamp.now(),
+            }, { merge: true });
+          } else {
+            // Truly new user — create fresh document
+            isNewUser = true;
+            await admin.firestore().collection(collection).doc(uid).set({
+              phone,
+              createdAt: admin.firestore.Timestamp.now(),
+              authMethod: 'otp',
+            });
+          }
+
+          console.log(`[verifyOtp] ${collection} doc ${isNewUser ? 'created' : 'updated'} for: ${uid}`);
+        }
       }
 
       const customToken = await admin.auth().createCustomToken(uid, {

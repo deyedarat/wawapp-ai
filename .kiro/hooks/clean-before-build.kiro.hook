@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Clean before admin build",
+  "description": "Runs flutter clean before building wawapp_admin to prevent stale web_plugin_registrant.dart cache from breaking Google Maps",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": [
+      "shell"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "If the shell command is 'flutter build web' for wawapp_admin, always run 'flutter clean' first in the same directory. This prevents stale build cache from missing google_maps_flutter_web plugin registration."
+  }
+}

@@ -26,6 +26,7 @@ import '../../features/shipment_type/shipment_type_screen.dart';
 import '../../features/order_history/order_history_screen.dart';
 import '../../features/track/driver_found_screen.dart';
 import '../../features/track/public_track_screen.dart';
+import '../../features/track/track_by_id_screen.dart';
 import '../../features/track/track_screen.dart';
 import '../../features/track/trip_completed_screen.dart';
 import '../logging/auth_logger.dart';
@@ -70,6 +71,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/track/:orderId',
         name: 'trackById',
+        builder: (context, state) {
+          final orderId = state.pathParameters['orderId']!;
+          return TrackByIdScreen(orderId: orderId);
+        },
+      ),
+      GoRoute(
+        path: '/public-track/:orderId',
+        name: 'publicTrack',
         builder: (context, state) {
           final orderId = state.pathParameters['orderId']!;
           return PublicTrackScreen(orderId: orderId);
@@ -162,7 +171,7 @@ String? _redirect(GoRouterState s, AuthState st) {
   }
 
   // 2. ALLOW: Public tracking routes (no auth required)
-  if (s.matchedLocation.startsWith('/track/')) {
+  if (s.matchedLocation.startsWith('/public-track/')) {
     debugPrint('[Router] ✓ Public route - no redirect');
     return null;
   }

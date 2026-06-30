@@ -15,7 +15,7 @@ import * as functions from 'firebase-functions/v1';
 /**
  * Configuration constants
  */
-const MAX_SEARCH_RADIUS_KM = 8; // Maximum radius to search for orders
+const MAX_SEARCH_RADIUS_KM = 50; // Relaxed for early-stage (few drivers). Restore to 8 when driver count > 10
 const MAX_ORDERS_TO_RETURN = 20; // Limit results
 
 /**
@@ -110,10 +110,11 @@ export const getNearbyOrders = functions.https.onCall(async (data, context) => {
       );
     }
 
-    if (!driverData?.isOnline) {
-      console.log('[getNearbyOrders] Driver is offline', { driver_id: driverId });
-      return { orders: [] };
-    }
+    // Online check removed for early-stage: driver sees orders whenever app is open
+    // Re-enable when driver count > 10:
+    // if (!driverData?.isOnline) {
+    //   return { orders: [] };
+    // }
 
     // Skip if driver has an active order (accepted or onRoute)
     const activeOrderSnapshot = await admin

@@ -24,7 +24,8 @@ export { cleanStaleDriverLocations } from './cleanStaleDriverLocations';
 export { createTopupRequest } from './createTopupRequest'; // Phase D: Driver top-up requests
 export { enforceOrderExclusivity } from './enforceOrderExclusivity'; // Phase C: Order exclusivity guards
 export { enforceWalletBalance } from './enforceWalletBalance'; // Phase D: Wallet balance enforcement
-export { expireStaleDrivers } from './expireStaleDrivers'; // Auto-offline drivers with stale location (>30 min)
+// ❌ DISABLED: Auto-offline feature removed - drivers must manually disconnect
+// export { expireStaleDrivers } from './expireStaleDrivers';
 export { expireStaleOrders } from './expireStaleOrders';
 export { getNearbyOrders } from './getNearbyOrders'; // FIX: Get nearby orders for drivers (bypasses Firestore Rules)
 export { notifyNewOrderV2 } from './notifyNewOrder.v2';
@@ -52,6 +53,7 @@ export { adminBlockClient, adminSetClientVerification, adminUnblockClient } from
 export { adminBlockDriver, adminUnblockDriver, adminVerifyDriver } from './admin/adminDriverActions';
 export { adminCancelOrder, adminReassignOrder } from './admin/adminOrderActions';
 export { adminResetDriverDispatch } from './admin/adminResetDriverDispatch';
+export { fixDuplicateDrivers } from './admin/fixDuplicateDrivers'; // TEMP: Fix duplicate driver registrations
 export { getAdminStats } from './admin/getAdminStats';
 export { checkPhoneExists } from './auth/checkPhoneExists';
 export { createCustomToken } from './auth/createCustomToken';

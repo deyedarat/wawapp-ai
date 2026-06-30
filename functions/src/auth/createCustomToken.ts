@@ -5,9 +5,9 @@
  * for signing in to Firebase Auth without requiring OTP every time.
  */
 
-import * as functions from 'firebase-functions/v1';
-import * as admin from 'firebase-admin';
 import * as crypto from 'crypto';
+import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions/v1';
 import { checkRateLimit, recordFailedAttempt, resetRateLimit } from './rateLimiting';
 
 /**
@@ -29,7 +29,7 @@ function hashWithSalt(pin: string, salt: string): string {
  */
 export const createCustomToken = functions.https.onCall(async (data, context) => {
   const { phoneE164, pin, userType } = data; // ADD userType parameter
-  
+
   // P0-11 FIX: Capture client IP for IP-based rate limiting
   const clientIp = context.rawRequest?.ip || 'unknown';
 
@@ -77,14 +77,43 @@ export const createCustomToken = functions.https.onCall(async (data, context) =>
       .limit(1)
       .get();
 
-    if (usersSnapshot.empty) {
-      console.log(`[createCustomToken] No ${userType || 'user'} found with phone: ${phoneE164}`);
-      throw new functions.https.HttpsError('not-found', 'User not found');
-    }
+    let userDoc;
+    let userData;
+    let uid: string;
 
-    const userDoc = usersSnapshot.docs[0];
-    const userData = userDoc.data();
-    const uid = userDoc.id;
+    if (!usersSnapshot.empty) {
+      userDoc = usersSnapshot.docs[0];
+      userData = userDoc.data();
+      uid = userDoc.id;
+    } else {
+      // Secondary lookup: check for local number format (without +222)
+      // Handles legacy entries stored without country code
+      const localNumber = phoneE164.startsWith('+222') ? phoneE164.replace('+222', '') : null;
+      if (localNumber) {
+        const localSnapshot = await admin.firestore()
+          .collection(collection)
+          .where('phone', '==', localNumber)
+          .limit(1)
+          .get();
+
+        if (!localSnapshot.empty) {
+          userDoc = localSnapshot.docs[0];
+          userData = userDoc.data();
+          uid = userDoc.id;
+          console.log(`[createCustomToken] Found user with local phone format: ${uid}. Normalizing.`);
+          // Fix phone format in background
+          admin.firestore().collection(collection).doc(uid).update({
+            phone: phoneE164,
+          }).catch(err => console.error('[createCustomToken] Phone normalize failed:', err));
+        } else {
+          console.log(`[createCustomToken] No ${userType || 'user'} found with phone: ${phoneE164}`);
+          throw new functions.https.HttpsError('not-found', 'User not found');
+        }
+      } else {
+        console.log(`[createCustomToken] No ${userType || 'user'} found with phone: ${phoneE164}`);
+        throw new functions.https.HttpsError('not-found', 'User not found');
+      }
+    }
 
     // Verify PIN
     const storedHash = userData.pinHash as string | undefined;

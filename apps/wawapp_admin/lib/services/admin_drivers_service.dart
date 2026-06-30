@@ -258,9 +258,10 @@ class AdminDriversService {
     }
     final driverData = driverDoc.data()!;
 
+    // Early-stage: isOnline check removed from dispatch — show as info only, not blocking
     if (driverData['isOnline'] != true) {
-      results['eligible'] = false;
-      (results['reasons'] as List).add('غير متصل');
+      // Don't mark as ineligible — just informational
+      (results['reasons'] as List).add('ℹ️ غير متصل (لا يمنع استقبال الطلبات حالياً)');
     }
 
     if (driverData['isVerified'] != true) {
@@ -286,9 +287,10 @@ class AdminDriversService {
       (results['reasons'] as List).add('ملف ناقص: ${missing.join("، ")}');
     }
 
-    // 2. Check location
+    // 2. Check location (informational only — freshness filter disabled for early-stage)
     final locationDoc = await _firestore.collection('driver_locations').doc(driverId).get();
     if (!locationDoc.exists) {
+      // No location at all means dispatch can't reach them (no coordinates)
       results['eligible'] = false;
       (results['reasons'] as List).add('لا يوجد موقع مسجّل');
     } else {
@@ -297,9 +299,9 @@ class AdminDriversService {
       if (updatedAt != null) {
         final age = DateTime.now().difference(updatedAt.toDate());
         results['locationAge'] = age.inMinutes;
+        // Early-stage: location age doesn't block eligibility
         if (age.inMinutes > 30) {
-          results['eligible'] = false;
-          (results['reasons'] as List).add('الموقع قديم (${age.inMinutes} دقيقة)');
+          (results['reasons'] as List).add('ℹ️ الموقع قديم (${age.inMinutes} دقيقة) — لا يمنع الاستقبال');
         }
       }
     }

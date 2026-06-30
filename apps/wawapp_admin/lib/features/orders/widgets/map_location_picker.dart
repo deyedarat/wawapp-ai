@@ -234,12 +234,15 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
 
   Future<String> _getAddressFromLatLng(double lat, double lng) async {
     // Use Google Maps JS Geocoder (browser-side, works with referer-restricted keys)
+    debugPrint('[MapPicker] Resolving address for: $lat, $lng');
     final googleResult = await WebGeocoder.reverseGeocode(lat, lng);
+    debugPrint('[MapPicker] WebGeocoder result: $googleResult');
     if (googleResult != null && googleResult.isNotEmpty) {
       return googleResult;
     }
 
     // Fallback: Nominatim (free, no API key needed)
+    debugPrint('[MapPicker] Falling back to Nominatim');
     try {
       final url = Uri.parse(
         'https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lng&accept-language=ar',

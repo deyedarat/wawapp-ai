@@ -158,6 +158,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       lat2: dropoff.latitude,
       lng2: dropoff.longitude,
     );
+
+    if (km < 0.2) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('يجب أن تكون المسافة بين موقع الاستلام والتسليم 200 متر على الأقل'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     final breakdown = Pricing.compute(km);
     final price = breakdown.rounded;
 
@@ -391,6 +402,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Get the color for the selected shipment type
     Color categoryColor;
     switch (selectedType) {
+      case ShipmentType.lightParcel:
+        categoryColor = shipmentColors.lightParcel;
+        break;
       case ShipmentType.foodAndPerishables:
         categoryColor = shipmentColors.foodPerishables;
         break;
@@ -574,6 +588,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             children: ShipmentType.values.map((type) {
               Color categoryColor;
               switch (type) {
+                case ShipmentType.lightParcel:
+                  categoryColor = shipmentColors.lightParcel;
+                  break;
                 case ShipmentType.foodAndPerishables:
                   categoryColor = shipmentColors.foodPerishables;
                   break;

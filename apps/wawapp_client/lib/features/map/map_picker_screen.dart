@@ -13,10 +13,12 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../core/location/location_service.dart';
+import 'pick_route_controller.dart';
 
 /// Data model for selected location
 class SelectedLocation {
@@ -66,7 +68,7 @@ class SelectedLocation {
 ///   // Update order draft with result
 /// }
 /// ```
-class MapPickerScreen extends StatefulWidget {
+class MapPickerScreen extends ConsumerStatefulWidget {
   final String title;
   final SelectedLocation? initialLocation;
 
@@ -77,10 +79,10 @@ class MapPickerScreen extends StatefulWidget {
   });
 
   @override
-  State<MapPickerScreen> createState() => _MapPickerScreenState();
+  ConsumerState<MapPickerScreen> createState() => _MapPickerScreenState();
 }
 
-class _MapPickerScreenState extends State<MapPickerScreen> {
+class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
   GoogleMapController? _mapController;
   LatLng? _selectedPosition;
   String _selectedLabel = 'الموقع المحدد';
@@ -141,9 +143,11 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     });
 
     try {
+      final apiKey = ref.read(mapsApiKeyProvider);
       final address = await LocationService.resolveAddressFromLatLng(
         position.latitude,
         position.longitude,
+        apiKey: apiKey,
       );
 
       if (mounted) {

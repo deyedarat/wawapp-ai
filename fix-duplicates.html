@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fix Duplicate Drivers</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #0f0; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #333; color: #0f0; border: 1px solid #0f0; }
+        button:hover { background: #0f0; color: #000; }
+        #output { white-space: pre-wrap; margin-top: 20px; padding: 10px; border: 1px solid #333; }
+        .error { color: #f00; }
+        .success { color: #0f0; }
+    </style>
+</head>
+<body>
+    <h2>Fix Duplicate Drivers - WawApp</h2>
+    <p>This will find and fix drivers with duplicate phone formats (local vs E.164)</p>
+    
+    <div>
+        <label>Admin Email: <input id="email" type="email" value="whitelara75@gmail.com" style="background:#333;color:#0f0;border:1px solid #0f0;padding:5px;width:300px"></label><br><br>
+        <label>Password: <input id="password" type="password" style="background:#333;color:#0f0;border:1px solid #0f0;padding:5px;width:300px"></label><br><br>
+        <button onclick="login()">1. Login as Admin</button>
+        <button onclick="fixDuplicates()" id="fixBtn" disabled>2. Fix Duplicates</button>
+    </div>
+    
+    <div id="output"></div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKZ0i1P4VGsscEPJbMJJRhYAbU1e7C7YU",
+            authDomain: "wawapp-952d6.firebaseapp.com",
+            projectId: "wawapp-952d6",
+            storageBucket: "wawapp-952d6.appspot.com",
+            messagingSenderId: "363341993641",
+            appId: "1:363341993641:web:placeholder"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const functions = firebase.functions();
+        const auth = firebase.auth();
+
+        function log(msg, cls) {
+            document.getElementById('output').innerHTML += `<span class="${cls || ''}">${msg}</span>\n`;
+        }
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try {
+                log('Logging in...');
+                await auth.signInWithEmailAndPassword(email, password);
+                log('✓ Logged in successfully!', 'success');
+                document.getElementById('fixBtn').disabled = false;
+            } catch(e) {
+                log(`✗ Login failed: ${e.message}`, 'error');
+            }
+        }
+
+        async function fixDuplicates() {
+            try {
+                log('\nCalling fixDuplicateDrivers...');
+                const callable = functions.httpsCallable('fixDuplicateDrivers');
+                const result = await callable({});
+                log('\n✓ DONE!', 'success');
+                log(JSON.stringify(result.data, null, 2), 'success');
+            } catch(e) {
+                log(`\n✗ Error: ${e.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
