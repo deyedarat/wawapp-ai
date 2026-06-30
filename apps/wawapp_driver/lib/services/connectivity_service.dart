@@ -17,8 +17,8 @@ class ConnectivityService {
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   bool _wasOffline = false;
 
-  /// Callback fired when driver is forced offline due to internet loss
-  VoidCallback? onForcedOffline;
+  /// Callback fired when connectivity is lost (for UI notification)
+  VoidCallback? onConnectivityLost;
 
   /// Initialize connectivity monitoring
   Future<void> initialize() async {
@@ -64,7 +64,7 @@ class ConnectivityService {
   }
 
   /// Handle connectivity changes
-  void _handleConnectivityChange(List<ConnectivityResult> results) {
+  Future<void> _handleConnectivityChange(List<ConnectivityResult> results) async {
     final isOnline = results.any((result) =>
         result == ConnectivityResult.mobile ||
         result == ConnectivityResult.wifi ||
@@ -80,43 +80,29 @@ class ConnectivityService {
       _reconnectFirestore();
       _wasOffline = false;
 
-      // Restore driver online status in Firestore
+      // Do NOT call setOnline() here. Driver online status is controlled
+      // ONLY by the manual toggle. If the driver was online before losing
+      // connectivity, resume tracking so location stays fresh.
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid != null) {
-        DriverStatusService.instance.setOnline(uid);
-        if (kDebugMode) {
-          print('📡 Connectivity restored — driver set online');
+        final wasOnline = await DriverStatusService.instance.getOnlineStatus(uid);
+        if (wasOnline) {
+          await TrackingService.instance.startTracking();
+          if (kDebugMode) {
+            print('📡 Connectivity restored — resuming tracking (driver was online)');
+          }
         }
       }
     } else if (!isOnline) {
       _wasOffline = true;
       if (kDebugMode) {
-        print('📴 Device offline - setting driver offline');
+        print('📴 Device offline - stopping tracking');
       }
-      _forceDriverOffline();
+      // Stop tracking to avoid stale writes, but do NOT change isOnline.
+      // isOnline is controlled ONLY by the manual toggle.
+      TrackingService.instance.stopTracking();
+      onConnectivityLost?.call();
     }
-  }
-
-  /// Handle internet loss — stop tracking but preserve driver intent (isOnline)
-  /// Dispatch eligibility is handled by location freshness filters in selectors.ts
-  Future<void> _forceDriverOffline() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
-
-    final isOnline = await DriverStatusService.instance.getOnlineStatus(uid);
-    if (!isOnline) return;
-
-    // Stop tracking to avoid stale writes, but do NOT set isOnline=false.
-    // Driver intent remains "online". Dispatch engine will skip this driver
-    // because driver_locations.updatedAt becomes stale (>5 min).
-    TrackingService.instance.stopTracking();
-    await DriverStatusService.instance.setOffline(uid);
-
-    if (kDebugMode) {
-      print('📴 Internet lost — tracking stopped, driver set offline');
-    }
-
-    onForcedOffline?.call();
   }
 
   /// Force Firestore to reconnect by disabling/enabling network

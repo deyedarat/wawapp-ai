@@ -157,7 +157,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     // Show permission setup on first launch
     _checkPermissionSetup();
     // Listen for internet loss
-    ConnectivityService().onForcedOffline = _onInternetLost;
+    ConnectivityService().onConnectivityLost = _onInternetLost;
     // Check eligibility nudges after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkEligibilityNudges());
     // Start polling fallback for offer detection (HTTPS, works on all networks)
@@ -169,7 +169,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     _accuracyNudgeSubscription?.cancel();
     _stopLocationMonitoring();
     _stopOfferPolling();
-    ConnectivityService().onForcedOffline = null;
+    ConnectivityService().onConnectivityLost = null;
     super.dispose();
   }
 
